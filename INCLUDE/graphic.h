@@ -1,7 +1,9 @@
+#ifndef _graphic_h_
+#define _graphic_h_
+
 #include<graphics.h>
 #include<math.h>
 #include<ctype.h>
-#include<stdio.h>
 
 // 参数说明：
 // x1,y1 - 起点坐标
@@ -117,7 +119,9 @@ void drawRectangle(int x0, int y0, int h, int w, int isSolid, int borderWidth, i
 void drawLine(int x1, int y1, int x2, int y2, int color) {
     int originalColor = getcolor();
     setcolor(color);
-    line(x1, y1, x2, y2);
-    setcolor(originalColor);
+	line(x1, y1, x2, y2);
+	setcolor(originalColor);
 }
+
+#endif
 

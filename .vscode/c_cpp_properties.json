@@ -1,0 +1,21 @@
+{
+    "configurations": [
+        {
+            "name": "BorlandC31_FullInclude",
+            "includePath": [
+                "D:\\Software\\BC31\\DISK_C\\BORLANDC\\INCLUDE",
+                "D:\\Software\\BC31\\DISK_C\\BORLANDC\\REPO\\CKSTASK\\ElectricBikeSystemCKSTask\\INCLUDE",
+                "${workspaceFolder}/**"
+            ],
+            "defines": [
+                "__BORLANDC__=0x0550",  // 编译器版本标识 
+                "__TURBOC__=0x0550",    // Turbo C兼容模式 
+                "__MSDOS__",            // DOS环境模拟 
+                "_DOS",                 // DOS平台定义 
+                "GRAPHICS_H",           // 图形库开关 
+                "_BCPP"                 // Borland C++标识 
+            ]
+        }
+    ],
+    "version": 4 
+}
