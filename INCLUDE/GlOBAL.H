@@ -12,14 +12,14 @@
 #include<time.h>
 //#include<stdint.h>
 
-#include"HZ.H"
+//#include"HZ.H"
 #include"GHZ.H"
 #include"MOUSE.H"
 #include"SVGA.h"
 #include"LOGIN.H"
 #include"KEYINPUT.H"
 
-extern MOUSE mouse;//声明全局变量，本项目工程共用同一个鼠标结构
+//extern MOUSE mouse;//声明全局变量，本项目工程共用同一个鼠标结构
 //故每个（需要鼠标的）文件都应包含
 
 #endif
