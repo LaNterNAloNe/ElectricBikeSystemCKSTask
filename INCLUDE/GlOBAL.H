@@ -10,7 +10,6 @@
 #include<dos.h>
 #include<math.h>
 #include<time.h>
-//#include<stdint.h>
 
 //#include"HZ.H"
 #include"GHZ.H"
@@ -23,6 +22,7 @@
 int driver =VGA;
 int mode =VGAHI;
 
+//定义page各个状态
 #define EXIT 0
 #define LOGIN 1
 #define LOGIN_ADMIN 2
