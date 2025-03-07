@@ -19,7 +19,31 @@
 #include"LOGIN.H"
 #include"KEYINPUT.H"
 
-//extern MOUSE mouse;//声明全局变量，本项目工程共用同一个鼠标结构
-//故每个（需要鼠标的）文件都应包含
+//声明显示模式，驱动器
+int driver =VGA;
+int mode =VGAHI;
+
+#define EXIT 0
+#define LOGIN 1
+#define LOGIN_ADMIN 2
+#define REGISTER 3
+
+#define MAIN_USER 10
+#define USER_BIKE_REGISTER 11
+#define USER_BIKE_LICENSE 12
+#define USER_BIKE_ANULL_AND_WROTEOUT 13
+#define USER_INFO 14
+#define USER_MESSAGE 15
+#define USER_DATAGRAPH 16
+
+#define MAIN_ADMIN 20
+#define ADMIN_BIKE_REGISTER 21
+#define ADMIN_BIKE_LICENSE 22
+#define ADMIN_BIKE_ANULL_AND_WROTEOUT 23
+#define ADMIN_BIKE_PENALIZE 24
+#define ADMIN_INFO 25
+#define ADMIN_MESSAGE 26
+#define ADMIN_DATABASE 27
+
 
 #endif

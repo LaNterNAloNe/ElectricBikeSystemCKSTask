@@ -14,6 +14,7 @@ typedef struct {
 	int is_active;          // �Ƿ񼤻�״̬
 } InputBox;
 
+void login(int *page);
 void draw_input_box(InputBox *box);
 void handle_input(InputBox *box, int key);
 

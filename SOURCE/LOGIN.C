@@ -1,5 +1,28 @@
 #include"LOGIN.H"
 
+// 登录界面
+void login(int *page){
+    InputBox username_box = {
+        .x1 = 240, .y1 = 200, .x2 = 400, .y2 = 240,
+        .text = "", .cursor_pos = 0, .is_active = 0
+    };
+    
+    InputBox password_box = {
+        .x1 = 240, .y1 = 260, .x2 = 400, .y2 = 300,
+        .text = "", .cursor_pos = 0, .is_active = 0
+    };
+
+    InputBox* active_box = NULL;
+    int exit_flag = 0;
+    
+    draw_login_graph(); // 绘制背景和静态元素
+    
+    // 绘制固定提示文字
+    setcolor(BLACK);
+    outtextxy(170, 205, "Username:");
+    outtextxy(170, 265, "Password:");
+}
+
 
 // 绘制输入框
 void draw_input_box(InputBox *box) {
@@ -53,4 +76,10 @@ void handle_input(InputBox *box, int key) {
                 box->cursor_pos++;
             }
     }
+}
+
+void draw_login_graph(void)
+{
+    //开始你的创作吧~
+    return;
 }

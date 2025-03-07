@@ -14,17 +14,17 @@ void puthz(int x, int y,char *s,int flag,int part,int color)
 	switch(flag)    //不同的flag对应不同的汉字库，实现了汉字的大小可根据需要改变
 	{
 		case 16 :
-				  {
-					 char mat[32];   //16*16的汉字需要32个字节的数组来存储
+				{
+					char mat[32];   //16*16的汉字需要32个字节的数组来存储
 					int y0=y;
 					int x0=x;
-					 hzk_p = fopen("HZK\\HZ16","rb");            //使用相对路径
-					 if(hzk_p==NULL)
-					 {
+					hzk_p = fopen("HZK\\HZ16","rb");            //使用相对路径
+					if(hzk_p==NULL)
+					{
 						CloseSVGA();
 						printf("cant open HZ16");
-						 getch();
-						 exit(1);
+						getch();
+						exit(1);
 
 					}
 					while(*s!=NULL)
@@ -46,7 +46,6 @@ void puthz(int x, int y,char *s,int flag,int part,int color)
 									if((mask[j%8]&mat[pos+j/8])!=NULL)   //j%8只能在0—8之间循环，j/8在0，1之间循环
 									{
 										Putpixel64k(x+j,y,color);
-
 									}
 
 								}
@@ -59,18 +58,15 @@ void puthz(int x, int y,char *s,int flag,int part,int color)
 							====================================================*/
 							x+=part;        //给x 一个偏移量part
 							s+=2;           //汉字里存放的是内码，2个字节，所以要加2
-
 						}
 						x=x0;y0+=flag+10; //一行汉字显示完后,重新从左侧开始输出汉字，给y一个偏移量
 					}
-
 					break;
-
-				 }
+				}
 
 
 		case 24 :
-				  {
+				{
 					char mat[72];   //24*24矩阵要72个字节来存储
 					 int y0=y;
 					 int x0=x;
@@ -110,21 +106,21 @@ void puthz(int x, int y,char *s,int flag,int part,int color)
 						}
 						x=x0;y0+=flag+10;
 					}
-						break;
+					break;
 				}
 
 		case 32 :
-				  {
-					 char mat[128];   //32*32的汉字需要128个字节的数组来存储
+				{
+					char mat[128];   //32*32的汉字需要128个字节的数组来存储
 					int y0=y;
 					int x0=x;
-					 hzk_p = fopen("HZK\\HZK32S","rb");
-					 if(hzk_p==NULL)
-					 {
+					hzk_p = fopen("HZK\\HZK32S","rb");
+					if(hzk_p==NULL)
+					{
 						CloseSVGA();
 						printf("cant open HZ32");
-						 getch();
-						 exit(1);
+						getch();
+						exit(1);
 
 					}
 					while(*s!=NULL)
@@ -145,38 +141,31 @@ void puthz(int x, int y,char *s,int flag,int part,int color)
 									if((mask[j%8]&mat[pos+j/8])!=NULL)
 									{
 										Putpixel64k(x+j,y,color);
-
 									}
-
 								}
 								y++;
-
-
 							}
 								//以上是一个汉字显示完
 							x+=part;    //给x 一个偏移量part
 							s+=2;          //汉字里存放的是内码，2个字节，所以要加2
-
 						}
 						x=x0;y0+=flag+10;   //一行汉字显示完后，给y一个偏移量
 					}
-						break;
-
+					break;
 				 }
-
 
 		case 48:
 				  {
 					char mat[288];   //48*48的汉字需要288个字节的数组来存储
 					int y0=y;
 					int x0=x;
-					 hzk_p = fopen("HZK\\Hzk48k","rb");
-					 if(hzk_p==NULL)
-					 {
+					hzk_p = fopen("HZK\\Hzk48k","rb");
+					if(hzk_p==NULL)
+					{
 						CloseSVGA();
 						printf("cant open HZ48");
-						 getch();
-						 exit(1);
+						getch();
+						exit(1);
 
 					}
 					while(*s!=NULL)
@@ -189,7 +178,6 @@ void puthz(int x, int y,char *s,int flag,int part,int color)
 							offset=(94*(quma-1)+(weima-1))*288L;   //求出要显示的汉字在字库文件中的偏移
 							fseek(hzk_p,offset,SEEK_SET);         //重定位文件指针
 							fread (mat,288,1,hzk_p);            //读出该汉字的具体点阵数据,1为要读入的项数
-
 							for(i=0;i<48;i++)
 							{
 								pos=6*i;
@@ -198,28 +186,23 @@ void puthz(int x, int y,char *s,int flag,int part,int color)
 									if((mask[j%8]&mat[pos+j/8])!=NULL)   //j%8只能在0—8之间循环，j/8在0，1之间循环
 									{
 										Putpixel64k(x+j,y,color);
-
 									}
-
 								}
 								y++;
 							}
 								//以上是一个汉字显示完
 							x+=part;    //给x 一个偏移量part
 							s+=2;          //汉字里存放的是内码，2个字节，所以要加2
-
 						}
 						x=x0;y0+=flag+10;   //一行汉字显示完后，给y一个偏移量
 					}
-						break;
-
+					break;
 				}
 
 		default:
-				  break;
+				break;
 
 	}
-
 	fclose(hzk_p);
 }
 
