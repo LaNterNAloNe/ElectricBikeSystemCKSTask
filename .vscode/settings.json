@@ -63,6 +63,7 @@
     "LGFUNC.C": "cpp",
     "GHZ.C": "cpp",
     "MAIN.C": "cpp",
-    "HZ.C": "cpp"
+    "HZ.C": "cpp",
+    "LOGIN.C": "cpp"
   }
 }

@@ -49,6 +49,8 @@ unsigned int Getpixel64k(int x, int y);
 
 /***ª≠ Û±Í***/
 
+void newmouse(int *nx,int *ny,int *nbuttons);
+
 void draw_mouse(int mx,int my);
 
 void CurShow(void);

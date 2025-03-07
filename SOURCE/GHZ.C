@@ -1,4 +1,6 @@
-#include"GLOBAL.H"
+#include"GHZ.H"
+
+
 
 void puthz(int x, int y,char *s,int flag,int part,int color)
 {

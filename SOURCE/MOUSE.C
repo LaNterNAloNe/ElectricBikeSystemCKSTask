@@ -1,4 +1,4 @@
-#include"mouse.h"
+#include"MOUSE.H"
 #include <dos.h>
 #include <stdio.h>
 #include <conio.h>
@@ -33,7 +33,6 @@ int mouse_shape[H][W] =    //鼠标形状二维数组
 unsigned int mouse_bk[20][20];           //存放被鼠标覆盖的区域
 MOUSE mouse={0,0,0};            //定义一个鼠标结构变量
  
-
 
 
 /***鼠标初始化***/

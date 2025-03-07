@@ -1,5 +1,11 @@
 #ifndef __GHZ_H__
 #define __GHZ_H__
+#include<stdio.h>
+#include"SVGA.H"
+#include<conio.h>
+#include<process.h>
+#include<graphics.h>
+#include"MOUSE.H"
 
 void puthz(int x, int y,char *s,int flag,int part,int color);
 
