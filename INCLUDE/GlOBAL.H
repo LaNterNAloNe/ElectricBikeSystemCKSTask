@@ -11,10 +11,8 @@
 #include<math.h>
 #include<time.h>
 
-//#include"HZ.H"
-#include"GHZ.H"
+#include"HZ.H"
 #include"MOUSE.H"
-#include"SVGA.h"
 #include"LOGIN.H"
 #include"KEYINPUT.H"
 

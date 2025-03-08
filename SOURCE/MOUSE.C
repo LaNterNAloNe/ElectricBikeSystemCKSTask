@@ -4,7 +4,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include "mouse.h"
-#include "SVGA.H"
+
 
 /**************************
 MOUSE.c
@@ -60,20 +60,20 @@ void mouseinit()//初始化
 	flag=1;
 }
 
-unsigned int Getpixel64k(int x, int y)
-{
-	unsigned int far * const video_buffer = (unsigned int far *)0xa0000000L;
-	unsigned char page;                                                  //要切换的页面号
-	unsigned long int page_dev;                                           //对应显存地址偏移量                       
-	if(x < 0 || x > (SCR_WIDTH - 1) || y < 0 || y > (SCR_HEIGHT - 1))           //判断点是否在屏幕范围内，不在就退出 
-	{
-		printf("out of range");
-	}
-	page_dev = ((unsigned long int)y << 10) + x;                              //计算显存地址偏移量和对应的页面号，做换页操作
-	page = page_dev >> 15;	//32k个点一换页，除以32k的替代算法
-	Selectpage(page);
-	return video_buffer[page_dev];	 //返回颜色
-}
+// unsigned int Getpixel64k(int x, int y)
+// {
+// 	unsigned int far * const video_buffer = (unsigned int far *)0xa0000000L;
+// 	unsigned char page;                                                  //要切换的页面号
+// 	unsigned long int page_dev;                                           //对应显存地址偏移量                       
+// 	if(x < 0 || x > (SCR_WIDTH - 1) || y < 0 || y > (SCR_HEIGHT - 1))           //判断点是否在屏幕范围内，不在就退出 
+// 	{
+// 		printf("out of range");
+// 	}
+// 	page_dev = ((unsigned long int)y << 10) + x;                              //计算显存地址偏移量和对应的页面号，做换页操作
+// 	page = page_dev >> 15;	//32k个点一换页，除以32k的替代算法
+// 	Selectpage(page);
+// 	return video_buffer[page_dev];	 //返回颜色
+// }
 
 /*****************************
 FUNCTION: mouse

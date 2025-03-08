@@ -1,5 +1,9 @@
 #ifndef _mouse_h_
 #define _mouse_h_
+
+#define	SCR_WIDTH	640	 //ÆÁÄ»¿í¶ÈÏñËØ 
+#define	SCR_HEIGHT	480		 //ÆÁÄ»¸ß¶ÈÏñËØ 
+
 int mouse_press(int x1, int y1, int x2, int y2);//å¦‚æœåœ¨æ?†ä¸­ç‚¹å‡»ï¼Œåˆ™è¿”å›1ï¼›åœ¨æ¡†ä¸­æœ?ç‚¹å‡»ï¼Œåˆ™è¿”å›2ï¼›ä¸åœ¨æ?†ä¸­åˆ™è¿”å›?0
 void mouse(int,int);//è®¾è?¡é¼ æ ?
 void mouseinit(void);//åˆå?‹åŒ–
