@@ -2,6 +2,8 @@
  
 void main(){
     int page=LOGIN;
+    int num = 0;
+
 
     initgraph(&driver, &mode, "C:\\BORLANDC\\BGI");
     cleardevice();
@@ -12,7 +14,7 @@ void main(){
         switch (page){
             case LOGIN:
                 {
-                    login(&page);
+                    login(&page,&num);
                 }
         }
 

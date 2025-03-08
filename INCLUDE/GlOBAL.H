@@ -19,8 +19,8 @@
 #include"KEYINPUT.H"
 
 //声明显示模式，驱动器
-int driver =VGA;
-int mode =VGAHI;
+const int driver =VGA;
+const int mode =VGAHI;
 
 //定义page各个状态
 #define EXIT 0
