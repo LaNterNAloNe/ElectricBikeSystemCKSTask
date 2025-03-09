@@ -43,5 +43,11 @@ const int mode =VGAHI;
 #define ADMIN_MESSAGE 26
 #define ADMIN_DATABASE 27
 
+void drawExittingProgram(void){
+    setcolor(BLUE);
+    setfillstyle(SOLID_FILL, CYAN);
+    bar(120,120,520,390);
+    puthz(180, 200, "你正在退出程序，按任意键退出", 24, 20, WHITE);
+}
 
 #endif

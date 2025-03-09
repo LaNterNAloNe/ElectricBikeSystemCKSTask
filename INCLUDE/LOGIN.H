@@ -6,9 +6,11 @@
 #include <conio.h>
 #include <DOS.H>
 #include <ctype.h>
+#include <stdlib.H>
 #include"KEYINPUT.H"
 #include"MOUSE.H"
 #include"INPUTCH.H"
+#include"HZ.H"
 
 //定义登录界面可交互块的坐标
 #define USERNAME_X1 220
@@ -31,28 +33,21 @@
 #define ADMIN_Y1 330
 #define ADMIN_X2 200
 #define ADMIN_Y2 360
+#define EXITPROGRAM_X1 10
+#define EXITPROGRAM_Y1 10
+#define EXITPROGRAM_X2 50
+#define EXITPROGRAM_Y2 50
+#define ACTIVE_USERNAME 1
+#define ACTIVE_PASSWORD 2
+#define ACTIVE_LOGIN 3
+#define ACTIVE_REGISTER 4
+#define ACTIVE_ADMIN 5
+#define ACTIVE_NONE 0
 
 
 void login(int *page,int *num);
 void drawgraph_login(void);
+void flushLoginGraph(int *tag);
 
 
 #endif
-
-// typedef struct {
-// 	int x1, y1, x2, y2;    // 输入框坐标
-// 	char text[MAX_INPUT_LEN]; // 输入内容
-// 	char placeholder[20];        // 提示文字字段 
-// 	int cursor_pos;         // 光标位置
-// 	int is_active;          // 是否激活状态
-// 	unsigned long last_blink;    // 光标计时器 
-// } InputBox;
-// /* 宏定义 */
-// #define MAX_USERNAME_LEN 20 
-// #define MAX_PASSWORD_LEN 16 
-// #define ADMIN_USER "admin"
-// #define ADMIN_PASS "admin"
-// #define ERR_EMPTY   -1 
-// #define ERR_INVALID -2 
-// #define MAX_INPUT_LEN 20
-// #define TIMER_FREQ 1193180L // 8253 PIT频率 

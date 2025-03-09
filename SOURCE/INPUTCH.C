@@ -2,22 +2,45 @@
 
 /************************************************************************
 FUNCTION:Input_Vis
-DESCRIPTION:实现可视化输入
+DESCRIPTION:实现可视化输入，有记忆的输入框
 INPUT:输入内容，输入框左上角坐标x,y，字数限制，输入框颜色
 RETURN:无
 ************************************************************************/
 int Input_Vis(char* ip,int x,int y,int lim,int color) //输入内容，输入框左上角坐标x,y，字数限制，输入框颜色
-{                                                      //注意：该输入函数要求输入框宽度为25
-	int i=0;
-	int j=0;                                           //记录输入数
+//注意：该输入函数要求输入框宽度为25
+{   
+	static InputMemory memory_pool[5]={{0,0,"",0}};
+	static int memory_count = 0;                      //记录总共输入了多少个输入框
+
+	int i = 0;                                         //记录输入框位置
+	int j = 0;  // 原定义位置不变 
+	int found = 0;
+                                         
 	char c;                                            //读取键盘输入的内容
+	
+	for (i = 0; i < memory_count; i++) {
+        if (memory_pool[i].x == x && memory_pool[i].y == y) {
+            strcpy(ip, memory_pool[i].content);
+            j = memory_pool[i].cursor_pos;
+            break;
+        }
+    }                                                  //查找对应的输入内容，并记录输入数
+
+	setcolor(BLACK);
+    settextstyle(TRIPLEX_FONT, HORIZ_DIR, 2);
+
+    if (j == 0) {  // 仅当无历史内容时执行原渲染逻辑 
+		line(x+10,y+6,x+10,y+20); 
+	} else {        // 有历史内容时直接定位到末尾光标 
+		line(x+10+j*18,y+6,x+10+j*18,y+20);
+	}
+
 	clrmous(MouseX, MouseY);
-	setcolor(LIGHTGRAY);                                   //设置显示字体为白色
+	setcolor(BLACK);                                   //设置显示字体为白色
 	setlinestyle(SOLID_LINE,0,NORM_WIDTH);             //设置线型
 	setfillstyle(SOLID_FILL,color);                    //保持填充颜色与输入框颜色一致
 	settextstyle(TRIPLEX_FONT,HORIZ_DIR,2);
 	settextjustify(LEFT_TEXT,TOP_TEXT);
-	line(x+10,y+6,x+10,y+20);                          //画输入提示光标（在给定坐标向右10个像素点，画一条长14个像素点的竖线
 	while(bioskey(1))
 	{
 		i=bioskey(0);
@@ -30,7 +53,7 @@ int Input_Vis(char* ip,int x,int y,int lim,int color) //输入内容，输入框左上角坐
 			if(c!='\n'&&c!='\r'&&c!=' '&&c!=033)       //如果读入非换行、回车、空格或退出
 			{
 				if(c!='\b')                            //如果读入非退格
-				{   if(c>='0'&&c<='9')
+				{   if(c>='0'&&c<='9' || c>='a'&&c<='z' || c>='A'&&c<='Z' || c=='_')
 				  { *(ip+j)=c;                         //将读入的c存入输入内容字符串ip
 					*(ip+j+1)='\0';                    //结束字符串ip
 					bar(x+8+j*18,y+3,x+12+j*18,y+24);  //清除光标（注意在原光标坐标上加上已经输入的内容）
@@ -81,27 +104,67 @@ int Input_Vis(char* ip,int x,int y,int lim,int color) //输入内容，输入框左上角坐
 			}
 		}
 	}
+
+	//记录输入状态（以输入框的位置作为每个输入框的独特标识）
+    for (i = 0; i < memory_count; i++) {
+        if (memory_pool[i].x == x && memory_pool[i].y == y) {
+            strcpy(memory_pool[i].content, ip);
+            memory_pool[i].cursor_pos = j;
+            found = 1;
+            break;
+        }
+    }
+    if (!found && memory_count < 10) {
+        strcpy(memory_pool[memory_count].content, ip);
+        memory_pool[memory_count].x = x;
+        memory_pool[memory_count].y = y;
+        memory_pool[memory_count].cursor_pos = j;
+        memory_count++;
+    }
+
 	return 2;
 }
 
 /************************************************************************
 FUNCTION:Input_Invis
-DESCRIPTION:实现不可视化输入
+DESCRIPTION:实现不可视化输入，有记忆的输入框
 INPUT:输入内容，输入框左上角坐标x,y，字数限制，输入框颜色
 RETURN:无
 ************************************************************************/
 int Input_Invis(char* ip,int x,int y,int lim,int color)//大体与Input_Vis函数相同，仅对显示的字符做不可视处理
 {
-	int i=0;                                       
-	int j=0;                                           //记录输入数 
+	static InputMemory memory_pool[5]={{0,0,"",0}};
+	static int memory_count = 0;                      //记录总共输入了多少个输入框
+
+	int i = 0;                                         //记录输入框位置
+	int j = 0;  // 原定义位置不变 
+	int found = 0;
+                                         
 	char c;                                            //读取键盘输入的内容
+	
+	for (i = 0; i < memory_count; i++) {
+        if (memory_pool[i].x == x && memory_pool[i].y == y) {
+            strcpy(ip, memory_pool[i].content);
+            j = memory_pool[i].cursor_pos;
+            break;
+        }
+    }                                                  //记录输入数
+
+	setcolor(BLACK);
+    settextstyle(TRIPLEX_FONT, HORIZ_DIR, 2);
+
+    if (j == 0) {  // 仅当无历史内容时执行原渲染逻辑 
+		line(x+10,y+6,x+10,y+20); 
+	} else {        // 有历史内容时直接定位到末尾光标 
+		line(x+10+j*18,y+6,x+10+j*18,y+20);
+	}
+
 	clrmous(MouseX, MouseY);
 	setfillstyle(SOLID_FILL,color);                    //设置填充形式
 	setlinestyle(SOLID_LINE,0,NORM_WIDTH);             //设置线型
-	setcolor(LIGHTGRAY);                                   //设置输出形式
+	setcolor(BLACK);                                   //设置输出形式
 	settextstyle(TRIPLEX_FONT,HORIZ_DIR,2);
 	settextjustify(LEFT_TEXT,TOP_TEXT);
-	line(x+10,y+6, x+10,y+20);                         //画输入提示光标
 	while(bioskey(1))
 	{
 		i=bioskey(0);
@@ -116,7 +179,7 @@ int Input_Invis(char* ip,int x,int y,int lim,int color)//大体与Input_Vis函数相同
 				
 			  
 				if(c!='\b')                           //如果读入非退格
-				{   if(c>='0'&&c<='9')
+				{   if(c>='0'&&c<='9' || c>='a'&&c<='z' || c>='A'&&c<='Z' || c=='_')
 				  { *(ip+j) =c;                        //将读入的c存入输入内容字符串ip
 					*(ip+j+1) = '\0';                  //结束字符串ip
 					bar(x+8+j*18,y+3,x+12+j*18,y+24);  //清除光标
@@ -167,6 +230,24 @@ int Input_Invis(char* ip,int x,int y,int lim,int color)//大体与Input_Vis函数相同
 			}
 		}
 	}
+
+	//记录输入状态
+    for (i = 0; i < memory_count; i++) {
+        if (memory_pool[i].x == x && memory_pool[i].y == y) {
+            strcpy(memory_pool[i].content, ip);
+            memory_pool[i].cursor_pos = j;
+            found = 1;
+            break;
+        }
+    }
+    if (!found && memory_count < 10) {
+        strcpy(memory_pool[memory_count].content, ip);
+        memory_pool[memory_count].x = x;
+        memory_pool[memory_count].y = y;
+        memory_pool[memory_count].cursor_pos = j;
+        memory_count++;
+    }
+
 	return 2;
 }
 

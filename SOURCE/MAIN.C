@@ -4,7 +4,6 @@ void main(){
     int page=LOGIN;
     int num = 0;
 
-
     initgraph(&driver, &mode, "C:\\BORLANDC\\BGI");
     cleardevice();
     mouseinit();
@@ -20,8 +19,10 @@ void main(){
 
         delay(25);
     }
+    clrmous(MouseX,MouseY);
+
+    drawExittingProgram();
 
     getch(); //按任意键结束
     closegraph();
 }
-
