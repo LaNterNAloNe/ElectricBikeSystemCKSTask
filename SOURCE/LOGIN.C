@@ -26,7 +26,7 @@ void login(int *page) {
         if (mouse_press(LOGIN_X1, LOGIN_Y1, LOGIN_X2, LOGIN_Y2)==1) {
             // 检查输入是否非空且正确
             if (a[0] != '\0' && b[0] != '\0' && 
-                strcmp(a, "123") == 0 && strcmp(b, "123") == 0) {
+                strcmp(a, "cks666") == 0 && strcmp(b, "cks666") == 0) {
 				puthz(150, 300, "哼哼哼哼",48,50,BLACK);
 				*page = MAIN_USER; // MAIN_USER : 10 跳转到用户主界面
                 return; // 退出循环
