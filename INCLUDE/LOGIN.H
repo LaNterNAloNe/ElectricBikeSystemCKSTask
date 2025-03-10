@@ -7,7 +7,7 @@
 #include <DOS.H>
 #include <ctype.h>
 #include <stdlib.H>
-#include"KEYINPUT.H"
+#include"GROCERY.H"
 #include"MOUSE.H"
 #include"INPUTCH.H"
 #include"HZ.H"
@@ -42,12 +42,16 @@
 #define ACTIVE_LOGIN 3
 #define ACTIVE_REGISTER 4
 #define ACTIVE_ADMIN 5
+#define EXIT_PROGRAM 6
 #define ACTIVE_NONE 0
 
-
-void login(int *page,int *num);
+//ÉùÃ÷º¯Êý
+void login(int *page);
+void login_admin(int *page);
+void _register(int *page);
 void drawgraph_login(void);
 void flushLoginGraph(int *tag);
+void switchPage();
 
 
 #endif

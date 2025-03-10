@@ -1,5 +1,5 @@
-#ifndef _KEYINPUT_H_
-#define _KEYINPUT_H_
+#ifndef _GROCERY_H_
+#define _GROCERY_H_
 
 #define NUM0 0x5230
 #define NUM1 0x4f31
@@ -38,5 +38,38 @@
 #define EIGHT 0x0938
 #define NINE 0x0a39
 #define ZERO 0x0b30
+
+//定义page各个状态
+#define TEST -1
+#define EXIT 0
+#define LOGIN 1
+#define LOGIN_ADMIN 2
+#define REGISTER 3
+
+#define MAIN_USER 10
+#define USER_BIKE_REGISTER 11
+#define USER_BIKE_LICENSE 12
+#define USER_BIKE_ANUAL_AND_WROTEOUT 13
+#define USER_INFO 14
+#define USER_MESSAGE 15
+#define USER_DATAGRAPH 16
+
+#define MAIN_ADMIN 20
+#define ADMIN_BIKE_REGISTER 21
+#define ADMIN_BIKE_LICENSE 22
+#define ADMIN_BIKE_ANUAL_AND_WROTEOUT 23
+#define ADMIN_BIKE_PENALIZE 24
+#define ADMIN_INFO 25
+#define ADMIN_MESSAGE 26
+#define ADMIN_DATABASE 27
+
+//宏定义自定义颜色盘
+#define MY_LIGHTBLUE 0
+#define MY_LIGHTGRAY 1
+#define MY_BLACK 2
+#define MY_YELLOW 3
+#define MY_RED 4
+#define MY_WHITE 5
+
 
 #endif
