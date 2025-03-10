@@ -29,10 +29,10 @@
 #define REGISTER_Y1 320
 #define REGISTER_X2 460
 #define REGISTER_Y2 370
-#define ADMIN_X1 160
+#define ADMIN_X1 130
 #define ADMIN_Y1 330
-#define ADMIN_X2 200
-#define ADMIN_Y2 360
+#define ADMIN_X2 210
+#define ADMIN_Y2 350
 #define EXITPROGRAM_X1 10
 #define EXITPROGRAM_Y1 10
 #define EXITPROGRAM_X2 50

@@ -112,11 +112,14 @@ void drawgraph_login(void){
 	setcolor(3);
 	setlinestyle(0, 0, THICK_WIDTH);
 	setfillstyle(1, 3);
-	bar(160, 330, 200, 360);//管理员模式
+	bar(ADMIN_X1, ADMIN_Y1, ADMIN_X2, ADMIN_Y2);//管理员模式
+
+	puthz(94, 50, "校园自行车管理系统",48,50,MY_WHITE);// 输出文本
 	puthz(220, 140, "用户名",24,50,MY_BLACK);// 输出文本
 	puthz(220, 230, "密码",24,50,MY_BLACK);
 	puthz(255, 330, "登录",24,30,MY_WHITE);
 	puthz(380, 330, "注册",24,30,MY_WHITE);
+	puthz(ADMIN_X1+2, ADMIN_Y1+2, "管理员模式",16,15,MY_WHITE);
 
 	setcolor(4);
 	setlinestyle(0, 0, NORM_WIDTH);
@@ -271,9 +274,9 @@ void switchPage(int *page){
 	setfillstyle(SOLID_FILL,MY_LIGHTGRAY);
 	for(i=0;i<16;i++)
 		for(j=0;j<12;j++)
-			for(k=0;k<=4;k++)
+			for(k=0;k<=5;k++)
 			{
-				bar(i*40+20-k*5,j*40+20-k*5,i*40+20+k*5,j*40+20+k*5);
-				delay(2);
+				bar(i*40+20-k*4,j*40+20-k*4,i*40+20+k*4,j*40+20+k*4);
+				delay(1);
 			}
 }
