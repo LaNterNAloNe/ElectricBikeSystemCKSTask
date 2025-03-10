@@ -12,10 +12,12 @@ DESCRIPTION:实现可视化输入，有记忆的输入框
 INPUT:输入内容，输入框左上角坐标x,y，字数限制，输入框颜色
 RETURN:无
 ************************************************************************/
-int Input_Vis(char* ip,int x,int y,int lim,int color) //输入内容，输入框左上角坐标x,y，字数限制，输入框颜色
+int Input_Vis(char* ip,int x,int y,int lim,int color,int *page) //输入内容，输入框左上角坐标x,y，字数限制，输入框颜色
 //注意：该输入函数要求输入框宽度为25
 {   
-	static InputMemory memory_pool[5]={{0,0,"",0}};
+	
+	static int current_page = -1;                       //记录当前页面
+	static InputMemory memory_pool[5];
 	static int memory_count = 0;                       //记录总共输入了多少个输入框
 
 	int i = 0;                                         //记录输入框位置
@@ -24,14 +26,25 @@ int Input_Vis(char* ip,int x,int y,int lim,int color) //输入内容，输入框左上角坐
 	//int blinkTick = 0;                                 //记录光标闪烁时间
                                          
 	char c;                                            //读取键盘输入的内容
+
+	if(current_page != *page){                         //如果当前输入与上一次输入所在页面不同，则清理输入记忆
+		memory_count = 0;
+		current_page = *page;
+		for (i = 0; i < 5; i++) {
+			memory_pool[i].x = 0;
+			memory_pool[i].y = 0;
+			memory_pool[i].cursor_pos = 0;
+			strcpy(memory_pool[i].content, "");
+		}
+	}
 	
-	for (i = 0; i < memory_count; i++) {
+	for (i = 0; i < memory_count; i++) {               //查找对应的输入内容，并记录输入数
         if (memory_pool[i].x == x && memory_pool[i].y == y) {
             strcpy(ip, memory_pool[i].content);
             j = memory_pool[i].cursor_pos;
             break;
         }
-    }                                                  //查找对应的输入内容，并记录输入数
+    }                                                  
 
 	
 	setcolor(MY_BLACK);                                //设置显示字体为黑色
@@ -147,8 +160,9 @@ DESCRIPTION:实现不可视化输入，有记忆的输入框
 INPUT:输入内容，输入框左上角坐标x,y，字数限制，输入框颜色
 RETURN:无
 ************************************************************************/
-int Input_Invis(char* ip,int x,int y,int lim,int color)//大体与Input_Vis函数相同，仅对显示的字符做不可视处理
-{
+int Input_Invis(char* ip,int x,int y,int lim,int color,int *page)//大体与Input_Vis函数相同，仅对显示的字符做不可视处理
+{	
+	static int current_page = -1;                       //记录当前页面
 	static InputMemory memory_pool[5]={{0,0,"",0}};
 	static int memory_count = 0;                      //记录总共输入了多少个输入框
 
@@ -157,14 +171,25 @@ int Input_Invis(char* ip,int x,int y,int lim,int color)//大体与Input_Vis函数相同
 	int found = 0;
                                          
 	char c;                                            //读取键盘输入的内容
+
+	if(current_page != *page){                         //如果当前输入与上一次输入所在页面不同，则清理输入记忆
+		memory_count = 0;
+		current_page = *page;
+		for (i = 0; i < 5; i++) {
+			memory_pool[i].x = 0;
+			memory_pool[i].y = 0;
+			memory_pool[i].cursor_pos = 0;
+			strcpy(memory_pool[i].content, "");
+		}
+	}
 	
-	for (i = 0; i < memory_count; i++) {
+	for (i = 0; i < memory_count; i++) {		        //查找对应的输入内容，并记录输入数
         if (memory_pool[i].x == x && memory_pool[i].y == y) {
             strcpy(ip, memory_pool[i].content);
             j = memory_pool[i].cursor_pos;
             break;
         }
-    }                                                  //记录输入数
+    }                                                  
 
 	setcolor(MY_BLACK);
     settextstyle(TRIPLEX_FONT, HORIZ_DIR, 2);

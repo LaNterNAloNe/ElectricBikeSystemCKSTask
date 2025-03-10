@@ -33,6 +33,10 @@
 #define ADMIN_Y1 330
 #define ADMIN_X2 210
 #define ADMIN_Y2 350
+#define ADMIN_LOGIN_X1 295
+#define ADMIN_LOGIN_Y1 320
+#define ADMIN_LOGIN_X2 395
+#define ADMIN_LOGIN_Y2 370
 #define EXITPROGRAM_X1 10
 #define EXITPROGRAM_Y1 10
 #define EXITPROGRAM_X2 50
@@ -42,7 +46,8 @@
 #define ACTIVE_LOGIN 3
 #define ACTIVE_REGISTER 4
 #define ACTIVE_ADMIN 5
-#define EXIT_PROGRAM 6
+#define ACTIVE_ADMIN_LOGIN 6
+#define EXIT_PROGRAM -1
 #define ACTIVE_NONE 0
 
 //定义密码，用户名最大长度
@@ -55,7 +60,7 @@ void _register(int *page);
 void drawgraph_login(void);
 void drawgraph_admin_login(void);
 void drawgraph_register(void);
-void flushLoginGraph(int *tag);
+void flushLoginGraph(int *tag,int *page);
 void switchPage();
 
 

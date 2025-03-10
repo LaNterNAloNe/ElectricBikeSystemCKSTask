@@ -3,7 +3,7 @@
 
 void main_admin(int *page){
     clrmous(MouseX, MouseY);
-    drawgraph_admin_login();
+    drawgraph_admin_main();
     mouseinit();
 
     while(1){
@@ -17,7 +17,7 @@ void main_admin(int *page){
 }
 
 
-void drawgraph_admin_login(void){
+void drawgraph_admin_main(void){
     /*** ªÊ÷∆≤Àµ• ***/
     setfillstyle(SOLID_FILL, CYAN);
     bar(MENU_X1, MENU_Y1, MENU_X2, MENU_Y2);

@@ -11,16 +11,16 @@ void login(int *page) {
     drawgraph_login();
 
     while (1) {
-		flushLoginGraph(&tag); // 刷新界面
+		flushLoginGraph(&tag,page); // 刷新界面
 		newmouse(&MouseX, &MouseY, &press); // 刷新鼠标
 
         // 处理鼠标点击事件
         if (mouse_press(USERNAME_X1, USERNAME_Y1, USERNAME_X2, USERNAME_Y2)==1) {
-            Input_Vis(a, USERNAME_X1, USERNAME_Y1+5, 13, MY_WHITE);
+            Input_Vis(a, USERNAME_X1, USERNAME_Y1+5, 13, MY_WHITE,page);
         }
 
         if (mouse_press(PASSWORD_X1, PASSWORD_Y1, PASSWORD_X2, PASSWORD_Y2)==1) {
-            Input_Invis(b, PASSWORD_X1, PASSWORD_Y1+5, 13, MY_WHITE);
+            Input_Invis(b, PASSWORD_X1, PASSWORD_Y1+5, 13, MY_WHITE,page);
         }
 
         if (mouse_press(LOGIN_X1, LOGIN_Y1, LOGIN_X2, LOGIN_Y2)==1) {
@@ -56,6 +56,66 @@ void login(int *page) {
     } 
 }
 
+// 绘制登录界面
+void drawgraph_login(void){
+    setrgbpalette(MY_LIGHTBLUE, 12,158,245);//浅蓝背景-1
+	setrgbpalette(MY_LIGHTGRAY, 235,235,235);//浅灰框-1
+	setrgbpalette(MY_BLACK, 0, 0, 0);//黑色
+	setrgbpalette(MY_YELLOW, 240, 230,75);//黄色
+	setrgbpalette(MY_RED, 255, 0, 0);//红色
+	setrgbpalette(MY_WHITE, 255, 255, 255);//白色
+	setfillstyle(1,0);
+	setcolor(MY_LIGHTBLUE);
+	bar(0,0,640,480);
+
+	setlinestyle(SOLID_LINE,0,THICK_WIDTH);//大框
+	setfillstyle(SOLID_FILL,MY_WHITE);
+	bar(120,120,520,390);
+
+	setcolor(MY_BLACK);
+	setlinestyle(0, 0, 3);
+	setfillstyle(SOLID_FILL,MY_BLACK);
+	pieslice(160,175,0,360,10);//人头
+	pieslice(160,205,0,180,20);
+	pieslice(160,250,0,360,12);//钥匙
+	bar(156,254,164,300);
+	bar(164, 276, 170, 282);
+	bar(163, 288,170, 294);
+
+	setcolor(MY_LIGHTGRAY);//用户名框和密码框
+	setlinestyle(0, 0, THICK_WIDTH);
+	line(USERNAME_X1, USERNAME_Y1, USERNAME_X2, USERNAME_Y1);
+	line(USERNAME_X1, USERNAME_Y1, USERNAME_X1, USERNAME_Y2);
+	line(USERNAME_X1, USERNAME_Y2, USERNAME_X2, USERNAME_Y2);
+	line(USERNAME_X2, USERNAME_Y1, USERNAME_X2, USERNAME_Y2);
+	line(PASSWORD_X1, PASSWORD_Y1, PASSWORD_X2, PASSWORD_Y1);
+	line(PASSWORD_X1, PASSWORD_Y1, PASSWORD_X1, PASSWORD_Y2);
+	line(PASSWORD_X1, PASSWORD_Y2, PASSWORD_X2, PASSWORD_Y2);
+	line(PASSWORD_X2, PASSWORD_Y1, PASSWORD_X2, PASSWORD_Y2);
+	setcolor(4);
+	setlinestyle(0, 0, THICK_WIDTH);
+	setfillstyle(1, 4);
+	bar(230, 320, 330, 370);//分别为登录，注册
+	bar(360, 320, 460, 370);
+
+	setcolor(3);
+	setlinestyle(0, 0, THICK_WIDTH);
+	setfillstyle(1, 3);
+	bar(ADMIN_X1, ADMIN_Y1, ADMIN_X2, ADMIN_Y2);//管理员模式
+
+	puthz(94, 50, "校园自行车管理系统",48,50,MY_WHITE);// 输出文本
+	puthz(220, 140, "用户名",24,50,MY_BLACK);// 输出文本
+	puthz(220, 230, "密码",24,50,MY_BLACK);
+	puthz(255, 330, "登录",24,30,MY_WHITE);
+	puthz(380, 330, "注册",24,30,MY_WHITE);
+	puthz(ADMIN_X1+2, ADMIN_Y1+2, "管理员模式",16,15,MY_WHITE);
+
+	setcolor(4);
+	setlinestyle(0, 0, NORM_WIDTH);
+	line(EXITPROGRAM_X1, EXITPROGRAM_Y1, EXITPROGRAM_X2, EXITPROGRAM_Y2);
+	line(EXITPROGRAM_X2, EXITPROGRAM_Y1, EXITPROGRAM_X1, EXITPROGRAM_Y2);
+}
+
 //管理员登录界面
 void login_admin(int* page) {
 	char a[10] = { 0 }; // 初始化为空
@@ -65,16 +125,16 @@ void login_admin(int* page) {
 	save_bk_mou(MouseX, MouseY);
 	drawgraph_admin_login();
 	while (1) {
-		flushLoginGraph(&tag); // 刷新界面
+		flushLoginGraph(&tag,page); // 刷新界面
 		newmouse(&MouseX, &MouseY, &press); // 刷新鼠标
 
 		// 处理鼠标点击事件
 		if (mouse_press(USERNAME_X1, USERNAME_Y1, USERNAME_X2, USERNAME_Y2) == 1) {
-			Input_Vis(a, USERNAME_X1, USERNAME_Y1 + 5, 13, MY_WHITE);
+			Input_Vis(a, USERNAME_X1, USERNAME_Y1 + 5, 13, MY_WHITE,page);
 		}
 
 		if (mouse_press(PASSWORD_X1, PASSWORD_Y1, PASSWORD_X2, PASSWORD_Y2) == 1) {
-			Input_Invis(b, PASSWORD_X1, PASSWORD_Y1 + 5, 13, MY_WHITE);
+			Input_Invis(b, PASSWORD_X1, PASSWORD_Y1 + 5, 13, MY_WHITE,page);
 		}
 
 		if (mouse_press(LOGIN_X1, LOGIN_Y1, LOGIN_X2, LOGIN_Y2) == 1) {
@@ -110,7 +170,7 @@ void login_admin(int* page) {
 	}
 }
 	
-//绘制管理员界面
+//绘制管理员登录界面
 void drawgraph_admin_login(){
 	setrgbpalette(MY_LIGHTBLUE, 12, 158, 245);//浅蓝背景-1
 	setrgbpalette(MY_LIGHTGRAY, 235, 235, 235);//浅灰框-1
@@ -121,8 +181,6 @@ void drawgraph_admin_login(){
 	setfillstyle(1, 0);
 	setcolor(MY_LIGHTBLUE);
 	bar(0, 0, 640, 480);
-
-	
 
 	//管理员模式边框
 	setfillstyle(1, MY_BLACK);
@@ -157,8 +215,7 @@ void drawgraph_admin_login(){
 	setcolor(4);
 	setlinestyle(0, 0, THICK_WIDTH);
 	setfillstyle(1, 4);
-	bar(230, 320, 330, 370);//分别为登录，注册
-	bar(360, 320, 460, 370);
+	bar(ADMIN_LOGIN_X1, ADMIN_LOGIN_Y1,ADMIN_LOGIN_X2, ADMIN_LOGIN_Y2);//登录按钮
 
 	setcolor(3);
 	setlinestyle(0, 0, THICK_WIDTH);
@@ -168,9 +225,7 @@ void drawgraph_admin_login(){
 	puthz(94, 50, "校园自行车管理系统", 48, 50, MY_WHITE);// 输出文本
 	puthz(220, 140, "用户名", 24, 50, MY_BLACK);// 输出文本
 	puthz(220, 230, "密码", 24, 50, MY_BLACK);
-	puthz(255, 330, "登录", 24, 30, MY_WHITE);
-	puthz(380, 330, "注册", 24, 30, MY_WHITE);
-	//puthz(ADMIN_X1 + 2, ADMIN_Y1 + 2, "管理员模式", 16, 15, MY_WHITE);
+	puthz(310, 330, "登录", 24, 30, MY_WHITE);
 	puthz(ADMIN_X1 + 5, ADMIN_Y1 + 2, "用户模式", 16, 15, MY_WHITE);
 	setcolor(4);
 	setlinestyle(0, 0, NORM_WIDTH);
@@ -179,8 +234,6 @@ void drawgraph_admin_login(){
 }
 
 	
-
-
 
 // 注册界面
 void _register(int* page) {
@@ -191,7 +244,7 @@ void _register(int* page) {
 	save_bk_mou(MouseX, MouseY);
 	drawgraph_register();
 	while (1) {
-		flushLoginGraph(&tag); // 刷新界面
+		flushLoginGraph(&tag,page); // 刷新界面
 		newmouse(&MouseX, &MouseY, &press); // 刷新鼠标
 
 		// 处理鼠标点击事件
@@ -199,14 +252,14 @@ void _register(int* page) {
 			setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
 			setfillstyle(SOLID_FILL,WHITE);
 			bar(USERNAME_X1+2, USERNAME_Y1+2, USERNAME_X2-2, USERNAME_Y2-2);
-			Input_Vis(a, USERNAME_X1, USERNAME_Y1 + 5, 13, MY_WHITE);
+			Input_Vis(a, USERNAME_X1, USERNAME_Y1 + 5, 13, MY_WHITE,page);
 		}
 
 		if (mouse_press(PASSWORD_X1, PASSWORD_Y1, PASSWORD_X2, PASSWORD_Y2) == 1) {
 			setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
 			setfillstyle(SOLID_FILL, WHITE);
 			bar(PASSWORD_X1+2, PASSWORD_Y1+2, PASSWORD_X2-2, PASSWORD_Y2-2);
-			Input_Invis(b, PASSWORD_X1, PASSWORD_Y1 + 5, 13, MY_WHITE);
+			Input_Invis(b, PASSWORD_X1, PASSWORD_Y1 + 5, 13, MY_WHITE,page);
 		}
 
 		if (mouse_press(LOGIN_X1, LOGIN_Y1, LOGIN_X2, LOGIN_Y2) == 1) {
@@ -309,76 +362,17 @@ void drawgraph_register() {
 	line(EXITPROGRAM_X2, EXITPROGRAM_Y1, EXITPROGRAM_X1, EXITPROGRAM_Y2);
 }
 
-// 绘制登录界面
-void drawgraph_login(void){
-    setrgbpalette(MY_LIGHTBLUE, 12,158,245);//浅蓝背景-1
-	setrgbpalette(MY_LIGHTGRAY, 235,235,235);//浅灰框-1
-	setrgbpalette(MY_BLACK, 0, 0, 0);//黑色
-	setrgbpalette(MY_YELLOW, 240, 230,75);//黄色
-	setrgbpalette(MY_RED, 255, 0, 0);//红色
-	setrgbpalette(MY_WHITE, 255, 255, 255);//白色
-	setfillstyle(1,0);
-	setcolor(MY_LIGHTBLUE);
-	bar(0,0,640,480);
-
-	setlinestyle(SOLID_LINE,0,THICK_WIDTH);//大框
-	setfillstyle(SOLID_FILL,MY_WHITE);
-	bar(120,120,520,390);
-
-	setcolor(MY_BLACK);
-	setlinestyle(0, 0, 3);
-	setfillstyle(SOLID_FILL,MY_BLACK);
-	pieslice(160,175,0,360,10);//人头
-	pieslice(160,205,0,180,20);
-	pieslice(160,250,0,360,12);//钥匙
-	bar(156,254,164,300);
-	bar(164, 276, 170, 282);
-	bar(163, 288,170, 294);
-
-	setcolor(MY_LIGHTGRAY);//用户名框和密码框
-	setlinestyle(0, 0, THICK_WIDTH);
-	line(USERNAME_X1, USERNAME_Y1, USERNAME_X2, USERNAME_Y1);
-	line(USERNAME_X1, USERNAME_Y1, USERNAME_X1, USERNAME_Y2);
-	line(USERNAME_X1, USERNAME_Y2, USERNAME_X2, USERNAME_Y2);
-	line(USERNAME_X2, USERNAME_Y1, USERNAME_X2, USERNAME_Y2);
-	line(PASSWORD_X1, PASSWORD_Y1, PASSWORD_X2, PASSWORD_Y1);
-	line(PASSWORD_X1, PASSWORD_Y1, PASSWORD_X1, PASSWORD_Y2);
-	line(PASSWORD_X1, PASSWORD_Y2, PASSWORD_X2, PASSWORD_Y2);
-	line(PASSWORD_X2, PASSWORD_Y1, PASSWORD_X2, PASSWORD_Y2);
-	setcolor(4);
-	setlinestyle(0, 0, THICK_WIDTH);
-	setfillstyle(1, 4);
-	bar(230, 320, 330, 370);//分别为登录，注册
-	bar(360, 320, 460, 370);
-
-	setcolor(3);
-	setlinestyle(0, 0, THICK_WIDTH);
-	setfillstyle(1, 3);
-	bar(ADMIN_X1, ADMIN_Y1, ADMIN_X2, ADMIN_Y2);//管理员模式
-
-	puthz(94, 50, "校园自行车管理系统",48,50,MY_WHITE);// 输出文本
-	puthz(220, 140, "用户名",24,50,MY_BLACK);// 输出文本
-	puthz(220, 230, "密码",24,50,MY_BLACK);
-	puthz(255, 330, "登录",24,30,MY_WHITE);
-	puthz(380, 330, "注册",24,30,MY_WHITE);
-	puthz(ADMIN_X1+2, ADMIN_Y1+2, "管理员模式",16,15,MY_WHITE);
-
-	setcolor(4);
-	setlinestyle(0, 0, NORM_WIDTH);
-	line(EXITPROGRAM_X1, EXITPROGRAM_Y1, EXITPROGRAM_X2, EXITPROGRAM_Y2);
-	line(EXITPROGRAM_X2, EXITPROGRAM_Y1, EXITPROGRAM_X1, EXITPROGRAM_Y2);
-}
 
 /*
 时刻刷新画面
 */
-void flushLoginGraph(int *tag){
+void flushLoginGraph(int *tag,int *page){
 	if ((MouseX >= USERNAME_X1 && MouseX <= USERNAME_X2 && MouseY >= USERNAME_Y1 && MouseY <= USERNAME_Y2) ||
 		(MouseX >= PASSWORD_X1 && MouseX <= PASSWORD_X2 && MouseY >= PASSWORD_Y1 && MouseY <= PASSWORD_Y2)) 
 		MouseS=2; // 假设设置为手形图标
-	else if ((MouseX >= LOGIN_X1 && MouseX <= LOGIN_X2 && MouseY >= LOGIN_Y1 && MouseY <= LOGIN_Y2) ||
-		(MouseX >= REGISTER_X1 && MouseX <= REGISTER_X2 && MouseY >= REGISTER_Y1 && MouseY <= REGISTER_Y2) ||
-		(MouseX >= ADMIN_X1 && MouseX <= ADMIN_X2 && MouseY >= ADMIN_Y1 && MouseY <= ADMIN_Y2) ||
+	else if ((MouseX >= LOGIN_X1 && MouseX <= LOGIN_X2 && MouseY >= LOGIN_Y1 && MouseY <= LOGIN_Y2 && *page != LOGIN_ADMIN) ||
+		(MouseX >= REGISTER_X1 && MouseX <= REGISTER_X2 && MouseY >= REGISTER_Y1 && MouseY <= REGISTER_Y2 && *page != LOGIN_ADMIN) ||
+		(MouseX >= ADMIN_X1 && MouseX <= ADMIN_X2 && MouseY >= ADMIN_Y1 && MouseY <= ADMIN_Y2 && *page != REGISTER) ||
 		(MouseX >= EXITPROGRAM_X1 && MouseX <= EXITPROGRAM_X2 && MouseY >= EXITPROGRAM_Y1 && MouseY <= EXITPROGRAM_Y2))
 		MouseS=1; // 假设设置为手形图标
 	else 
@@ -403,7 +397,7 @@ void flushLoginGraph(int *tag){
 		line(PASSWORD_X1-2, PASSWORD_Y2+2, PASSWORD_X2+2, PASSWORD_Y2+2);
 		line(PASSWORD_X2+2, PASSWORD_Y1-2, PASSWORD_X2+2, PASSWORD_Y2+2);
 	}
-	else if (MouseX >= LOGIN_X1 && MouseX <= LOGIN_X2 && MouseY >= LOGIN_Y1 && MouseY <= LOGIN_Y2) {
+	else if (MouseX >= LOGIN_X1 && MouseX <= LOGIN_X2 && MouseY >= LOGIN_Y1 && MouseY <= LOGIN_Y2 && *page != LOGIN_ADMIN) {
 		*tag=ACTIVE_LOGIN;
 		setcolor(GREEN);
 		setlinestyle(0, 0, 2);
@@ -412,7 +406,7 @@ void flushLoginGraph(int *tag){
 		line(LOGIN_X1-2, LOGIN_Y2+2, LOGIN_X2+2, LOGIN_Y2+2);
 		line(LOGIN_X2+2, LOGIN_Y1-2, LOGIN_X2+2, LOGIN_Y2+2);
 	}
-	else if (MouseX >= REGISTER_X1 && MouseX <= REGISTER_X2 && MouseY >= REGISTER_Y1 && MouseY <= REGISTER_Y2) {
+	else if (MouseX >= REGISTER_X1 && MouseX <= REGISTER_X2 && MouseY >= REGISTER_Y1 && MouseY <= REGISTER_Y2 && *page != LOGIN_ADMIN) {
 		*tag=ACTIVE_REGISTER;
 		setcolor(GREEN);
 		setlinestyle(0, 0, 2);
@@ -421,7 +415,7 @@ void flushLoginGraph(int *tag){
 		line(REGISTER_X1-2, REGISTER_Y2+2, REGISTER_X2+2, REGISTER_Y2+2);
 		line(REGISTER_X2+2, REGISTER_Y1-2, REGISTER_X2+2, REGISTER_Y2+2);
 	}
-	else if (MouseX >= ADMIN_X1 && MouseX <= ADMIN_X2 && MouseY >= ADMIN_Y1 && MouseY <= ADMIN_Y2) {
+	else if (MouseX >= ADMIN_X1 && MouseX <= ADMIN_X2 && MouseY >= ADMIN_Y1 && MouseY <= ADMIN_Y2 && *page != REGISTER) {
 		*tag=ACTIVE_ADMIN;
 		setcolor(GREEN);
 		setlinestyle(0, 0, 2);
@@ -429,6 +423,15 @@ void flushLoginGraph(int *tag){
 		line(ADMIN_X1-2, ADMIN_Y1-2, ADMIN_X1-2, ADMIN_Y2+2);
 		line(ADMIN_X1-2, ADMIN_Y2+2, ADMIN_X2+2, ADMIN_Y2+2);
 		line(ADMIN_X2+2, ADMIN_Y1-2, ADMIN_X2+2, ADMIN_Y2+2);
+	}
+	else if (MouseX >= ADMIN_LOGIN_X1 && MouseX <= ADMIN_LOGIN_X2 && MouseY >= ADMIN_LOGIN_Y1 && MouseY <= ADMIN_LOGIN_Y2 && *page == LOGIN_ADMIN) {
+		*tag=ACTIVE_ADMIN_LOGIN;
+		setcolor(GREEN);
+		setlinestyle(0, 0, 2);
+		line(ADMIN_LOGIN_X1-2, ADMIN_LOGIN_Y1-2, ADMIN_LOGIN_X2+2, ADMIN_LOGIN_Y1-2);
+		line(ADMIN_LOGIN_X1-2, ADMIN_LOGIN_Y1-2, ADMIN_LOGIN_X1-2, ADMIN_LOGIN_Y2+2);
+		line(ADMIN_LOGIN_X1-2, ADMIN_LOGIN_Y2+2, ADMIN_LOGIN_X2+2, ADMIN_LOGIN_Y2+2);
+		line(ADMIN_LOGIN_X2+2, ADMIN_LOGIN_Y1-2, ADMIN_LOGIN_X2+2, ADMIN_LOGIN_Y2+2);
 	}
 	else if ((MouseX >= EXITPROGRAM_X1 && MouseX <= EXITPROGRAM_X2 && MouseY >= EXITPROGRAM_Y1 && MouseY <= EXITPROGRAM_Y2) && *tag==ACTIVE_NONE) {
 		*tag=EXIT_PROGRAM;
@@ -467,7 +470,9 @@ void flushLoginGraph(int *tag){
 		line(PASSWORD_X1-2, PASSWORD_Y2+2, PASSWORD_X2+2, PASSWORD_Y2+2);
 		line(PASSWORD_X2+2, PASSWORD_Y1-2, PASSWORD_X2+2, PASSWORD_Y2+2);
 	}
-	else if ((MouseX < LOGIN_X1 || MouseX > LOGIN_X2 || MouseY < LOGIN_Y1 || MouseY > LOGIN_Y2) && (*tag==ACTIVE_LOGIN)) {
+	//登录预注册的两个红色按钮共用一个else if语句
+	else if ((MouseX < LOGIN_X1 || MouseX > LOGIN_X2 || MouseY < LOGIN_Y1 || MouseY > LOGIN_Y2) 
+		&& (*tag==ACTIVE_LOGIN) && *page != LOGIN_ADMIN) {
 		*tag=ACTIVE_NONE;
 		setcolor(WHITE);
 		setlinestyle(0, 0, 2);
@@ -476,7 +481,8 @@ void flushLoginGraph(int *tag){
 		line(LOGIN_X1-2, LOGIN_Y2+2, LOGIN_X2+2, LOGIN_Y2+2);
 		line(LOGIN_X2+2, LOGIN_Y1-2, LOGIN_X2+2, LOGIN_Y2+2);
 	}
-	else if ((MouseX < REGISTER_X1 || MouseX > REGISTER_X2 || MouseY < REGISTER_Y1 || MouseY > REGISTER_Y2) && (*tag==ACTIVE_REGISTER)) {
+	else if ((MouseX < REGISTER_X1 || MouseX > REGISTER_X2 || MouseY < REGISTER_Y1 || MouseY > REGISTER_Y2) 
+		&& *tag==ACTIVE_REGISTER && *page != LOGIN_ADMIN) {
 		*tag=ACTIVE_NONE;
 		setcolor(WHITE);
 		setlinestyle(0, 0, 2);
@@ -485,7 +491,8 @@ void flushLoginGraph(int *tag){
 		line(REGISTER_X1-2, REGISTER_Y2+2, REGISTER_X2+2, REGISTER_Y2+2);
 		line(REGISTER_X2+2, REGISTER_Y1-2, REGISTER_X2+2, REGISTER_Y2+2);
 	}
-	else if ((MouseX < ADMIN_X1 || MouseX > ADMIN_X2 || MouseY < ADMIN_Y1 || MouseY > ADMIN_Y2) && (*tag==ACTIVE_ADMIN)) {
+	//管理员模式和用户模式共用一个else if语句
+	else if ((MouseX < ADMIN_X1 || MouseX > ADMIN_X2 || MouseY < ADMIN_Y1 || MouseY > ADMIN_Y2) && *tag==ACTIVE_ADMIN && *page != REGISTER) {
 		*tag=ACTIVE_NONE;
 		setcolor(WHITE);
 		setlinestyle(0, 0, 2);
@@ -493,6 +500,16 @@ void flushLoginGraph(int *tag){
 		line(ADMIN_X1-2, ADMIN_Y1-2, ADMIN_X1-2, ADMIN_Y2+2);
 		line(ADMIN_X1-2, ADMIN_Y2+2, ADMIN_X2+2, ADMIN_Y2+2);
 		line(ADMIN_X2+2, ADMIN_Y1-2, ADMIN_X2+2, ADMIN_Y2+2);
+	}
+	else if ((MouseX < ADMIN_LOGIN_X1 || MouseX > ADMIN_LOGIN_X2 || MouseY < ADMIN_LOGIN_Y1 || MouseY > ADMIN_LOGIN_Y2) 
+		&& *tag==ACTIVE_ADMIN_LOGIN && *page == LOGIN_ADMIN) {
+		*tag=ACTIVE_NONE;
+		setcolor(WHITE);
+		setlinestyle(0, 0, 2);
+		line(ADMIN_LOGIN_X1-2, ADMIN_LOGIN_Y1-2, ADMIN_LOGIN_X2+2, ADMIN_LOGIN_Y1-2);
+		line(ADMIN_LOGIN_X1-2, ADMIN_LOGIN_Y1-2, ADMIN_LOGIN_X1-2, ADMIN_LOGIN_Y2+2);
+		line(ADMIN_LOGIN_X1-2, ADMIN_LOGIN_Y2+2, ADMIN_LOGIN_X2+2, ADMIN_LOGIN_Y2+2);
+		line(ADMIN_LOGIN_X2+2, ADMIN_LOGIN_Y1-2, ADMIN_LOGIN_X2+2, ADMIN_LOGIN_Y2+2);
 	}
 	else if ((MouseX < EXITPROGRAM_X1 || MouseX > EXITPROGRAM_X2 || MouseY < EXITPROGRAM_Y1 || MouseY > EXITPROGRAM_Y2) && (*tag==EXIT_PROGRAM)) {
 		*tag=ACTIVE_NONE;

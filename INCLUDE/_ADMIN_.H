@@ -15,6 +15,6 @@
 #define INTERFACE_B_Y2 480
 
 
-void drawgraph_admin_login(void);
+void drawgraph_admin_main(void);
 
 #endif

@@ -7,7 +7,7 @@ void drawExittingProgram(void){
 }
  
 void main(){
-    int page=MAIN_ADMIN;
+    int page=LOGIN;
     // 如果想测试函数，将page设为TEST //如果想正常执行程序，将page设为LOGIN
     int driver=VGA,mode=VGAHI;
 
