@@ -57,14 +57,256 @@ void login(int *page) {
 }
 
 //管理员登录界面
-void login_admin(int *page){
+void login_admin(int* page) {
+	char a[10] = { 0 }; // 初始化为空
+	char b[10] = { 0 };
+	int tag = 0;
+	clrmous(MouseX, MouseY);
+	save_bk_mou(MouseX, MouseY);
+	drawgraph_admin_login();
+	while (1) {
+		flushLoginGraph(&tag); // 刷新界面
+		newmouse(&MouseX, &MouseY, &press); // 刷新鼠标
 
+		// 处理鼠标点击事件
+		if (mouse_press(USERNAME_X1, USERNAME_Y1, USERNAME_X2, USERNAME_Y2) == 1) {
+			Input_Vis(a, USERNAME_X1, USERNAME_Y1 + 5, 13, MY_WHITE);
+		}
+
+		if (mouse_press(PASSWORD_X1, PASSWORD_Y1, PASSWORD_X2, PASSWORD_Y2) == 1) {
+			Input_Invis(b, PASSWORD_X1, PASSWORD_Y1 + 5, 13, MY_WHITE);
+		}
+
+		if (mouse_press(LOGIN_X1, LOGIN_Y1, LOGIN_X2, LOGIN_Y2) == 1) {
+			// 检查输入是否非空且正确
+			if (a[0] != '\0' && b[0] != '\0' &&
+				strcmp(a, "cks666") == 0 && strcmp(b, "cks666") == 0) {
+				puthz(150, 300, "哼哼哼哼", 48, 50, BLACK);
+				*page = MAIN_USER; // MAIN_USER : 10 跳转到用户主界面
+				return; // 退出循环
+			}
+		}
+		if (mouse_press(ADMIN_X1, ADMIN_Y1, ADMIN_X2, ADMIN_Y2) == 1) {
+			clrmous(MouseX, MouseY);
+			switchPage();
+			*page = LOGIN; // LOGIN_ADMIN : 2 跳转到用户登录界面
+			return;
+		}
+		else if (mouse_press(REGISTER_X1, REGISTER_Y1, REGISTER_X2, REGISTER_Y2) == 1) {
+			clrmous(MouseX, MouseY);
+			switchPage();
+			*page = REGISTER; // REGISTER : 3 跳转到注册界面
+			return;
+		}
+		else if (mouse_press(EXITPROGRAM_X1, EXITPROGRAM_Y1, EXITPROGRAM_X2, EXITPROGRAM_Y2) == 1) {
+			clrmous(MouseX, MouseY);
+			switchPage();
+			*page = EXIT; // EXIT : 0，退出程序
+			return;
+		}
+
+		delay(25); // 50hz刷新率
+
+	}
+}
+	
+//绘制管理员界面
+void drawgraph_admin_login(){
+	setrgbpalette(MY_LIGHTBLUE, 12, 158, 245);//浅蓝背景-1
+	setrgbpalette(MY_LIGHTGRAY, 235, 235, 235);//浅灰框-1
+	setrgbpalette(MY_BLACK, 0, 0, 0);//黑色
+	setrgbpalette(MY_YELLOW, 240, 230, 75);//黄色
+	setrgbpalette(MY_RED, 255, 0, 0);//红色
+	setrgbpalette(MY_WHITE, 255, 255, 255);//白色
+	setfillstyle(1, 0);
+	setcolor(MY_LIGHTBLUE);
+	bar(0, 0, 640, 480);
+
+	
+
+	//管理员模式边框
+	setfillstyle(1, MY_BLACK);
+	setcolor(MY_BLACK);
+	bar(115, 110, 525, 430);
+	puthz(255, 400, "管理员模式", 24, 30, MY_WHITE);
+	
+	setlinestyle(SOLID_LINE, 0, THICK_WIDTH);//大框
+	setfillstyle(SOLID_FILL, MY_WHITE);
+	bar(120, 120, 520, 390);
+
+	setcolor(MY_BLACK);
+	setlinestyle(0, 0, 3);
+	setfillstyle(SOLID_FILL, MY_BLACK);
+	pieslice(160, 175, 0, 360, 10);//人头
+	pieslice(160, 205, 0, 180, 20);
+	pieslice(160, 250, 0, 360, 12);//钥匙
+	bar(156, 254, 164, 300);
+	bar(164, 276, 170, 282);
+	bar(163, 288, 170, 294);
+
+	setcolor(MY_LIGHTGRAY);//用户名框和密码框
+	setlinestyle(0, 0, THICK_WIDTH);
+	line(USERNAME_X1, USERNAME_Y1, USERNAME_X2, USERNAME_Y1);
+	line(USERNAME_X1, USERNAME_Y1, USERNAME_X1, USERNAME_Y2);
+	line(USERNAME_X1, USERNAME_Y2, USERNAME_X2, USERNAME_Y2);
+	line(USERNAME_X2, USERNAME_Y1, USERNAME_X2, USERNAME_Y2);
+	line(PASSWORD_X1, PASSWORD_Y1, PASSWORD_X2, PASSWORD_Y1);
+	line(PASSWORD_X1, PASSWORD_Y1, PASSWORD_X1, PASSWORD_Y2);
+	line(PASSWORD_X1, PASSWORD_Y2, PASSWORD_X2, PASSWORD_Y2);
+	line(PASSWORD_X2, PASSWORD_Y1, PASSWORD_X2, PASSWORD_Y2);
+	setcolor(4);
+	setlinestyle(0, 0, THICK_WIDTH);
+	setfillstyle(1, 4);
+	bar(230, 320, 330, 370);//分别为登录，注册
+	bar(360, 320, 460, 370);
+
+	setcolor(3);
+	setlinestyle(0, 0, THICK_WIDTH);
+	setfillstyle(1, 3);
+	bar(ADMIN_X1, ADMIN_Y1, ADMIN_X2, ADMIN_Y2);//管理员模式
+
+	puthz(94, 50, "校园自行车管理系统", 48, 50, MY_WHITE);// 输出文本
+	puthz(220, 140, "用户名", 24, 50, MY_BLACK);// 输出文本
+	puthz(220, 230, "密码", 24, 50, MY_BLACK);
+	puthz(255, 330, "登录", 24, 30, MY_WHITE);
+	puthz(380, 330, "注册", 24, 30, MY_WHITE);
+	//puthz(ADMIN_X1 + 2, ADMIN_Y1 + 2, "管理员模式", 16, 15, MY_WHITE);
+	puthz(ADMIN_X1 + 5, ADMIN_Y1 + 2, "用户模式", 16, 15, MY_WHITE);
+	setcolor(4);
+	setlinestyle(0, 0, NORM_WIDTH);
+	line(EXITPROGRAM_X1, EXITPROGRAM_Y1, EXITPROGRAM_X2, EXITPROGRAM_Y2);
+	line(EXITPROGRAM_X2, EXITPROGRAM_Y1, EXITPROGRAM_X1, EXITPROGRAM_Y2);
 }
 
+	
+
+
+
 // 注册界面
-void _register(int *page) {
-	
-	
+void _register(int* page) {
+	char a[10] = { 0 }; // 初始化为空
+	char b[10] = { 0 };
+	int tag = 0;
+	clrmous(MouseX, MouseY);
+	save_bk_mou(MouseX, MouseY);
+	drawgraph_register();
+	while (1) {
+		flushLoginGraph(&tag); // 刷新界面
+		newmouse(&MouseX, &MouseY, &press); // 刷新鼠标
+
+		// 处理鼠标点击事件
+		if (mouse_press(USERNAME_X1, USERNAME_Y1, USERNAME_X2, USERNAME_Y2) == 1) {
+			setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+			setfillstyle(SOLID_FILL,WHITE);
+			bar(USERNAME_X1+2, USERNAME_Y1+2, USERNAME_X2-2, USERNAME_Y2-2);
+			Input_Vis(a, USERNAME_X1, USERNAME_Y1 + 5, 13, MY_WHITE);
+		}
+
+		if (mouse_press(PASSWORD_X1, PASSWORD_Y1, PASSWORD_X2, PASSWORD_Y2) == 1) {
+			setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+			setfillstyle(SOLID_FILL, WHITE);
+			bar(PASSWORD_X1+2, PASSWORD_Y1+2, PASSWORD_X2-2, PASSWORD_Y2-2);
+			Input_Invis(b, PASSWORD_X1, PASSWORD_Y1 + 5, 13, MY_WHITE);
+		}
+
+		if (mouse_press(LOGIN_X1, LOGIN_Y1, LOGIN_X2, LOGIN_Y2) == 1) {
+			// 检查输入是否非空且正确
+			if (a[0] != '\0' && b[0] != '\0' &&
+				strlen(a) <= MAX_LEN && strlen(b) <= MAX_LEN) {
+				puthz(150, 300, "哼哼哼哼", 48, 50, BLACK);
+				*page = LOGIN; // MAIN_USER : 10 跳转到用户主界面
+				return; // 退出循环
+			}
+		}
+		/*if (mouse_press(ADMIN_X1, ADMIN_Y1, ADMIN_X2, ADMIN_Y2) == 1) {
+			clrmous(MouseX, MouseY);
+			switchPage();
+			*page = LOGIN; 
+			return;
+		}
+		*/
+		else if (mouse_press(REGISTER_X1, REGISTER_Y1, REGISTER_X2, REGISTER_Y2) == 1) {
+			clrmous(MouseX, MouseY);
+			switchPage();
+			*page = LOGIN; //此时这个键是“返回登录”，跳转到登录界面
+			return;
+		}
+		else if (mouse_press(EXITPROGRAM_X1, EXITPROGRAM_Y1, EXITPROGRAM_X2, EXITPROGRAM_Y2) == 1) {
+			clrmous(MouseX, MouseY);
+			switchPage();
+			*page = EXIT; // EXIT : 0，退出程序
+			return;
+		}
+
+		delay(25); // 50hz刷新率
+
+	}
+}
+		
+
+
+//绘制注册界面
+void drawgraph_register() {
+	setrgbpalette(MY_LIGHTBLUE, 12, 158, 245);//浅蓝背景-1
+	setrgbpalette(MY_LIGHTGRAY, 235, 235, 235);//浅灰框-1
+	setrgbpalette(MY_BLACK, 0, 0, 0);//黑色
+	setrgbpalette(MY_YELLOW, 240, 230, 75);//黄色
+	setrgbpalette(MY_RED, 255, 0, 0);//红色
+	setrgbpalette(MY_WHITE, 255, 255, 255);//白色
+
+	setfillstyle(1, 0);
+	setcolor(MY_LIGHTBLUE);
+	bar(0, 0, 640, 480);
+
+	setlinestyle(SOLID_LINE, 0, THICK_WIDTH);//大框
+	setfillstyle(SOLID_FILL, MY_WHITE);
+	bar(120, 120, 520, 390);
+
+	setcolor(MY_BLACK);
+	setlinestyle(0, 0, 3);
+	setfillstyle(SOLID_FILL, MY_BLACK);
+	pieslice(160, 175, 0, 360, 10);//人头
+	pieslice(160, 205, 0, 180, 20);
+	pieslice(160, 250, 0, 360, 12);//钥匙
+	bar(156, 254, 164, 300);
+	bar(164, 276, 170, 282);
+	bar(163, 288, 170, 294);
+
+	setcolor(MY_LIGHTGRAY);//用户名框和密码框
+	setlinestyle(0, 0, THICK_WIDTH);
+	line(USERNAME_X1, USERNAME_Y1, USERNAME_X2, USERNAME_Y1);
+	line(USERNAME_X1, USERNAME_Y1, USERNAME_X1, USERNAME_Y2);
+	line(USERNAME_X1, USERNAME_Y2, USERNAME_X2, USERNAME_Y2);
+	line(USERNAME_X2, USERNAME_Y1, USERNAME_X2, USERNAME_Y2);
+	line(PASSWORD_X1, PASSWORD_Y1, PASSWORD_X2, PASSWORD_Y1);
+	line(PASSWORD_X1, PASSWORD_Y1, PASSWORD_X1, PASSWORD_Y2);
+	line(PASSWORD_X1, PASSWORD_Y2, PASSWORD_X2, PASSWORD_Y2);
+	line(PASSWORD_X2, PASSWORD_Y1, PASSWORD_X2, PASSWORD_Y2);
+	setcolor(4);
+	setlinestyle(0, 0, THICK_WIDTH);
+	setfillstyle(1, 4);
+	bar(230, 320, 330, 370);//分别为注册,返回登录
+	bar(360, 320, 460, 370);
+
+	/*setcolor(3);
+	setlinestyle(0, 0, THICK_WIDTH);
+	setfillstyle(1, 3);
+	bar(ADMIN_X1, ADMIN_Y1, ADMIN_X2, ADMIN_Y2);//管理员模式
+	*/
+
+	puthz(94, 50, "校园自行车管理系统", 48, 50, MY_WHITE);// 输出文本
+	puthz(220, 140, "输入用户名", 24, 20, MY_BLACK);// 输出文本
+	puthz(USERNAME_X1+10, (USERNAME_Y1+USERNAME_Y2)/2-8, "用户名规则",24,20,MY_BLACK);
+	puthz(220, 230, "输入密码", 24, 20, MY_BLACK);
+	puthz(PASSWORD_X1+10, (PASSWORD_Y1+PASSWORD_Y2)/2-8, "密码规则",24, 20, MY_BLACK);
+	puthz(245, 330, "确认注册", 24, 20, MY_WHITE);
+	puthz(370, 330, "返回登录", 24, 20, MY_WHITE);
+	//puthz(ADMIN_X1 + 2, ADMIN_Y1 + 2, "管理员模式", 16, 15, MY_WHITE);
+	//puthz(ADMIN_X1 + 5, ADMIN_Y1 + 2, "用户模式", 16, 15, MY_WHITE);
+	setcolor(4);
+	setlinestyle(0, 0, NORM_WIDTH);
+	line(EXITPROGRAM_X1, EXITPROGRAM_Y1, EXITPROGRAM_X2, EXITPROGRAM_Y2);
+	line(EXITPROGRAM_X2, EXITPROGRAM_Y1, EXITPROGRAM_X1, EXITPROGRAM_Y2);
 }
 
 // 绘制登录界面

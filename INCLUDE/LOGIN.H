@@ -45,11 +45,16 @@
 #define EXIT_PROGRAM 6
 #define ACTIVE_NONE 0
 
+//定义密码，用户名最大长度
+#define MAX_LEN 15
+
 //声明函数
 void login(int *page);
 void login_admin(int *page);
 void _register(int *page);
 void drawgraph_login(void);
+void drawgraph_admin_login(void);
+void drawgraph_register(void);
 void flushLoginGraph(int *tag);
 void switchPage();
 
