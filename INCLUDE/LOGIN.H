@@ -1,6 +1,7 @@
 #ifndef LOGIN_H
 #define LOGIN_H
 
+#include <stdio.h>
 #include <graphics.h>
 #include <string.h>
 #include <conio.h>

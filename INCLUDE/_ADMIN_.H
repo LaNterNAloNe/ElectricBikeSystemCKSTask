@@ -1,6 +1,14 @@
 #ifndef __ADMIN__H_
 #define __ADMIN__H_
 
+#include"MOUSE.H"
+#include<stdio.h>
+#include<stdlib.h>
+#include<graphics.h>
+#include"GROCERY.H"
+#include<conio.h>
+
+
 #define MENU_X1 0
 #define MENU_Y1 0
 #define MENU_X2 120

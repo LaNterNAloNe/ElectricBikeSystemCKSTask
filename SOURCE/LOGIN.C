@@ -6,6 +6,8 @@ void login(int *page) {
     char a[10] = {0}; // 初始化为空
     char b[10] = {0};
     int tag = 0;
+	FILE *fp_LOGIN_USER_read = fopen("C:\\EBS\\DATA\\USER.csv","r");
+	if(fp_LOGIN_USER_read == NULL) getch(),exit(0);
     clrmous(MouseX, MouseY);
     save_bk_mou(MouseX, MouseY);
     drawgraph_login();
@@ -25,10 +27,9 @@ void login(int *page) {
 
         if (mouse_press(LOGIN_X1, LOGIN_Y1, LOGIN_X2, LOGIN_Y2)==1) {
             // 检查输入是否非空且正确
-            if (a[0] != '\0' && b[0] != '\0' && 
-                strcmp(a, "cks666") == 0 && strcmp(b, "cks666") == 0) {
-				puthz(150, 300, "哼哼哼哼",48,50,BLACK);
-				*page = MAIN_USER; // MAIN_USER : 10 跳转到用户主界面
+            if (a[0] != '\0' && b[0] != '\0') {
+
+				*page = MAIN_ADMIN; // MAIN_USER : 10 跳转到用户主界面
                 return; // 退出循环
             }
         }
@@ -121,6 +122,8 @@ void login_admin(int* page) {
 	char a[10] = { 0 }; // 初始化为空
 	char b[10] = { 0 };
 	int tag = 0;
+	FILE *fp_LOGIN_ADMIN_read = fopen("C:\\EBS\\DATA\\ADMIN.csv","r");
+	if(fp_LOGIN_ADMIN_read == NULL) *page=-1,getch(),exit(0);
 	clrmous(MouseX, MouseY);
 	save_bk_mou(MouseX, MouseY);
 	drawgraph_admin_login();
@@ -240,6 +243,8 @@ void _register(int* page) {
 	char a[10] = { 0 }; // 初始化为空
 	char b[10] = { 0 };
 	int tag = 0;
+	FILE *fp_LOGIN_USER_write = fopen("C:\\EBS\\DATA\\ADMIN.csv","w+");
+	if(fp_LOGIN_USER_write == NULL) *page=-1,getch(),exit(0);
 	clrmous(MouseX, MouseY);
 	save_bk_mou(MouseX, MouseY);
 	drawgraph_register();
@@ -264,11 +269,8 @@ void _register(int* page) {
 
 		if (mouse_press(LOGIN_X1, LOGIN_Y1, LOGIN_X2, LOGIN_Y2) == 1) {
 			// 检查输入是否非空且正确
-			if (a[0] != '\0' && b[0] != '\0' &&
-				strlen(a) <= MAX_LEN && strlen(b) <= MAX_LEN) {
-				puthz(150, 300, "哼哼哼哼", 48, 50, BLACK);
-				*page = LOGIN; // MAIN_USER : 10 跳转到用户主界面
-				return; // 退出循环
+			if (a[0] != '\0' && b[0] != '\0'){
+				//fwrite(fp_LOGIN_USER_write,);
 			}
 		}
 		/*if (mouse_press(ADMIN_X1, ADMIN_Y1, ADMIN_X2, ADMIN_Y2) == 1) {
@@ -373,6 +375,7 @@ void flushLoginGraph(int *tag,int *page){
 	else if ((MouseX >= LOGIN_X1 && MouseX <= LOGIN_X2 && MouseY >= LOGIN_Y1 && MouseY <= LOGIN_Y2 && *page != LOGIN_ADMIN) ||
 		(MouseX >= REGISTER_X1 && MouseX <= REGISTER_X2 && MouseY >= REGISTER_Y1 && MouseY <= REGISTER_Y2 && *page != LOGIN_ADMIN) ||
 		(MouseX >= ADMIN_X1 && MouseX <= ADMIN_X2 && MouseY >= ADMIN_Y1 && MouseY <= ADMIN_Y2 && *page != REGISTER) ||
+		(MouseX >= ADMIN_LOGIN_X1 && MouseX <= ADMIN_LOGIN_X2 && MouseY >= ADMIN_LOGIN_Y1 && MouseY <= ADMIN_LOGIN_Y2 && *page == LOGIN_ADMIN) ||
 		(MouseX >= EXITPROGRAM_X1 && MouseX <= EXITPROGRAM_X2 && MouseY >= EXITPROGRAM_Y1 && MouseY <= EXITPROGRAM_Y2))
 		MouseS=1; // 假设设置为手形图标
 	else 

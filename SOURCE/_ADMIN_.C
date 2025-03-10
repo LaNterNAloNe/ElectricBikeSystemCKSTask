@@ -1,4 +1,4 @@
-#include "GLOBAL.H"
+#include"_ADMIN_.H"
 
 
 void main_admin(int *page){

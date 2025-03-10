@@ -1,11 +1,7 @@
 #include"GLOBAL.H"
 
-void drawExittingProgram(void){
-    setfillstyle(SOLID_FILL, CYAN);
-    bar(120,120,520,390);
-    puthz(180, 200, "你正在退出程序，按任意键退出", 24, 20, MY_WHITE);
-}
- 
+
+
 void main(){
     int page=LOGIN;
     // 如果想测试函数，将page设为TEST //如果想正常执行程序，将page设为LOGIN
@@ -35,8 +31,9 @@ void main(){
         }
     }
     clrmous(MouseX,MouseY);
-    drawExittingProgram();
+    drawExittingProgram(page);
 
     getch(); //按任意键结束
     closegraph();
 }
+
