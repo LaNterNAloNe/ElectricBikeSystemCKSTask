@@ -2,8 +2,9 @@
 
 /************************************************************************
 CHANGETAG:这些函数经过了优化，更符合CKS宝宝体质
-CHANGEINFO:1.实现记忆性，每次离开输入框时可记录输入内容
+CHANGEINFO:1.实现记忆性，每次离开输入框时可记录输入内容，实现这种功能是，添加了新的传入函数的参数int *page
 		   2.添加超出限制提示，可以适当修改提示内容所在位置
+		   3.屏蔽了不会使用的字符的输入，防止函数运行异常和破坏画面
 ************************************************************************/
 
 /************************************************************************
@@ -16,16 +17,25 @@ int Input_Vis(char* ip,int x,int y,int lim,int color,int *page) //输入内容，输入
 //注意：该输入函数要求输入框宽度为25
 {   
 	
-	static int current_page = -1;                       //记录当前页面
+	static int current_page = -1;                      //记录当前页面
 	static InputMemory memory_pool[5];
 	static int memory_count = 0;                       //记录总共输入了多少个输入框
 
 	int i = 0;                                         //记录输入框位置
-	int j = 0;  									   // 原定义位置不变 
+	int j = 0;  									   //原定义位置不变 
 	int found = 0;
-	//int blinkTick = 0;                                 //记录光标闪烁时间
+	//int blinkTick = 0;                               //记录光标闪烁时间
                                          
-	char c;                                            //读取键盘输入的内容
+	unsigned int c;                                    //读取键盘输入的内容
+	unsigned char scan_code_c; 						   //获取读数内容的扫描码
+	unsigned char ascii_code_c;						   //获取读数内容的ASCII码
+
+	char lim_str_buffer[3];							   //生成超出限制提示的字符串
+	char out_of_limit_warnning[20]={'\0'};
+	itoa(lim,lim_str_buffer,10);
+	strcat(out_of_limit_warnning,"OUT OF LIMIT(");
+	strcat(out_of_limit_warnning,lim_str_buffer);
+	strcat(out_of_limit_warnning,")");
 
 	if(current_page != *page){                         //如果当前输入与上一次输入所在页面不同，则清理输入记忆
 		memory_count = 0;
@@ -68,16 +78,27 @@ int Input_Vis(char* ip,int x,int y,int lim,int color,int *page) //输入内容，输入
 	while(1)
 	{
 	    c=bioskey(0);                                  //读取键盘输入内容
+		scan_code_c = (c >> 8) & 0xFF;
+		ascii_code_c = c & 0xFF;
 		setlinestyle(SOLID_LINE,0,THICK_WIDTH);        //设置线型，防止线条样式变为细线
+
+		if (!(ascii_code_c>='0'&&ascii_code_c<='9' || ascii_code_c>='a'&&ascii_code_c<='z' || 
+			ascii_code_c>='A'&&ascii_code_c<='Z' || ascii_code_c=='_'||ascii_code_c=='\n'||
+			ascii_code_c=='\r'||ascii_code_c==' '|| ascii_code_c=='\b' ||ascii_code_c==033)) {
+			continue;  
+		}													
+		//将输入内容限制在以上列出的按键中，方式错误地退出而不能正常存储输入状态和破坏画面
+
 		if(j<lim)
-		{
-			if(c!='\n'&&c!='\r'&&c!=' '&&c!=033)       //如果读入非换行、回车、空格或退出
+		{	
+			if(ascii_code_c!='\n'&&ascii_code_c!='\r'&&ascii_code_c!=' '&&ascii_code_c!=033)       //如果读入非换行、回车、空格或退出
 			{
-				if(c!='\b')                            //如果读入非退格
+				if(ascii_code_c!='\b')                            //如果读入非退格
 				{   
-					if(c>='0'&&c<='9' || c>='a'&&c<='z' || c>='A'&&c<='Z' || c=='_')
+					if(ascii_code_c>='0'&&ascii_code_c<='9' || ascii_code_c>='a'&&ascii_code_c<='z' || 
+						ascii_code_c>='A'&&ascii_code_c<='Z' || ascii_code_c=='_')
 					{
-						*(ip+j)=c;                         //将读入的c存入输入内容字符串ip
+						*(ip+j)=ascii_code_c;                         //将读入的c存入输入内容字符串ip
 						*(ip+j+1)='\0';                    //结束字符串ip
 						bar(x+8+j*18,y+3,x+12+j*18,y+24);  //清除光标（注意在原光标坐标上加上已经输入的内容）
 						settextstyle(TRIPLEX_FONT, HORIZ_DIR, 2); //设置字体
@@ -87,7 +108,7 @@ int Input_Vis(char* ip,int x,int y,int lim,int color,int *page) //输入内容，输入
 					}else
 					    return  1;
 				}
-				else if (c=='\b'&&j>0)                 //如果读入退格
+				else if (ascii_code_c=='\b'&&j>0)                 //如果读入退格
 				{	
 					
 					bar(x-10+j*18,y+3,x+7+j*18,y+24);  //清除上一输入字符
@@ -97,8 +118,7 @@ int Input_Vis(char* ip,int x,int y,int lim,int color,int *page) //输入内容，输入
 					*(ip+j)='\0';                      //清除字符串ip读入的上一字符
 					*(ip+j+1)='\0';                    //结束字符串ip
 				}
-			}
-			else                                       //如果读入换行、回车、空格或退出
+			}else                                       //如果读入换行、回车、空格或退出
 			{
 				setfillstyle(SOLID_FILL, color);       //结束当前输入操作
 				bar(x+8+j*18,y+3,x+12+j*18,y+24);      //清除光标
@@ -107,11 +127,11 @@ int Input_Vis(char* ip,int x,int y,int lim,int color,int *page) //输入内容，输入
 		}
 		else if(j>=lim)                                //如果达到输入限制
 		{
-			if(c!='\n'&&c!='\r'&&c!=' '&&c!=033)       //其余功能不变
+			if(ascii_code_c!='\n'&&ascii_code_c!='\r'&&ascii_code_c!=' '&&ascii_code_c!=033)       //其余功能不变
 			{                                          //读入除换行、回车、空格、退出或退格以外字符不再存储与显示
 				settextstyle(SMALL_FONT, HORIZ_DIR, 5); //设置字体
-				outtextxy(x,y+30,"OUT OF LIMIT(13)");
-				if(c=='\b'&&j>0)
+				outtextxy(x,y+30,out_of_limit_warnning);
+				if(ascii_code_c=='\b'&&j>0)
 				{	
 					bar(x,y+33,x+150,y+45);			   //清除输入框下方的超出限制提示
 					bar(x+8+j*18,y+3,x+12+j*18,y+24);  //清除要清楚的字符，用背景色覆盖
@@ -170,7 +190,16 @@ int Input_Invis(char* ip,int x,int y,int lim,int color,int *page)//大体与Input_V
 	int j = 0;  // 原定义位置不变 
 	int found = 0;
                                          
-	char c;                                            //读取键盘输入的内容
+	unsigned int c;                                    //读取键盘输入的内容
+	unsigned char scan_code_c; 						   //获取读数内容的扫描码
+	unsigned char ascii_code_c;						   //获取读数内容的ASCII码
+
+	char lim_str_buffer[3];							   //生成超出限制提示的字符串
+	char out_of_limit_warnning[20]={'\0'};
+	itoa(lim,lim_str_buffer,10);
+	strcat(out_of_limit_warnning,"OUT OF LIMIT(");
+	strcat(out_of_limit_warnning,lim_str_buffer);
+	strcat(out_of_limit_warnning,")");
 
 	if(current_page != *page){                         //如果当前输入与上一次输入所在页面不同，则清理输入记忆
 		memory_count = 0;
@@ -213,18 +242,27 @@ int Input_Invis(char* ip,int x,int y,int lim,int color,int *page)//大体与Input_V
 	while(1)
 	{
 	    c=bioskey(0);                                  //读取键盘输入内容
+		scan_code_c = (c >> 8) & 0xFF;
+		ascii_code_c = c & 0xFF;
 		setlinestyle(SOLID_LINE,0,THICK_WIDTH);        //设置线型，防止线条样式变为细线
+
+		if (!(ascii_code_c>='0'&&ascii_code_c<='9' || ascii_code_c>='a'&&ascii_code_c<='z' || 
+			ascii_code_c>='A'&&ascii_code_c<='Z' || ascii_code_c=='_'||ascii_code_c=='\n'||
+			ascii_code_c=='\r'||ascii_code_c==' '|| ascii_code_c=='\b' ||ascii_code_c==033)) {
+			continue;  
+		}													
+		//将输入内容限制在以上列出的按键中，方式错误地退出而不能正常存储输入状态和破坏画面
+
 		if(j<lim)
 		{
-			if(c!='\n'&&c!='\r'&&c!=' '&&c!=033)       //如果读入非换行、回车、空格或退出
+			if(ascii_code_c!='\n'&&ascii_code_c!='\r'&&ascii_code_c!=' '&&ascii_code_c!=033)       //如果读入非换行、回车、空格或退出
 			{
-				
-			  
-				if(c!='\b')                            //如果读入非退格
+				if(ascii_code_c!='\b')                            //如果读入非退格
 				{   
-					if(c>='0'&&c<='9' || c>='a'&&c<='z' || c>='A'&&c<='Z' || c=='_')
+					if(ascii_code_c>='0'&&ascii_code_c<='9' || ascii_code_c>='a'&&ascii_code_c<='z' || 
+						ascii_code_c>='A'&&ascii_code_c<='Z' || ascii_code_c=='_')
 				  	{ 
-						*(ip+j) =c;                        //将读入的c存入输入内容字符串ip
+						*(ip+j) =ascii_code_c;             //将读入的c存入输入内容字符串ip
 						*(ip+j+1) = '\0';                  //结束字符串ip
 						bar(x+8+j*18,y+3,x+12+j*18,y+24);  //清除光标
 						outtextxy(x+8+j*18,y+4,"*");       //在输入框中显示字符“*”
@@ -233,7 +271,7 @@ int Input_Invis(char* ip,int x,int y,int lim,int color,int *page)//大体与Input_V
 					}else
 						return 1;
 				}
-				else if (c=='\b'&&j>0)                 //如果读入退格
+				else if (ascii_code_c=='\b'&&j>0)                 //如果读入退格
 				{
 					bar(x-10+j*18,y+3,x+7+j*18,y+24);  //清除上一输入字符
 					bar(x+8+j*18,y+3,x+12+j*18,y+24);  //清除光标
@@ -253,10 +291,10 @@ int Input_Invis(char* ip,int x,int y,int lim,int color,int *page)//大体与Input_V
 		else if(j>=lim)                                //如果达到输入限制
 		{
 			settextstyle(SMALL_FONT, HORIZ_DIR, 5); //设置字体
-			outtextxy(x,y+30,"OUT OF LIMIT(13)");
-			if(c!='\n'&&c!='\r'&&c!=' '&&c!=033)       //其余功能不变
+			outtextxy(x,y+30,out_of_limit_warnning);
+			if(ascii_code_c!='\n'&&ascii_code_c!='\r'&&ascii_code_c!=' '&&c!=033)       //其余功能不变
 			{                                          //读入除换行、回车、空格、退出或退格以外字符不再存储与显示
-				if (c=='\b'&&j>0)
+				if (ascii_code_c=='\b'&&j>0)
 				{	
 					bar(x,y+33,x+150,y+45);			   //清除输入框下方的超出限制提示
 					

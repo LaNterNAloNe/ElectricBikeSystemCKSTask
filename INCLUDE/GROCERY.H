@@ -11,16 +11,21 @@
 #define NUM7 0x4737
 #define NUM8 0x4838
 #define NUM9 0x4939
-#define F2 0x3c00
-#define F3 0x3d00
-#define F4 0x3e00
-#define F5 0x3f00
-#define F6 0x4000
-#define F7 0x4100
-#define F8 0x4200
-#define F9 0x4300
-#define F10 0x4400
-#define F1 0x3b00
+#define F1 0x3b
+#define F2 0x3c
+#define F3 0x3d
+#define F4 0x3e
+#define F5 0x3f
+#define F6 0x40
+#define F7 0x41
+#define F8 0x42
+#define F9 0x43
+#define F10 0x44
+#define F11 0x57
+#define F12 0x58
+#define TILDE 0x29
+#define TAB 0x0F
+#define BACKSLASH 0x2B
 #define ENTER 0x1c0d
 #define BACK 0x0e08
 #define ESC 0x011b
@@ -38,6 +43,7 @@
 #define EIGHT 0x0938
 #define NINE 0x0a39
 #define ZERO 0x0b30
+
 
 //定义page各个状态
 #define TEST -1
@@ -70,7 +76,7 @@
 #define MY_YELLOW 3
 #define MY_RED 4
 #define MY_WHITE 5
-
+#define MY_GREEN 6
 
 #endif
 

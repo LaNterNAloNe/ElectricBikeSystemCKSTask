@@ -72,6 +72,12 @@ void adminlogin_judge(char *usrn,char *psw,int *uid);
 int userregister_judge(char *usrn,char *psw);
 void switchPage();
 void anime_register_success();
+void anime_register_fail(int err);
+void anime_login_success();
+void anime_login_fail();
+void anime_admin_login_success();
+void anime_admin_login_fail();
+
 
 typedef struct {
     int uid;
@@ -79,5 +85,11 @@ typedef struct {
     char psw[MAX_LEN];
     char state;
 }USER_LOGIN_DATA;
+
+typedef struct {
+    int uid;
+    char usrn[MAX_LEN];
+    char psw[MAX_LEN];
+}ADMIN_LOGIN_DATA;
 
 #endif

@@ -29,13 +29,16 @@ void login(int *page,int *uid) {
             if (usrn[0] != '\0' && psw[0] != '\0') {
 				userlogin_judge(usrn,psw,uid);
 				if(*uid != -1){
-					//switchPage();
+					anime_login_success();
+					switchPage();
 					*page = MAIN_ADMIN; // MAIN_USER : 10 跳转到用户主界面
                 	return; // 退出循环
-				}else{
-					puthz(230,400,"账号或密码错误！",24,30,MY_WHITE);
 				}
-            }
+				else{
+					anime_login_fail();
+				}
+            }else 
+				anime_login_fail();
         }
 		if (mouse_press(ADMIN_X1,ADMIN_Y1,ADMIN_X2,ADMIN_Y2)==1) {
 			clrmous(MouseX, MouseY);
@@ -111,8 +114,8 @@ void drawgraph_login(void){
 	puthz(94, 50, "校园自行车管理系统",48,50,MY_WHITE);// 输出文本
 	puthz(220, 140, "用户名",24,50,MY_BLACK);// 输出文本
 	puthz(220, 230, "密码",24,50,MY_BLACK);
-	puthz(255, 330, "登录",24,30,MY_WHITE);
-	puthz(380, 330, "注册",24,30,MY_WHITE);
+	puthz(LOGIN_X1+24, LOGIN_Y1+12, "登录",24,30,MY_WHITE);
+	puthz(REGISTER_X1+24, REGISTER_Y1+12, "注册",24,30,MY_WHITE);
 	puthz(ADMIN_X1+2, ADMIN_Y1+2, "管理员模式",16,15,MY_WHITE);
 
 	setcolor(4);
@@ -123,8 +126,8 @@ void drawgraph_login(void){
 
 //管理员登录界面
 void login_admin(int* page,int *uid) {
-	char a[10] = { 0 }; // 初始化为空
-	char b[10] = { 0 };
+	char usrn[10] = { 0 }; // 初始化为空
+	char psw[10] = { 0 };
 	int tag = 0;
 	FILE *fp_LOGIN_ADMIN_read = fopen("C:\\EBS\\DATA\\ADMIN.csv","r");
 	if(fp_LOGIN_ADMIN_read == NULL) *page=-1,getch(),exit(0);
@@ -137,21 +140,28 @@ void login_admin(int* page,int *uid) {
 
 		// 处理鼠标点击事件
 		if (mouse_press(USERNAME_X1, USERNAME_Y1, USERNAME_X2, USERNAME_Y2) == 1) {
-			Input_Vis(a, USERNAME_X1, USERNAME_Y1 + 5, 13, MY_WHITE,page);
+			Input_Vis(usrn, USERNAME_X1, USERNAME_Y1 + 5, 13, MY_WHITE,page);
 		}
 
 		if (mouse_press(PASSWORD_X1, PASSWORD_Y1, PASSWORD_X2, PASSWORD_Y2) == 1) {
-			Input_Invis(b, PASSWORD_X1, PASSWORD_Y1 + 5, 13, MY_WHITE,page);
+			Input_Invis(psw, PASSWORD_X1, PASSWORD_Y1 + 5, 13, MY_WHITE,page);
 		}
 
 		if (mouse_press(ADMIN_LOGIN_X1, ADMIN_LOGIN_Y1, ADMIN_LOGIN_X2, ADMIN_LOGIN_Y2) == 1) {
 			// 检查输入是否非空且正确
-			if (a[0] != '\0' && b[0] != '\0' &&
-				strcmp(a, "cks666") == 0 && strcmp(b, "cks666") == 0) {
-				switchPage();
-				*page = MAIN_ADMIN; // MAIN_USER : 10 跳转到用户主界面
-				return; // 退出循环
-			}
+			if (usrn[0] != '\0' && psw[0] != '\0'){
+				adminlogin_judge(usrn,psw,uid);
+				if(*uid != -1){
+					anime_admin_login_success();
+					switchPage();
+					*page = MAIN_ADMIN; // MAIN_USER : 10 跳转到用户主界面
+                	return; // 退出循环
+				}
+				else{
+					anime_admin_login_fail();
+				}
+			}else 
+			anime_admin_login_fail();
 		}
 		if (mouse_press(ADMIN_X1, ADMIN_Y1, ADMIN_X2, ADMIN_Y2) == 1) {
 			clrmous(MouseX, MouseY);
@@ -179,6 +189,7 @@ void drawgraph_admin_login(){
 	setrgbpalette(MY_YELLOW, 240, 230, 75);//黄色
 	setrgbpalette(MY_RED, 255, 0, 0);//红色
 	setrgbpalette(MY_WHITE, 255, 255, 255);//白色
+	setrgbpalette(MY_GREEN, 0, 255, 0);//白色
 	setfillstyle(1, 0);
 	setcolor(MY_LIGHTBLUE);
 	bar(0, 0, 640, 480);
@@ -226,7 +237,7 @@ void drawgraph_admin_login(){
 	puthz(94, 50, "校园自行车管理系统", 48, 50, MY_WHITE);// 输出文本
 	puthz(220, 140, "用户名", 24, 50, MY_BLACK);// 输出文本
 	puthz(220, 230, "密码", 24, 50, MY_BLACK);
-	puthz(310, 330, "登录", 24, 30, MY_WHITE);
+	puthz(ADMIN_LOGIN_X1+24, ADMIN_LOGIN_Y1+12, "登录",24,30,MY_WHITE);
 	puthz(ADMIN_X1 + 5, ADMIN_Y1 + 2, "用户模式", 16, 15, MY_WHITE);
 	setcolor(4);
 	setlinestyle(0, 0, NORM_WIDTH);
@@ -241,8 +252,8 @@ void _register(int* page) {
 	char usrn[10] = { 0 }; // 初始化为空
 	char psw[10] = { 0 };
 	int tag = 0;
-	FILE *fp_LOGIN_USER_write = fopen("C:\\EBS\\DATA\\ADMIN.csv","w+");
-	if(fp_LOGIN_USER_write == NULL) *page=-1,getch(),exit(0);
+	int is_register_invalid=0;
+
 	clrmous(MouseX, MouseY);
 	save_bk_mou(MouseX, MouseY);
 	drawgraph_register();
@@ -262,12 +273,21 @@ void _register(int* page) {
 		if (mouse_press(LOGIN_X1, LOGIN_Y1, LOGIN_X2, LOGIN_Y2) == 1) {
 			// 检查输入是否非空且正确
 			if (usrn[0] != '\0' && psw[0] != '\0'){
-				if(userregister_judge(usrn,psw) == 0){
+				is_register_invalid = userregister_judge(usrn,psw);
+				if(!is_register_invalid){
 					anime_register_success();
 					*page = LOGIN;
 					return;
 				}
-
+				if(is_register_invalid){
+					anime_register_fail(1); //1意味是因为用户名已被注册而无法再利用此用户名注册
+				}
+			}else if(usrn[0] == '\0' && psw[0] != '\0'){
+				anime_register_fail(2);
+			}else if(usrn[0] != '\0' && psw[0] == '\0'){
+				anime_register_fail(3);
+			}else if(usrn[0] == '\0' && psw[0] == '\0'){
+				anime_register_fail(4);
 			}
 		}
 		else if (mouse_press(REGISTER_X1, REGISTER_Y1, REGISTER_X2, REGISTER_Y2) == 1) {
@@ -335,26 +355,26 @@ void drawgraph_register() {
 	puthz(94, 50, "校园自行车管理系统", 48, 50, MY_WHITE);// 输出文本
 	puthz(220, 140, "输入用户名", 24, 20, MY_BLACK);// 输出文本
 	puthz(220, 230, "输入密码", 24, 20, MY_BLACK);
-	puthz(245, 330, "确认注册", 24, 20, MY_WHITE);
-	puthz(370, 330, "返回登录", 24, 20, MY_WHITE);
+	puthz(LOGIN_X1+8, LOGIN_Y1+12, "确认注册", 24, 20, MY_WHITE);
+	puthz(REGISTER_X1+8, REGISTER_Y1+12, "返回登录", 24, 20, MY_WHITE);
 	setcolor(4);
 	setlinestyle(0, 0, NORM_WIDTH);
 	line(EXITPROGRAM_X1, EXITPROGRAM_Y1, EXITPROGRAM_X2, EXITPROGRAM_Y2);
 	line(EXITPROGRAM_X2, EXITPROGRAM_Y1, EXITPROGRAM_X1, EXITPROGRAM_Y2);
 }
 
-
+//用户登录检测
 void userlogin_judge(char *usrn,char *psw,int *uid){
 	int i=0;
-	int file_lenth;
+	int account_counts;
 	USER_LOGIN_DATA *TEMP=malloc(sizeof(USER_LOGIN_DATA));
-	FILE *fp_LOGIN_USER_read = fopen("C:\\EBS\\DATA\\USER.dat","rb");
+	FILE *fp_LOGIN_USER_read = fopen("C:\\EBS\\DATA\\USER.DAT","rb");
 	if(TEMP=NULL) getch(),exit(0);
 	if(fp_LOGIN_USER_read == NULL) getch(),exit(0);
 	fseek(fp_LOGIN_USER_read,0,SEEK_END);
-	file_lenth = ftell(fp_LOGIN_USER_read)/sizeof(USER_LOGIN_DATA);//初始操作完成，接下来开始遍历数据
+	account_counts = ftell(fp_LOGIN_USER_read)/sizeof(USER_LOGIN_DATA);//初始操作完成，接下来开始遍历数据
 
-	for(i=0;i<file_lenth;i++){
+	for(i=0;i<account_counts;i++){
 		fseek(fp_LOGIN_USER_read,i*sizeof(USER_LOGIN_DATA),SEEK_SET);
 		fread(TEMP,sizeof(USER_LOGIN_DATA),1,fp_LOGIN_USER_read); //逐个读取，每个用户信息，直到用户名与密码均匹配
 
@@ -375,35 +395,69 @@ void userlogin_judge(char *usrn,char *psw,int *uid){
 	return;
 }
 
+//管理员登录检测
+void adminlogin_judge(char *usrn,char *psw,int *uid){
+	int i=0;
+	int account_counts;
+	ADMIN_LOGIN_DATA *TEMP=malloc(sizeof(ADMIN_LOGIN_DATA));
+	FILE *fp_LOGIN_ADMIN_read = fopen("C:\\EBS\\DATA\\ADMIN.DAT","rb");
+	if(TEMP=NULL) getch(),exit(0);
+	if(fp_LOGIN_ADMIN_read == NULL) getch(),exit(0);
+	fseek(fp_LOGIN_ADMIN_read,0,SEEK_END);
+	account_counts = ftell(fp_LOGIN_ADMIN_read)/sizeof(ADMIN_LOGIN_DATA);//初始操作完成，接下来开始遍历数据
+
+	for(i=0;i<account_counts;i++){
+		fseek(fp_LOGIN_ADMIN_read,i*sizeof(ADMIN_LOGIN_DATA),SEEK_SET);
+		fread(TEMP,sizeof(ADMIN_LOGIN_DATA),1,fp_LOGIN_ADMIN_read); //逐个读取，每个用户信息，直到用户名与密码均匹配
+
+		if(strcmp(usrn,TEMP->usrn) == 0){
+			if(strcmp(psw,TEMP->psw) == 0){
+				//登陆成功
+				*uid = TEMP->uid;
+				free(TEMP);
+				if(fclose(fp_LOGIN_ADMIN_read)!=0) getch(),exit(0);
+				return;
+			}
+		}
+		
+	}
+
+	if(fclose(fp_LOGIN_ADMIN_read)!=0) getch(),exit(0);
+	free(TEMP);
+	return;
+}
+
+//用户注册检测
 int userregister_judge(char *usrn,char *psw){
 	int i=0;
-	int file_lenth;
+	int account_counts;
 	USER_LOGIN_DATA *TEMP=malloc(sizeof(USER_LOGIN_DATA));
-	FILE *fp_LOGIN_USER_readndwrite = fopen("C:\\EBS\\DATA\\USER.dat","rb+");
-	if(TEMP=NULL) getch(),exit(0);
+	FILE *fp_LOGIN_USER_readndwrite = fopen("C:\\EBS\\DATA\\USER.DAT","rb+");
+	if(TEMP==NULL) getch(),exit(0);
 	if(fp_LOGIN_USER_readndwrite == NULL) getch(),exit(0);
 	fseek(fp_LOGIN_USER_readndwrite,0,SEEK_END);
-	file_lenth = ftell(fp_LOGIN_USER_readndwrite)/sizeof(USER_LOGIN_DATA);//初始操作完成，接下来开始遍历数据
+	account_counts = ftell(fp_LOGIN_USER_readndwrite)/sizeof(USER_LOGIN_DATA);//初始操作完成，接下来开始遍历数据
 
-	for(i=0;i<=file_lenth;i++){
+	for(i=0;i<account_counts;i++){
 		fseek(fp_LOGIN_USER_readndwrite,i*sizeof(USER_LOGIN_DATA),SEEK_SET);
 		fread(TEMP,sizeof(USER_LOGIN_DATA),1,fp_LOGIN_USER_readndwrite); //逐个读取，每个用户信息
 
 		if(strcmp(usrn,TEMP->usrn) == 0){
 			free(TEMP);
-			if(fclose(fp_LOGIN_USER_readndwrite)!=0) getch(),exit(0); //发现存在用户名相同的，则注册失败
+			if(fclose(fp_LOGIN_USER_readndwrite)!=0) getch(),exit(1); //发现存在用户名相同的，则注册失败
 			return 1;
-		}else{
-			strcpy(TEMP->usrn,usrn);			//获取账密和uid
-			strcpy(TEMP->psw,psw);
-			TEMP->uid = file_lenth;
-			TEMP->state = ACTIVE;
-			fwrite(TEMP,sizeof(USER_LOGIN_DATA),1,fp_LOGIN_USER_readndwrite);  //将注册信息写入文件
-			free(TEMP);
-			if(fclose(fp_LOGIN_USER_readndwrite)!=0) getch(),exit(0); //无相同用户名，可以注册
-			return 0;
 		}
 	}
+
+	//若经过了for循环仍未经过return，则代表用户名未曾注册过，可以注册
+	strcpy(TEMP->usrn,usrn);			//获取账密和uid
+	strcpy(TEMP->psw,psw);
+	TEMP->uid = account_counts;
+	TEMP->state = ACTIVE;
+	fwrite(TEMP,sizeof(USER_LOGIN_DATA),1,fp_LOGIN_USER_readndwrite);  //将注册信息写入文件
+	free(TEMP);
+	if(fclose(fp_LOGIN_USER_readndwrite)!=0) getch(),exit(1);
+	return 0;
 
 }
  
@@ -425,60 +479,37 @@ void flushLoginGraph(int *tag,int *page){
 	else 
 		MouseS=0; // 恢复默认箭头
 
+	setlinestyle(SOLID_LINE,0,NORM_WIDTH);
 	// 处理可交互窗口的鼠标移动事件 **显示激活状态**
 	if (MouseX >= USERNAME_X1 && MouseX <= USERNAME_X2 && MouseY >= USERNAME_Y1 && MouseY <= USERNAME_Y2) {
 		*tag=ACTIVE_USERNAME;
 		setcolor(GREEN);
-		setlinestyle(0, 0, 2);
-		line(USERNAME_X1-2, USERNAME_Y1-2, USERNAME_X2+2, USERNAME_Y1-2);
-		line(USERNAME_X1-2, USERNAME_Y1-2, USERNAME_X1-2, USERNAME_Y2+2);
-		line(USERNAME_X1-2, USERNAME_Y2+2, USERNAME_X2+2, USERNAME_Y2+2);
-		line(USERNAME_X2+2, USERNAME_Y1-2, USERNAME_X2+2, USERNAME_Y2+2);
+		rectangle(USERNAME_X1-2, USERNAME_Y1-2, USERNAME_X2+2, USERNAME_Y2+2);
 	}
 	else if (MouseX >= PASSWORD_X1 && MouseX <= PASSWORD_X2 && MouseY >= PASSWORD_Y1 && MouseY <= PASSWORD_Y2) {
 		*tag=ACTIVE_PASSWORD;
 		setcolor(GREEN);
-		setlinestyle(0, 0, 2);
-		line(PASSWORD_X1-2, PASSWORD_Y1-2, PASSWORD_X2+2, PASSWORD_Y1-2);
-		line(PASSWORD_X1-2, PASSWORD_Y1-2, PASSWORD_X1-2, PASSWORD_Y2+2);
-		line(PASSWORD_X1-2, PASSWORD_Y2+2, PASSWORD_X2+2, PASSWORD_Y2+2);
-		line(PASSWORD_X2+2, PASSWORD_Y1-2, PASSWORD_X2+2, PASSWORD_Y2+2);
+		rectangle(PASSWORD_X1-2, PASSWORD_Y1-2, PASSWORD_X2+2, PASSWORD_Y2+2);
 	}
 	else if (MouseX >= LOGIN_X1 && MouseX <= LOGIN_X2 && MouseY >= LOGIN_Y1 && MouseY <= LOGIN_Y2 && *page != LOGIN_ADMIN) {
 		*tag=ACTIVE_LOGIN;
 		setcolor(GREEN);
-		setlinestyle(0, 0, 2);
-		line(LOGIN_X1-2, LOGIN_Y1-2, LOGIN_X2+2, LOGIN_Y1-2);
-		line(LOGIN_X1-2, LOGIN_Y1-2, LOGIN_X1-2, LOGIN_Y2+2);
-		line(LOGIN_X1-2, LOGIN_Y2+2, LOGIN_X2+2, LOGIN_Y2+2);
-		line(LOGIN_X2+2, LOGIN_Y1-2, LOGIN_X2+2, LOGIN_Y2+2);
+		rectangle(LOGIN_X1-2, LOGIN_Y1-2, LOGIN_X2+2, LOGIN_Y2+2);
 	}
 	else if (MouseX >= REGISTER_X1 && MouseX <= REGISTER_X2 && MouseY >= REGISTER_Y1 && MouseY <= REGISTER_Y2 && *page != LOGIN_ADMIN) {
 		*tag=ACTIVE_REGISTER;
 		setcolor(GREEN);
-		setlinestyle(0, 0, 2);
-		line(REGISTER_X1-2, REGISTER_Y1-2, REGISTER_X2+2, REGISTER_Y1-2);
-		line(REGISTER_X1-2, REGISTER_Y1-2, REGISTER_X1-2, REGISTER_Y2+2);
-		line(REGISTER_X1-2, REGISTER_Y2+2, REGISTER_X2+2, REGISTER_Y2+2);
-		line(REGISTER_X2+2, REGISTER_Y1-2, REGISTER_X2+2, REGISTER_Y2+2);
+		rectangle(REGISTER_X1-2, REGISTER_Y1-2, REGISTER_X2+2, REGISTER_Y2+2);
 	}
 	else if (MouseX >= ADMIN_X1 && MouseX <= ADMIN_X2 && MouseY >= ADMIN_Y1 && MouseY <= ADMIN_Y2 && *page != REGISTER) {
 		*tag=ACTIVE_ADMIN;
 		setcolor(GREEN);
-		setlinestyle(0, 0, 2);
-		line(ADMIN_X1-2, ADMIN_Y1-2, ADMIN_X2+2, ADMIN_Y1-2);
-		line(ADMIN_X1-2, ADMIN_Y1-2, ADMIN_X1-2, ADMIN_Y2+2);
-		line(ADMIN_X1-2, ADMIN_Y2+2, ADMIN_X2+2, ADMIN_Y2+2);
-		line(ADMIN_X2+2, ADMIN_Y1-2, ADMIN_X2+2, ADMIN_Y2+2);
+		rectangle(ADMIN_X1-2, ADMIN_Y1-2, ADMIN_X2+2, ADMIN_Y2+2);
 	}
 	else if (MouseX >= ADMIN_LOGIN_X1 && MouseX <= ADMIN_LOGIN_X2 && MouseY >= ADMIN_LOGIN_Y1 && MouseY <= ADMIN_LOGIN_Y2 && *page == LOGIN_ADMIN) {
 		*tag=ACTIVE_ADMIN_LOGIN;
 		setcolor(GREEN);
-		setlinestyle(0, 0, 2);
-		line(ADMIN_LOGIN_X1-2, ADMIN_LOGIN_Y1-2, ADMIN_LOGIN_X2+2, ADMIN_LOGIN_Y1-2);
-		line(ADMIN_LOGIN_X1-2, ADMIN_LOGIN_Y1-2, ADMIN_LOGIN_X1-2, ADMIN_LOGIN_Y2+2);
-		line(ADMIN_LOGIN_X1-2, ADMIN_LOGIN_Y2+2, ADMIN_LOGIN_X2+2, ADMIN_LOGIN_Y2+2);
-		line(ADMIN_LOGIN_X2+2, ADMIN_LOGIN_Y1-2, ADMIN_LOGIN_X2+2, ADMIN_LOGIN_Y2+2);
+		rectangle(ADMIN_LOGIN_X1-2, ADMIN_LOGIN_Y1-2, ADMIN_LOGIN_X2+2, ADMIN_LOGIN_Y2+2);
 	}
 	else if ((MouseX >= EXITPROGRAM_X1 && MouseX <= EXITPROGRAM_X2 && MouseY >= EXITPROGRAM_Y1 && MouseY <= EXITPROGRAM_Y2) && *tag==ACTIVE_NONE) {
 		*tag=EXIT_PROGRAM;
@@ -489,7 +520,7 @@ void flushLoginGraph(int *tag,int *page){
 
 		setcolor(BLACK);
 		setlinestyle(0, 0, 2);
-		line(EXITPROGRAM_X2+10, EXITPROGRAM_Y1, EXITPROGRAM_X2+100, EXITPROGRAM_Y1);
+		line(EXITPROGRAM_X2+20, EXITPROGRAM_Y1, EXITPROGRAM_X2+100, EXITPROGRAM_Y1);
 		line(EXITPROGRAM_X2+20, EXITPROGRAM_Y1, EXITPROGRAM_X2+20, EXITPROGRAM_Y1+40);
 		line(EXITPROGRAM_X2+20, EXITPROGRAM_Y1+40, EXITPROGRAM_X2+100, EXITPROGRAM_Y1+40);
 		line(EXITPROGRAM_X2+100, EXITPROGRAM_Y1, EXITPROGRAM_X2+100, EXITPROGRAM_Y1+40);
@@ -502,61 +533,38 @@ void flushLoginGraph(int *tag,int *page){
 	if ((MouseX < USERNAME_X1 || MouseX > USERNAME_X2 || MouseY < USERNAME_Y1 || MouseY > USERNAME_Y2) && (*tag==ACTIVE_USERNAME)) {
 		*tag=ACTIVE_NONE;
 		setcolor(WHITE);
-		setlinestyle(0, 0, 2);
-		line(USERNAME_X1-2, USERNAME_Y1-2, USERNAME_X2+2, USERNAME_Y1-2);
-		line(USERNAME_X1-2, USERNAME_Y1-2, USERNAME_X1-2, USERNAME_Y2+2);
-		line(USERNAME_X1-2, USERNAME_Y2+2, USERNAME_X2+2, USERNAME_Y2+2);
-		line(USERNAME_X2+2, USERNAME_Y1-2, USERNAME_X2+2, USERNAME_Y2+2);
+		rectangle(USERNAME_X1-2, USERNAME_Y1-2, USERNAME_X2+2, USERNAME_Y2+2);
 	}
 	else if ((MouseX < PASSWORD_X1 || MouseX > PASSWORD_X2 || MouseY < PASSWORD_Y1 || MouseY > PASSWORD_Y2) && (*tag==ACTIVE_PASSWORD)) {
 		*tag=ACTIVE_NONE;
 		setcolor(WHITE);
-		setlinestyle(0, 0, 2);
-		line(PASSWORD_X1-2, PASSWORD_Y1-2, PASSWORD_X2+2, PASSWORD_Y1-2);
-		line(PASSWORD_X1-2, PASSWORD_Y1-2, PASSWORD_X1-2, PASSWORD_Y2+2);
-		line(PASSWORD_X1-2, PASSWORD_Y2+2, PASSWORD_X2+2, PASSWORD_Y2+2);
-		line(PASSWORD_X2+2, PASSWORD_Y1-2, PASSWORD_X2+2, PASSWORD_Y2+2);
+		rectangle(PASSWORD_X1-2, PASSWORD_Y1-2, PASSWORD_X2+2, PASSWORD_Y2+2);
 	}
 	//登录预注册的两个红色按钮共用一个else if语句
 	else if ((MouseX < LOGIN_X1 || MouseX > LOGIN_X2 || MouseY < LOGIN_Y1 || MouseY > LOGIN_Y2) 
 		&& (*tag==ACTIVE_LOGIN) && *page != LOGIN_ADMIN) {
 		*tag=ACTIVE_NONE;
 		setcolor(WHITE);
-		setlinestyle(0, 0, 2);
-		line(LOGIN_X1-2, LOGIN_Y1-2, LOGIN_X2+2, LOGIN_Y1-2);
-		line(LOGIN_X1-2, LOGIN_Y1-2, LOGIN_X1-2, LOGIN_Y2+2);
-		line(LOGIN_X1-2, LOGIN_Y2+2, LOGIN_X2+2, LOGIN_Y2+2);
-		line(LOGIN_X2+2, LOGIN_Y1-2, LOGIN_X2+2, LOGIN_Y2+2);
+		rectangle(LOGIN_X1-2, LOGIN_Y1-2, LOGIN_X2+2, LOGIN_Y2+2);
 	}
 	else if ((MouseX < REGISTER_X1 || MouseX > REGISTER_X2 || MouseY < REGISTER_Y1 || MouseY > REGISTER_Y2) 
 		&& *tag==ACTIVE_REGISTER && *page != LOGIN_ADMIN) {
 		*tag=ACTIVE_NONE;
 		setcolor(WHITE);
-		setlinestyle(0, 0, 2);
-		line(REGISTER_X1-2, REGISTER_Y1-2, REGISTER_X2+2, REGISTER_Y1-2);
-		line(REGISTER_X1-2, REGISTER_Y1-2, REGISTER_X1-2, REGISTER_Y2+2);
-		line(REGISTER_X1-2, REGISTER_Y2+2, REGISTER_X2+2, REGISTER_Y2+2);
-		line(REGISTER_X2+2, REGISTER_Y1-2, REGISTER_X2+2, REGISTER_Y2+2);
+		rectangle(REGISTER_X1-2, REGISTER_Y1-2, REGISTER_X2+2, REGISTER_Y2+2);
 	}
 	//管理员模式和用户模式共用一个else if语句
 	else if ((MouseX < ADMIN_X1 || MouseX > ADMIN_X2 || MouseY < ADMIN_Y1 || MouseY > ADMIN_Y2) && *tag==ACTIVE_ADMIN && *page != REGISTER) {
 		*tag=ACTIVE_NONE;
 		setcolor(WHITE);
-		setlinestyle(0, 0, 2);
-		line(ADMIN_X1-2, ADMIN_Y1-2, ADMIN_X2+2, ADMIN_Y1-2);
-		line(ADMIN_X1-2, ADMIN_Y1-2, ADMIN_X1-2, ADMIN_Y2+2);
-		line(ADMIN_X1-2, ADMIN_Y2+2, ADMIN_X2+2, ADMIN_Y2+2);
-		line(ADMIN_X2+2, ADMIN_Y1-2, ADMIN_X2+2, ADMIN_Y2+2);
+		rectangle(ADMIN_X1-2, ADMIN_Y1-2, ADMIN_X2+2, ADMIN_Y2+2);
 	}
 	else if ((MouseX < ADMIN_LOGIN_X1 || MouseX > ADMIN_LOGIN_X2 || MouseY < ADMIN_LOGIN_Y1 || MouseY > ADMIN_LOGIN_Y2) 
 		&& *tag==ACTIVE_ADMIN_LOGIN && *page == LOGIN_ADMIN) {
 		*tag=ACTIVE_NONE;
 		setcolor(WHITE);
-		setlinestyle(0, 0, 2);
-		line(ADMIN_LOGIN_X1-2, ADMIN_LOGIN_Y1-2, ADMIN_LOGIN_X2+2, ADMIN_LOGIN_Y1-2);
-		line(ADMIN_LOGIN_X1-2, ADMIN_LOGIN_Y1-2, ADMIN_LOGIN_X1-2, ADMIN_LOGIN_Y2+2);
-		line(ADMIN_LOGIN_X1-2, ADMIN_LOGIN_Y2+2, ADMIN_LOGIN_X2+2, ADMIN_LOGIN_Y2+2);
-		line(ADMIN_LOGIN_X2+2, ADMIN_LOGIN_Y1-2, ADMIN_LOGIN_X2+2, ADMIN_LOGIN_Y2+2);
+		rectangle(ADMIN_LOGIN_X1-2, ADMIN_LOGIN_Y1-2, ADMIN_LOGIN_X2+2, ADMIN_LOGIN_Y2+2);
+
 	}
 	else if ((MouseX < EXITPROGRAM_X1 || MouseX > EXITPROGRAM_X2 || MouseY < EXITPROGRAM_Y1 || MouseY > EXITPROGRAM_Y2) && (*tag==EXIT_PROGRAM)) {
 		*tag=ACTIVE_NONE;
@@ -574,7 +582,7 @@ void flushLoginGraph(int *tag,int *page){
 	
 }
 
-
+//切换页面时的过场
 void switchPage(){
 	int i,j,k;
 	setfillstyle(SOLID_FILL,MY_LIGHTGRAY);
@@ -587,22 +595,201 @@ void switchPage(){
 			}
 }
 
-void anime_register_success(){
+//以下为登录或注册的成功与失败的动画
+void anime_login_success(){
 	int blinkTick=0;
 	clrmous(MouseX,MouseY);
-	setfillstyle(SOLID_FILL,CYAN);
+
+	setfillstyle(SOLID_FILL,MY_LIGHTBLUE);
+	bar(120, 395, 520, 430); //覆盖原有的错误提示
+
+	setcolor(LIGHTGREEN);
+	rectangle(USERNAME_X1+2,USERNAME_Y1+2,USERNAME_X2-2,USERNAME_Y2-2);
+	rectangle(PASSWORD_X1+2,PASSWORD_Y1+2,PASSWORD_X2-2,PASSWORD_Y2-2);
 	
-	while(blinkTick < 200){
-		if(blinkTick % 40 == 0 && blinkTick % 80 != 0){
-			setfillstyle(SOLID_FILL,GREEN);
-			bar(LOGIN_X1,LOGIN_X2,LOGIN_Y1,LOGIN_Y2);
-			puthz(245, 330, "注册成功", 24, 20, MY_WHITE);
-		}else if(blinkTick % 80 == 0){
-			setfillstyle(SOLID_FILL,YELLOW);
-			bar(LOGIN_X1,LOGIN_X2,LOGIN_Y1,LOGIN_Y2);
-			puthz(245, 330, "注册成功", 24, 20, MY_WHITE);
+	while(blinkTick < 100){
+		if(blinkTick % 20 == 0 && blinkTick % 40 != 0){
+			setfillstyle(SOLID_FILL,MY_GREEN);
+			bar(LOGIN_X1,LOGIN_Y1,LOGIN_X2,LOGIN_Y2);
+			puthz(LOGIN_X1+8, LOGIN_Y1+12, "登录成功", 24, 20, MY_WHITE);
+		}else if(blinkTick % 40 == 0){
+			setfillstyle(SOLID_FILL,MY_LIGHTBLUE);
+			bar(LOGIN_X1,LOGIN_Y1,LOGIN_X2,LOGIN_Y2);
+			puthz(LOGIN_X1+8, LOGIN_Y1+12, "登录成功", 24, 20, MY_WHITE);
 		}
 		blinkTick++;
 		delay(25);
 	}
+}
+
+void anime_login_fail(){
+	int blinkTick=0;
+	clrmous(MouseX,MouseY);
+
+	setcolor(WHITE);
+	setlinestyle(SOLID_LINE,0,NORM_WIDTH);
+	rectangle(USERNAME_X1+2,USERNAME_Y1+2,USERNAME_X2-2,USERNAME_Y2-2);
+	rectangle(PASSWORD_X1+2,PASSWORD_Y1+2,PASSWORD_X2-2,PASSWORD_Y2-2);
+	setfillstyle(SOLID_FILL,MY_LIGHTBLUE);//先覆盖原先的错误提示
+
+	puthz(165,400,"错误：账号或密码错误！",24,30,MY_WHITE);
+
+	setcolor(RED);
+	setlinestyle(SOLID_LINE,0,NORM_WIDTH);
+	rectangle(USERNAME_X1+2,USERNAME_Y1+2,USERNAME_X2-2,USERNAME_Y2-2);
+	rectangle(PASSWORD_X1+2,PASSWORD_Y1+2,PASSWORD_X2-2,PASSWORD_Y2-2);//后判断应该高亮提示那个输入框输入错误
+	
+	while(blinkTick < 100){
+		if(blinkTick % 20 == 0 && blinkTick % 40 != 0){
+			setfillstyle(SOLID_FILL,MY_RED);
+			bar(LOGIN_X1,LOGIN_Y1,LOGIN_X2,LOGIN_Y2);
+			puthz(LOGIN_X1+8, LOGIN_Y1+12, "登录失败", 24, 20, MY_WHITE);
+		}else if(blinkTick % 40 == 0){
+			setfillstyle(SOLID_FILL,MY_LIGHTBLUE);
+			bar(LOGIN_X1,LOGIN_Y1,LOGIN_X2,LOGIN_Y2);
+			puthz(LOGIN_X1+8, LOGIN_Y1+12, "登录失败", 24, 20, MY_WHITE);
+		}
+		blinkTick++;
+		delay(25);
+	}
+
+	setfillstyle(SOLID_FILL,MY_RED);
+	bar(LOGIN_X1, LOGIN_Y1, LOGIN_X2, LOGIN_Y2);
+
+	puthz(LOGIN_X1+24, LOGIN_Y1+12, "登录",24,30,MY_WHITE);
+	
+}
+
+void anime_admin_login_success(){
+	int blinkTick=0;
+	clrmous(MouseX,MouseY);
+
+	setfillstyle(SOLID_FILL,MY_LIGHTBLUE);
+	bar(120, 430, 520, 480); //覆盖原有的错误提示
+
+	setcolor(LIGHTGREEN);
+	rectangle(USERNAME_X1+2,USERNAME_Y1+2,USERNAME_X2-2,USERNAME_Y2-2);
+	rectangle(PASSWORD_X1+2,PASSWORD_Y1+2,PASSWORD_X2-2,PASSWORD_Y2-2);
+	
+	while(blinkTick < 100){
+		if(blinkTick % 20 == 0 && blinkTick % 40 != 0){
+			setfillstyle(SOLID_FILL,MY_GREEN);
+			bar(ADMIN_LOGIN_X1,ADMIN_LOGIN_Y1,ADMIN_LOGIN_X2,ADMIN_LOGIN_Y2);
+			puthz(ADMIN_LOGIN_X1+8, ADMIN_LOGIN_Y1+12, "登录成功", 24, 20, MY_WHITE);
+		}else if(blinkTick % 40 == 0){
+			setfillstyle(SOLID_FILL,MY_LIGHTBLUE);
+			bar(ADMIN_LOGIN_X1,ADMIN_LOGIN_Y1,ADMIN_LOGIN_X2,ADMIN_LOGIN_Y2);
+			puthz(ADMIN_LOGIN_X1+8, ADMIN_LOGIN_Y1+12, "登录成功", 24, 20, MY_WHITE);
+		}
+		blinkTick++;
+		delay(25);
+	}
+}
+
+void anime_admin_login_fail(){
+	int blinkTick=0;
+	clrmous(MouseX,MouseY);
+
+	setcolor(WHITE);
+	setlinestyle(SOLID_LINE,0,NORM_WIDTH);
+	rectangle(USERNAME_X1+2,USERNAME_Y1+2,USERNAME_X2-2,USERNAME_Y2-2);
+	rectangle(PASSWORD_X1+2,PASSWORD_Y1+2,PASSWORD_X2-2,PASSWORD_Y2-2);
+	setfillstyle(SOLID_FILL,MY_LIGHTBLUE);//先覆盖原先的错误提示
+
+	puthz(165,440,"错误：账号或密码错误！",24,30,MY_WHITE);
+
+	setcolor(RED);
+	setlinestyle(SOLID_LINE,0,NORM_WIDTH);
+	rectangle(USERNAME_X1+2,USERNAME_Y1+2,USERNAME_X2-2,USERNAME_Y2-2);
+	rectangle(PASSWORD_X1+2,PASSWORD_Y1+2,PASSWORD_X2-2,PASSWORD_Y2-2);//后判断应该高亮提示那个输入框输入错误
+	
+	while(blinkTick < 100){
+		if(blinkTick % 20 == 0 && blinkTick % 40 != 0){
+			setfillstyle(SOLID_FILL,MY_RED);
+			bar(ADMIN_LOGIN_X1,ADMIN_LOGIN_Y1,ADMIN_LOGIN_X2,ADMIN_LOGIN_Y2);
+			puthz(ADMIN_LOGIN_X1+8, ADMIN_LOGIN_Y1+12, "登录失败", 24, 20, MY_WHITE);
+		}else if(blinkTick % 40 == 0){
+			setfillstyle(SOLID_FILL,MY_LIGHTBLUE);
+			bar(ADMIN_LOGIN_X1,ADMIN_LOGIN_Y1,ADMIN_LOGIN_X2,LOGIN_Y2);
+			puthz(ADMIN_LOGIN_X1+8, ADMIN_LOGIN_Y1+12, "登录失败", 24, 20, MY_WHITE);
+		}
+		blinkTick++;
+		delay(25);
+	}
+
+	setfillstyle(SOLID_FILL,MY_RED);
+	bar(ADMIN_LOGIN_X1, ADMIN_LOGIN_Y1, ADMIN_LOGIN_X2, ADMIN_LOGIN_Y2);
+
+	puthz(ADMIN_LOGIN_X1+24, ADMIN_LOGIN_Y1+12, "登录",24,30,MY_WHITE);
+	
+}
+
+void anime_register_success(){
+	int blinkTick=0;
+	clrmous(MouseX,MouseY);
+
+	setfillstyle(SOLID_FILL,MY_LIGHTBLUE);
+	bar(120, 395, 520, 430); //覆盖原有的错误提示
+
+	setcolor(LIGHTGREEN);
+	rectangle(USERNAME_X1+2,USERNAME_Y1+2,USERNAME_X2-2,USERNAME_Y2-2);
+	rectangle(PASSWORD_X1+2,PASSWORD_Y1+2,PASSWORD_X2-2,PASSWORD_Y2-2);
+	
+	while(blinkTick < 100){
+		if(blinkTick % 20 == 0 && blinkTick % 40 != 0){
+			setfillstyle(SOLID_FILL,MY_GREEN);
+			bar(LOGIN_X1,LOGIN_Y1,LOGIN_X2,LOGIN_Y2);
+			puthz(LOGIN_X1+8, LOGIN_Y1+12, "注册成功", 24, 20, MY_WHITE);
+		}else if(blinkTick % 40 == 0){
+			setfillstyle(SOLID_FILL,MY_LIGHTBLUE);
+			bar(LOGIN_X1,LOGIN_Y1,LOGIN_X2,LOGIN_Y2);
+			puthz(LOGIN_X1+8, LOGIN_Y1+12, "注册成功", 24, 20, MY_WHITE);
+		}
+		blinkTick++;
+		delay(25);
+	}
+}
+
+
+
+void anime_register_fail(int err){
+	int blinkTick=0;
+	clrmous(MouseX,MouseY);
+
+	setcolor(WHITE);
+	setlinestyle(SOLID_LINE,0,NORM_WIDTH);
+	rectangle(USERNAME_X1+2,USERNAME_Y1+2,USERNAME_X2-2,USERNAME_Y2-2);
+	rectangle(PASSWORD_X1+2,PASSWORD_Y1+2,PASSWORD_X2-2,PASSWORD_Y2-2);
+	setfillstyle(SOLID_FILL,MY_LIGHTBLUE);
+	bar(120, 395, 520, 430);//先覆盖原先的错误提示
+
+	if(err == 1) puthz(165,400,"错误：该账号已被注册！",24,30,MY_WHITE);
+	if(err >= 2 && err <=4) puthz(137,400,"错误：用户名或密码未填写！",24,30,MY_WHITE);
+
+	setcolor(RED);
+	setlinestyle(SOLID_LINE,0,NORM_WIDTH);
+	if(err == 1 || err == 2 || err == 4) 
+		rectangle(USERNAME_X1+2,USERNAME_Y1+2,USERNAME_X2-2,USERNAME_Y2-2);
+	if(err == 3 || err == 4) 
+		rectangle(PASSWORD_X1+2,PASSWORD_Y1+2,PASSWORD_X2-2,PASSWORD_Y2-2);//后判断应该高亮提示那个输入框输入错误
+	
+	while(blinkTick < 100){
+		if(blinkTick % 20 == 0 && blinkTick % 40 != 0){
+			setfillstyle(SOLID_FILL,MY_RED);
+			bar(LOGIN_X1,LOGIN_Y1,LOGIN_X2,LOGIN_Y2);
+			puthz(LOGIN_X1+8, LOGIN_Y1+12, "注册失败", 24, 20, MY_WHITE);
+		}else if(blinkTick % 40 == 0){
+			setfillstyle(SOLID_FILL,MY_LIGHTBLUE);
+			bar(LOGIN_X1,LOGIN_Y1,LOGIN_X2,LOGIN_Y2);
+			puthz(LOGIN_X1+8, LOGIN_Y1+12, "注册失败", 24, 20, MY_WHITE);
+		}
+		blinkTick++;
+		delay(25);
+	}
+
+	setfillstyle(SOLID_FILL,MY_RED);
+	bar(LOGIN_X1, LOGIN_Y1, LOGIN_X2, LOGIN_Y2);
+
+	puthz(LOGIN_X1+8, LOGIN_Y1+12, "确认注册", 24, 20, MY_WHITE);
+	
 }
