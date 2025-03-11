@@ -7,6 +7,8 @@ void main(){
     // 如果想测试函数，将page设为TEST //如果想正常执行程序，将page设为LOGIN
     int driver=VGA,mode=VGAHI;
 
+    int uid=-1;//记录登录用户的uid
+
     initgraph(&driver, &mode, "C:\\BORLANDC\\BGI");
     cleardevice();
     mouseinit();
@@ -15,9 +17,9 @@ void main(){
         switch (page){
             // LOGIN.C
             case LOGIN:
-                login(&page);break;
+                login(&page,&uid);break;
             case LOGIN_ADMIN:
-                login_admin(&page);break;
+                login_admin(&page,&uid);break;
             case REGISTER:
                 _register(&page);break;
             case TEST:

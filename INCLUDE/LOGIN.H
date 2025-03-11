@@ -51,18 +51,33 @@
 #define EXIT_PROGRAM -1
 #define ACTIVE_NONE 0
 
+//定义用户状态
+#define ACTIVE '0'
+#define FROZEN '1'
+#define BANNED '2'
+
 //定义密码，用户名最大长度
 #define MAX_LEN 15
 
 //声明函数
-void login(int *page);
-void login_admin(int *page);
+void login(int *page,int *uid);
+void login_admin(int *page,int *uid);
 void _register(int *page);
 void drawgraph_login(void);
 void drawgraph_admin_login(void);
 void drawgraph_register(void);
 void flushLoginGraph(int *tag,int *page);
+void userlogin_judge(char *usrn,char *psw,int *uid);
+void adminlogin_judge(char *usrn,char *psw,int *uid);
+int userregister_judge(char *usrn,char *psw);
 void switchPage();
+void anime_register_success();
 
+typedef struct {
+    int uid;
+    char usrn[MAX_LEN];
+    char psw[MAX_LEN];
+    char state;
+}USER_LOGIN_DATA;
 
 #endif
