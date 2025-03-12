@@ -16,6 +16,7 @@
 #include "LOGIN.H"
 #include "GROCERY.H"
 #include "_ADMIN_.H"
+#include "USER.H"
 
 void initcolorpalette(){
     setrgbpalette(MY_LIGHTBLUE, 12,158,245);//Ç³À¶±³¾°-1
