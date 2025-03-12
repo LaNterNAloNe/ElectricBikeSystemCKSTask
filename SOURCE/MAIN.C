@@ -1,7 +1,5 @@
 #include"GLOBAL.H"
 
-
-
 void main(){
     int page=LOGIN;
     // 如果想测试函数，将page设为TEST //如果想正常执行程序，将page设为LOGIN
@@ -12,6 +10,7 @@ void main(){
     initgraph(&driver, &mode, "C:\\BORLANDC\\BGI");
     cleardevice();
     mouseinit();
+    initcolorpalette();
 
     while(page != EXIT){   //循环直到page = EXIT ( 0 )
         switch (page){

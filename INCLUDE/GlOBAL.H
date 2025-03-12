@@ -17,6 +17,16 @@
 #include "GROCERY.H"
 #include "_ADMIN_.H"
 
+void initcolorpalette(){
+    setrgbpalette(MY_LIGHTBLUE, 12,158,245);//Ç³À¶±³¾°-1
+	setrgbpalette(MY_LIGHTGRAY, 235,235,235);//Ç³»Ò¿ò-1
+	setrgbpalette(MY_BLACK, 0, 0, 0);//ºÚÉ«
+	setrgbpalette(MY_YELLOW, 240, 230,75);//»ÆÉ«
+	setrgbpalette(MY_RED, 255, 0, 0);//ºìÉ«
+	setrgbpalette(MY_WHITE, 255, 255, 255);//°×É«
+    setrgbpalette(MY_GREEN, 0, 63, 0);//ÂÌÉ«
+}
+
 void drawExittingProgram(int err){
     setfillstyle(SOLID_FILL, CYAN);
     bar(120,120,520,390);

@@ -2,7 +2,7 @@
 
 /************************************************************************
 CHANGETAG:这些函数经过了优化，更符合CKS宝宝体质
-CHANGEINFO:1.实现记忆性，每次离开输入框时可记录输入内容，实现这种功能是，添加了新的传入函数的参数int *page
+CHANGEINFO:1.实现记忆性，每次离开输入框时可记录输入内容，实现这种功能时，添加了新的传入函数的参数int is_clear_memory
 		   2.添加超出限制提示，可以适当修改提示内容所在位置
 		   3.屏蔽了不会使用的字符的输入，防止函数运行异常和破坏画面
 		   4.将两函数合为一体，因为确实只有一句话差别，加个调整的传入参数就好
@@ -14,18 +14,16 @@ DESCRIPTION:实现可视化或不可视化输入，有记忆的输入框
 INPUT:输入内容，输入框左上角坐标x,y，字数限制，输入框颜色
 RETURN:无
 ************************************************************************/
-int Input_Bar(char* ip,int x,int y,int lim,int color,int *page,int is_visible) //输入内容，输入框左上角坐标x,y，字数限制，输入框颜色，当前页面，输入字符是否可见
+int Input_Bar(char* ip,int x,int y,int lim,int color,int is_clear_memory,int is_visible) 
+//输入内容，输入框左上角坐标x,y，字数限制，输入框颜色，是否清除输入记忆，输入字符是否可见
 //注意：该输入函数要求输入框宽度为25
 {   
-	
-	static int current_page = -1;                      //记录当前页面
 	static InputMemory memory_pool[5];
 	static int memory_count = 0;                       //记录总共输入了多少个输入框
 
 	int i = 0;                                         //记录输入框位置
 	int j = 0;  									   //原定义位置不变 
 	int found = 0;
-	int test = 0;                               //记录光标闪烁时间
                                          
 	unsigned int c;                                    //读取键盘输入的内容
 	unsigned char scan_code_c; 						   //获取读数内容的扫描码
@@ -38,15 +36,15 @@ int Input_Bar(char* ip,int x,int y,int lim,int color,int *page,int is_visible) /
 	strcat(out_of_limit_warnning,lim_str_buffer);
 	strcat(out_of_limit_warnning,")");
 
-	if(current_page != *page){                         //如果当前输入与上一次输入所在页面不同，则清理输入记忆
+	if(is_clear_memory){                         //如果收到清除记忆需求，则判断：1.只清除记忆，并退出函数 2.清除记忆，并执行接下来的代码
 		memory_count = 0;
-		current_page = *page;
 		for (i = 0; i < 5; i++) {
 			memory_pool[i].x = 0;
 			memory_pool[i].y = 0;
 			memory_pool[i].cursor_pos = 0;
 			strcpy(memory_pool[i].content, "");
 		}
+		if(is_clear_memory == 1) return;
 	}
 	
 	for (i = 0; i < memory_count; i++) {               //查找对应的输入内容，并记录输入数
@@ -88,7 +86,7 @@ int Input_Bar(char* ip,int x,int y,int lim,int color,int *page,int is_visible) /
 			ascii_code_c=='\r'||ascii_code_c==' '|| ascii_code_c=='\b' ||ascii_code_c==033)) {
 			continue;  
 		}													
-		//将输入内容限制在以上列出的按键中，方式错误地退出而不能正常存储输入状态和破坏画面
+		//将输入内容限制在以上列出的按键中，防止错误地退出而不能正常存储输入状态和破坏画面
 
 		if(j<lim)
 		{	
