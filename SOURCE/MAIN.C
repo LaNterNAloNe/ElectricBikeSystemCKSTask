@@ -3,7 +3,7 @@
 
 
 void main(){
-    int page=LOGIN;
+    int page=TEST;
     // 如果想测试函数，将page设为TEST //如果想正常执行程序，将page设为LOGIN
     int driver=VGA,mode=VGAHI;
 
@@ -23,6 +23,7 @@ void main(){
             case REGISTER:
                 _register(&page);break;
             case TEST:
+                user_main();
                 break;
             // USER_MAIN_GRAPH.C
 

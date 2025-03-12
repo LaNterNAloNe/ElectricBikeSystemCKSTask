@@ -16,6 +16,7 @@
 #include "LOGIN.H"
 #include "GROCERY.H"
 #include "_ADMIN_.H"
+#include "USER.H"
 
 void drawExittingProgram(int err){
     setfillstyle(SOLID_FILL, CYAN);
