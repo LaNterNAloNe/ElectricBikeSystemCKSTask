@@ -57,7 +57,7 @@
 #define BANNED '2'
 
 //定义密码，用户名最大长度
-#define MAX_LEN 15
+#define MAX_LEN 14
 
 //声明函数
 void login(int *page,int *uid);
@@ -78,18 +78,21 @@ void anime_login_fail();
 void anime_admin_login_success();
 void anime_admin_login_fail();
 
-
+#pragma pack(1)
 typedef struct {
     int uid;
     char usrn[MAX_LEN];
     char psw[MAX_LEN];
     char state;
 }USER_LOGIN_DATA;
+//若要修改结构体信息，则记得删掉之前的.DAT文件重新写入账号信息
 
+#pragma pack(1)
 typedef struct {
     int uid;
     char usrn[MAX_LEN];
     char psw[MAX_LEN];
 }ADMIN_LOGIN_DATA;
+#pragma pack()
 
 #endif

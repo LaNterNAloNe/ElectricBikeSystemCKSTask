@@ -17,11 +17,11 @@ void login(int *page,int *uid) {
 
         // 处理鼠标点击事件
         if (mouse_press(USERNAME_X1, USERNAME_Y1, USERNAME_X2, USERNAME_Y2)==1) {
-            Input_Vis(usrn, USERNAME_X1, USERNAME_Y1+5, 13, MY_WHITE,page);
+            Input_Bar(usrn, USERNAME_X1, USERNAME_Y1+5, 13, MY_WHITE,page,1);
         }
 
         if (mouse_press(PASSWORD_X1, PASSWORD_Y1, PASSWORD_X2, PASSWORD_Y2)==1) {
-            Input_Invis(psw, PASSWORD_X1, PASSWORD_Y1+5, 13, MY_WHITE,page);
+            Input_Bar(psw, PASSWORD_X1, PASSWORD_Y1+5, 13, MY_WHITE,page,0);
         }
 
         if (mouse_press(LOGIN_X1, LOGIN_Y1, LOGIN_X2, LOGIN_Y2)==1) {
@@ -140,11 +140,11 @@ void login_admin(int* page,int *uid) {
 
 		// 处理鼠标点击事件
 		if (mouse_press(USERNAME_X1, USERNAME_Y1, USERNAME_X2, USERNAME_Y2) == 1) {
-			Input_Vis(usrn, USERNAME_X1, USERNAME_Y1 + 5, 13, MY_WHITE,page);
+			Input_Bar(usrn, USERNAME_X1, USERNAME_Y1 + 5, 13, MY_WHITE,page,1);
 		}
 
 		if (mouse_press(PASSWORD_X1, PASSWORD_Y1, PASSWORD_X2, PASSWORD_Y2) == 1) {
-			Input_Invis(psw, PASSWORD_X1, PASSWORD_Y1 + 5, 13, MY_WHITE,page);
+			Input_Bar(psw, PASSWORD_X1, PASSWORD_Y1 + 5, 13, MY_WHITE,page,0);
 		}
 
 		if (mouse_press(ADMIN_LOGIN_X1, ADMIN_LOGIN_Y1, ADMIN_LOGIN_X2, ADMIN_LOGIN_Y2) == 1) {
@@ -263,11 +263,11 @@ void _register(int* page) {
 
 		// 处理鼠标点击事件
 		if (mouse_press(USERNAME_X1, USERNAME_Y1, USERNAME_X2, USERNAME_Y2) == 1) {
-			Input_Vis(usrn, USERNAME_X1, USERNAME_Y1 + 5, 13, MY_WHITE,page);
+			Input_Bar(usrn, USERNAME_X1, USERNAME_Y1 + 5, 13, MY_WHITE,page,1);
 		}
 
 		if (mouse_press(PASSWORD_X1, PASSWORD_Y1, PASSWORD_X2, PASSWORD_Y2) == 1) {
-			Input_Invis(psw, PASSWORD_X1, PASSWORD_Y1 + 5, 13, MY_WHITE,page);
+			Input_Bar(psw, PASSWORD_X1, PASSWORD_Y1 + 5, 13, MY_WHITE,page,0);
 		}
 
 		if (mouse_press(LOGIN_X1, LOGIN_Y1, LOGIN_X2, LOGIN_Y2) == 1) {
@@ -369,7 +369,7 @@ void userlogin_judge(char *usrn,char *psw,int *uid){
 	int account_counts;
 	USER_LOGIN_DATA *TEMP=malloc(sizeof(USER_LOGIN_DATA));
 	FILE *fp_LOGIN_USER_read = fopen("C:\\EBS\\DATA\\USER.DAT","rb");
-	if(TEMP=NULL) getch(),exit(0);
+	if(TEMP==NULL) getch(),exit(0);
 	if(fp_LOGIN_USER_read == NULL) getch(),exit(0);
 	fseek(fp_LOGIN_USER_read,0,SEEK_END);
 	account_counts = ftell(fp_LOGIN_USER_read)/sizeof(USER_LOGIN_DATA);//初始操作完成，接下来开始遍历数据
@@ -401,7 +401,7 @@ void adminlogin_judge(char *usrn,char *psw,int *uid){
 	int account_counts;
 	ADMIN_LOGIN_DATA *TEMP=malloc(sizeof(ADMIN_LOGIN_DATA));
 	FILE *fp_LOGIN_ADMIN_read = fopen("C:\\EBS\\DATA\\ADMIN.DAT","rb");
-	if(TEMP=NULL) getch(),exit(0);
+	if(TEMP==NULL) getch(),exit(0);
 	if(fp_LOGIN_ADMIN_read == NULL) getch(),exit(0);
 	fseek(fp_LOGIN_ADMIN_read,0,SEEK_END);
 	account_counts = ftell(fp_LOGIN_ADMIN_read)/sizeof(ADMIN_LOGIN_DATA);//初始操作完成，接下来开始遍历数据

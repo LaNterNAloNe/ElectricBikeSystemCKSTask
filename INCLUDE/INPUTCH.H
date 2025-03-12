@@ -14,7 +14,7 @@ typedef struct {
     int cursor_pos;
 } InputMemory;
  
-int Input_Vis(char* ip,int x,int y,int lim,int color,int *page);
-int Input_Invis(char* ip,int x,int y,int lim,int color,int *page);                      
+int Input_Bar(char* ip,int x,int y,int lim,int color,int *page,int is_visible);
+// int Input_Invis(char* ip,int x,int y,int lim,int color,int *page);                      
 
 #endif
