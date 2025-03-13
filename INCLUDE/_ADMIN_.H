@@ -62,10 +62,21 @@
 #define ACTIVE_ADMIN_BUTTON5 5
 #define ACTIVE_ADMIN_BUTTON6 6
 
+typedef void (*DRAWFUNCTION) (int coord1,int coord2,int coord3,int coord4);
+typedef void (*CLEARFUNCTION) (int coord1,int coord2,int coord3,int coord4);
+
+typedef struct {
+    int x1, x2, y1, y2;
+    int active_tag;
+    DRAWFUNCTION drawfunc;
+    CLEARFUNCTION clearfunc;
+} ADMIN_BUTTONS;
 
 void drawgraph_admin_main(void);
-void draw_cues(int x,int y);
-void flush_admin_main_graph(int *tag);
+void draw_cues(int x,int y,int null1,int null2);
+void clear_cues(int x1,int y1,int x2,int y2);
+void flush_admin_main_graph(int *tag,int button_counts,ADMIN_BUTTONS AdminButtons[]);
 
+#define STRUCT_LENGTH(Struct) (sizeof(Struct)/sizeof(Struct[0]))
 
 #endif

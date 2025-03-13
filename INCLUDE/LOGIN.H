@@ -78,7 +78,6 @@ void anime_login_fail();
 void anime_admin_login_success();
 void anime_admin_login_fail();
 
-#pragma pack(1)
 typedef struct {
     int uid;
     char usrn[MAX_LEN];
@@ -87,12 +86,10 @@ typedef struct {
 }USER_LOGIN_DATA;
 //若要修改结构体信息，则记得删掉之前的.DAT文件重新写入账号信息
 
-#pragma pack(1)
 typedef struct {
     int uid;
     char usrn[MAX_LEN];
     char psw[MAX_LEN];
 }ADMIN_LOGIN_DATA;
-#pragma pack()
 
 #endif

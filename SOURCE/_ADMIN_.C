@@ -3,13 +3,34 @@
 
 void main_admin(int *page){
     int tag=ACTIVE_ADMIN_NULL;
+    ADMIN_BUTTONS AdminButtons[]={
+        {ADMIN_BUTTON1_X1, ADMIN_BUTTON1_X2, 
+         ADMIN_BUTTON1_Y1, ADMIN_BUTTON1_Y2, 
+         ACTIVE_ADMIN_BUTTON1,&draw_cues,&clear_cues},
+        {ADMIN_BUTTON2_X1, ADMIN_BUTTON2_X2, 
+         ADMIN_BUTTON2_Y1, ADMIN_BUTTON2_Y2, 
+         ACTIVE_ADMIN_BUTTON2,&draw_cues,&clear_cues},
+        {ADMIN_BUTTON3_X1, ADMIN_BUTTON3_X2, 
+         ADMIN_BUTTON3_Y1, ADMIN_BUTTON3_Y2, 
+         ACTIVE_ADMIN_BUTTON3,&draw_cues,&clear_cues},
+        {ADMIN_BUTTON4_X1, ADMIN_BUTTON4_X2, 
+         ADMIN_BUTTON4_Y1, ADMIN_BUTTON4_Y2, 
+         ACTIVE_ADMIN_BUTTON4,&draw_cues,&clear_cues},
+        {ADMIN_BUTTON5_X1, ADMIN_BUTTON5_X2, 
+         ADMIN_BUTTON5_Y1, ADMIN_BUTTON5_Y2, 
+         ACTIVE_ADMIN_BUTTON5,&draw_cues,&clear_cues},
+        {ADMIN_BUTTON6_X1, ADMIN_BUTTON6_X2, 
+         ADMIN_BUTTON6_Y1, ADMIN_BUTTON6_Y2, 
+         ACTIVE_ADMIN_BUTTON6,&draw_cues,&clear_cues}
+    };
 
     clrmous(MouseX, MouseY);
     drawgraph_admin_main();
     mouseinit();
 
     while(1){
-        flush_admin_main_graph(&tag);
+        flush_admin_main_graph(&tag,STRUCT_LENGTH(AdminButtons),AdminButtons);
+        //应该在传入AdminButtons前计算其长度，传入函数后，使用sizeof计算其长度则会退化为指针长度，导致功能失效
         newmouse(&MouseX, &MouseY, &press);
 
         if (mouse_press(0, 0, 640, 480) == 1) {
@@ -71,78 +92,47 @@ void drawgraph_admin_main(void){
 
 }
 
-void draw_cues(int x, int y){
+void draw_cues(int x, int y,int null1,int null2){
     setcolor(MY_GREEN);
     setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
     line(x-10,y,x,y);
     line(x-5,y-5,x,y);
     line(x-5,y+5,x,y);
 }
-
-void flush_admin_main_graph(int *tag){
-    if((MouseX >= ADMIN_BUTTON1_X1 && MouseX <= ADMIN_BUTTON1_X2 && MouseY >= ADMIN_BUTTON1_Y1 && MouseY <= ADMIN_BUTTON1_Y2) || 
-    (MouseX >= ADMIN_BUTTON2_X1 && MouseX <= ADMIN_BUTTON2_X2 && MouseY >= ADMIN_BUTTON2_Y1 && MouseY <= ADMIN_BUTTON2_Y2) || 
-    (MouseX >= ADMIN_BUTTON3_X1 && MouseX <= ADMIN_BUTTON3_X2 && MouseY >= ADMIN_BUTTON3_Y1 && MouseY <= ADMIN_BUTTON3_Y2) || 
-    (MouseX >= ADMIN_BUTTON4_X1 && MouseX <= ADMIN_BUTTON4_X2 && MouseY >= ADMIN_BUTTON4_Y1 && MouseY <= ADMIN_BUTTON4_Y2) || 
-    (MouseX >= ADMIN_BUTTON5_X1 && MouseX <= ADMIN_BUTTON5_X2 && MouseY >= ADMIN_BUTTON5_Y1 && MouseY <= ADMIN_BUTTON5_Y2) || 
-    (MouseX >= ADMIN_BUTTON6_X1 && MouseX <= ADMIN_BUTTON6_X2 && MouseY >= ADMIN_BUTTON6_Y1 && MouseY <= ADMIN_BUTTON6_Y2))
-        MouseS = 1;
-    else
-        MouseS = 0;
+void clear_cues(int x1, int y1, int x2, int y2){
+    setfillstyle(SOLID_FILL, MY_YELLOW);
+    bar(x1-13,y1+6,x2-79,y2);
+}
 
 
-    if(MouseX >= ADMIN_BUTTON1_X1 && MouseX <= ADMIN_BUTTON1_X2 && MouseY >= ADMIN_BUTTON1_Y1 && MouseY <= ADMIN_BUTTON1_Y2 && *tag !=ACTIVE_ADMIN_BUTTON1){
-        *tag = ACTIVE_ADMIN_BUTTON1;
-        draw_cues(ADMIN_BUTTON1_X1,ADMIN_BUTTON1_Y1+23);
-    }else if(MouseX >= ADMIN_BUTTON2_X1 && MouseX <= ADMIN_BUTTON2_X2 && MouseY >= ADMIN_BUTTON2_Y1 && MouseY <= ADMIN_BUTTON2_Y2 && *tag !=ACTIVE_ADMIN_BUTTON2){
-        *tag = ACTIVE_ADMIN_BUTTON2;
-        draw_cues(ADMIN_BUTTON2_X1,ADMIN_BUTTON2_Y1+23);
-    }else if(MouseX >= ADMIN_BUTTON3_X1 && MouseX <= ADMIN_BUTTON3_X2 && MouseY >= ADMIN_BUTTON3_Y1 && MouseY <= ADMIN_BUTTON3_Y2 && *tag !=ACTIVE_ADMIN_BUTTON3){
-        *tag = ACTIVE_ADMIN_BUTTON3;
-        draw_cues(ADMIN_BUTTON3_X1,ADMIN_BUTTON3_Y1+23);
-    }else if(MouseX >= ADMIN_BUTTON4_X1 && MouseX <= ADMIN_BUTTON4_X2 && MouseY >= ADMIN_BUTTON4_Y1 && MouseY <= ADMIN_BUTTON4_Y2 && *tag !=ACTIVE_ADMIN_BUTTON4){
-        *tag = ACTIVE_ADMIN_BUTTON4;
-        draw_cues(ADMIN_BUTTON4_X1,ADMIN_BUTTON4_Y1+23);
-    }else if(MouseX >= ADMIN_BUTTON5_X1 && MouseX <= ADMIN_BUTTON5_X2 && MouseY >= ADMIN_BUTTON5_Y1 && MouseY <= ADMIN_BUTTON5_Y2 && *tag !=ACTIVE_ADMIN_BUTTON5){
-        *tag = ACTIVE_ADMIN_BUTTON5;
-        draw_cues(ADMIN_BUTTON5_X1,ADMIN_BUTTON5_Y1+23);
-    }else if(MouseX >= ADMIN_BUTTON6_X1 && MouseX <= ADMIN_BUTTON6_X2 && MouseY >= ADMIN_BUTTON6_Y1 && MouseY <= ADMIN_BUTTON6_Y2 && *tag !=ACTIVE_ADMIN_BUTTON6){
-        *tag = ACTIVE_ADMIN_BUTTON6;
-        draw_cues(ADMIN_BUTTON6_X1,ADMIN_BUTTON6_Y1+23);
-    }
+
+void flush_admin_main_graph(int *tag,int button_counts,ADMIN_BUTTONS AdminButtons[]){
+    int i;
+    int new_tag = ACTIVE_ADMIN_NULL;
+    static int temp;
     
-    if((MouseX < ADMIN_BUTTON1_X1 || MouseX > ADMIN_BUTTON1_X2 || MouseY < ADMIN_BUTTON1_Y1 || MouseY > ADMIN_BUTTON1_Y2) && *tag == ACTIVE_ADMIN_BUTTON1){
-        *tag = ACTIVE_ADMIN_NULL;
-        setfillstyle(SOLID_FILL,MY_YELLOW);
-        bar(ADMIN_BUTTON1_X1-13,ADMIN_BUTTON1_Y1+6,ADMIN_BUTTON1_X1+1,ADMIN_BUTTON1_Y2);
-    }
-    if((MouseX < ADMIN_BUTTON2_X1 || MouseX > ADMIN_BUTTON2_X2 || MouseY < ADMIN_BUTTON2_Y1 || MouseY > ADMIN_BUTTON2_Y2) && *tag == ACTIVE_ADMIN_BUTTON2){
-        *tag = ACTIVE_ADMIN_NULL;
-        setfillstyle(SOLID_FILL,MY_YELLOW);
-        bar(ADMIN_BUTTON2_X1-13,ADMIN_BUTTON2_Y1+6,ADMIN_BUTTON2_X1+1,ADMIN_BUTTON2_Y2);
-    }
-    if((MouseX < ADMIN_BUTTON3_X1 || MouseX > ADMIN_BUTTON3_X2 || MouseY < ADMIN_BUTTON3_Y1 || MouseY > ADMIN_BUTTON3_Y2) && *tag == ACTIVE_ADMIN_BUTTON3){
-        *tag = ACTIVE_ADMIN_NULL;
-        setfillstyle(SOLID_FILL,MY_YELLOW);
-        bar(ADMIN_BUTTON3_X1-13,ADMIN_BUTTON3_Y1+6,ADMIN_BUTTON3_X1+1,ADMIN_BUTTON3_Y2);
-    }
-    if((MouseX < ADMIN_BUTTON4_X1 || MouseX > ADMIN_BUTTON4_X2 || MouseY < ADMIN_BUTTON4_Y1 || MouseY > ADMIN_BUTTON4_Y2) && *tag == ACTIVE_ADMIN_BUTTON4){
-        *tag = ACTIVE_ADMIN_NULL;
-        setfillstyle(SOLID_FILL,MY_YELLOW);
-        bar(ADMIN_BUTTON4_X1-13,ADMIN_BUTTON4_Y1+6,ADMIN_BUTTON4_X1+1,ADMIN_BUTTON4_Y2);
-    }
-    if((MouseX < ADMIN_BUTTON5_X1 || MouseX > ADMIN_BUTTON5_X2 || MouseY < ADMIN_BUTTON5_Y1 || MouseY > ADMIN_BUTTON5_Y2) && *tag == ACTIVE_ADMIN_BUTTON5){
-        *tag = ACTIVE_ADMIN_NULL;
-        setfillstyle(SOLID_FILL,MY_YELLOW);
-        bar(ADMIN_BUTTON5_X1-13,ADMIN_BUTTON5_Y1+6,ADMIN_BUTTON5_X1+1,ADMIN_BUTTON5_Y2);
-    }
-    if((MouseX < ADMIN_BUTTON6_X1 || MouseX > ADMIN_BUTTON6_X2 || MouseY < ADMIN_BUTTON6_Y1 || MouseY > ADMIN_BUTTON6_Y2) && *tag == ACTIVE_ADMIN_BUTTON6){
-        *tag = ACTIVE_ADMIN_NULL;
-        setfillstyle(SOLID_FILL,MY_YELLOW);
-        bar(ADMIN_BUTTON6_X1-13,ADMIN_BUTTON6_Y1+6,ADMIN_BUTTON6_X1+1,ADMIN_BUTTON6_Y2);
+    // 检查鼠标是否在任一按钮区域内
+    for (i = 0; i < button_counts; i++) {
+        if (MouseX >= AdminButtons[i].x1 && MouseX <= AdminButtons[i].x2 &&
+            MouseY >= AdminButtons[i].y1 && MouseY <= AdminButtons[i].y2) {
+            new_tag = AdminButtons[i].active_tag;
+            temp = i;
+            break;
+        }
     }
 
-
-    
-
+    // 状态变化时更新
+    if (*tag != new_tag) {
+        *tag = new_tag;
+        if (new_tag != ACTIVE_ADMIN_NULL) {
+            // 绘制提示（需根据按钮索引计算坐标）
+            AdminButtons[temp].drawfunc(AdminButtons[temp].x1,AdminButtons[temp].y1+23,NULL,NULL);
+            MouseS = 1;
+        } 
+        else {
+            // 清除提示
+            AdminButtons[temp].clearfunc(AdminButtons[temp].x1,AdminButtons[temp].y1,AdminButtons[temp].x2,AdminButtons[temp].y2);
+            MouseS = 0;
+        }
+    }
 }

@@ -1,7 +1,7 @@
 #include"GLOBAL.H"
 
 void main(){
-    int page=TEST;
+    int page=LOGIN;
     // 如果想测试函数，将page设为TEST //如果想正常执行程序，将page设为LOGIN
     int driver=VGA,mode=VGAHI;
 
@@ -21,15 +21,15 @@ void main(){
                 login_admin(&page,&uid);break;
             case REGISTER:
                 _register(&page);break;
-            case TEST:
-                user_main();
-                break;
+            
             // USER_MAIN_GRAPH.C
+            case MAIN_USER:
+                user_main(&page);
+                break;
 
             //ADMIN_MAIN_GRAPH.C
             case MAIN_ADMIN:
                 main_admin(&page);break;
-            
         }
     }
     clrmous(MouseX,MouseY);

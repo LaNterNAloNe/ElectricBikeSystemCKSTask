@@ -1,14 +1,18 @@
 #include"USER.H"
-void user_main() {
+
+void user_main(int *page) {
 	int tag = 0;
-	int page = 0;
 	clrmous(MouseX, MouseY);
 	save_bk_mou(MouseX, MouseY);
 	drawgraph_user_main();
 	
 	while (1) {
-		flushUserGraph(&tag,&page); // 刷新界面
+		flushUserGraph(&tag,page); // 刷新界面
 		newmouse(&MouseX, &MouseY, &press); // 刷新鼠标
+		if(mouse_press(0,0,640,480) == 1) {
+			*page=EXIT;
+			return;
+		}
 		delay(25); // 50hz刷新率
 	}
 }

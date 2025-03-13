@@ -31,7 +31,7 @@ void login(int *page,int *uid) {
 				if(*uid != -1){
 					anime_login_success();
 					switchPage();
-					*page = MAIN_ADMIN; // MAIN_USER : 10 跳转到用户主界面
+					*page = MAIN_USER; // MAIN_USER : 10 跳转到用户主界面
 					Input_Bar(NULL, NULL, NULL, NULL, NULL,1,NULL);  // 清除输入框记忆
                 	return; // 退出循环
 				}
@@ -126,7 +126,7 @@ void login_admin(int* page,int *uid) {
 	char usrn[10] = { 0 }; // 初始化为空
 	char psw[10] = { 0 };
 	int tag = 0;
-	FILE *fp_LOGIN_ADMIN_read = fopen("C:\\EBS\\DATA\\ADMIN.csv","r");
+	FILE *fp_LOGIN_ADMIN_read = fopen("C:\\EBS\\DATA\\ADMIN.DAT","r");
 	if(fp_LOGIN_ADMIN_read == NULL) *page=-1,getch(),exit(0);
 	clrmous(MouseX, MouseY);
 	save_bk_mou(MouseX, MouseY);
