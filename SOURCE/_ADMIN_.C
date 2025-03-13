@@ -37,9 +37,12 @@ void main_admin(int *page){
             *page = EXIT;
             return;
         }
+        delay(25);
+    
     }   
 
-    delay(25);
+    free(AdminButtons);
+    
 }
 
 
