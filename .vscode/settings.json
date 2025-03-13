@@ -66,6 +66,9 @@
     "HZ.C": "cpp",
     "LOGIN.C": "cpp",
     "_ADMIN_.C": "cpp",
-    "INPUTCH.C": "cpp"
+    "INPUTCH.C": "cpp",
+    "stdlib.h": "c",
+    "linklist.h": "c",
+    "STDLIB.H": "cpp"
   }
 }
