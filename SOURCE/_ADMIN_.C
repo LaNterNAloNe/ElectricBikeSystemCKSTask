@@ -29,9 +29,36 @@ void main_admin(int *page,int *ID){
          ACTIVE_ADMIN_EXIT,&draw_exit,&clear_exit}
     };
 
+    char buffer[100];
+    char *token;
+    LINKLIST *LIST = (LINKLIST *)malloc(sizeof(LINKLIST));
+    LINKLIST_USER LIST_USER;
+    
+    FILE *fp_USER_DATA_read = fopen("C:\\EBS\\DATA\\USRDAT.TXT","r");
+    if(fp_USER_DATA_read == NULL) getch(),exit(1);
+
+    fgets(buffer, sizeof(buffer), fp_USER_DATA_read);
+    token = strtok(buffer, ",");
+    LIST_USER.ID = token ? atoi(token) : 0;
+
+    strncpy(LIST_USER.usrn, strtok(NULL, ","), sizeof(LIST_USER.usrn));
+    strncpy(LIST_USER.rln, strtok(NULL, ","), sizeof(LIST_USER.rln)); 
+    strncpy(LIST_USER.location, strtok(NULL, ","), sizeof(LIST_USER.location)); 
+
+    token = strtok(NULL, ",");
+    LIST_USER.anual_check  = token ? atoi(token) : 0;
+
+    token = strtok(NULL, ",\n");
+    LIST_USER.account_state  = (token && *token) ? *token : 'I';
+
+    linklist_add_data(LIST,LIST_USER);
+
     clrmous(MouseX, MouseY);
     drawgraph_admin_main();
     mouseinit();
+
+    if(linklist_find_data(LIST,"¥‘”Í","realname")) puthz(200,200,"’“µΩ¡À",24,24,MY_WHITE);
+    linklist_clear(LIST);
 
     while(1){
         flush_admin_main_graph(&tag,STRUCT_LENGTH(AdminButtons),AdminButtons);

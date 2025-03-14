@@ -10,8 +10,9 @@ typedef struct
 
 typedef struct
 {
-    int line;
+    int chain_lenth;
     LINKLIST_USER USER_DATA;
+    struct LINKLIST_NODE *PREVIOUS;
     struct LINKLIST_NODE *NEXT;
 } LINKLIST_NODE;
 
@@ -20,8 +21,7 @@ typedef struct
     LINKLIST_NODE *HEAD;
 } LINKLIST;
 
-void linklist_add_data(LINKLIST *pList, LINKLIST_USER data);
-void linklist_print_data(LINKLIST *pList);
-int linklist_find_data(LINKLIST *pList, char *ID);
-void linklist_delete_data(LINKLIST *pList, char *ID);
+void linklist_add_data(LINKLIST *pList, LINKLIST_USER NEW_USER_DATA);
+int linklist_find_data(LINKLIST *pList, char *str, char *needed_finding);
+int linklist_delete_data(LINKLIST *pList, char *usrn);
 void linklist_clear(LINKLIST *pList);

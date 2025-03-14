@@ -70,6 +70,12 @@
     "stdlib.h": "c",
     "linklist.h": "c",
     "STDLIB.H": "cpp",
-    "USER.C": "cpp"
+    "USER.C": "cpp",
+    "span": "c",
+    "array": "c",
+    "string": "c",
+    "string_view": "c",
+    "random": "c",
+    "conio.h": "c"
   }
 }

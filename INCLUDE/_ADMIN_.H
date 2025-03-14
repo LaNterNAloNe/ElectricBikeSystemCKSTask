@@ -1,12 +1,16 @@
 #ifndef __ADMIN__H_
 #define __ADMIN__H_
 
-#include"MOUSE.H"
 #include<stdio.h>
 #include<stdlib.h>
 #include<graphics.h>
-#include"GROCERY.H"
 #include<conio.h>
+#include<string.h>
+#include"GROCERY.H"
+#include"LINKLIST.H"
+#include"MOUSE.H"
+#include"HZ.H"
+
 
 //定义界面坐标
 #define MENU_X1 0
