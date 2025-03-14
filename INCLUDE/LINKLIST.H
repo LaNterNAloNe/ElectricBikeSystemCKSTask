@@ -1,10 +1,11 @@
 typedef struct
 {
     int ID;
-    char usrn[10];
-    char rln[15];
+    char usrn[15];
+    char rln[16];
     char location[10];
     int anual_check;
+    int violations;
     char account_state;
 } LINKLIST_USER;
 

@@ -75,6 +75,11 @@ int linklist_find_data(LINKLIST *pList, char *str, char *needed_finding)
             if(!strcmp(buffer, str))
                 isFound++;
         }
+        if (strcmp(needed_finding,"violations")) {
+            itoa(ptr->USER_DATA.violations,buffer,10);
+            if(!strcmp(buffer, str))
+                isFound++;
+        }
         if (isFound) return isFound;
     }
 

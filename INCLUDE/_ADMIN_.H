@@ -98,6 +98,7 @@ int admin_exitting(int *page);
 void draw_exit_menu(int x1,int y1,int x2,int y2);
 void clear_exit_menu(int x1,int y1,int x2,int y2);
 void flush_admin_main_graph(int *tag,int button_counts,ADMIN_BUTTONS AdminButtons[]);
+void get_user_data(LINKLIST *LIST);
 void AdminswitchPage(){
 	int i,j,k;
 	setfillstyle(SOLID_FILL,MY_LIGHTBLUE);
