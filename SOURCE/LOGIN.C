@@ -652,7 +652,7 @@ void anime_admin_login_success(){
 	clrmous(MouseX,MouseY);
 
 	setfillstyle(SOLID_FILL,MY_LIGHTBLUE);
-	bar(120, 430, 520, 480); //覆盖原有的错误提示
+	bar(120, 435, 520, 480); //覆盖原有的错误提示
 
 	setcolor(LIGHTGREEN);
 	rectangle(USERNAME_X1+2,USERNAME_Y1+2,USERNAME_X2-2,USERNAME_Y2-2);
@@ -681,7 +681,8 @@ void anime_admin_login_fail(){
 	setlinestyle(SOLID_LINE,0,NORM_WIDTH);
 	rectangle(USERNAME_X1+2,USERNAME_Y1+2,USERNAME_X2-2,USERNAME_Y2-2);
 	rectangle(PASSWORD_X1+2,PASSWORD_Y1+2,PASSWORD_X2-2,PASSWORD_Y2-2);
-	setfillstyle(SOLID_FILL,MY_LIGHTBLUE);//先覆盖原先的错误提示
+	setfillstyle(SOLID_FILL,MY_LIGHTBLUE);
+	bar(120, 435, 520, 480); //覆盖原有的错误提示
 
 	puthz(165,440,"错误：账号或密码错误！",24,30,MY_WHITE);
 

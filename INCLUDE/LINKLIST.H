@@ -1,22 +1,23 @@
 typedef struct
 {
-    char ID[15];
-    char pass[15];
-    char license[15];
-    char check;
-    char location;
+    int ID;
+    char usrn[10];
+    char rln[15];
+    char location[10];
+    int anual_check;
+    char account_state;
 } LINKLIST_USER;
 
 typedef struct
 {
     int line;
-    LINKLIST_USER userdata;
-    struct LINKLIST_NODE *next;
+    LINKLIST_USER USER_DATA;
+    struct LINKLIST_NODE *NEXT;
 } LINKLIST_NODE;
 
 typedef struct
 {
-    LINKLIST_NODE *head;
+    LINKLIST_NODE *HEAD;
 } LINKLIST;
 
 void linklist_add_data(LINKLIST *pList, LINKLIST_USER data);

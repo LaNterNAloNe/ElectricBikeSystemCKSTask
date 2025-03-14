@@ -8,22 +8,22 @@
 void linklist_add_data(LINKLIST *pList, LINKLIST_USER data)
 {
     LINKLIST_NODE *p = (LINKLIST_NODE *)malloc(sizeof(LINKLIST_NODE));
-    LINKLIST_NODE *last = pList->head;
-    p->userdata = data;
-    p->next = NULL;
+    LINKLIST_NODE *last = pList->HEAD;
+    p->USER_DATA = data;
+    p->NEXT = NULL;
     if (last)
     {
-        while (last->next)
+        while (last->NEXT)
         {
-            last = last->next;
+            last = last->NEXT;
         }
         // attach
-        last->next = p;
+        last->NEXT = p;
         p->line = last->line + 1;
     }
     else
     {
-        pList->head = p;
+        pList->HEAD = p;
         p->line = 1;
     }
 
@@ -34,23 +34,23 @@ void linklist_print_data(LINKLIST *pList)
 {
     LINKLIST_NODE *p;
     printf("All data:\n");
-    for (p = pList->head; p; p = p->next)
+    for (p = pList->HEAD; p; p = p->NEXT)
     {
         printf("Line %d:\t", p->line);
-        printf("%s %s %s %c %c\n", p->userdata.ID, p->userdata.pass, p->userdata.license, p->userdata.check, p->userdata.location);
+        printf("%s %d %s %s %d %c\n", p->USER_DATA.usrn, p->USER_DATA.ID, p->USER_DATA.location, p->USER_DATA.anual_check, p->USER_DATA.account_state);
     }
     printf("\n");
 
     return;
 }
 
-int linklist_find_data(LINKLIST *pList, char *ID)
+int linklist_find_data(LINKLIST *pList, char *usrn)
 {
     LINKLIST_NODE *p;
     int isFound = 0;
-    for (p = pList->head; p; p = p->next)
+    for (p = pList->HEAD; p; p = p->NEXT)
     {
-        if (strcmp(p->userdata.ID, ID) == 0)
+        if (strcmp(p->USER_DATA.usrn, usrn) == 0)
         {
             //printf("Found!\n");
             isFound = 1;
@@ -65,21 +65,21 @@ int linklist_find_data(LINKLIST *pList, char *ID)
     return isFound;
 }
 
-void linklist_delete_data(LINKLIST *pList, char *ID)
+void linklist_delete_data(LINKLIST *pList, char *usrn)
 {
     LINKLIST_NODE *p;
     LINKLIST_NODE *q;
-    for (q = NULL, p = pList->head; p; q = p, p = p->next)
+    for (q = NULL, p = pList->HEAD; p; q = p, p = p->NEXT)
     {
-        if (strcmp(p->userdata.ID, ID) == 0)
+        if (strcmp(p->USER_DATA.usrn, usrn) == 0)
         {
             if (q)
             {
-                q->next = p->next;
+                q->NEXT = p->NEXT;
             }
             else
             {
-                pList->head = p->next;
+                pList->HEAD = p->NEXT;
             }
             free(p);
             break;
@@ -93,9 +93,9 @@ void linklist_clear(LINKLIST *pList)
 {
     LINKLIST_NODE *q;
     LINKLIST_NODE *p;
-    for (p = pList->head; p; p = q)
+    for (p = pList->HEAD; p; p = q)
     {
-        q = p->next;
+        q = p->NEXT;
         free(p);
     }
 

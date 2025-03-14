@@ -45,8 +45,7 @@ void main_admin(int *page){
             } 
         }
     }
-    //世纪难题，以下语句运行会卡死闪退
-    //free(AdminButtons);
+    
 }
 
 
