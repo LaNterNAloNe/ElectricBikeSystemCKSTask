@@ -3,7 +3,7 @@
 //切换页面时的过场
 
 
-void main_admin(int *page){
+void main_admin(int *page,int *ID){
     int tag=ACTIVE_ADMIN_NULL;
     ADMIN_BUTTONS AdminButtons[]={
         {ADMIN_BUTTON1_X1, ADMIN_BUTTON1_X2, 

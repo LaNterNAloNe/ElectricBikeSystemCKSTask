@@ -59,7 +59,7 @@
 #define ACTIVE_USER_MESSAGE 6
 #define ACTIVE_USER_DATAGRAPH 7
 
-void user_main(int *page);
+void user_main(int *page,int *ID);
 void drawgraph_user_main(void);
 void flushUserGraph(int *tag,int *page);
 #endif

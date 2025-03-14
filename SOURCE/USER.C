@@ -1,6 +1,6 @@
 #include"USER.H"
 
-void user_main(int *page) {
+void user_main(int *page,int *ID) {
 	int tag = 0;
 	clrmous(MouseX, MouseY);
 	save_bk_mou(MouseX, MouseY);

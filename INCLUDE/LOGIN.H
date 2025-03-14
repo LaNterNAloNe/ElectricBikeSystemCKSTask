@@ -79,7 +79,7 @@ void anime_admin_login_success();
 void anime_admin_login_fail();
 
 typedef struct {
-    int uid;
+    int ID;
     char usrn[MAX_LEN];
     char psw[MAX_LEN];
     char state;

@@ -2,10 +2,9 @@
 
 void main(){
     int page=LOGIN;
+    int ID=-1;//记录登录用户的ID
     // 如果想测试函数，将page设为TEST //如果想正常执行程序，将page设为LOGIN
     int driver=VGA,mode=VGAHI;
-
-    int uid=-1;//记录登录用户的uid
 
     initgraph(&driver, &mode, "C:\\BORLANDC\\BGI");
     cleardevice();
@@ -16,20 +15,19 @@ void main(){
         switch (page){
             // LOGIN.C
             case LOGIN:
-                login(&page,&uid);break;
+                login(&page,&ID);break;
             case LOGIN_ADMIN:
-                login_admin(&page,&uid);break;
+                login_admin(&page,&ID);break;
             case REGISTER:
                 _register(&page);break;
             
             // USER_MAIN_GRAPH.C
             case MAIN_USER:
-                user_main(&page);
-                break;
+                user_main(&page,&ID);break;
 
             //ADMIN_MAIN_GRAPH.C
             case MAIN_ADMIN:
-                main_admin(&page);break;
+                main_admin(&page,&ID);break;
         }
     }
     clrmous(MouseX,MouseY);

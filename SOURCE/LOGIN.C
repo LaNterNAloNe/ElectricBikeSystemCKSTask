@@ -1,7 +1,7 @@
 #include"LOGIN.H"
 
 // 登录界面
-void login(int *page,int *uid) {
+void login(int *page,int *ID) {
 	
     char usrn[13] = {0}; // 初始化为空
     char psw[13] = {0};
@@ -27,8 +27,8 @@ void login(int *page,int *uid) {
         if (mouse_press(LOGIN_X1, LOGIN_Y1, LOGIN_X2, LOGIN_Y2)==1) {
             // 检查输入是否非空且正确
             if (usrn[0] != '\0' && psw[0] != '\0') {
-				userlogin_judge(usrn,psw,uid);
-				if(*uid != -1){
+				userlogin_judge(usrn,psw,ID);
+				if(*ID != -1){
 					anime_login_success();
 					switchPage();
 					*page = MAIN_USER; // MAIN_USER : 10 跳转到用户主界面
@@ -108,7 +108,7 @@ void drawgraph_login(void){
 	setfillstyle(1, 3);
 	bar(ADMIN_X1, ADMIN_Y1, ADMIN_X2, ADMIN_Y2);//管理员模式
 
-	puthz(94, 50, "校园自行车管理系统",48,50,MY_WHITE);// 输出文本
+	puthz(94, 50, "校园电动车管理系统",48,50,MY_WHITE);// 输出文本
 	puthz(220, 140, "用户名",24,50,MY_BLACK);// 输出文本
 	puthz(220, 230, "密码",24,50,MY_BLACK);
 	puthz(LOGIN_X1+24, LOGIN_Y1+12, "登录",24,30,MY_WHITE);
@@ -226,7 +226,7 @@ void drawgraph_admin_login(){
 	setfillstyle(1, 3);
 	bar(ADMIN_X1, ADMIN_Y1, ADMIN_X2, ADMIN_Y2);//管理员模式
 
-	puthz(94, 50, "校园自行车管理系统", 48, 50, MY_WHITE);// 输出文本
+	puthz(94, 50, "校园电动车管理系统", 48, 50, MY_WHITE);// 输出文本
 	puthz(220, 140, "用户名", 24, 50, MY_BLACK);// 输出文本
 	puthz(220, 230, "密码", 24, 50, MY_BLACK);
 	puthz(ADMIN_LOGIN_X1+24, ADMIN_LOGIN_Y1+12, "登录",24,30,MY_WHITE);
@@ -339,7 +339,7 @@ void drawgraph_register() {
 	bar(230, 320, 330, 370);//分别为注册,返回登录
 	bar(360, 320, 460, 370);
 
-	puthz(94, 50, "校园自行车管理系统", 48, 50, MY_WHITE);// 输出文本
+	puthz(94, 50, "校园电动车管理系统", 48, 50, MY_WHITE);// 输出文本
 	puthz(220, 140, "输入用户名", 24, 20, MY_BLACK);// 输出文本
 	puthz(220, 230, "输入密码", 24, 20, MY_BLACK);
 	puthz(LOGIN_X1+8, LOGIN_Y1+12, "确认注册", 24, 20, MY_WHITE);
@@ -351,7 +351,7 @@ void drawgraph_register() {
 }
 
 //用户登录检测
-void userlogin_judge(char *usrn,char *psw,int *uid){
+void userlogin_judge(char *usrn,char *psw,int *ID){
 	int i=0;
 	int account_counts;
 	USER_LOGIN_DATA *TEMP=malloc(sizeof(USER_LOGIN_DATA));
@@ -368,7 +368,7 @@ void userlogin_judge(char *usrn,char *psw,int *uid){
 		if(strcmp(usrn,TEMP->usrn) == 0){
 			if(strcmp(psw,TEMP->psw) == 0){
 				//登陆成功
-				*uid = TEMP->uid;
+				*ID = TEMP->ID;
 				free(TEMP);
 				if(fclose(fp_LOGIN_USER_read)!=0) getch(),exit(0);
 				return;
@@ -439,7 +439,7 @@ int userregister_judge(char *usrn,char *psw){
 	//若经过了for循环仍未经过return，则代表用户名未曾注册过，可以注册
 	strcpy(TEMP->usrn,usrn);			//获取账密和uid
 	strcpy(TEMP->psw,psw);
-	TEMP->uid = account_counts;
+	TEMP->ID = NULL;
 	TEMP->state = ACTIVE;
 	fwrite(TEMP,sizeof(USER_LOGIN_DATA),1,fp_LOGIN_USER_readndwrite);  //将注册信息写入文件
 	free(TEMP);

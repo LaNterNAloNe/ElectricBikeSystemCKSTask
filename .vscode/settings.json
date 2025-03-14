@@ -69,6 +69,7 @@
     "INPUTCH.C": "cpp",
     "stdlib.h": "c",
     "linklist.h": "c",
-    "STDLIB.H": "cpp"
+    "STDLIB.H": "cpp",
+    "USER.C": "cpp"
   }
 }

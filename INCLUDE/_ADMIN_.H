@@ -84,6 +84,7 @@ typedef struct {
     CLEARFUNCTION clearfunc;
 } ADMIN_BUTTONS;
 
+void main_admin(int *page,int *ID);
 void drawgraph_admin_main(void);
 void draw_cues(int x,int y,int null1,int null2);
 void clear_cues(int x1,int y1,int x2,int y2);
