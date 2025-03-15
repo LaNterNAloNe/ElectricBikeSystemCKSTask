@@ -76,6 +76,7 @@
     "string": "c",
     "string_view": "c",
     "random": "c",
-    "conio.h": "c"
+    "conio.h": "c",
+    "CONIO.H": "cpp"
   }
 }

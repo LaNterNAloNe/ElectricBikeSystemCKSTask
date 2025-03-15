@@ -13,18 +13,22 @@
 
 
 //定义界面坐标
-#define MENU_X1 0
-#define MENU_Y1 0
-#define MENU_X2 120
-#define MENU_Y2 480
-#define INTERFACE_A_X1 121
-#define INTERFACE_A_Y1 0
-#define INTERFACE_A_X2 380
-#define INTERFACE_A_Y2 480
-#define INTERFACE_B_X1 381
-#define INTERFACE_B_Y1 0
-#define INTERFACE_B_X2 640
-#define INTERFACE_B_Y2 480
+#define ADMIN_MENU_X1 0
+#define ADMIN_MENU_Y1 0
+#define ADMIN_MENU_X2 120
+#define ADMIN_MENU_Y2 480
+#define ADMIN_INTERFACE_A_X1 121
+#define ADMIN_INTERFACE_A_Y1 0
+#define ADMIN_INTERFACE_A_X2 380
+#define ADMIN_INTERFACE_A_Y2 480
+#define ADMIN_INTERFACE_B_X1 381
+#define ADMIN_INTERFACE_B_Y1 0
+#define ADMIN_INTERFACE_B_X2 640
+#define ADMIN_INTERFACE_B_Y2 480
+#define ADMIN_INTERFACE_X1 121
+#define ADMIN_INTERFACE_Y1 0
+#define ADMIN_INTERFACE_X2 640
+#define ADMIN_INTERFACE_Y2 480
 
 //定义按钮坐标
 #define ADMIN_BUTTON1_X1 20
@@ -88,17 +92,27 @@ typedef struct {
     CLEARFUNCTION clearfunc;
 } ADMIN_BUTTONS;
 
-void main_admin(int *page,int *ID);
+typedef struct {
+    char rln[16];
+	int ID;
+	char ebike_ID[10];
+    int apply_time;
+} EBIKE_REGISTER;
+
+void main_admin(int *page_1,int *page_2,int *ID);
 void drawgraph_admin_main(void);
 void draw_cues(int x,int y,int null1,int null2);
 void clear_cues(int x1,int y1,int x2,int y2);
 void draw_exit(int x1,int y1,int x2,int y2);
 void clear_exit(int x1,int y1,int x2,int y2);
-int admin_exitting(int *page);
+int admin_exitting(int *page_1);
 void draw_exit_menu(int x1,int y1,int x2,int y2);
 void clear_exit_menu(int x1,int y1,int x2,int y2);
 void flush_admin_main_graph(int *tag,int button_counts,ADMIN_BUTTONS AdminButtons[]);
 void get_user_data(LINKLIST *LIST);
+
+void admin_bike_license(int *page_1,int *page_2,int *id);
+void drawgraph_admin_bike_license();
 void AdminswitchPage(){
 	int i,j,k;
 	setfillstyle(SOLID_FILL,MY_LIGHTBLUE);

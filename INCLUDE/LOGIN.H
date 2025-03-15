@@ -51,11 +51,6 @@
 #define EXIT_PROGRAM -1
 #define ACTIVE_NONE 0
 
-//定义用户状态
-#define ACTIVE '0'
-#define FROZEN '1'
-#define BANNED '2'
-
 //定义密码，用户名最大长度
 #define MAX_LEN 14
 

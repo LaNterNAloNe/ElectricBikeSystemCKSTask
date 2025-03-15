@@ -4,10 +4,27 @@ typedef struct
     char usrn[15];
     char rln[16];
     char location[10];
+    char ebike_ID[10];
+    char ebike_license[7];
     int anual_check;
     int violations;
     char account_state;
+    char ebike_state;
 } LINKLIST_USER;
+
+// typedef struct
+// {
+//     int ID;
+//     char rln[16];
+//     char ebike_ID[10];
+//     char account_state;
+// } LINKLIST_LICENSE;
+
+// typedef union
+// {
+//     LINKLIST_LICENSE USER_LICENSE;
+//     LINKLIST_USER USER_DATA;
+// }LINKLIST_BODY;
 
 typedef struct
 {

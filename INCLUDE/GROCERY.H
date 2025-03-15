@@ -79,6 +79,14 @@
 #define MY_GREEN 6
 #define USER_DEFINED_COLOR 15
 
+//定义用户状态
+#define ACTIVE '0'
+#define FROZEN '1'
+#define BANNED '2'
+
+#define ACTIVE '0'
+#define BROKEN '1'
+
 #endif
 
 
