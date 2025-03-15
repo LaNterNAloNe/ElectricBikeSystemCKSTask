@@ -319,6 +319,20 @@ int mouse_press(int x1, int y1, int x2, int y2)
 		return 3;
 	}
 	
+	/*
+	该函数存在缺陷，导致某些应用场景产生bug，以下是对点击情况的补充枚举
+	*/
+	//不在框中点击，则返回-1
+	else if ((MouseX < x1 
+		||MouseX > x2
+		||MouseY < y1
+		||MouseY > y2)
+		&&press)
+	{
+		return -1;
+	}
+
+	//不在框中未点击，无事发生
 	else
 	{
 		return 0;

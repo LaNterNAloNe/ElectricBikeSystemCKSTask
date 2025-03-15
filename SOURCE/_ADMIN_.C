@@ -33,24 +33,15 @@ void main_admin(int *page_1,int *page_2,int *ID){
     drawgraph_admin_main(); // 初始化界面
     mouseinit();
 
-    while(1){
-        flush_admin_main_graph(&tag,STRUCT_LENGTH(AdminButtons),AdminButtons);
+    while(*page_1 == MAIN_ADMIN && *page_2 == NULL){
+        flush_admin_main_menu(&tag,STRUCT_LENGTH(AdminButtons),AdminButtons);
+        handle_click_event_main(page_1,page_2);
         //应该在传入AdminButtons前计算其长度，传入函数后，使用sizeof计算其长度则会退化为指针长度，导致功能失效
         newmouse(&MouseX, &MouseY, &press);
-
-        if (mouse_press(ADMIN_EXIT_X1,ADMIN_EXIT_Y1,ADMIN_EXIT_X2,ADMIN_EXIT_Y2) == 1) {
-            if(!admin_exitting(page_1)){
-                AdminswitchPage();
-                return;
-            } 
-        }
-        if (mouse_press(ADMIN_BUTTON1_X1,ADMIN_BUTTON1_Y1,ADMIN_BUTTON1_X2,ADMIN_BUTTON1_Y2)==1) {
-            *page_2 = ADMIN_BIKE_LICENSE;
-            return;
-        }
     }
     
 }
+
 
 
 void drawgraph_admin_main(void){
@@ -133,17 +124,19 @@ void clear_exit(int x1,int y1,int x2,int y2){
     line(ADMIN_EXIT_X2,ADMIN_EXIT_Y1,ADMIN_EXIT_X1,ADMIN_EXIT_Y2);
 }
 
-int admin_exitting(int *page){
+int admin_exitting(int *page_1,int *page_2){
     draw_exit_menu(ADMIN_EXIT_MENU_X1,ADMIN_EXIT_MENU_Y1,ADMIN_EXIT_MENU_X2,ADMIN_EXIT_MENU_Y2);
     while(1){
         newmouse(&MouseX, &MouseY, &press);
         if(mouse_press(ADMIN_EXIT_MENU_X1+2,ADMIN_EXIT_MENU_Y1+5,ADMIN_EXIT_MENU_X1+60,ADMIN_EXIT_MENU_Y1+21)==1){
-            *page = LOGIN;
+            *page_1 = LOGIN;
+            *page_2 = NULL;
             return 0;
         }else if(mouse_press(ADMIN_EXIT_MENU_X1+2,ADMIN_EXIT_MENU_Y1+30,ADMIN_EXIT_MENU_X1+60,ADMIN_EXIT_MENU_Y1+46)==1){
-            *page = EXIT;
+            *page_1 = EXIT;
+            *page_2 = NULL;
             return 0;
-        }else if(mouse_press(0,0,640,480)==1 && !mouse_press(ADMIN_EXIT_X1,ADMIN_EXIT_Y1,ADMIN_EXIT_X2,ADMIN_EXIT_Y2)){
+        }else if(mouse_press(0,0,640,480)==1 && mouse_press(ADMIN_EXIT_X1,ADMIN_EXIT_Y1,ADMIN_EXIT_X2,ADMIN_EXIT_Y2)==-1){
             clear_exit_menu(ADMIN_EXIT_MENU_X1,ADMIN_EXIT_MENU_Y1,ADMIN_EXIT_MENU_X2,ADMIN_EXIT_MENU_Y2);
             return 1;
         }
@@ -162,7 +155,7 @@ void clear_exit_menu(int x1,int y1,int x2,int y2){
 }
 
 
-void flush_admin_main_graph(int *tag,int button_counts,ADMIN_BUTTONS AdminButtons[]){
+void flush_admin_main_menu(int *tag,int button_counts,ADMIN_BUTTONS AdminButtons[]){
     int i;
     int new_tag = ACTIVE_ADMIN_NULL;
     static int last_active_index = 0;
@@ -196,6 +189,24 @@ void flush_admin_main_graph(int *tag,int button_counts,ADMIN_BUTTONS AdminButton
     }
 }
 
+void handle_click_event_main(int *page_1,int *page_2){
+    if (mouse_press(ADMIN_EXIT_X1,ADMIN_EXIT_Y1,ADMIN_EXIT_X2,ADMIN_EXIT_Y2) == 1) {
+        if(!admin_exitting(page_1,page_2)){
+            AdminswitchPage();
+            return;
+        } 
+    }
+    if (mouse_press(ADMIN_BUTTON1_X1,ADMIN_BUTTON1_Y1,ADMIN_BUTTON1_X2,ADMIN_BUTTON1_Y2)==1 && 
+        *page_2 != ADMIN_BIKE_REGISTER) {
+        *page_2 = ADMIN_BIKE_REGISTER;
+        return;
+    }
+}
+
+
+/*****************************************************************
+MODULE:生成链表数据
+*****************************************************************/
 //开始特性功能前先将储存信息传递到链表
 void get_user_data(LINKLIST *LIST){
     char buffer[100]; // 定义缓冲区
@@ -241,22 +252,57 @@ void get_user_data(LINKLIST *LIST){
 /*****************************************************************
 MODULE:管理员车辆注册
 *****************************************************************/
-void admin_bike_license(int *page_1,int *page_2,int *ID){
+void admin_bike_register(int *page_1,int *page_2,int *ID){
+    int mode=0;
+    int tag=ACTIVE_ADMIN_NULL;
+    ADMIN_BUTTONS AdminButtons[]={
+        {ADMIN_BUTTON1_X1, ADMIN_BUTTON1_X2, 
+         ADMIN_BUTTON1_Y1, ADMIN_BUTTON1_Y2, 
+         ACTIVE_ADMIN_BUTTON1,&draw_cues,&clear_cues},
+        {ADMIN_BUTTON2_X1, ADMIN_BUTTON2_X2, 
+         ADMIN_BUTTON2_Y1, ADMIN_BUTTON2_Y2, 
+         ACTIVE_ADMIN_BUTTON2,&draw_cues,&clear_cues},
+        {ADMIN_BUTTON3_X1, ADMIN_BUTTON3_X2, 
+         ADMIN_BUTTON3_Y1, ADMIN_BUTTON3_Y2, 
+         ACTIVE_ADMIN_BUTTON3,&draw_cues,&clear_cues},
+        {ADMIN_BUTTON4_X1, ADMIN_BUTTON4_X2, 
+         ADMIN_BUTTON4_Y1, ADMIN_BUTTON4_Y2, 
+         ACTIVE_ADMIN_BUTTON4,&draw_cues,&clear_cues},
+        {ADMIN_BUTTON5_X1, ADMIN_BUTTON5_X2, 
+         ADMIN_BUTTON5_Y1, ADMIN_BUTTON5_Y2, 
+         ACTIVE_ADMIN_BUTTON5,&draw_cues,&clear_cues},
+        {ADMIN_BUTTON6_X1, ADMIN_BUTTON6_X2, 
+         ADMIN_BUTTON6_Y1, ADMIN_BUTTON6_Y2, 
+         ACTIVE_ADMIN_BUTTON6,&draw_cues,&clear_cues},
+        {ADMIN_EXIT_X1,ADMIN_EXIT_X2,
+         ADMIN_EXIT_Y1,ADMIN_EXIT_Y2,
+         ACTIVE_ADMIN_EXIT,&draw_exit,&clear_exit}
+    };
+
     LINKLIST *LIST = (LINKLIST *)malloc(sizeof(LINKLIST));
-
-    EBIKE_REGISTER *TEMP = (EBIKE_REGISTER*)malloc(sizeof(EBIKE_REGISTER));
-    FILE *fp_EBIKE_REGISTER_read = fopen("C:\\ESB\\DATA\\REGISTER.DAT","rb+");
+    FILE *fp_EBIKE_REGISTER_read = fopen("C:\\EBS\\DATA\\REGISTER.DAT","rb+");
     if(!fp_EBIKE_REGISTER_read) exit(1);
-    if(!TEMP) exit(1);
+    fseek(fp_EBIKE_REGISTER_read,0,SEEK_SET);
+    drawgraph_admin_bike_register();
 
+    delay(50);
     get_user_data(LIST);
-    drawgraph_admin_bike_license();
+    list_search_register_request(LIST,fp_EBIKE_REGISTER_read);
 
-    getch();
-    exit(1);
+    while(*page_2 == ADMIN_BIKE_REGISTER){
+        flush_admin_main_menu(&tag,STRUCT_LENGTH(AdminButtons),AdminButtons);
+        handle_click_event_main(page_1,page_2);
+        newmouse(&MouseX,&MouseY,&press);
+        if (mouse_press(ADMIN_MENU_X1, ADMIN_MENU_Y1, ADMIN_MENU_X2, ADMIN_MENU_Y2) == 1 &&
+            mouse_press(ADMIN_BUTTON1_X1,ADMIN_BUTTON1_Y1,ADMIN_BUTTON1_X2,ADMIN_BUTTON1_Y2)==-1) {
+            *page_2 = NULL;
+            return;
+        }
+        
+    }
 }
  
-void drawgraph_admin_bike_license(){
+void drawgraph_admin_bike_register(){
     puthz(ADMIN_INTERFACE_X1+5,ADMIN_INTERFACE_Y1+5,"车辆注册审核",24,20,MY_WHITE);
     puthz(ADMIN_INTERFACE_X1+140,ADMIN_INTERFACE_Y1+10,"待处理项目",16,16,MY_WHITE);
     settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);
@@ -266,4 +312,42 @@ void drawgraph_admin_bike_license(){
     puthz(ADMIN_INTERFACE_X1+200,ADMIN_INTERFACE_Y1+40,"车辆车牌号",16,16,MY_WHITE);
     puthz(ADMIN_INTERFACE_X1+300,ADMIN_INTERFACE_Y1+40,"申请日期",16,16,MY_WHITE);
     puthz(ADMIN_INTERFACE_X1+400,ADMIN_INTERFACE_Y1+40,"处理情况",16,16,MY_WHITE);
+
+}
+
+char *list_search_register_request(LINKLIST *pList,FILE *fp){
+    int listed_item=0;
+    int request_counts = 0;
+    int search_times = 0;
+    char *buffer;
+    EBIKE_REGISTER *TEMP = (EBIKE_REGISTER*)malloc(sizeof(EBIKE_REGISTER));
+    if(!TEMP) exit(1);
+    request_counts = ftell(fp)/sizeof(EBIKE_REGISTER);
+    
+    if(request_counts = ftell(fp)/sizeof(EBIKE_REGISTER)){
+        while(listed_item <= request_counts && listed_item <= 7 && search_times <= request_counts){
+            search_times++;
+            fread(TEMP,sizeof(TEMP),1,fp); // 读取数据，直到查找到未被处理的注册请求
+            if (TEMP->conduct_time == -1) continue;
+
+            settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);
+            puthz(ADMIN_INTERFACE_X1+20,ADMIN_INTERFACE_Y1+60+listed_item*20,TEMP->rln,16,16,MY_WHITE); // 输出姓名
+            itoa(TEMP->ID,buffer,10);
+            outtextxy(ADMIN_INTERFACE_X1+100,ADMIN_INTERFACE_Y1+60+listed_item*20,buffer); // 输出ID
+            outtextxy(ADMIN_INTERFACE_X1+200,ADMIN_INTERFACE_Y1+60+listed_item*20,TEMP->ebike_ID); // 输出电动车车牌号
+            outtextxy(ADMIN_INTERFACE_X1+300,ADMIN_INTERFACE_Y1+60+listed_item*20,buffer); // 输出请求时间
+            
+            if(TEMP->conduct_time == -1){ // 输出处理状态
+                puthz(ADMIN_INTERFACE_X1+20,ADMIN_INTERFACE_Y1+60+listed_item*20,"未处理",16,16,MY_RED);
+            }else{
+                puthz(ADMIN_INTERFACE_X1+20,ADMIN_INTERFACE_Y1+60+listed_item*20,"已处理",16,16,MY_GREEN);
+            }
+        }
+    }else{
+        puthz(ADMIN_INTERFACE_X1+200,ADMIN_INTERFACE_Y1+60,"未找到对应数据",16,16,MY_RED);
+        return NULL;
+    }
+    free(TEMP);
+    return NULL;
+
 }

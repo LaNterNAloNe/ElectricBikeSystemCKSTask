@@ -106,14 +106,19 @@ void draw_cues(int x,int y,int null1,int null2);
 void clear_cues(int x1,int y1,int x2,int y2);
 void draw_exit(int x1,int y1,int x2,int y2);
 void clear_exit(int x1,int y1,int x2,int y2);
-int admin_exitting(int *page_1);
+int admin_exitting(int *page_1,int *page_2);
 void draw_exit_menu(int x1,int y1,int x2,int y2);
 void clear_exit_menu(int x1,int y1,int x2,int y2);
-void flush_admin_main_graph(int *tag,int button_counts,ADMIN_BUTTONS AdminButtons[]);
+
+void admin_bike_register(int *page_1,int *page_2,int *id);
+void drawgraph_admin_bike_register();
+char *list_search_register_request(LINKLIST *pList,FILE *fp);
+
+void flush_admin_main_menu(int *tag,int button_counts,ADMIN_BUTTONS AdminButtons[]);
+void handle_click_event_main(int *page_1,int *page_2);
 void get_user_data(LINKLIST *LIST);
 
-void admin_bike_license(int *page_1,int *page_2,int *id);
-void drawgraph_admin_bike_license();
+
 void AdminswitchPage(){
 	int i,j,k;
 	setfillstyle(SOLID_FILL,MY_LIGHTBLUE);

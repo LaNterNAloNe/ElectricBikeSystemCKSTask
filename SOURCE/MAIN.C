@@ -31,8 +31,8 @@ void main(){
                 switch (page_2){
                     case NULL:
                         main_admin(&page_1,&page_2,&ID);break;
-                    case ADMIN_BIKE_LICENSE:
-                        admin_bike_license(&page_1,&page_2,&ID);break;
+                    case ADMIN_BIKE_REGISTER:
+                        admin_bike_register(&page_1,&page_2,&ID);break;
                 }
         }
     }

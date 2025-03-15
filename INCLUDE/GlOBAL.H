@@ -24,7 +24,7 @@ void initcolorpalette(){
 	setrgbpalette(MY_YELLOW, 240, 230,75);//黄色
 	setrgbpalette(MY_RED, 255, 0, 0);//红色
 	setrgbpalette(MY_WHITE, 255, 255, 255);//白色
-    setrgbpalette(MY_GREEN, 0, 63, 0);//绿色
+    setrgbpalette(MY_GREEN, 0, 255, 0);//绿色
 }
 
 void drawExittingProgram(int err){
