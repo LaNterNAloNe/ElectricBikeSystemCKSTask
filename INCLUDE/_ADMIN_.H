@@ -97,6 +97,7 @@ typedef struct {
 	int ID;
 	char ebike_ID[10];
     int apply_time;
+	int conduct_time;
 } EBIKE_REGISTER;
 
 void main_admin(int *page_1,int *page_2,int *ID);
