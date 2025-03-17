@@ -127,4 +127,5 @@ void linklist_clear(LINKLIST *pList) {
         current = next;
     }
     pList->HEAD = NULL; // ЧхГ§аќПежИеы 
+    free(pList);
 }

@@ -73,6 +73,9 @@ void anime_login_fail();
 void anime_admin_login_success();
 void anime_admin_login_fail();
 
+unsigned long get_used_memory();
+void display_memory_usage(int x, int y);
+
 typedef struct {
     int ID;
     char usrn[MAX_LEN];

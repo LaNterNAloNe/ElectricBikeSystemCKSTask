@@ -1,5 +1,6 @@
 #include"LOGIN.H"
 
+
 // 登录界面
 void login(int *page,int *ID) {
 	
@@ -10,6 +11,8 @@ void login(int *page,int *ID) {
     clrmous(MouseX, MouseY);
     save_bk_mou(MouseX, MouseY);
     drawgraph_login();
+
+	if(debug_mode == 1) display_memory_usage(400, 10); // 左上角显示 
 
     while (1) {
 		flushLoginGraph(&tag,page); // 刷新界面
@@ -131,6 +134,9 @@ void login_admin(int* page,int *uid) {
 	clrmous(MouseX, MouseY);
 	save_bk_mou(MouseX, MouseY);
 	drawgraph_admin_login();
+
+	if(debug_mode == 1) display_memory_usage(400, 10); // 左上角显示 
+
 	while (1) {
 		flushLoginGraph(&tag,page); // 刷新界面
 		newmouse(&MouseX, &MouseY, &press); // 刷新鼠标
@@ -249,6 +255,9 @@ void _register(int* page) {
 	clrmous(MouseX, MouseY);
 	save_bk_mou(MouseX, MouseY);
 	drawgraph_register();
+
+	if(debug_mode == 1) display_memory_usage(400, 10); // 左上角显示 
+	
 	while (1) {
 		flushLoginGraph(&tag,page); // 刷新界面
 		newmouse(&MouseX, &MouseY, &press); // 刷新鼠标
@@ -356,8 +365,13 @@ void userlogin_judge(char *usrn,char *psw,int *ID){
 	int account_counts;
 	USER_LOGIN_DATA *TEMP=malloc(sizeof(USER_LOGIN_DATA));
 	FILE *fp_LOGIN_USER_read = fopen("C:\\EBS\\DATA\\USER.DAT","rb");
-	if(TEMP==NULL) getch(),exit(0);
-	if(fp_LOGIN_USER_read == NULL) getch(),exit(0);
+
+	if (TEMP == NULL || fp_LOGIN_USER_read == NULL) {
+        if (TEMP) free(TEMP);
+        fclose(fp_LOGIN_USER_read);
+        exit(0);
+    }
+	
 	fseek(fp_LOGIN_USER_read,0,SEEK_END);
 	account_counts = ftell(fp_LOGIN_USER_read)/sizeof(USER_LOGIN_DATA);//初始操作完成，接下来开始遍历数据
 
@@ -388,8 +402,13 @@ void adminlogin_judge(char *usrn,char *psw,int *uid){
 	int account_counts;
 	ADMIN_LOGIN_DATA *TEMP=malloc(sizeof(ADMIN_LOGIN_DATA));
 	FILE *fp_LOGIN_ADMIN_read = fopen("C:\\EBS\\DATA\\ADMIN.DAT","rb");
-	if(TEMP==NULL) getch(),exit(0);
-	if(fp_LOGIN_ADMIN_read == NULL) getch(),exit(0);
+
+	if (TEMP == NULL || fp_LOGIN_ADMIN_read == NULL) {
+        if (TEMP) free(TEMP);
+        fclose(fp_LOGIN_ADMIN_read);
+        exit(0);
+    }
+
 	fseek(fp_LOGIN_ADMIN_read,0,SEEK_END);
 	account_counts = ftell(fp_LOGIN_ADMIN_read)/sizeof(ADMIN_LOGIN_DATA);//初始操作完成，接下来开始遍历数据
 
@@ -420,8 +439,13 @@ int userregister_judge(char *usrn,char *psw){
 	int account_counts;
 	USER_LOGIN_DATA *TEMP=malloc(sizeof(USER_LOGIN_DATA));
 	FILE *fp_LOGIN_USER_readndwrite = fopen("C:\\EBS\\DATA\\USER.DAT","rb+");
-	if(TEMP==NULL) getch(),exit(0);
-	if(fp_LOGIN_USER_readndwrite == NULL) getch(),exit(0);
+	
+	if (TEMP == NULL || fp_LOGIN_USER_readndwrite == NULL) {
+        if (TEMP) free(TEMP);
+        fclose(fp_LOGIN_USER_readndwrite);
+        exit(0);
+    }
+
 	fseek(fp_LOGIN_USER_readndwrite,0,SEEK_END);
 	account_counts = ftell(fp_LOGIN_USER_readndwrite)/sizeof(USER_LOGIN_DATA);//初始操作完成，接下来开始遍历数据
 

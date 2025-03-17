@@ -5,6 +5,7 @@
 #include<stdlib.h>
 #include<graphics.h>
 #include<conio.h>
+#include <alloc.h>    // DOS内存管理头文件 
 #include<string.h>
 #include"GROCERY.H"
 #include"LINKLIST.H"
@@ -71,6 +72,41 @@
 #define ADMIN_EXIT_MENU_X2 80
 #define ADMIN_EXIT_MENU_Y2 430
 
+#define ADMIN_FEATURE1_X1 130
+#define ADMIN_FEATURE1_Y1 440
+#define ADMIN_FEATURE1_X2 200
+#define ADMIN_FEATURE1_Y2 470
+
+#define ADMIN_FEATURE2_X1 208
+#define ADMIN_FEATURE2_Y1 440
+#define ADMIN_FEATURE2_X2 278
+#define ADMIN_FEATURE2_Y2 470
+
+#define ADMIN_FEATURE3_X1 286
+#define ADMIN_FEATURE3_Y1 440
+#define ADMIN_FEATURE3_X2 356
+#define ADMIN_FEATURE3_Y2 470
+
+#define ADMIN_FEATURE4_X1 364
+#define ADMIN_FEATURE4_Y1 440
+#define ADMIN_FEATURE4_X2 434
+#define ADMIN_FEATURE4_Y2 470
+
+#define ADMIN_FEATURE5_X1 442
+#define ADMIN_FEATURE5_Y1 440
+#define ADMIN_FEATURE5_X2 512
+#define ADMIN_FEATURE5_Y2 470
+
+#define ADMIN_FEATURE6_X1 520
+#define ADMIN_FEATURE6_Y1 440
+#define ADMIN_FEATURE6_X2 590
+#define ADMIN_FEATURE6_Y2 470
+
+#define ADMIN_FEATURE_EXIT_X1 610
+#define ADMIN_FEATURE_EXIT_Y1 450
+#define ADMIN_FEATURE_EXIT_X2 630
+#define ADMIN_FEATURE_EXIT_Y2 470
+
 
 //定义激活状态
 #define ACTIVE_ADMIN_NULL 0
@@ -81,6 +117,13 @@
 #define ACTIVE_ADMIN_BUTTON5 5
 #define ACTIVE_ADMIN_BUTTON6 6
 #define ACTIVE_ADMIN_EXIT 7
+#define ACTIVE_ADMIN_FEATURE1 8
+#define ACTIVE_ADMIN_FEATURE2 9
+#define ACTIVE_ADMIN_FEATURE3 10
+#define ACTIVE_ADMIN_FEATURE4 11
+#define ACTIVE_ADMIN_FEATURE5 12
+#define ACTIVE_ADMIN_FEATURE6 13
+#define ACTIVE_ADMIN_FEATURE_EXIT 14
 
 typedef void (*DRAWFUNCTION) (int coord1,int coord2,int coord3,int coord4);
 typedef void (*CLEARFUNCTION) (int coord1,int coord2,int coord3,int coord4);
@@ -98,24 +141,27 @@ typedef struct {
 	char ebike_ID[10];
     int apply_time;
 	int conduct_time;
+    int result;
 } EBIKE_REGISTER;
 
-void main_admin(int *page_1,int *page_2,int *ID);
-void drawgraph_admin_main(void);
+void main_admin(int *page,int *ID);
+void drawgraph_admin_menu(void);
 void draw_cues(int x,int y,int null1,int null2);
 void clear_cues(int x1,int y1,int x2,int y2);
+void draw_rectangle(int x1,int y1,int x2,int y2);
+void clear_rectangle(int x1,int y1,int x2,int y2);
 void draw_exit(int x1,int y1,int x2,int y2);
 void clear_exit(int x1,int y1,int x2,int y2);
-int admin_exitting(int *page_1,int *page_2);
+int admin_exitting(int *page);
 void draw_exit_menu(int x1,int y1,int x2,int y2);
 void clear_exit_menu(int x1,int y1,int x2,int y2);
 
-void admin_bike_register(int *page_1,int *page_2,int *id);
+void admin_bike_register(int *page,int *id);
 void drawgraph_admin_bike_register();
-char *list_search_register_request(LINKLIST *pList,FILE *fp);
+void list_search_register_request(LINKLIST *pList,FILE *fp);
 
 void flush_admin_main_menu(int *tag,int button_counts,ADMIN_BUTTONS AdminButtons[]);
-void handle_click_event_main(int *page_1,int *page_2);
+void handle_click_event_main(int *page);
 void get_user_data(LINKLIST *LIST);
 
 
@@ -129,6 +175,41 @@ void AdminswitchPage(){
 				bar(i*40+20-k*4,j*40+20-k*4,i*40+20+k*4,j*40+20+k*4);
 				delay(1);
 			}
+}
+
+
+ 
+/* 获取当前程序内存使用量（单位：KB） */
+unsigned long get_used_memory() {
+    struct heapinfo *hi;
+    unsigned long total = 0;
+ 
+    // 遍历堆内存分配块 
+    hi->ptr  = NULL;
+    while(heapwalk(hi) == _HEAPOK) {
+        if(hi->in_use)  
+            total += hi->size;  // 累计已分配内存 
+    }
+ 
+    // 转换为KB（DOS内存块以16字节为单位）
+    return (total * 16) / 1024; 
+}
+
+void display_memory_usage(int x, int y) {
+    static char mem_str[20];
+    unsigned long mem_used;
+ 
+    // 获取内存数据 
+    mem_used = get_used_memory();
+ 
+    // 构建显示字符串 
+    sprintf(mem_str, "MEM: %lu KB", mem_used);
+ 
+    // 图形模式输出（带背景刷新）
+    setcolor(WHITE);
+    setfillstyle(SOLID_FILL, BLUE);
+    bar(x-5, y-5, x+textwidth(mem_str)+5, y+textheight(mem_str)+5);
+    outtextxy(x, y, mem_str);
 }
 
 #define STRUCT_LENGTH(Struct) (sizeof(Struct)/sizeof(Struct[0]))

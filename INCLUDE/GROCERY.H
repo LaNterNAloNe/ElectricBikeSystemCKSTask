@@ -1,5 +1,5 @@
-#ifndef _GROCERY_H_
-#define _GROCERY_H_
+#ifndef GROCERY_H
+#define GROCERY_H
 
 #define NUM0 0x5230
 #define NUM1 0x4f31
@@ -86,6 +86,9 @@
 
 #define ACTIVE '0'
 #define BROKEN '1'
+
+#define debug_mode 0
+
 
 #endif
 

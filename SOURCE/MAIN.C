@@ -1,8 +1,8 @@
 #include"GLOBAL.H"
 
 void main(){
-    int page_1=MAIN_ADMIN; // 主页面
-    int page_2=NULL; // 副页面
+    int page=MAIN_ADMIN; // 主页面
+    // int page=NULL; // 副页面
     int ID=-1;//记录登录用户的ID
     // 如果想测试函数，将page设为TEST //如果想正常执行程序，将page设为LOGIN
     int driver=VGA,mode=VGAHI;
@@ -12,34 +12,48 @@ void main(){
     mouseinit();
     initcolorpalette();
 
-    while(page_1 != EXIT){   //循环直到page = EXIT ( 0 )
-        switch (page_1){
+    while(page != EXIT){   //循环直到page = EXIT ( 0 )
+        cleardevice();
+        switch (page){
             // LOGIN.C
             case LOGIN:
-                login(&page_1,&ID);break;
+                login(&page,&ID);break;
             case LOGIN_ADMIN:
-                login_admin(&page_1,&ID);break;
+                login_admin(&page,&ID);break;
             case REGISTER:
-                _register(&page_1);break;
+                _register(&page);break;
             
             // USER_MAIN_GRAPH.C
             case MAIN_USER:
-                user_main(&page_1,&ID);break;
+                user_main(&page,&ID);break;
 
             //ADMIN_MAIN_GRAPH.C
             case MAIN_ADMIN:
-                switch (page_2){
-                    case NULL:
-                        main_admin(&page_1,&page_2,&ID);break;
-                    case ADMIN_BIKE_REGISTER:
-                        admin_bike_register(&page_1,&page_2,&ID);break;
-                }
+                main_admin(&page,&ID);break;
+            case ADMIN_BIKE_REGISTER:
+                admin_bike_register(&page,&ID);break;
         }
     }
     clrmous(MouseX,MouseY);
-    drawExittingProgram(page_1);
+    drawExittingProgram(page);
 
     getch(); //按任意键结束
     closegraph();
 }
 
+void initcolorpalette(){
+    setrgbpalette(MY_LIGHTBLUE, 12,158,245);//浅蓝背景-1
+	setrgbpalette(MY_LIGHTGRAY, 235,235,235);//浅灰框-1
+	setrgbpalette(MY_BLACK, 0, 0, 0);//黑色
+	setrgbpalette(MY_YELLOW, 240, 230,75);//黄色
+	setrgbpalette(MY_RED, 255, 0, 0);//红色
+	setrgbpalette(MY_WHITE, 255, 255, 255);//白色
+    setrgbpalette(MY_GREEN, 0, 255, 0);//绿色
+}
+
+void drawExittingProgram(int err){
+    setfillstyle(SOLID_FILL, CYAN);
+    bar(120,120,520,390);
+    if(err == 0) puthz(180, 200, "你正在退出程序，按任意键退出", 24, 20, MY_WHITE);
+    if(err == 1) puthz(180, 200, "无法打开用户数据库", 24, 20, MY_RED);
+}

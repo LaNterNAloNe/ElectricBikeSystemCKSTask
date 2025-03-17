@@ -78,6 +78,8 @@
     "random": "c",
     "conio.h": "c",
     "CONIO.H": "cpp",
-    "*.tcc": "cpp"
+    "*.tcc": "cpp",
+    "LINKLIST.C": "cpp",
+    "charconv": "cpp"
   }
 }
