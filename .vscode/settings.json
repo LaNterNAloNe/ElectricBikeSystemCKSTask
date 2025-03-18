@@ -80,6 +80,7 @@
     "CONIO.H": "cpp",
     "*.tcc": "cpp",
     "LINKLIST.C": "cpp",
-    "charconv": "cpp"
+    "charconv": "cpp",
+    "LINKLIST.H": "cpp"
   }
 }

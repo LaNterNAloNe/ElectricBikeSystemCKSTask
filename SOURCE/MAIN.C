@@ -1,6 +1,6 @@
 #include"GLOBAL.H"
 
-void main(){
+int main(void){
     int page=MAIN_ADMIN; // 主页面
     // int page=NULL; // 副页面
     int ID=-1;//记录登录用户的ID
@@ -39,6 +39,7 @@ void main(){
 
     getch(); //按任意键结束
     closegraph();
+    return 0;
 }
 
 void initcolorpalette(){

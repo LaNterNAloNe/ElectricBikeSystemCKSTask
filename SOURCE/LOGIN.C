@@ -2,7 +2,7 @@
 
 
 // 登录界面
-void login(int *page,int *ID) {
+void login(int *page, int *ID) {
 	
     char usrn[13] = {0}; // 初始化为空
     char psw[13] = {0};
@@ -15,7 +15,7 @@ void login(int *page,int *ID) {
 	if(debug_mode == 1) display_memory_usage(400, 10); // 左上角显示 
 
     while (1) {
-		flushLoginGraph(&tag,page); // 刷新界面
+		//flushLoginGraph(&tag,page); // 刷新界面
 		newmouse(&MouseX, &MouseY, &press); // 刷新鼠标
 
         // 处理鼠标点击事件
@@ -129,8 +129,8 @@ void login_admin(int* page,int *uid) {
 	char usrn[10] = { 0 }; // 初始化为空
 	char psw[10] = { 0 };
 	int tag = 0;
-	FILE *fp_LOGIN_ADMIN_read = fopen("C:\\EBS\\DATA\\ADMIN.DAT","r");
-	if(fp_LOGIN_ADMIN_read == NULL) *page=-1,getch(),exit(0);
+	// FILE *fp_LOGIN_ADMIN_read = fopen("C:\\EBS\\DATA\\ADMIN.DAT","r");
+	// if(fp_LOGIN_ADMIN_read == NULL) *page=-1,getch(),exit(0);
 	clrmous(MouseX, MouseY);
 	save_bk_mou(MouseX, MouseY);
 	drawgraph_admin_login();
@@ -138,7 +138,7 @@ void login_admin(int* page,int *uid) {
 	if(debug_mode == 1) display_memory_usage(400, 10); // 左上角显示 
 
 	while (1) {
-		flushLoginGraph(&tag,page); // 刷新界面
+		//flushLoginGraph(&tag,page); // 刷新界面
 		newmouse(&MouseX, &MouseY, &press); // 刷新鼠标
 
 		// 处理鼠标点击事件
@@ -172,12 +172,14 @@ void login_admin(int* page,int *uid) {
 			switchPage();
 			*page = LOGIN; // LOGIN_ADMIN : 2 跳转到用户登录界面
 			Input_Bar(NULL, NULL, NULL, NULL, NULL,1,NULL);
+			//fclose(fp_LOGIN_ADMIN_read);
 			return;
 		}
 		else if (mouse_press(EXITPROGRAM_X1, EXITPROGRAM_Y1, EXITPROGRAM_X2, EXITPROGRAM_Y2) == 1) {
 			clrmous(MouseX, MouseY);
 			switchPage();
 			*page = EXIT; // EXIT : 0，退出程序
+			//fclose(fp_LOGIN_ADMIN_read);
 			return;
 		}
 
@@ -259,7 +261,7 @@ void _register(int* page) {
 	if(debug_mode == 1) display_memory_usage(400, 10); // 左上角显示 
 	
 	while (1) {
-		flushLoginGraph(&tag,page); // 刷新界面
+		//flushLoginGraph(&tag,page); // 刷新界面
 		newmouse(&MouseX, &MouseY, &press); // 刷新鼠标
 
 		// 处理鼠标点击事件

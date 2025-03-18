@@ -158,7 +158,7 @@ void clear_exit_menu(int x1,int y1,int x2,int y2);
 
 void admin_bike_register(int *page,int *id);
 void drawgraph_admin_bike_register();
-void list_search_register_request(LINKLIST *pList,FILE *fp);
+void list_search_register_request(int id_list[8],FILE *fp,int mode,int page_change,int is_clear);
 
 void flush_admin_main_menu(int *tag,int button_counts,ADMIN_BUTTONS AdminButtons[]);
 void handle_click_event_main(int *page);
@@ -198,10 +198,10 @@ unsigned long get_used_memory() {
 void display_memory_usage(int x, int y) {
     static char mem_str[20];
     unsigned long mem_used;
- 
+
     // 获取内存数据 
     mem_used = get_used_memory();
- 
+
     // 构建显示字符串 
     sprintf(mem_str, "MEM: %lu KB", mem_used);
  
