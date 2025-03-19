@@ -1,5 +1,4 @@
-typedef struct
-{
+typedef struct _user{
     int ID;
     char usrn[15];
     char rln[16];
@@ -26,7 +25,7 @@ typedef struct
 //     LINKLIST_USER USER_DATA;
 // }LINKLIST_BODY;
 
-typedef struct
+typedef struct _LINKLISTNODE_
 {
     int chain_lenth;
     LINKLIST_USER USER_DATA;
@@ -34,7 +33,7 @@ typedef struct
     struct LINKLIST_NODE *NEXT;
 } LINKLIST_NODE;
 
-typedef struct
+typedef struct _LINKLIST_
 {
     LINKLIST_NODE *HEAD;
 } LINKLIST;
@@ -43,3 +42,4 @@ void linklist_add_data(LINKLIST *pList, LINKLIST_USER NEW_USER_DATA);
 int linklist_find_data(LINKLIST *pList, char *str, char *needed_finding);
 int linklist_delete_data(LINKLIST *pList, char *usrn);
 void linklist_clear(LINKLIST *pList);
+

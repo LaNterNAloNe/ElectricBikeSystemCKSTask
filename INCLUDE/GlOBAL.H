@@ -2,6 +2,7 @@
 #define _GLOBAL_H_
 
 #pragma option -N+ -Z -G-      //大内存模型/关闭堆栈检查/紧凑代码/全局优化 
+// #pragma option -Nc16384
 
 #include<conio.h>
 #include<graphics.h>
@@ -17,6 +18,7 @@
 #include "MOUSE.H"
 #include "LOGIN.H"
 #include "GROCERY.H"
+#include "LINKLIST.H"
 
 void initcolorpalette();
 void drawExittingProgram(int err);

@@ -1,16 +1,18 @@
 #include"GLOBAL.H"
 
 int main(void){
-    int page=MAIN_ADMIN; // 主页面
+    int page=LOGIN; // 主页面
     // int page=NULL; // 副页面
     int ID=-1;//记录登录用户的ID
-    // 如果想测试函数，将page设为TEST //如果想正常执行程序，将page设为LOGIN
     int driver=VGA,mode=VGAHI;
+    // LINKLIST *LIST = (LINKLIST *)malloc(sizeof(LINKLIST));
 
     initgraph(&driver, &mode, "C:\\BORLANDC\\BGI");
     cleardevice();
     mouseinit();
     initcolorpalette();
+
+    // get_user_data(LIST); // 生成链表
 
     while(page != EXIT){   //循环直到page = EXIT ( 0 )
         cleardevice();
@@ -37,6 +39,7 @@ int main(void){
     clrmous(MouseX,MouseY);
     drawExittingProgram(page);
 
+    // linklist_clear(LIST); // 清理链表
     getch(); //按任意键结束
     closegraph();
     return 0;

@@ -102,6 +102,11 @@
 #define ADMIN_FEATURE6_X2 590
 #define ADMIN_FEATURE6_Y2 470
 
+#define ADMIN_FEATURE_SEARCH_X1 130
+#define ADMIN_FEATURE_SEARCH_Y1 390
+#define ADMIN_FEATURE_SEARCH_X2 340
+#define ADMIN_FEATURE_SEARCH_Y2 420
+
 #define ADMIN_FEATURE_EXIT_X1 610
 #define ADMIN_FEATURE_EXIT_Y1 450
 #define ADMIN_FEATURE_EXIT_X2 630
@@ -123,7 +128,9 @@
 #define ACTIVE_ADMIN_FEATURE4 11
 #define ACTIVE_ADMIN_FEATURE5 12
 #define ACTIVE_ADMIN_FEATURE6 13
-#define ACTIVE_ADMIN_FEATURE_EXIT 14
+#define ACTIVE_ADMIN_FEATURE_SEARCH 14
+#define ACTIVE_ADMIN_FEATURE_EXIT 20
+
 
 typedef void (*DRAWFUNCTION) (int coord1,int coord2,int coord3,int coord4);
 typedef void (*CLEARFUNCTION) (int coord1,int coord2,int coord3,int coord4);
@@ -158,10 +165,11 @@ void clear_exit_menu(int x1,int y1,int x2,int y2);
 
 void admin_bike_register(int *page,int *id);
 void drawgraph_admin_bike_register();
-void list_search_register_request(int id_list[8],FILE *fp,int mode,int page_change,int is_clear);
+void list_search_register_request(int id_list[8],FILE *fp,int mode,int page_change,int is_clear,char *search_str,char *search_needed);
+int list_admin_register_search_is_valid(EBIKE_REGISTER TEMP,char *search_str,char *search_needed,int mode);
 
-void flush_admin_main_menu(int *tag,int button_counts,ADMIN_BUTTONS AdminButtons[]);
-void handle_click_event_main(int *page);
+void admin_flush_graph(int *tag,int button_counts,ADMIN_BUTTONS AdminButtons[]);
+void handle_click_event_admin_main(int *page);
 void get_user_data(LINKLIST *LIST);
 
 
@@ -209,7 +217,10 @@ void display_memory_usage(int x, int y) {
     setcolor(WHITE);
     setfillstyle(SOLID_FILL, BLUE);
     bar(x-5, y-5, x+textwidth(mem_str)+5, y+textheight(mem_str)+5);
+    settextstyle(DEFAULT_FONT,NULL,1);
     outtextxy(x, y, mem_str);
+    sprintf(mem_str,"FARMEM LEFT: %lu Byte",farcoreleft());
+    outtextxy(x,y+10,mem_str);
 }
 
 #define STRUCT_LENGTH(Struct) (sizeof(Struct)/sizeof(Struct[0]))

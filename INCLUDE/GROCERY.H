@@ -87,7 +87,7 @@
 #define ACTIVE '0'
 #define BROKEN '1'
 
-#define debug_mode 0
+#define debug_mode 1
 
 
 #endif
