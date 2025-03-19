@@ -163,7 +163,7 @@ int admin_exitting(int *page);
 void draw_exit_menu(int x1,int y1,int x2,int y2);
 void clear_exit_menu(int x1,int y1,int x2,int y2);
 
-void admin_bike_register(int *page,int *id);
+void admin_bike_register(int *page, int *id,LINKLIST *LIST);
 void drawgraph_admin_bike_register();
 void list_search_register_request(int id_list[8],FILE *fp,int mode,int page_change,int is_clear,char *search_str,char *search_needed);
 int list_admin_register_search_is_valid(EBIKE_REGISTER TEMP,char *search_str,char *search_needed,int mode);

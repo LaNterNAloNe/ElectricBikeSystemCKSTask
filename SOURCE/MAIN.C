@@ -5,14 +5,14 @@ int main(void){
     // int page=NULL; // 副页面
     int ID=-1;//记录登录用户的ID
     int driver=VGA,mode=VGAHI;
-    // LINKLIST *LIST = (LINKLIST *)malloc(sizeof(LINKLIST));
+    LINKLIST *LIST = (LINKLIST *)malloc(sizeof(LINKLIST));
 
     initgraph(&driver, &mode, "C:\\BORLANDC\\BGI");
     cleardevice();
     mouseinit();
     initcolorpalette();
 
-    // get_user_data(LIST); // 生成链表
+    get_user_data(LIST); // 生成链表
 
     while(page != EXIT){   //循环直到page = EXIT ( 0 )
         cleardevice();
@@ -33,13 +33,13 @@ int main(void){
             case MAIN_ADMIN:
                 main_admin(&page,&ID);break;
             case ADMIN_BIKE_REGISTER:
-                admin_bike_register(&page,&ID);break;
+                admin_bike_register(&page,&ID,LIST);break;
         }
     }
     clrmous(MouseX,MouseY);
     drawExittingProgram(page);
 
-    // linklist_clear(LIST); // 清理链表
+    linklist_clear(LIST); // 清理链表
     getch(); //按任意键结束
     closegraph();
     return 0;

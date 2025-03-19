@@ -124,7 +124,8 @@ void handle_click_event_admin_main(int *page){
 /*****************************************************************
 MODULE:管理员车辆注册
 *****************************************************************/
-void admin_bike_register(int *page,int *ID){
+void admin_bike_register(int *page, int *ID, LINKLIST *LIST)
+{
     static int mode=0; // 搜索模式，列出已处理清单或待处理清单，主动清除该页面时重设为0（默认列出待处理清单）
     static int visited=0; // 是否进入乐该页面，主动清除该页面时重设为0
     char search_str[10]; // 搜索框输入信息储存
@@ -215,7 +216,7 @@ void admin_bike_register(int *page,int *ID){
     Input_Bar(NULL, NULL, NULL, NULL, NULL,1,NULL);
     return;
 }
- 
+
 void drawgraph_admin_bike_register(){
     puthz(ADMIN_INTERFACE_X1+5,ADMIN_INTERFACE_Y1+5,"车辆注册审核",24,20,MY_WHITE);
     puthz(ADMIN_INTERFACE_X1+140,ADMIN_INTERFACE_Y1+10,"待处理项目",16,16,MY_WHITE);
