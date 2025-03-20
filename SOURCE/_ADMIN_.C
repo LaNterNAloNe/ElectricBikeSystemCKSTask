@@ -196,6 +196,7 @@ void admin_bike_register(int *page, int *ID, LINKLIST *LIST)
     while(*page == ADMIN_BIKE_REGISTER){
         admin_flush_graph(&tag,STRUCT_LENGTH(AdminButtons),AdminButtons);
         handle_click_event_admin_main(page);
+        handle_select_line_admin_register(page);
         newmouse(&MouseX,&MouseY,&press);
 
         if (mouse_press(ADMIN_FEATURE_EXIT_X1,ADMIN_FEATURE_EXIT_Y1,ADMIN_FEATURE_EXIT_X2,ADMIN_FEATURE_EXIT_Y2) == 1) {
@@ -214,6 +215,8 @@ void admin_bike_register(int *page, int *ID, LINKLIST *LIST)
     list_search_register_request(NULL,NULL,NULL,NULL,1,NULL,NULL);
     fclose(fp_EBIKE_REGISTER_read);
     Input_Bar(NULL, NULL, NULL, NULL, NULL,1,NULL);
+    visited = 0;
+    mode = 0;
     return;
 }
 
@@ -261,6 +264,7 @@ void list_search_register_request(int id_list[8],FILE *fp,int mode,int page_chan
     // page_change为1，向下列表，为-1，向上列表，为0，不翻页
     // mode为0，查找未处理，为1，查找已处理
     // is_clear为0，不做任何操作，为1，清理列表状态并不做任何操作，为2，清理列表状态并继续列表（重新开始列表）
+    int i;
     int listed_item=0; // 列出的数量
     static int start=0; // 储存当前列表第一个所在的位置
     static int end=0; // 储存当前列表最后一个所在的位置
@@ -272,12 +276,18 @@ void list_search_register_request(int id_list[8],FILE *fp,int mode,int page_chan
     EBIKE_REGISTER TEMP;
     counts = ftell(fp)/sizeof(EBIKE_REGISTER);
 
-    if(is_clear){
-        start=0;
-        end=0;
-        if(is_clear == 1) return;
+    for (i = 0; i < 8; i++){
+        id_list[i] = -1;
+    } // 开始列表前一定清理列表记录
+
+    if (is_clear)
+    {
+        start = 0;
+        end = 0;
+        if (is_clear == 1)
+            return;
     }
-    
+
     if(counts && page_change == 1){ // 收到下翻指令
         /*条件判断*/
         if(end = counts-1) {
@@ -288,7 +298,7 @@ void list_search_register_request(int id_list[8],FILE *fp,int mode,int page_chan
             if(fread(&TEMP,sizeof(TEMP),1,fp)) { // 到文件末尾都没有发现可列表的，则不执行下翻列表操作
                 return; 
             }
-            if (list_admin_register_search_is_valid) break;// 下翻查找是一旦读到可以被列出的，则可以执行下翻列表操作
+            if (list_admin_register_search_is_valid(TEMP,search_str,search_needed,mode)) break;// 下翻查找是一旦读到可以被列出的，则可以执行下翻列表操作
         }
 
         /*列表操作*/
@@ -300,21 +310,23 @@ void list_search_register_request(int id_list[8],FILE *fp,int mode,int page_chan
         while(listed_item < 8){
             if(!fread(&TEMP,sizeof(TEMP),1,fp)) break; // 读取数据，直到达到文件末尾
             end++; // 先将end指向读取的数据的头部
-            if ( ! list_admin_register_search_is_valid) continue; // 如果下翻读取时读到的数据不符条件，则进行下一轮循环
+            if ( ! list_admin_register_search_is_valid(TEMP, search_str, search_needed, mode))
+                continue; // 如果下翻读取时读到的数据不符条件，则进行下一轮循环
 
-            listed_item++;
             settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);
-            puthz(ADMIN_INTERFACE_X1+20,ADMIN_INTERFACE_Y1+70+listed_item*20,TEMP.rln,16,16,MY_WHITE); // 输出姓名
+            puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70 + listed_item * 20, TEMP.rln, 16, 16, MY_WHITE); // 输出姓名
             itoa(TEMP.ID,buffer,10);
-            outtextxy(ADMIN_INTERFACE_X1+100,ADMIN_INTERFACE_Y1+70+listed_item*40,buffer); // 输出ID
-            outtextxy(ADMIN_INTERFACE_X1+200,ADMIN_INTERFACE_Y1+70+listed_item*40,TEMP.ebike_ID); // 输出电动车车牌号
-            outtextxy(ADMIN_INTERFACE_X1+300,ADMIN_INTERFACE_Y1+70+listed_item*40,buffer); // 输出请求时间
-            
+            outtextxy(ADMIN_INTERFACE_X1 + 100, ADMIN_INTERFACE_Y1 + 70 + listed_item * LIST_INTERVAL, buffer);        // 输出ID
+            outtextxy(ADMIN_INTERFACE_X1 + 200, ADMIN_INTERFACE_Y1 + 70 + listed_item * LIST_INTERVAL, TEMP.ebike_ID); // 输出电动车车牌号
+            outtextxy(ADMIN_INTERFACE_X1 + 300, ADMIN_INTERFACE_Y1 + 70 + listed_item * LIST_INTERVAL, buffer); // 输出请求时间
+
             if(TEMP.conduct_time == -1){ // 输出处理状态
-                puthz(ADMIN_INTERFACE_X1+400,ADMIN_INTERFACE_Y1+70+listed_item*40,"未处理",16,16,MY_RED);
+                puthz(ADMIN_INTERFACE_X1 + 400, ADMIN_INTERFACE_Y1 + 70 + listed_item * LIST_INTERVAL, "未处理", 16, 16, MY_RED);
             }else{
-                puthz(ADMIN_INTERFACE_X1+400,ADMIN_INTERFACE_Y1+70+listed_item*40,"已处理",16,16,MY_GREEN);
+                puthz(ADMIN_INTERFACE_X1 + 400, ADMIN_INTERFACE_Y1 + 70 + listed_item * LIST_INTERVAL, "已处理", 16, 16, MY_GREEN);
             }
+            id_list[listed_item] = TEMP.ID;
+            listed_item++;
         }
     }else if(counts && page_change == -1){ // 收到上翻指令
         /*条件判断*/
@@ -329,7 +341,8 @@ void list_search_register_request(int id_list[8],FILE *fp,int mode,int page_chan
             fseek(fp,(temp_start-1)*sizeof(TEMP),SEEK_SET);
             fread(&TEMP,sizeof(TEMP),1,fp); // 读取上一个数据块
             temp_end = --temp_start;
-            if (list_admin_register_search_is_valid) break; // 上翻查找到一个可列出数据，则可以上翻
+            if (list_admin_register_search_is_valid(TEMP, search_str, search_needed, mode))
+                break; // 上翻查找到一个可列出数据，则可以上翻
         }
 
         /*列表操作*/
@@ -341,21 +354,23 @@ void list_search_register_request(int id_list[8],FILE *fp,int mode,int page_chan
         while(listed_item < 8){ // 由于此时是从后往前读取数据，因此是从下往上列表
             fseek(fp,(start-1)*sizeof(TEMP),SEEK_SET);
             fread(&TEMP,sizeof(TEMP),1,fp); // 读取数据，直到查找到未被处理的注册请求
-            if ( ! list_admin_register_search_is_valid) continue; // 如果下翻读取时读到的数据不符条件，则进行下一轮循环
+            if ( ! list_admin_register_search_is_valid(TEMP, search_str, search_needed, mode))
+                continue; // 如果下翻读取时读到的数据不符条件，则进行下一轮循环
 
-            listed_item++;
             settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);
-            puthz(ADMIN_INTERFACE_X1+20,ADMIN_INTERFACE_Y1+390-listed_item*40,TEMP.rln,16,16,MY_WHITE); // 输出姓名
+            puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 310 - listed_item * LIST_INTERVAL, TEMP.rln, 16, 16, MY_WHITE); // 输出姓名
             itoa(TEMP.ID,buffer,10);
-            outtextxy(ADMIN_INTERFACE_X1+100,ADMIN_INTERFACE_Y1+390-listed_item*40,buffer); // 输出ID
-            outtextxy(ADMIN_INTERFACE_X1+200,ADMIN_INTERFACE_Y1+390-listed_item*40,TEMP.ebike_ID); // 输出电动车车牌号
-            outtextxy(ADMIN_INTERFACE_X1+300,ADMIN_INTERFACE_Y1+390-listed_item*40,buffer); // 输出请求时间
-            
+            outtextxy(ADMIN_INTERFACE_X1 + 100, ADMIN_INTERFACE_Y1 + 310 - listed_item * LIST_INTERVAL, buffer); // 输出ID
+            outtextxy(ADMIN_INTERFACE_X1 + 200, ADMIN_INTERFACE_Y1 + 310 - listed_item * LIST_INTERVAL, TEMP.ebike_ID); // 输出电动车车牌号
+            outtextxy(ADMIN_INTERFACE_X1 + 300, ADMIN_INTERFACE_Y1 + 310 - listed_item * LIST_INTERVAL, buffer); // 输出请求时间
+
             if(TEMP.conduct_time == -1){ // 输出处理状态
-                puthz(ADMIN_INTERFACE_X1+400,ADMIN_INTERFACE_Y1+390-listed_item*40,"未处理",16,16,MY_RED);
+                puthz(ADMIN_INTERFACE_X1 + 400, ADMIN_INTERFACE_Y1 + 310 - listed_item * LIST_INTERVAL, "未处理", 16, 16, MY_RED);
             }else{
-                puthz(ADMIN_INTERFACE_X1+400,ADMIN_INTERFACE_Y1+390-listed_item*40,"已处理",16,16,MY_GREEN);
+                puthz(ADMIN_INTERFACE_X1 + 400, ADMIN_INTERFACE_Y1 + 310 - listed_item * LIST_INTERVAL, "已处理", 16, 16, MY_GREEN);
             }
+            id_list[listed_item] = TEMP.ID;
+            listed_item++;
         }
     }else if(counts && page_change == 0){ // 不翻页，输出原内容
         fseek(fp,(start)*sizeof(TEMP),SEEK_SET);
@@ -363,21 +378,24 @@ void list_search_register_request(int id_list[8],FILE *fp,int mode,int page_chan
             if(!fread(&TEMP,sizeof(TEMP),1,fp)) { // 读取数据，直到查找到八个可列出数据
                 return;
             }
-            if ( ! list_admin_register_search_is_valid)  continue; // 如果下翻读取时读到的数据不符条件，则进行下一轮循环
+            if ( ! list_admin_register_search_is_valid(TEMP, search_str, search_needed, mode))
+                continue; // 如果下翻读取时读到的数据不符条件，则进行下一轮循环
 
-            listed_item++;
             settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);
-            puthz(ADMIN_INTERFACE_X1+20,ADMIN_INTERFACE_Y1+390-listed_item*40,TEMP.rln,16,16,MY_WHITE); // 输出姓名
-            itoa(TEMP.ID,buffer,10);
-            outtextxy(ADMIN_INTERFACE_X1+100,ADMIN_INTERFACE_Y1+390-listed_item*40,buffer); // 输出ID
-            outtextxy(ADMIN_INTERFACE_X1+200,ADMIN_INTERFACE_Y1+390-listed_item*40,TEMP.ebike_ID); // 输出电动车车牌号
-            outtextxy(ADMIN_INTERFACE_X1+300,ADMIN_INTERFACE_Y1+390-listed_item*40,buffer); // 输出请求时间
-            
-            if(TEMP.conduct_time == -1){ // 输出处理状态
-                puthz(ADMIN_INTERFACE_X1+400,ADMIN_INTERFACE_Y1+390-listed_item*40,"未处理",16,16,MY_RED);
+            puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70 + listed_item * 20, TEMP.rln, 16, 16, MY_WHITE); // 输出姓名
+            itoa(TEMP.ID, buffer, 10);
+            outtextxy(ADMIN_INTERFACE_X1 + 100, ADMIN_INTERFACE_Y1 + 70 + listed_item * LIST_INTERVAL, buffer);        // 输出ID
+            outtextxy(ADMIN_INTERFACE_X1 + 200, ADMIN_INTERFACE_Y1 + 70 + listed_item * LIST_INTERVAL, TEMP.ebike_ID); // 输出电动车车牌号
+            outtextxy(ADMIN_INTERFACE_X1 + 300, ADMIN_INTERFACE_Y1 + 70 + listed_item * LIST_INTERVAL, buffer);        // 输出请求时间
+
+            if (TEMP.conduct_time == -1)
+            { // 输出处理状态
+                puthz(ADMIN_INTERFACE_X1 + 400, ADMIN_INTERFACE_Y1 + 70 + listed_item * LIST_INTERVAL, "未处理", 16, 16, MY_RED);
             }else{
-                puthz(ADMIN_INTERFACE_X1+400,ADMIN_INTERFACE_Y1+390-listed_item*40,"已处理",16,16,MY_GREEN);
+                puthz(ADMIN_INTERFACE_X1 + 400, ADMIN_INTERFACE_Y1 + 70 + listed_item * LIST_INTERVAL, "已处理", 16, 16, MY_GREEN);
             }
+            id_list[listed_item] = TEMP.ID;
+            listed_item++;
         }
 
     }else{
@@ -396,6 +414,18 @@ int list_admin_register_search_is_valid(EBIKE_REGISTER TEMP,char *search_str,cha
     else return 0;
 }
 
+int handle_select_line_admin_register(int *id_list){
+    int i;
+    for (i = 0; i < LIST_LIMIT; i++){
+        if (mouse_press(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70 + i * 20,
+            ADMIN_INTERFACE_X1 + 400, ADMIN_INTERFACE_Y1 + 70 + (i+1) * LIST_INTERVAL - 1) &&
+            id_list[i] != -1)
+            bar(); // 清理所有高亮
+            bar(); // 生成当前高亮
+            return i;
+    }
+    return NULL;
+}
 
 
 /*****************************************************************

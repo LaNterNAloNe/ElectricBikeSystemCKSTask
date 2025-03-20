@@ -131,6 +131,8 @@
 #define ACTIVE_ADMIN_FEATURE_SEARCH 14
 #define ACTIVE_ADMIN_FEATURE_EXIT 20
 
+#define LIST_INTERVAL 30
+#define LIST_LIMIT 8
 
 typedef void (*DRAWFUNCTION) (int coord1,int coord2,int coord3,int coord4);
 typedef void (*CLEARFUNCTION) (int coord1,int coord2,int coord3,int coord4);
@@ -170,8 +172,8 @@ int list_admin_register_search_is_valid(EBIKE_REGISTER TEMP,char *search_str,cha
 
 void admin_flush_graph(int *tag,int button_counts,ADMIN_BUTTONS AdminButtons[]);
 void handle_click_event_admin_main(int *page);
+int handle_select_line_admin_register(int *page);
 void get_user_data(LINKLIST *LIST);
-
 
 void AdminswitchPage(){
 	int i,j,k;
