@@ -322,11 +322,12 @@ ACTIVE_USER_DATAGRAPH},
 		if (mouse_press(USER_BIKE_REGISTER_INPUT2_X1, USER_BIKE_REGISTER_INPUT2_Y1, USER_BIKE_REGISTER_INPUT2_X2, USER_BIKE_REGISTER_INPUT2_Y2) == 1 && new_user == 1) {
 			Input_Bar(e_bike_id, USER_BIKE_REGISTER_INPUT2_X1, USER_BIKE_REGISTER_INPUT2_Y1 + 5, 13, MY_WHITE, 0, 1);
 		}
-		if (mouse_press(USER_BIKE_REGISTER_BUTTON1_X1, USER_BIKE_REGISTER_BUTTON1_Y1, USER_BIKE_REGISTER_BUTTON1_X2, USER_BIKE_REGISTER_BUTTON1_Y2) == 1 && new_user ==1 &&judge_e_bike_id(*id)) {
-			anime_login_success_user();
+		if (mouse_press(USER_BIKE_REGISTER_BUTTON1_X1, USER_BIKE_REGISTER_BUTTON1_Y1, USER_BIKE_REGISTER_BUTTON1_X2, USER_BIKE_REGISTER_BUTTON1_Y2) == 1 && new_user ==1) {
+            // &&judge_e_bike_id(*id)
+            anime_login_success_user();
 			setfillstyle(SOLID_FILL, MY_WHITE);
 			bar(60, 150, 640, 480);
-			puthz(280, 300, "您已登记成功，请等待审核", 24, 30);
+			puthz(280, 300, "您已登记成功，请等待审核", 24, 30,MY_WHITE);
 			delay(5000);
 			Input_Bar(NULL, NULL, NULL, NULL, NULL, 1, NULL);
 			*page = MAIN_USER;
