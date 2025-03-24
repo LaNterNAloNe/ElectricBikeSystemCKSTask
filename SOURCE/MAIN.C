@@ -28,6 +28,9 @@ int main(void){
             // USER_MAIN_GRAPH.C
             case MAIN_USER:
                 user_main(&page,&ID);break;
+            case USER_BIKE_REGISTER:
+                user_main();
+                user_bike_register(&page, &ID); break;
 
             //ADMIN_MAIN_GRAPH.C
             case MAIN_ADMIN:
