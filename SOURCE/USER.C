@@ -1,29 +1,79 @@
 #include"USER.H"
 
-void user_main(int *page,int *ID) {
+void user_main(int *page) {
 	int tag = 0;
+	int click = -1;
+	user_button UserButtons[] = {
+{USER_BIKE_REGISTER_X1, USER_BIKE_REGISTER_X2,
+USER_BIKE_REGISTER_Y1, USER_BIKE_REGISTER_Y2,
+ACTIVE_USER_BIKE_REGISTER,USER_BIKE_REGISTER},
+
+{USER_BIKE_LICENSE_X1, USER_BIKE_LICENSE_X2,
+		USER_BIKE_LICENSE_Y1, USER_BIKE_LICENSE_Y2,
+		ACTIVE_USER_BIKE_LICENSE,USER_BIKE_LICENSE},
+
+{USER_BIKE_ANUAL_X1, USER_BIKE_ANUAL_X2,
+USER_BIKE_ANUAL_Y1, USER_BIKE_ANUAL_Y2,
+ACTIVE_USER_BIKE_ANUAL,USER_BIKE_ANUAL},
+
+{USER_BIKE_WROTEOUT_X1, USER_BIKE_WROTEOUT_X2,
+USER_BIKE_WROTEOUT_Y1, USER_BIKE_WROTEOUT_Y2,
+ACTIVE_USER_BIKE_WROTEOUT,USER_BIKE_WROTEOUT},
+
+{USER_INFO_X1, USER_INFO_X2,
+USER_INFO_Y1, USER_INFO_Y2,
+ACTIVE_USER_INFO,USER_INFO},
+
+{USER_MESSAGE_X1, USER_MESSAGE_X2,
+USER_MESSAGE_Y1, USER_MESSAGE_Y2,
+ACTIVE_USER_MESSAGE,USER_MESSAGE},
+
+{USER_DATAGRAPH_X1, USER_DATAGRAPH_X2,
+USER_DATAGRAPH_Y1, USER_DATAGRAPH_Y2,
+ACTIVE_USER_DATAGRAPH,USER_DATAGRAPH},
+
+{USER_BACK_X1,USER_BACK_X2,USER_BACK_Y1,USER_BACK_Y2,ACTIVE_USER_BACK},
+{USER_EXIT_X1,USER_EXIT_X2,USER_EXIT_Y1,USER_EXIT_Y2,ACTIVE_USER_EXIT},
+};
 	clrmous(MouseX, MouseY);
 	save_bk_mou(MouseX, MouseY);
-	drawgraph_user_main();
+	drawgraph_user_main(page);
 	
 	while (1) {
-		flushUserGraph(&tag,page); // 刷新界面
-		newmouse(&MouseX, &MouseY, &press); // 刷新鼠标
-		if(mouse_press(0,0,640,480) == 1) {
-			*page=EXIT;
-			return;
-		}
-		delay(25); // 50hz刷新率
+			flushUserMain(&tag, STRUCT_LENGTH(UserButtons), UserButtons); // 刷新界面
+			newmouse(&MouseX, &MouseY, &press); // 刷新鼠标
+			click = handle_click_main(STRUCT_LENGTH(UserButtons), UserButtons);
+			if (click!= -1) {
+				*page = click;
+				return;
+			}
+			/*if (mouse_press(USER_BACK_X1, USER_BACK_Y1, USER_BACK_X2, USER_BACK_Y2) == 1) {
+				*page = LOGIN;
+				clrmous(MouseX, MouseY);
+				return;
+			}
+			else if (mouse_press(USER_EXIT_X1, USER_EXIT_Y1, USER_EXIT_X2, USER_EXIT_Y2) == 1) {
+				*page = EXIT;
+				clrmous(MouseX, MouseY);
+				return;
+			}
+			else if (mouse_press(USER_BIKE_REGISTER_X1, USER_BIKE_REGISTER_Y1, USER_BIKE_REGISTER_X2, USER_BIKE_REGISTER_Y2) == 1) {
+				*page = USER_BIKE_REGISTER;
+				//clrmous(MouseX, MouseY);
+				return;
+			}*/
+			delay(25);//
 	}
 }
 
-void drawgraph_user_main() {
+void drawgraph_user_main(int *page) {
 	setrgbpalette(MY_LIGHTBLUE, 12, 158, 245);//浅蓝背景-1
 	setrgbpalette(MY_LIGHTGRAY, 235, 235, 235);//浅灰框-1
 	setrgbpalette(MY_BLACK, 0, 0, 0);//黑色
 	setrgbpalette(MY_YELLOW, 240, 230, 75);//黄色
 	setrgbpalette(MY_RED, 255, 0, 0);//红色
 	setrgbpalette(MY_WHITE, 255, 255, 255);//白色
+	
 
 	setbkcolor(MY_LIGHTBLUE);//主界面
 	setfillstyle(1, 0);
@@ -37,16 +87,19 @@ void drawgraph_user_main() {
 	setfillstyle(1, MY_LIGHTGRAY);//侧框
 	setcolor(MY_LIGHTGRAY);
 	bar(0, 60, 150, 480);
+	setcolor(MY_LIGHTGRAY);
+	setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+	rectangle(151, 61, 639, 479);
 
-	setcolor(MY_WHITE);//功能按钮
-	rectangle(BIKE_REGISTER_X1, BIKE_REGISTER_Y1, BIKE_REGISTER_X2, BIKE_REGISTER_Y2);
-	rectangle(BIKE_LICENSE_X1, BIKE_LICENSE_Y1, BIKE_LICENSE_X2, BIKE_LICENSE_Y2);
-	rectangle(BIKE_ANUAL_X1, BIKE_ANUAL_Y1, BIKE_ANUAL_X2, BIKE_ANUAL_Y2);
-	rectangle(BIKE_WROTEOUT_X1, BIKE_WROTEOUT_Y1, BIKE_WROTEOUT_X2, BIKE_WROTEOUT_Y2);
-	rectangle(BIKE_ANUAL_X1, BIKE_ANUAL_Y1, BIKE_ANUAL_X2, BIKE_ANUAL_Y2);
+	/*setcolor(MY_WHITE);//功能按钮
+	rectangle(USER_BIKE_REGISTER_X1, USER_BIKE_REGISTER_Y1, USER_BIKE_REGISTER_X2, USER_BIKE_REGISTER_Y2);
+	rectangle(USER_BIKE_LICENSE_X1, USER_BIKE_LICENSE_Y1, USER_BIKE_LICENSE_X2, USER_BIKE_LICENSE_Y2);
+	rectangle(USER_BIKE_ANUAL_X1, USER_BIKE_ANUAL_Y1, USER_BIKE_ANUAL_X2, USER_BIKE_ANUAL_Y2);
+	rectangle(USER_BIKE_WROTEOUT_X1, USER_BIKE_WROTEOUT_Y1, USER_BIKE_WROTEOUT_X2, USER_BIKE_WROTEOUT_Y2);
+	rectangle(USER_BIKE_ANUAL_X1, USER_BIKE_ANUAL_Y1, USER_BIKE_ANUAL_X2, USER_BIKE_ANUAL_Y2);
 	rectangle(USER_DATAGRAPH_X1, USER_DATAGRAPH_Y1, USER_DATAGRAPH_X2, USER_DATAGRAPH_Y2);
 	rectangle(USER_INFO_X1, USER_INFO_Y1, USER_INFO_X2, USER_INFO_Y2);
-	rectangle(USER_MESSAGE_X1, USER_MESSAGE_Y1, USER_MESSAGE_X2,USER_MESSAGE_Y2);
+	rectangle(USER_MESSAGE_X1, USER_MESSAGE_Y1, USER_MESSAGE_X2,USER_MESSAGE_Y2);*/
 
 	setfillstyle(1, MY_YELLOW);//返回登录界面
 	setcolor(MY_YELLOW);
@@ -60,130 +113,318 @@ void drawgraph_user_main() {
 	line(USER_EXIT_X1, USER_EXIT_Y1, USER_EXIT_X2-1, USER_EXIT_Y2-1);
 	line(USER_EXIT_X2-1, USER_EXIT_Y1, USER_EXIT_X1, USER_EXIT_Y2-1);
 
-	puthz(BIKE_REGISTER_X1 + 15, (BIKE_REGISTER_Y1 + BIKE_REGISTER_Y2) / 2-5, "电动车注册",24,25,MY_WHITE);
-	puthz(BIKE_ANUAL_X1+ 15, (BIKE_ANUAL_Y1 + BIKE_ANUAL_Y2) / 2-5, "电动车年审", 24, 25, MY_WHITE);
-	puthz(BIKE_LICENSE_X1 + 15, (BIKE_LICENSE_Y1 + BIKE_LICENSE_Y2) / 2-5, "电动车证件", 24, 25, MY_WHITE);
-	puthz(BIKE_WROTEOUT_X1 + 15, (BIKE_WROTEOUT_Y1 + BIKE_WROTEOUT_Y2) / 2 - 5, "电动车报废", 24, 25, MY_WHITE);
+	puthz(USER_BIKE_REGISTER_X1 + 15, (USER_BIKE_REGISTER_Y1 + USER_BIKE_REGISTER_Y2) / 2-5, "电动车登记",24,25,MY_WHITE);
+	puthz(USER_BIKE_ANUAL_X1+ 15, (USER_BIKE_ANUAL_Y1 + USER_BIKE_ANUAL_Y2) / 2-5, "电动车年审", 24, 25, MY_WHITE);
+	puthz(USER_BIKE_LICENSE_X1 + 15, (USER_BIKE_LICENSE_Y1 + USER_BIKE_LICENSE_Y2) / 2-5, "电动车牌照", 24, 25, MY_WHITE);
+	puthz(USER_BIKE_WROTEOUT_X1 + 15, (USER_BIKE_WROTEOUT_Y1 + USER_BIKE_WROTEOUT_Y2) / 2 - 5, "电动车报废", 24, 25, MY_WHITE);
 	puthz(USER_INFO_X1 + 5, (USER_INFO_Y1 + USER_INFO_Y2) / 2 - 5, "用户信息管理", 24, 22, MY_WHITE);
 	puthz(USER_MESSAGE_X1 + 15, (USER_MESSAGE_Y1 + USER_MESSAGE_Y2) / 2 - 5, "信息中心", 24, 25, MY_WHITE);
 	puthz(USER_DATAGRAPH_X1+ 15, (USER_DATAGRAPH_Y1 + USER_DATAGRAPH_Y2) / 2 - 5, "数据可视化", 24, 25, MY_WHITE);
 	puthz(USER_BACK_X1 + 5, (USER_BACK_Y1 + USER_BACK_Y2) / 2 - 10, "返回", 24, 25, MY_WHITE);
+
+	switch (*page) {
+		case USER_BIKE_ANUAL:
+			setcolor(MY_WHITE);
+			setlinestyle(SOLID_LINE, 0, NORM_WIDTH);
+			setfillstyle(1, MY_WHITE);
+			bar(USER_BIKE_ANUAL_X1, USER_BIKE_ANUAL_Y1, USER_BIKE_ANUAL_X2, USER_BIKE_ANUAL_Y2);
+			puthz(USER_BIKE_ANUAL_X1 + 15, (USER_BIKE_ANUAL_Y1 + USER_BIKE_ANUAL_Y2) / 2 - 5, "电动车年审", 24, 25, MY_BLACK);
+			break;
+		case USER_BIKE_LICENSE:
+			setcolor(MY_WHITE);
+			setlinestyle(SOLID_LINE, 0, NORM_WIDTH);
+			setfillstyle(1, MY_WHITE);
+			bar(USER_BIKE_LICENSE_X1, USER_BIKE_LICENSE_Y1, USER_BIKE_LICENSE_X2, USER_BIKE_LICENSE_Y2);
+			puthz(USER_BIKE_LICENSE_X1 + 15, (USER_BIKE_LICENSE_Y1 + USER_BIKE_LICENSE_Y2) / 2 - 5, "电动车通行证", 24, 25, MY_BLACK);
+			break;
+		case USER_BIKE_REGISTER:
+			setcolor(MY_WHITE);
+			setlinestyle(SOLID_LINE, 0, NORM_WIDTH);
+			setfillstyle(1, MY_WHITE);
+			bar(USER_BIKE_REGISTER_X1, USER_BIKE_REGISTER_Y1, USER_BIKE_REGISTER_X2, USER_BIKE_REGISTER_Y2);
+			puthz(USER_BIKE_REGISTER_X1 + 15, (USER_BIKE_REGISTER_Y1 + USER_BIKE_REGISTER_Y2) / 2 - 5, "电动车登记", 24, 25, MY_BLACK);
+			break;
+		case USER_BIKE_WROTEOUT:
+			setcolor(MY_WHITE);
+			setlinestyle(SOLID_LINE, 0, NORM_WIDTH);
+			setfillstyle(1, MY_WHITE);
+			bar(USER_BIKE_WROTEOUT_X1, USER_BIKE_WROTEOUT_Y1, USER_BIKE_WROTEOUT_X2, USER_BIKE_WROTEOUT_Y2);
+			puthz(USER_BIKE_WROTEOUT_X1 + 15, (USER_BIKE_WROTEOUT_Y1 + USER_BIKE_WROTEOUT_Y2) / 2 - 5, "电动车报废", 24, 25, MY_BLACK);
+			break;
+		case USER_DATAGRAPH:
+			setcolor(MY_WHITE);
+			setlinestyle(SOLID_LINE, 0, NORM_WIDTH);
+			setfillstyle(1, MY_WHITE);
+			bar(USER_DATAGRAPH_X1, USER_DATAGRAPH_Y1, USER_DATAGRAPH_X2, USER_DATAGRAPH_Y2);
+			puthz(USER_DATAGRAPH_X1 + 15, (USER_DATAGRAPH_Y1 + USER_DATAGRAPH_Y2) / 2 - 5, "数据可视化", 24, 25, MY_BLACK);
+			break;
+		case USER_INFO:
+			setcolor(MY_WHITE);
+			setlinestyle(SOLID_LINE, 0, NORM_WIDTH);
+			setfillstyle(1, MY_WHITE);
+			bar(USER_INFO_X1, USER_INFO_Y1, USER_INFO_X2, USER_INFO_Y2);
+			puthz(USER_INFO_X1 + 15, (USER_INFO_Y1 + USER_INFO_Y2) / 2 - 5, "用户信息管理", 24, 25, MY_BLACK);
+			break;
+		case USER_MESSAGE:
+			setcolor(MY_WHITE);
+			setlinestyle(SOLID_LINE, 0, NORM_WIDTH);
+			setfillstyle(1, MY_WHITE);
+			bar(USER_MESSAGE_X1, USER_MESSAGE_Y1, USER_MESSAGE_X2, USER_MESSAGE_Y2);
+			puthz(USER_MESSAGE_X1 + 15, (USER_MESSAGE_Y1 + USER_MESSAGE_Y2) / 2 - 5, "消息中心", 24, 25, MY_WHITE);
+			break;
+
+	}
+	
+	
 }
-void flushUserGraph(int *tag,int *page) {
-	if ((MouseX >= BIKE_ANUAL_X1 && MouseX <= BIKE_ANUAL_X2 && MouseY >= BIKE_ANUAL_Y1 && MouseY <= BIKE_ANUAL_Y2) ||
-		(MouseX >= BIKE_LICENSE_X1 && MouseX <= BIKE_LICENSE_X2 && MouseY >=BIKE_LICENSE_Y1 && MouseY <= BIKE_LICENSE_Y2)||
-		(MouseX >= BIKE_REGISTER_X1 && MouseX <= BIKE_REGISTER_X2 && MouseY >= BIKE_REGISTER_Y1 && MouseY <= BIKE_REGISTER_Y2)||
-		(MouseX >= BIKE_WROTEOUT_X1 && MouseX <= BIKE_WROTEOUT_X2 && MouseY >= BIKE_WROTEOUT_Y1 && MouseY <= BIKE_WROTEOUT_Y2)||
-		(MouseX >= USER_DATAGRAPH_X1 && MouseX <= USER_DATAGRAPH_X2 && MouseY >=USER_DATAGRAPH_Y1 && MouseY <= USER_DATAGRAPH_Y2) ||
-		(MouseX >= USER_INFO_X1 && MouseX <= USER_INFO_X2 && MouseY >= USER_INFO_Y1 && MouseY <= USER_INFO_Y2) ||
-		(MouseX >= USER_MESSAGE_X1 && MouseX <= USER_MESSAGE_X2 && MouseY >=USER_INFO_Y1 && MouseY <= USER_INFO_Y2) ||
-		(MouseX >= USER_BACK_X1 && MouseX <= USER_BACK_X2 && MouseY >= USER_BACK_Y1 && MouseY <= USER_BACK_Y2) ||
-		(MouseX >= USER_EXIT_X1 && MouseX <= USER_EXIT_X2 && MouseY >= USER_EXIT_Y1 && MouseY <= USER_EXIT_Y2))
-		MouseS = 1; // 假设设置为手形图标
-	else
-	    MouseS = 0; // 恢复默认箭头
 
+//刷新画面与鼠标激活状态
+void flushUserMain(int *tag,int button_count,user_button UserButtons[]) { 
+	int i = 0;
+	int temp = 0;
+	int new_tag = ACTIVE_USER_NONE;
+	
+	
+	
+for (i = 0; i < button_count; i++) {
+	if (MouseX >= UserButtons[i].x1 && MouseX <= UserButtons[i].x2 &&
+		MouseY >= UserButtons[i].y1 && MouseY <= UserButtons[i].y2) {
+		new_tag = UserButtons[i].active_tag;
+		temp = i; 
+		break;
+	}
+}
 
-	//恢复未激活状态
-	if ((MouseX < BIKE_REGISTER_X1 || MouseX > BIKE_REGISTER_X2 || MouseY < BIKE_REGISTER_Y1 || MouseY > BIKE_REGISTER_Y2) && (*tag == ACTIVE_BIKE_REGISTER)) {
-		*tag = ACTIVE_NONE;
+if (*tag != new_tag) {
+	*tag = new_tag;
+	if (new_tag != ACTIVE_USER_NONE && new_tag<=ACTIVE_USER_DATAGRAPH) {
+		setfillstyle(1,MY_WHITE);
 		setcolor(MY_WHITE);
-		setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
-		rectangle(BIKE_REGISTER_X1, BIKE_REGISTER_Y1, BIKE_REGISTER_X2, BIKE_REGISTER_Y2);
+		setlinestyle(SOLID_LINE,0,THICK_WIDTH);
+		rectangle(UserButtons[temp].x1, UserButtons[temp].y1, UserButtons[temp].x2, UserButtons[temp].y2);
+		MouseS = 1;
 	}
+	else if (new_tag == ACTIVE_USER_EXIT) {
+		/*setcolor(MY_RED);
+		setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+		setfillstyle(1, MY_RED);
+		bar(0, 0, 80, 60);
+		puthz(5, 25, "退出程序", 16, 20,MY_WHITE);;*/
+		MouseS = 1;
+	}
+	else if (new_tag == ACTIVE_USER_BACK) {
+		setcolor(MY_RED);
+		setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+		setfillstyle(1, MY_RED);
+		bar(USER_BACK_X1, USER_BACK_Y1, USER_BACK_X2, USER_BACK_Y2);
+		puthz(USER_BACK_X1 + 5, (USER_BACK_Y1 + USER_BACK_Y2) / 2 - 10, "返回", 24, 25, MY_WHITE);
+		MouseS = 1;
+	}
+	else {
+		// 清除提示
+		setcolor(MY_LIGHTGRAY);
+		setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+		for (i = 0; i < button_count-2; i++) {
+			rectangle(UserButtons[i].x1, UserButtons[i].y1, UserButtons[i].x2, UserButtons[i].y2);
+		}
 
-	if ((MouseX < BIKE_LICENSE_X1 || MouseX > BIKE_LICENSE_X2 || MouseY < BIKE_LICENSE_Y1 || MouseY > BIKE_LICENSE_Y2) && (*tag == ACTIVE_BIKE_LICENSE)) {
-		*tag = ACTIVE_NONE;
+		/*setcolor(MY_LIGHTBLUE); //恢复退出红叉
+		setlinestyle(SOLID_LINE, 0, NORM_WIDTH);
+		setfillstyle(1, MY_LIGHTBLUE);
+		bar(0, 0, 79, 59);
+		setcolor(MY_RED);
+		setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+		setfillstyle(1, MY_RED);
+		bar(USER_EXIT_X1, USER_EXIT_Y1, USER_EXIT_X2, USER_EXIT_Y2);
 		setcolor(MY_WHITE);
-		setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
-		rectangle(BIKE_LICENSE_X1, BIKE_LICENSE_Y1, BIKE_LICENSE_X2, BIKE_LICENSE_Y2);
+		line(USER_EXIT_X1, USER_EXIT_Y1, USER_EXIT_X2 - 1, USER_EXIT_Y2 - 1);
+		line(USER_EXIT_X2 - 1, USER_EXIT_Y1, USER_EXIT_X1, USER_EXIT_Y2 - 1);*/
+
+		setfillstyle(1, MY_YELLOW);//恢复“返回登录”
+		setcolor(MY_YELLOW);
+		bar(USER_BACK_X1, USER_BACK_Y1, USER_BACK_X2, USER_BACK_Y2);
+		puthz(USER_BACK_X1 + 5, (USER_BACK_Y1 + USER_BACK_Y2) / 2 - 10, "返回", 24, 25, MY_WHITE);
+
+		MouseS = 0;
 	}
+}
+}
 
-	if ((MouseX < BIKE_ANUAL_X1 || MouseX > BIKE_ANUAL_X2 || MouseY < BIKE_ANUAL_Y1 || MouseY > BIKE_ANUAL_Y2) && (*tag == ACTIVE_BIKE_ANUAL)) {
-		*tag = ACTIVE_NONE;
-		setcolor(MY_WHITE);
-		setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
-		rectangle(BIKE_ANUAL_X1, BIKE_ANUAL_Y1, BIKE_ANUAL_X2, BIKE_ANUAL_Y2);
+int handle_click_main(int button_num, user_button UserButtons[]){
+	int i = 0;
+	for (i = 0; i < button_num; i++) {
+		if (mouse_press(UserButtons[i].x1, UserButtons[i].y1, UserButtons[i].x2, UserButtons[i].y2) == 1) 
+			return UserButtons[i].page;
+	}	
+	return -1;
+}
+
+
+
+
+
+
+void user_bike_register(int *page,int *id)
+{
+	int tag = 0;
+	int click = -1;
+	int new_user = 0;
+	char usrn[13] = { 0 }; // 初始化为空
+	char e_bike_id[13] = { 0 };
+	user_button UserButtons[] = {
+{USER_BIKE_REGISTER_X1, USER_BIKE_REGISTER_X2,
+USER_BIKE_REGISTER_Y1, USER_BIKE_REGISTER_Y2,
+ACTIVE_USER_BIKE_REGISTER},
+
+{USER_BIKE_LICENSE_X1, USER_BIKE_LICENSE_X2,
+		USER_BIKE_LICENSE_Y1, USER_BIKE_LICENSE_Y2,
+		ACTIVE_USER_BIKE_LICENSE},
+
+{USER_BIKE_ANUAL_X1, USER_BIKE_ANUAL_X2,
+USER_BIKE_ANUAL_Y1, USER_BIKE_ANUAL_Y2,
+ACTIVE_USER_BIKE_ANUAL},
+
+{USER_BIKE_WROTEOUT_X1, USER_BIKE_WROTEOUT_X2,
+USER_BIKE_WROTEOUT_Y1, USER_BIKE_WROTEOUT_Y2,
+ACTIVE_USER_BIKE_WROTEOUT},
+
+{USER_INFO_X1, USER_INFO_X2,
+USER_INFO_Y1, USER_INFO_Y2,
+ACTIVE_USER_INFO},
+
+{USER_MESSAGE_X1, USER_MESSAGE_X2,
+USER_MESSAGE_Y1, USER_MESSAGE_Y2,
+ACTIVE_USER_MESSAGE},
+
+{USER_DATAGRAPH_X1, USER_DATAGRAPH_X2,
+USER_DATAGRAPH_Y1, USER_DATAGRAPH_Y2,
+ACTIVE_USER_DATAGRAPH},
+
+{USER_BACK_X1,USER_BACK_X2,USER_BACK_Y1,USER_BACK_Y2,ACTIVE_USER_BACK},
+{USER_EXIT_X1,USER_EXIT_X2,USER_EXIT_Y1,USER_EXIT_Y2,ACTIVE_USER_EXIT},
+	};
+	clrmous(MouseX, MouseY);
+	save_bk_mou(MouseX, MouseY);
+	drawgraph_user_main(page);
+	drawgraph_user_bike_register();
+	while (*page == USER_BIKE_REGISTER) {
+		flushUserMain(&tag, STRUCT_LENGTH(UserButtons), UserButtons); // 刷新界面
+		//flushUserRegister(&tag, STRUCT_LENGTH(UserButtons), UserButtons);
+		newmouse(&MouseX, &MouseY, &press);// 刷新鼠标
+		click = handle_click_main(STRUCT_LENGTH(UserButtons), UserButtons);
+		if (click != -1&&click !=ACTIVE_USER_BIKE_REGISTER) {
+			*page = click;
+			return;
+		}
+		if (mouse_press(USER_BIKE_REGISTER_INPUT1_X1, USER_BIKE_REGISTER_INPUT1_Y1, USER_BIKE_REGISTER_INPUT1_X2, USER_BIKE_REGISTER_INPUT1_Y2) == 1&&new_user==1) {
+			Input_Bar(usrn, USER_BIKE_REGISTER_INPUT1_X1, USER_BIKE_REGISTER_INPUT1_Y1 + 5, 13, MY_WHITE, 0, 1);
+		}
+		if (mouse_press(USER_BIKE_REGISTER_INPUT2_X1, USER_BIKE_REGISTER_INPUT2_Y1, USER_BIKE_REGISTER_INPUT2_X2, USER_BIKE_REGISTER_INPUT2_Y2) == 1 && new_user == 1) {
+			Input_Bar(e_bike_id, USER_BIKE_REGISTER_INPUT2_X1, USER_BIKE_REGISTER_INPUT2_Y1 + 5, 13, MY_WHITE, 0, 1);
+		}
+		if (mouse_press(USER_BIKE_REGISTER_BUTTON1_X1, USER_BIKE_REGISTER_BUTTON1_Y1, USER_BIKE_REGISTER_BUTTON1_X2, USER_BIKE_REGISTER_BUTTON1_Y2) == 1 && new_user ==1 &&judge_e_bike_id(*id)) {
+			anime_login_success_user();
+			setfillstyle(SOLID_FILL, MY_WHITE);
+			bar(60, 150, 640, 480);
+			puthz(280, 300, "您已登记成功，请等待审核", 24, 30);
+			delay(5000);
+			Input_Bar(NULL, NULL, NULL, NULL, NULL, 1, NULL);
+			*page = MAIN_USER;
+			return;
+		}
+		
+		delay(25); // 50hz刷新率
 	}
+}
 
-	if ((MouseX < BIKE_WROTEOUT_X1 || MouseX > BIKE_WROTEOUT_X2 || MouseY < BIKE_WROTEOUT_Y1 || MouseY > BIKE_WROTEOUT_Y2) && (*tag == ACTIVE_BIKE_WROTEOUT)) {
-		*tag = ACTIVE_NONE;
-		setcolor(MY_WHITE);
-		rectangle(BIKE_WROTEOUT_X1, BIKE_WROTEOUT_Y1, BIKE_WROTEOUT_X2, BIKE_WROTEOUT_Y2);
-		setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+void anime_login_success_user() {
+	int blinkTick = 0;
+	clrmous(MouseX, MouseY);
+
+	setfillstyle(SOLID_FILL, MY_LIGHTBLUE);
+	bar(120, 395, 520, 430); //覆盖原有的错误提示
+
+	setcolor(LIGHTGREEN);
+	rectangle(USER_BIKE_REGISTER_INPUT1_X1 + 2, USER_BIKE_REGISTER_INPUT1_Y1 + 2, USER_BIKE_REGISTER_INPUT1_X2 - 2, USER_BIKE_REGISTER_INPUT1_Y2 - 2);
+	rectangle(USER_BIKE_REGISTER_INPUT2_X1 + 2, USER_BIKE_REGISTER_INPUT2_Y1 + 2, USER_BIKE_REGISTER_INPUT1_X2 - 2, USER_BIKE_REGISTER_INPUT1_Y2 - 2);
+
+	while (blinkTick < 100) {
+		if (blinkTick % 20 == 0 && blinkTick % 40 != 0) {
+			setfillstyle(SOLID_FILL, MY_GREEN);
+			bar(USER_BIKE_REGISTER_BUTTON1_X1, USER_BIKE_REGISTER_BUTTON1_Y1, USER_BIKE_REGISTER_BUTTON1_X2, USER_BIKE_REGISTER_BUTTON1_Y2);
+			puthz(USER_BIKE_REGISTER_BUTTON1_X1 + 7, USER_BIKE_REGISTER_BUTTON1_Y1 + 10, "登记成功", 24, 20, MY_WHITE);
+		}
+		else if (blinkTick % 40 == 0) {
+			setfillstyle(SOLID_FILL, MY_LIGHTBLUE);
+			bar(USER_BIKE_REGISTER_BUTTON1_X1, USER_BIKE_REGISTER_BUTTON1_Y1, USER_BIKE_REGISTER_BUTTON1_X2, USER_BIKE_REGISTER_BUTTON1_Y2);
+			puthz(USER_BIKE_REGISTER_BUTTON1_X1 + 7, USER_BIKE_REGISTER_BUTTON1_Y1 + 10, "登记成功", 24, 20, MY_WHITE);
+		}
+		blinkTick++;
+		delay(25);
 	}
-
-	if ((MouseX < USER_INFO_X1 || MouseX > USER_INFO_X2 || MouseY < USER_INFO_Y1 || MouseY > USER_INFO_Y2) && (*tag == ACTIVE_USER_INFO)) {
-		*tag = ACTIVE_NONE;
-		setcolor(MY_WHITE);
-		setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
-		rectangle(USER_INFO_X1, USER_INFO_Y1, USER_INFO_X2, USER_INFO_Y2);
-	}
-
-	if ((MouseX < USER_MESSAGE_X1 || MouseX > USER_MESSAGE_X2 || MouseY < USER_MESSAGE_Y1 || MouseY > USER_MESSAGE_Y2) && (*tag == ACTIVE_USER_MESSAGE)) {
-		*tag = ACTIVE_NONE;
-		setcolor(MY_WHITE);
-		setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
-		rectangle(USER_MESSAGE_X1, USER_MESSAGE_Y1, USER_MESSAGE_X2, USER_MESSAGE_Y2);
-	}
-
-	if ((MouseX < USER_DATAGRAPH_X1 || MouseX > USER_DATAGRAPH_X2 || MouseY < USER_DATAGRAPH_Y1 || MouseY > USER_DATAGRAPH_Y2) && (*tag == ACTIVE_USER_DATAGRAPH)) {
-		*tag = ACTIVE_NONE;
-		setcolor(MY_WHITE);
-		setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
-		rectangle(USER_DATAGRAPH_X1, USER_DATAGRAPH_Y1, USER_DATAGRAPH_X2, USER_DATAGRAPH_Y2);
-	}
+}
+int user_judge(int* id) {
+	return 1;
+}
 
 
+void drawgraph_user_bike_register() {
+	
+	puthz(260, 80, "电动车登记", 32,40, MY_BLACK);
+	setcolor(MY_BLACK);
+	setlinestyle(SOLID_LINE, 0, NORM_WIDTH);
+	setfillstyle(SOLID_FILL, MY_BLACK);
+	bar(151, 120, 640, 123);
+	setcolor(MY_LIGHTGRAY);
+	setlinestyle(SOLID_LINE, 0, NORM_WIDTH);
+	rectangle(USER_BIKE_REGISTER_INPUT1_X1, USER_BIKE_REGISTER_INPUT1_Y1, USER_BIKE_REGISTER_INPUT1_X2, USER_BIKE_REGISTER_INPUT1_Y2);
+	rectangle(USER_BIKE_REGISTER_INPUT2_X1, USER_BIKE_REGISTER_INPUT2_Y1, USER_BIKE_REGISTER_INPUT2_X2, USER_BIKE_REGISTER_INPUT2_Y2);
 
-	//激活
-	if (MouseX >= BIKE_REGISTER_X1 && MouseX <= BIKE_REGISTER_X2 && MouseY >= BIKE_REGISTER_Y1 && MouseY <= BIKE_REGISTER_Y2) {
-		*tag = ACTIVE_BIKE_REGISTER;
-		setcolor(MY_BLACK);
-		setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
-		rectangle(BIKE_REGISTER_X1, BIKE_REGISTER_Y1, BIKE_REGISTER_X2, BIKE_REGISTER_Y2);
-	}
+	puthz(170, 170, "姓名",24,20,MY_BLACK);
+	puthz(170, 235, "学号",24,20,MY_BLACK);
 
-	if (MouseX >= BIKE_LICENSE_X1 && MouseX <= BIKE_LICENSE_X2 && MouseY >= BIKE_LICENSE_Y1 && MouseY <= BIKE_LICENSE_Y2) {
-		*tag = ACTIVE_BIKE_LICENSE;
-		setcolor(MY_BLACK);
-		setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
-		rectangle(BIKE_LICENSE_X1, BIKE_LICENSE_Y1, BIKE_LICENSE_X2, BIKE_LICENSE_Y2);
-	}
+	setcolor(MY_RED);
+	setlinestyle(SOLID_LINE, 0, NORM_WIDTH);
+	setfillstyle(SOLID_FILL, MY_RED);
+	bar(USER_BIKE_REGISTER_BUTTON1_X1, USER_BIKE_REGISTER_BUTTON1_Y1, USER_BIKE_REGISTER_BUTTON1_X2, USER_BIKE_REGISTER_BUTTON1_Y2);
+	bar(USER_BIKE_REGISTER_BUTTON2_X1, USER_BIKE_REGISTER_BUTTON2_Y1, USER_BIKE_REGISTER_BUTTON2_X2, USER_BIKE_REGISTER_BUTTON2_Y2);
+	puthz(USER_BIKE_REGISTER_BUTTON1_X1 + 10, USER_BIKE_REGISTER_BUTTON1_Y1 + 10, "登记", 24, 30, MY_WHITE);
+	puthz(USER_BIKE_REGISTER_BUTTON2_X1 + 10, USER_BIKE_REGISTER_BUTTON2_Y1 + 10, "修改", 24, 30, MY_WHITE);
 
-	if (MouseX >= BIKE_ANUAL_X1 && MouseX <= BIKE_ANUAL_X2 && MouseY >= BIKE_ANUAL_Y1 && MouseY <= BIKE_ANUAL_Y2) {
-		*tag = ACTIVE_BIKE_ANUAL;
-		setcolor(MY_BLACK);
-		setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
-		rectangle(BIKE_ANUAL_X1, BIKE_ANUAL_Y1, BIKE_ANUAL_X2, BIKE_ANUAL_Y2);
-	}
+	puthz(170, 290, "电动车座位数", 24, 20, MY_BLACK);
+	puthz(170, 340, "电动车品牌", 24, 20, MY_BLACK);
+	puthz(400, 290, "电动车购买时间", 24, 20, MY_BLACK);
+	puthz(400, 340, "登记情况", 24, 20, MY_BLACK);
+	puthz(400, 380, "未登记", 24, 20, MY_BLACK);
+}
 
-	if (MouseX >= BIKE_WROTEOUT_X1 && MouseX <= BIKE_WROTEOUT_X2 && MouseY >= BIKE_WROTEOUT_Y1 && MouseY <= BIKE_WROTEOUT_Y2) {
-		*tag = ACTIVE_BIKE_WROTEOUT;
-		setcolor(MY_BLACK);
-		setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
-		rectangle(BIKE_WROTEOUT_X1, BIKE_WROTEOUT_Y1, BIKE_WROTEOUT_X2, BIKE_WROTEOUT_Y2);
-	}
+void user_bike_license()
+{
+	
+}
 
-	if (MouseX >= USER_INFO_X1 && MouseX <= USER_INFO_X2 && MouseY >= USER_INFO_Y1 && MouseY <= USER_INFO_Y2) {
-		*tag = ACTIVE_USER_INFO;
-		setcolor(MY_BLACK);
-		setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
-		rectangle(USER_INFO_X1, USER_INFO_Y1, USER_INFO_X2, USER_INFO_Y2);
-	}
+void user_bike_anual()
+{
 
-	if (MouseX >= USER_MESSAGE_X1 && MouseX <= USER_MESSAGE_X2 && MouseY >= USER_MESSAGE_Y1 && MouseY <= USER_MESSAGE_Y2) {
-		*tag = ACTIVE_USER_MESSAGE;
-		setcolor(MY_BLACK);
-		setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
-		rectangle(USER_MESSAGE_X1, USER_MESSAGE_Y1, USER_MESSAGE_X2, USER_MESSAGE_Y2);
-	}
+}
 
-	if (MouseX >= USER_DATAGRAPH_X1 && MouseX <= USER_DATAGRAPH_X2 && MouseY >= USER_DATAGRAPH_Y1 && MouseY <= USER_DATAGRAPH_Y2) {
-		*tag = ACTIVE_USER_DATAGRAPH;
-		setcolor(MY_BLACK);
-		setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
-		rectangle(USER_DATAGRAPH_X1, USER_DATAGRAPH_Y1, USER_DATAGRAPH_X2, USER_DATAGRAPH_Y2);
-	}
+void user_bike_wroteout()
+{
+
+}
+
+void user_info()
+{
+	
+}
+
+void user_message()
+{
+	
+}
+
+void user_datagraph()
+{
+
 }
 

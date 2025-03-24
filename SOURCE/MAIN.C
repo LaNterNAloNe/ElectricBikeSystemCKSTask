@@ -30,8 +30,15 @@ int main(void){
             
             // USER_MAIN_GRAPH.C
             case MAIN_USER:
+<<<<<<< HEAD
                 user_main(&page,&ID);
                 break;
+=======
+                user_main(&page,&ID);break;
+            case USER_BIKE_REGISTER:
+                user_main();
+                user_bike_register(&page, &ID); break;
+>>>>>>> 274baf7773d8420b3bc8f9a488b37ebbe9d1877f
 
             //ADMIN_MAIN_GRAPH.C
             case MAIN_ADMIN:
