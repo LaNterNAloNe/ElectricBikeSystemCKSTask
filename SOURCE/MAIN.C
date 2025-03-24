@@ -1,7 +1,7 @@
 #include"GLOBAL.H"
 
 int main(void){
-    int page=LOGIN; // 主页面
+    int page=MAIN_USER; // 主页面
     // int page=NULL; // 副页面
     int ID=-1;//记录登录用户的ID
     int driver=VGA,mode=VGAHI;
@@ -30,9 +30,8 @@ int main(void){
             
             // USER_MAIN_GRAPH.C
             case MAIN_USER:
-                user_main(&page,&ID);break;
+                user_main(&page);break;
             case USER_BIKE_REGISTER:
-                user_main();
                 user_bike_register(&page, &ID); break;
 
             //ADMIN_MAIN_GRAPH.C

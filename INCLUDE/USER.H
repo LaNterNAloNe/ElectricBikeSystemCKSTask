@@ -67,8 +67,8 @@
 #define USER_BIKE_REGISTER_INPUT1_Y2 195
 #define USER_BIKE_REGISTER_INPUT2_X1 250
 #define USER_BIKE_REGISTER_INPUT2_X2 600
-#define USER_BIKE_REGISTER_INPUT2_Y1 220
-#define USER_BIKE_REGISTER_INPUT2_Y2 255
+#define USER_BIKE_REGISTER_INPUT2_Y1 225
+#define USER_BIKE_REGISTER_INPUT2_Y2 260
 #define USER_BIKE_REGISTER_INPUT3_X1 250
 #define USER_BIKE_REGISTER_INPUT3_X2 600
 #define USER_BIKE_REGISTER_INPUT3_Y1 160
@@ -113,8 +113,8 @@ void user_main(int *page);
 void drawgraph_user_main(int *page);
 void flushUserMain(int* tag, int button_count, user_button UserButtons[]);
 void user_bike_register(int* page, int* id);
-void drawgraph_user_bike_register();
-int user_judge(int* id);
+void drawgraph_user_bike_register(void);
+int ebike_register_judge(char *usrn,char *e_bike_id,int *ID);
 
 void user_bike_anual();
 void user_bike_wroteout();
