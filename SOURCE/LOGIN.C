@@ -15,7 +15,7 @@ void login(int *page, int *ID) {
 	if(debug_mode == 1) display_memory_usage(400, 10); // 左上角显示 
 
     while (1) {
-		//flushLoginGraph(&tag,page); // 刷新界面
+		flushLoginGraph(&tag,page); // 刷新界面
 		newmouse(&MouseX, &MouseY, &press); // 刷新鼠标
 
         // 处理鼠标点击事件
@@ -138,7 +138,7 @@ void login_admin(int* page,int *uid) {
 	if(debug_mode == 1) display_memory_usage(400, 10); // 左上角显示 
 
 	while (1) {
-		//flushLoginGraph(&tag,page); // 刷新界面
+		flushLoginGraph(&tag,page); // 刷新界面
 		newmouse(&MouseX, &MouseY, &press); // 刷新鼠标
 
 		// 处理鼠标点击事件
@@ -261,7 +261,7 @@ void _register(int* page) {
 	if(debug_mode == 1) display_memory_usage(400, 10); // 左上角显示 
 	
 	while (1) {
-		//flushLoginGraph(&tag,page); // 刷新界面
+		flushLoginGraph(&tag,page); // 刷新界面
 		newmouse(&MouseX, &MouseY, &press); // 刷新鼠标
 
 		// 处理鼠标点击事件

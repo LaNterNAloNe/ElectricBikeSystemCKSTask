@@ -117,6 +117,12 @@ void handle_click_event_admin_main(int *page){
         *page = ADMIN_BIKE_REGISTER;
         return;
     }
+    /*车辆上牌*/
+    if (mouse_press(ADMIN_BUTTON2_X1, ADMIN_BUTTON2_Y1, ADMIN_BUTTON2_X2, ADMIN_BUTTON2_Y2) == 1 &&
+        *page != ADMIN_BIKE_LICENSE){
+        *page = ADMIN_BIKE_LICENSE;
+        return;
+    }
 }
 
 
@@ -126,9 +132,10 @@ MODULE:管理员车辆注册
 *****************************************************************/
 void admin_bike_register(int *page, int *ID, LINKLIST *LIST)
 {
-    static int mode=0; // 搜索模式，列出已处理清单或待处理清单，主动清除该页面时重设为0（默认列出待处理清单）
-    static int visited=0; // 是否进入乐该页面，主动清除该页面时重设为0
+    int mode=0; // 搜索模式，列出已处理清单或待处理清单，主动清除该页面时重设为0（默认列出待处理清单）
+    // static int visited=0; // 是否进入乐该页面，主动清除该页面时重设为0
     char search_str[10]; // 搜索框输入信息储存
+    int selected_id = -1;
     int id_list[8];
     int tag=ACTIVE_ADMIN_NULL;
     ADMIN_BUTTONS AdminButtons[15]={
@@ -185,18 +192,15 @@ void admin_bike_register(int *page, int *ID, LINKLIST *LIST)
     drawgraph_admin_menu();
     drawgraph_admin_bike_register();
 
-    
-    if(visited == 1) 
-        list_search_register_request(id_list,fp_EBIKE_REGISTER_read,mode,0,0,"\0","\0");
-    else
-        list_search_register_request(id_list,fp_EBIKE_REGISTER_read,mode,1,0,"\0","\0");
+    // 列出数据
+    list_search_register_request(id_list,fp_EBIKE_REGISTER_read,mode,1,0,"\0","\0");
 
     if(debug_mode == 1) display_memory_usage(400, 10); // 左上角显示 
 
     while(*page == ADMIN_BIKE_REGISTER){
         admin_flush_graph(&tag,STRUCT_LENGTH(AdminButtons),AdminButtons);
         handle_click_event_admin_main(page);
-        handle_select_line_admin_register(page);
+        selected_id = handle_select_line_admin_register(page);
         newmouse(&MouseX,&MouseY,&press);
 
         if (mouse_press(ADMIN_FEATURE_EXIT_X1,ADMIN_FEATURE_EXIT_Y1,ADMIN_FEATURE_EXIT_X2,ADMIN_FEATURE_EXIT_Y2) == 1) {
@@ -209,14 +213,32 @@ void admin_bike_register(int *page, int *ID, LINKLIST *LIST)
             list_search_register_request(id_list,fp_EBIKE_REGISTER_read,mode,1,0,search_str,"ID");
         } // 点击输入框后退回
 
+        if (mouse_press(ADMIN_FEATURE3_X1, ADMIN_FEATURE3_Y1, ADMIN_FEATURE3_X2, ADMIN_FEATURE3_Y2) == 1 &&
+            mode == 0)
+        {
+            mode = 1;
+            setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
+            bar(ADMIN_INTERFACE_X1 + 140, ADMIN_INTERFACE_Y1 + 10, ADMIN_INTERFACE_X1 + 230, ADMIN_INTERFACE_Y1 + 30);
+            puthz(ADMIN_INTERFACE_X1 + 140, ADMIN_INTERFACE_Y1 + 10, "已处理项目", 16, 16, MY_WHITE);
+            list_search_register_request(id_list, fp_EBIKE_REGISTER_read, mode, 1, 2, search_str, "ID");
+        } // 点击已处理后显示已处理
+
+        if (mouse_press(ADMIN_FEATURE4_X1, ADMIN_FEATURE4_Y1, ADMIN_FEATURE4_X2, ADMIN_FEATURE4_Y2) == 1 &&
+            mode == 1)
+        {
+            mode = 0;
+            setfillstyle(SOLID_FILL,MY_LIGHTGRAY);
+            bar(ADMIN_INTERFACE_X1 + 140, ADMIN_INTERFACE_Y1 + 10, ADMIN_INTERFACE_X1 + 230, ADMIN_INTERFACE_Y1 + 30);
+            puthz(ADMIN_INTERFACE_X1 + 140, ADMIN_INTERFACE_Y1 + 10, "未处理项目", 16, 16, MY_WHITE);
+            list_search_register_request(id_list, fp_EBIKE_REGISTER_read, mode, 1, 2, search_str, "ID");
+        } // 点击未处理后显示未处理
+
         delay(25);
     }
 
-    list_search_register_request(NULL,NULL,NULL,NULL,1,NULL,NULL);
     fclose(fp_EBIKE_REGISTER_read);
+    list_search_register_request(NULL, NULL, NULL, NULL, 1, NULL, NULL);
     Input_Bar(NULL, NULL, NULL, NULL, NULL,1,NULL);
-    visited = 0;
-    mode = 0;
     return;
 }
 
@@ -242,6 +264,12 @@ void drawgraph_admin_bike_register(){
     puthz(ADMIN_FEATURE2_X1+4,ADMIN_FEATURE2_Y1+8,"驳回申请",16,16,MY_WHITE);
     puthz(ADMIN_FEATURE3_X1+4,ADMIN_FEATURE3_Y1+8,"已处理",16,16,MY_WHITE);
     puthz(ADMIN_FEATURE4_X1+4,ADMIN_FEATURE4_Y1+8,"待处理",16,16,MY_WHITE);
+    setcolor(BLACK);
+    setlinestyle(SOLID_LINE,0,THICK_WIDTH);
+    line(ADMIN_FEATURE_UP_X1, ADMIN_FEATURE_UP_Y1 + 10, ADMIN_FEATURE_UP_X2, ADMIN_FEATURE_UP_Y1);
+    line(ADMIN_FEATURE_UP_X1, ADMIN_FEATURE_UP_Y1 + 10, ADMIN_FEATURE_UP_X2, ADMIN_FEATURE_UP_Y2); // 切换页面 <
+    line(ADMIN_FEATURE_DOWN_X2, ADMIN_FEATURE_DOWN_Y1 + 10, ADMIN_FEATURE_DOWN_X1, ADMIN_FEATURE_DOWN_Y1);
+    line(ADMIN_FEATURE_DOWN_X2, ADMIN_FEATURE_DOWN_Y1 + 10, ADMIN_FEATURE_DOWN_X1, ADMIN_FEATURE_DOWN_Y2); // 切换页面 >
 
     setfillstyle(SOLID_FILL,MY_LIGHTGRAY);
     bar(ADMIN_FEATURE_SEARCH_X1,ADMIN_FEATURE_SEARCH_Y1,ADMIN_FEATURE_SEARCH_X2,ADMIN_FEATURE_SEARCH_Y2);
@@ -420,13 +448,60 @@ int handle_select_line_admin_register(int *id_list){
         if (mouse_press(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70 + i * 20,
             ADMIN_INTERFACE_X1 + 400, ADMIN_INTERFACE_Y1 + 70 + (i+1) * LIST_INTERVAL - 1) &&
             id_list[i] != -1)
-            bar(); // 清理所有高亮
-            bar(); // 生成当前高亮
-            return i;
+            // bar(); // 清理所有高亮
+            // bar(); // 生成当前高亮
+            return id_list[i];
     }
     return NULL;
 }
 
+/*****************************************************************
+MODULE:管理员车辆上牌
+*****************************************************************/
+void admin_bike_license(int *page, int *id, LINKLIST *LIST)
+{
+
+}
+
+void drawgraph_admin_bike_license()
+{
+    puthz(ADMIN_INTERFACE_X1 + 5, ADMIN_INTERFACE_Y1 + 5, "车辆注册审核", 24, 20, MY_WHITE);
+    puthz(ADMIN_INTERFACE_X1 + 140, ADMIN_INTERFACE_Y1 + 10, "待处理项目", 16, 16, MY_WHITE);
+    settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);
+    outtextxy(ADMIN_INTERFACE_X1 + 130, ADMIN_INTERFACE_Y1 + 15, "-");
+    puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 40, "姓名", 16, 16, MY_WHITE);
+    puthz(ADMIN_INTERFACE_X1 + 100, ADMIN_INTERFACE_Y1 + 40, "学号", 16, 16, MY_WHITE);
+    puthz(ADMIN_INTERFACE_X1 + 200, ADMIN_INTERFACE_Y1 + 40, "车辆车牌号", 16, 16, MY_WHITE);
+    puthz(ADMIN_INTERFACE_X1 + 300, ADMIN_INTERFACE_Y1 + 40, "申请日期", 16, 16, MY_WHITE);
+    puthz(ADMIN_INTERFACE_X1 + 400, ADMIN_INTERFACE_Y1 + 40, "处理情况", 16, 16, MY_WHITE);
+
+    setfillstyle(SOLID_FILL, MY_YELLOW);
+    bar(ADMIN_FEATURE1_X1, ADMIN_FEATURE1_Y1, ADMIN_FEATURE1_X2, ADMIN_FEATURE1_Y2);
+    bar(ADMIN_FEATURE2_X1, ADMIN_FEATURE2_Y1, ADMIN_FEATURE2_X2, ADMIN_FEATURE2_Y2);
+    bar(ADMIN_FEATURE3_X1, ADMIN_FEATURE3_Y1, ADMIN_FEATURE3_X2, ADMIN_FEATURE3_Y2);
+    bar(ADMIN_FEATURE4_X1, ADMIN_FEATURE4_Y1, ADMIN_FEATURE4_X2, ADMIN_FEATURE4_Y2);
+    bar(ADMIN_FEATURE5_X1, ADMIN_FEATURE5_Y1, ADMIN_FEATURE5_X2, ADMIN_FEATURE5_Y2);
+    bar(ADMIN_FEATURE6_X1, ADMIN_FEATURE6_Y1, ADMIN_FEATURE6_X2, ADMIN_FEATURE6_Y2);
+    puthz(ADMIN_FEATURE1_X1 + 4, ADMIN_FEATURE1_Y1 + 8, "同意申请", 16, 16, MY_WHITE);
+    puthz(ADMIN_FEATURE2_X1 + 4, ADMIN_FEATURE2_Y1 + 8, "驳回申请", 16, 16, MY_WHITE);
+    puthz(ADMIN_FEATURE3_X1 + 4, ADMIN_FEATURE3_Y1 + 8, "已处理", 16, 16, MY_WHITE);
+    puthz(ADMIN_FEATURE4_X1 + 4, ADMIN_FEATURE4_Y1 + 8, "待处理", 16, 16, MY_WHITE);
+
+    setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
+    bar(ADMIN_FEATURE_SEARCH_X1, ADMIN_FEATURE_SEARCH_Y1, ADMIN_FEATURE_SEARCH_X2, ADMIN_FEATURE_SEARCH_Y2);
+    setcolor(MY_BLACK);
+    setlinestyle(SOLID_LINE, 0, NORM_WIDTH);
+    rectangle(ADMIN_FEATURE_SEARCH_X1, ADMIN_FEATURE_SEARCH_Y1, ADMIN_FEATURE_SEARCH_X2, ADMIN_FEATURE_SEARCH_Y2);
+
+    setlinestyle(SOLID_LINE, 0, THICK_WIDTH); // 小放大镜，提示为搜索框
+    line(ADMIN_FEATURE_SEARCH_X1 + 5, ADMIN_FEATURE_SEARCH_Y2 - 7, ADMIN_FEATURE_SEARCH_X1 + 12, ADMIN_FEATURE_SEARCH_Y2 - 14);
+    circle(ADMIN_FEATURE_SEARCH_X1 + 16, ADMIN_FEATURE_SEARCH_Y2 - 18, 5);
+
+    // setfillstyle(SOLID_FILL,MY_GREEN);
+    // bar(ADMIN_INTERFACE_X1+10,ADMIN_INTERFACE_Y1+70,ADMIN_INTERFACE_X1+500,ADMIN_INTERFACE_Y1+390); // 清理列表
+
+    clear_exit(ADMIN_FEATURE_EXIT_X1, ADMIN_FEATURE_EXIT_Y1, ADMIN_FEATURE_EXIT_X2, ADMIN_FEATURE_EXIT_Y2);
+}
 
 /*****************************************************************
 MODULE:刷新画面和处理鼠标点击
@@ -611,7 +686,6 @@ void admin_flush_graph(int *tag,int button_counts,ADMIN_BUTTONS AdminButtons[]){
 //         }
 //     }
 // }
-
 
 
 

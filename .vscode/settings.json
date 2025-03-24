@@ -81,6 +81,7 @@
     "*.tcc": "cpp",
     "LINKLIST.C": "cpp",
     "charconv": "cpp",
-    "LINKLIST.H": "cpp"
-  }
+    "LINKLIST.H": "cpp",
+    "DEBUG.C": "cpp"
+}
 }

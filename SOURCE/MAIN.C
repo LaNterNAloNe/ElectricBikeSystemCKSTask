@@ -1,7 +1,7 @@
 #include"GLOBAL.H"
 
 int main(void){
-    int page=LOGIN; // 主页面
+    int page=MAIN_ADMIN; // 主页面
     // int page=NULL; // 副页面
     int ID=-1;//记录登录用户的ID
     int driver=VGA,mode=VGAHI;
@@ -19,21 +19,30 @@ int main(void){
         switch (page){
             // LOGIN.C
             case LOGIN:
-                login(&page,&ID);break;
+                login(&page,&ID);
+                break;
             case LOGIN_ADMIN:
-                login_admin(&page,&ID);break;
+                login_admin(&page,&ID);
+                break;
             case REGISTER:
-                _register(&page);break;
+                _register(&page);
+                break;
             
             // USER_MAIN_GRAPH.C
             case MAIN_USER:
-                user_main(&page,&ID);break;
+                user_main(&page,&ID);
+                break;
 
             //ADMIN_MAIN_GRAPH.C
             case MAIN_ADMIN:
-                main_admin(&page,&ID);break;
+                main_admin(&page,&ID);
+                break;
             case ADMIN_BIKE_REGISTER:
-                admin_bike_register(&page,&ID,LIST);break;
+                admin_bike_register(&page,&ID,LIST);
+                break;
+            case ADMIN_BIKE_LICENSE:
+                admin_bike_license(&page, &ID, LIST);
+                break;
         }
     }
     clrmous(MouseX,MouseY);

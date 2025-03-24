@@ -5,12 +5,12 @@
 #include<stdlib.h>
 #include<graphics.h>
 #include<conio.h>
-#include <alloc.h>    // DOS内存管理头文件 
 #include<string.h>
 #include"GROCERY.H"
 #include"LINKLIST.H"
 #include"MOUSE.H"
 #include"HZ.H"
+#include"debug.h"
 
 
 //定义界面坐标
@@ -112,6 +112,15 @@
 #define ADMIN_FEATURE_EXIT_X2 630
 #define ADMIN_FEATURE_EXIT_Y2 470
 
+#define ADMIN_FEATURE_UP_X1 350
+#define ADMIN_FEATURE_UP_Y1 395
+#define ADMIN_FEATURE_UP_X2 370
+#define ADMIN_FEATURE_UP_Y2 415
+
+#define ADMIN_FEATURE_DOWN_X1 380
+#define ADMIN_FEATURE_DOWN_Y1 395
+#define ADMIN_FEATURE_DOWN_X2 400
+#define ADMIN_FEATURE_DOWN_Y2 415
 
 //定义激活状态
 #define ACTIVE_ADMIN_NULL 0
@@ -131,6 +140,7 @@
 #define ACTIVE_ADMIN_FEATURE_SEARCH 14
 #define ACTIVE_ADMIN_FEATURE_EXIT 20
 
+// 列表参数
 #define LIST_INTERVAL 30
 #define LIST_LIMIT 8
 
@@ -170,6 +180,9 @@ void drawgraph_admin_bike_register();
 void list_search_register_request(int id_list[8],FILE *fp,int mode,int page_change,int is_clear,char *search_str,char *search_needed);
 int list_admin_register_search_is_valid(EBIKE_REGISTER TEMP,char *search_str,char *search_needed,int mode);
 
+void admin_bike_license(int *page, int *id, LINKLIST *LIST);
+void drawgraph_admin_bike_license();
+
 void admin_flush_graph(int *tag,int button_counts,ADMIN_BUTTONS AdminButtons[]);
 void handle_click_event_admin_main(int *page);
 int handle_select_line_admin_register(int *page);
@@ -189,41 +202,8 @@ void AdminswitchPage(){
 
 
  
-/* 获取当前程序内存使用量（单位：KB） */
-unsigned long get_used_memory() {
-    struct heapinfo *hi;
-    unsigned long total = 0;
- 
-    // 遍历堆内存分配块 
-    hi->ptr  = NULL;
-    while(heapwalk(hi) == _HEAPOK) {
-        if(hi->in_use)  
-            total += hi->size;  // 累计已分配内存 
-    }
- 
-    // 转换为KB（DOS内存块以16字节为单位）
-    return (total * 16) / 1024; 
-}
 
-void display_memory_usage(int x, int y) {
-    static char mem_str[20];
-    unsigned long mem_used;
 
-    // 获取内存数据 
-    mem_used = get_used_memory();
-
-    // 构建显示字符串 
-    sprintf(mem_str, "MEM: %lu KB", mem_used);
- 
-    // 图形模式输出（带背景刷新）
-    setcolor(WHITE);
-    setfillstyle(SOLID_FILL, BLUE);
-    bar(x-5, y-5, x+textwidth(mem_str)+5, y+textheight(mem_str)+5);
-    settextstyle(DEFAULT_FONT,NULL,1);
-    outtextxy(x, y, mem_str);
-    sprintf(mem_str,"FARMEM LEFT: %lu Byte",farcoreleft());
-    outtextxy(x,y+10,mem_str);
-}
 
 #define STRUCT_LENGTH(Struct) (sizeof(Struct)/sizeof(Struct[0]))
 
