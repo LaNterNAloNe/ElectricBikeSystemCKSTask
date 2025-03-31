@@ -116,16 +116,29 @@ NAME:linklist_clear
 VALUE:pList自定链表
 FUNCTION:将链表释放
 **********************************************************/
-void linklist_clear(LINKLIST *pList) {
-    LINKLIST_NODE *next;
-    LINKLIST_NODE *current = pList->HEAD;
+// void linklist_clear(LINKLIST *pList) {
+//     LINKLIST_NODE *next;
+//     LINKLIST_NODE *current = pList->HEAD;
 
-    if (!pList) return;
-    while (current) {
-        next = current->NEXT; // 先保存后释放 
-        free(current);
-        current = next;
+//     if (!pList) return;
+//     while (current) {
+//         next = current->NEXT; // 先保存后释放 
+//         free(current);
+//         current = next;
+//     }
+//     pList->HEAD = NULL; // 清除悬空指针 
+//     free(pList);
+// }
+
+void linklist_clear(LINKLIST *pList)
+{
+    LINKLIST_NODE *q;
+    LINKLIST_NODE *p;
+    for (p = pList->HEAD; p; p = q)
+    {
+        q = p->NEXT;
+        free(p);
     }
-    pList->HEAD = NULL; // 清除悬空指针 
-    free(pList);
+
+    return;
 }

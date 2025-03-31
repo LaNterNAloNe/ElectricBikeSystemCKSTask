@@ -82,6 +82,13 @@
     "LINKLIST.C": "cpp",
     "charconv": "cpp",
     "LINKLIST.H": "cpp",
-    "DEBUG.C": "cpp"
+    "DEBUG.C": "cpp",
+    "bit": "c",
+    "compare": "c",
+    "concepts": "c",
+    "type_traits": "c",
+    "cmath": "c",
+    "limits": "c",
+    "new": "c"
 }
 }

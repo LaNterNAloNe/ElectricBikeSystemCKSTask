@@ -138,54 +138,60 @@ void admin_bike_register(int *page, int *ID, LINKLIST *LIST)
     int selected_id = -1;
     int id_list[8];
     int tag=ACTIVE_ADMIN_NULL;
-    ADMIN_BUTTONS AdminButtons[15]={
-        {ADMIN_BUTTON1_X1, ADMIN_BUTTON1_X2, 
-         ADMIN_BUTTON1_Y1, ADMIN_BUTTON1_Y2, 
-         ACTIVE_ADMIN_BUTTON1,&draw_cues,&clear_cues},
-        {ADMIN_BUTTON2_X1, ADMIN_BUTTON2_X2, 
-         ADMIN_BUTTON2_Y1, ADMIN_BUTTON2_Y2, 
-         ACTIVE_ADMIN_BUTTON2,&draw_cues,&clear_cues},
-        {ADMIN_BUTTON3_X1, ADMIN_BUTTON3_X2, 
-         ADMIN_BUTTON3_Y1, ADMIN_BUTTON3_Y2, 
-         ACTIVE_ADMIN_BUTTON3,&draw_cues,&clear_cues},
-        {ADMIN_BUTTON4_X1, ADMIN_BUTTON4_X2, 
-         ADMIN_BUTTON4_Y1, ADMIN_BUTTON4_Y2, 
-         ACTIVE_ADMIN_BUTTON4,&draw_cues,&clear_cues},
-        {ADMIN_BUTTON5_X1, ADMIN_BUTTON5_X2, 
-         ADMIN_BUTTON5_Y1, ADMIN_BUTTON5_Y2, 
-         ACTIVE_ADMIN_BUTTON5,&draw_cues,&clear_cues},
-        {ADMIN_BUTTON6_X1, ADMIN_BUTTON6_X2, 
-         ADMIN_BUTTON6_Y1, ADMIN_BUTTON6_Y2, 
-         ACTIVE_ADMIN_BUTTON6,&draw_cues,&clear_cues},
-        {ADMIN_EXIT_X1,ADMIN_EXIT_X2,
-         ADMIN_EXIT_Y1,ADMIN_EXIT_Y2,
-         ACTIVE_ADMIN_EXIT,&draw_exit,&clear_exit},
-        {ADMIN_FEATURE1_X1,ADMIN_FEATURE1_X2,
-         ADMIN_FEATURE1_Y1,ADMIN_FEATURE1_Y2,
-         ACTIVE_ADMIN_FEATURE1,&draw_rectangle,&clear_rectangle},
-        {ADMIN_FEATURE2_X1,ADMIN_FEATURE2_X2,
-         ADMIN_FEATURE2_Y1,ADMIN_FEATURE2_Y2,
-         ACTIVE_ADMIN_FEATURE2,&draw_rectangle,&clear_rectangle},
-        {ADMIN_FEATURE3_X1,ADMIN_FEATURE3_X2,
-         ADMIN_FEATURE3_Y1,ADMIN_FEATURE3_Y2,
-         ACTIVE_ADMIN_FEATURE3,&draw_rectangle,&clear_rectangle},
-        {ADMIN_FEATURE4_X1,ADMIN_FEATURE4_X2,
-         ADMIN_FEATURE4_Y1,ADMIN_FEATURE4_Y2,
-         ACTIVE_ADMIN_FEATURE4,&draw_rectangle,&clear_rectangle},
-        {ADMIN_FEATURE5_X1,ADMIN_FEATURE5_X2,
-         ADMIN_FEATURE5_Y1,ADMIN_FEATURE5_Y2,
-         ACTIVE_ADMIN_FEATURE5,&draw_rectangle,&clear_rectangle},
-        {ADMIN_FEATURE6_X1,ADMIN_FEATURE6_X2,
-         ADMIN_FEATURE6_Y1,ADMIN_FEATURE6_Y2,
-         ACTIVE_ADMIN_FEATURE6,&draw_rectangle,&clear_rectangle},
-        {ADMIN_FEATURE_EXIT_X1,ADMIN_FEATURE_EXIT_X2,
-         ADMIN_FEATURE_EXIT_Y1,ADMIN_FEATURE_EXIT_Y2,
-         ACTIVE_ADMIN_FEATURE_EXIT,&draw_exit,&clear_exit},
-        {ADMIN_FEATURE_SEARCH_X1,ADMIN_FEATURE_SEARCH_X2,
-         ADMIN_FEATURE_SEARCH_Y1,ADMIN_FEATURE_SEARCH_Y2,
-         ACTIVE_ADMIN_FEATURE_SEARCH,&draw_rectangle,&clear_rectangle},
+    ADMIN_BUTTONS AdminButtons[17] = {
+        {ADMIN_BUTTON1_X1, ADMIN_BUTTON1_X2,
+         ADMIN_BUTTON1_Y1, ADMIN_BUTTON1_Y2,
+         ACTIVE_ADMIN_BUTTON1, &draw_cues, &clear_cues},
+        {ADMIN_BUTTON2_X1, ADMIN_BUTTON2_X2,
+         ADMIN_BUTTON2_Y1, ADMIN_BUTTON2_Y2,
+         ACTIVE_ADMIN_BUTTON2, &draw_cues, &clear_cues},
+        {ADMIN_BUTTON3_X1, ADMIN_BUTTON3_X2,
+         ADMIN_BUTTON3_Y1, ADMIN_BUTTON3_Y2,
+         ACTIVE_ADMIN_BUTTON3, &draw_cues, &clear_cues},
+        {ADMIN_BUTTON4_X1, ADMIN_BUTTON4_X2,
+         ADMIN_BUTTON4_Y1, ADMIN_BUTTON4_Y2,
+         ACTIVE_ADMIN_BUTTON4, &draw_cues, &clear_cues},
+        {ADMIN_BUTTON5_X1, ADMIN_BUTTON5_X2,
+         ADMIN_BUTTON5_Y1, ADMIN_BUTTON5_Y2,
+         ACTIVE_ADMIN_BUTTON5, &draw_cues, &clear_cues},
+        {ADMIN_BUTTON6_X1, ADMIN_BUTTON6_X2,
+         ADMIN_BUTTON6_Y1, ADMIN_BUTTON6_Y2,
+         ACTIVE_ADMIN_BUTTON6, &draw_cues, &clear_cues},
+        {ADMIN_EXIT_X1, ADMIN_EXIT_X2,
+         ADMIN_EXIT_Y1, ADMIN_EXIT_Y2,
+         ACTIVE_ADMIN_EXIT, &draw_exit, &clear_exit},
+        {ADMIN_FEATURE1_X1, ADMIN_FEATURE1_X2,
+         ADMIN_FEATURE1_Y1, ADMIN_FEATURE1_Y2,
+         ACTIVE_ADMIN_FEATURE1, &draw_rectangle, &clear_rectangle},
+        {ADMIN_FEATURE2_X1, ADMIN_FEATURE2_X2,
+         ADMIN_FEATURE2_Y1, ADMIN_FEATURE2_Y2,
+         ACTIVE_ADMIN_FEATURE2, &draw_rectangle, &clear_rectangle},
+        {ADMIN_FEATURE3_X1, ADMIN_FEATURE3_X2,
+         ADMIN_FEATURE3_Y1, ADMIN_FEATURE3_Y2,
+         ACTIVE_ADMIN_FEATURE3, &draw_rectangle, &clear_rectangle},
+        {ADMIN_FEATURE4_X1, ADMIN_FEATURE4_X2,
+         ADMIN_FEATURE4_Y1, ADMIN_FEATURE4_Y2,
+         ACTIVE_ADMIN_FEATURE4, &draw_rectangle, &clear_rectangle},
+        {ADMIN_FEATURE5_X1, ADMIN_FEATURE5_X2,
+         ADMIN_FEATURE5_Y1, ADMIN_FEATURE5_Y2,
+         ACTIVE_ADMIN_FEATURE5, &draw_rectangle, &clear_rectangle},
+        {ADMIN_FEATURE6_X1, ADMIN_FEATURE6_X2,
+         ADMIN_FEATURE6_Y1, ADMIN_FEATURE6_Y2,
+         ACTIVE_ADMIN_FEATURE6, &draw_rectangle, &clear_rectangle},
+        {ADMIN_FEATURE_EXIT_X1, ADMIN_FEATURE_EXIT_X2,
+         ADMIN_FEATURE_EXIT_Y1, ADMIN_FEATURE_EXIT_Y2,
+         ACTIVE_ADMIN_FEATURE_EXIT, &draw_exit, &clear_exit},
+        {ADMIN_FEATURE_SEARCH_X1, ADMIN_FEATURE_SEARCH_X2,
+         ADMIN_FEATURE_SEARCH_Y1, ADMIN_FEATURE_SEARCH_Y2,
+         ACTIVE_ADMIN_FEATURE_SEARCH, &draw_rectangle, &clear_rectangle},
+        {ADMIN_FEATURE_UP_X1, ADMIN_FEATURE_UP_X2,
+         ADMIN_FEATURE_UP_Y1, ADMIN_FEATURE_UP_Y2,
+         ACTIVE_ADMIN_FEATURE_UP, &draw_flip_up, &clear_flip_up},
+        {ADMIN_FEATURE_DOWN_X1, ADMIN_FEATURE_DOWN_X2,
+         ADMIN_FEATURE_DOWN_Y1, ADMIN_FEATURE_DOWN_Y2,
+         ACTIVE_ADMIN_FEATURE_DOWN, &draw_flip_down, &clear_flip_down}
     };
-        
+
     FILE *fp_EBIKE_REGISTER_read = fopen("C:\\EBS\\DATA\\REGISTER.DAT","rb+");
     if(!fp_EBIKE_REGISTER_read) exit(1);
     fseek(fp_EBIKE_REGISTER_read,0,SEEK_SET);
@@ -264,13 +270,7 @@ void drawgraph_admin_bike_register(){
     puthz(ADMIN_FEATURE2_X1+4,ADMIN_FEATURE2_Y1+8,"驳回申请",16,16,MY_WHITE);
     puthz(ADMIN_FEATURE3_X1+4,ADMIN_FEATURE3_Y1+8,"已处理",16,16,MY_WHITE);
     puthz(ADMIN_FEATURE4_X1+4,ADMIN_FEATURE4_Y1+8,"待处理",16,16,MY_WHITE);
-    setcolor(BLACK);
-    setlinestyle(SOLID_LINE,0,THICK_WIDTH);
-    line(ADMIN_FEATURE_UP_X1, ADMIN_FEATURE_UP_Y1 + 10, ADMIN_FEATURE_UP_X2, ADMIN_FEATURE_UP_Y1);
-    line(ADMIN_FEATURE_UP_X1, ADMIN_FEATURE_UP_Y1 + 10, ADMIN_FEATURE_UP_X2, ADMIN_FEATURE_UP_Y2); // 切换页面 <
-    line(ADMIN_FEATURE_DOWN_X2, ADMIN_FEATURE_DOWN_Y1 + 10, ADMIN_FEATURE_DOWN_X1, ADMIN_FEATURE_DOWN_Y1);
-    line(ADMIN_FEATURE_DOWN_X2, ADMIN_FEATURE_DOWN_Y1 + 10, ADMIN_FEATURE_DOWN_X1, ADMIN_FEATURE_DOWN_Y2); // 切换页面 >
-
+    
     setfillstyle(SOLID_FILL,MY_LIGHTGRAY);
     bar(ADMIN_FEATURE_SEARCH_X1,ADMIN_FEATURE_SEARCH_Y1,ADMIN_FEATURE_SEARCH_X2,ADMIN_FEATURE_SEARCH_Y2);
     setcolor(MY_BLACK);
@@ -446,7 +446,7 @@ int handle_select_line_admin_register(int *id_list){
     int i;
     for (i = 0; i < LIST_LIMIT; i++){
         if (mouse_press(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70 + i * 20,
-            ADMIN_INTERFACE_X1 + 400, ADMIN_INTERFACE_Y1 + 70 + (i+1) * LIST_INTERVAL - 1) &&
+            ADMIN_INTERFACE_X1 + 400, ADMIN_INTERFACE_Y1 + 70 + (i+1) * LIST_INTERVAL - 1) == 1 &&
             id_list[i] != -1)
             // bar(); // 清理所有高亮
             // bar(); // 生成当前高亮
@@ -573,6 +573,36 @@ void clear_exit_menu(int x1,int y1,int x2,int y2){
     setfillstyle(SOLID_FILL,MY_YELLOW);
     bar(x1,y1,x2,y2);
 }
+
+void draw_flip_up(int x1, int y1, int x2, int y2)
+{
+    setcolor(BLACK);
+    setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+    line(ADMIN_FEATURE_UP_X1, ADMIN_FEATURE_UP_Y1 + 10, ADMIN_FEATURE_UP_X2, ADMIN_FEATURE_UP_Y1);
+    line(ADMIN_FEATURE_UP_X1, ADMIN_FEATURE_UP_Y1 + 10, ADMIN_FEATURE_UP_X2, ADMIN_FEATURE_UP_Y2); // 切换页面 <
+}
+void draw_flip_down(int x1, int y1, int x2, int y2)
+{
+    setcolor(BLACK);
+    setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+    line(ADMIN_FEATURE_DOWN_X2, ADMIN_FEATURE_DOWN_Y1 + 10, ADMIN_FEATURE_DOWN_X1, ADMIN_FEATURE_DOWN_Y1);
+    line(ADMIN_FEATURE_DOWN_X2, ADMIN_FEATURE_DOWN_Y1 + 10, ADMIN_FEATURE_DOWN_X1, ADMIN_FEATURE_DOWN_Y2); // 切换页面 >
+}
+void clear_flip_up(int x1, int y1, int x2, int y2)
+{
+    setcolor(MY_YELLOW);
+    setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+    line(ADMIN_FEATURE_UP_X1, ADMIN_FEATURE_UP_Y1 + 10, ADMIN_FEATURE_UP_X2, ADMIN_FEATURE_UP_Y1);
+    line(ADMIN_FEATURE_UP_X1, ADMIN_FEATURE_UP_Y1 + 10, ADMIN_FEATURE_UP_X2, ADMIN_FEATURE_UP_Y2); // 切换页面 <
+}
+void clear_flip_down(int x1, int y1, int x2, int y2)
+{
+    setcolor(MY_YELLOW);
+    setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+    line(ADMIN_FEATURE_DOWN_X2, ADMIN_FEATURE_DOWN_Y1 + 10, ADMIN_FEATURE_DOWN_X1, ADMIN_FEATURE_DOWN_Y1);
+    line(ADMIN_FEATURE_DOWN_X2, ADMIN_FEATURE_DOWN_Y1 + 10, ADMIN_FEATURE_DOWN_X1, ADMIN_FEATURE_DOWN_Y2); // 切换页面 >
+}
+
 
 
 // 这个函数可能还需要进一步优化，若之后出现画面抽搐的问题尚不能解决，就干这个函数
