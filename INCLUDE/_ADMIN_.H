@@ -189,11 +189,12 @@ int list_admin_register_search_is_valid(EBIKE_REGISTER TEMP,char *search_str,cha
 
 void admin_bike_license(int *page, int *id, LINKLIST *LIST);
 void drawgraph_admin_bike_license();
+void list_search_license_request(int id_list[8],FILE *fp,int mode,int page_change,int is_clear,char *search_str,char *search_needed);
+int list_admin_license_search_is_valid(EBIKE_REGISTER TEMP,char *search_str,char *search_needed,int mode);
 
 void admin_flush_graph(int *tag,int button_counts,ADMIN_BUTTONS AdminButtons[]);
 void handle_click_event_admin_main(int *page);
 int handle_select_line_admin_register(int *page);
-void get_user_data(LINKLIST *LIST);
 
 void AdminswitchPage(){
 	int i,j,k;
@@ -206,10 +207,6 @@ void AdminswitchPage(){
 				delay(1);
 			}
 }
-
-
- 
-
 
 
 #define STRUCT_LENGTH(Struct) (sizeof(Struct)/sizeof(Struct[0]))

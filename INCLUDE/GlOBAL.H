@@ -22,7 +22,7 @@
 
 void initcolorpalette();
 void drawExittingProgram(int err);
-
+void get_user_data(LINKLIST *LIST);
 
 
 #endif
