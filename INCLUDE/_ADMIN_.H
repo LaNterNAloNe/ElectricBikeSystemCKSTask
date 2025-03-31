@@ -176,6 +176,11 @@ void clear_exit(int x1,int y1,int x2,int y2);
 int admin_exitting(int *page);
 void draw_exit_menu(int x1,int y1,int x2,int y2);
 void clear_exit_menu(int x1,int y1,int x2,int y2);
+void draw_flip_up(int x1,int y1,int x2,int y2);
+void clear_flip_up(int x1,int y1,int x2,int y2);
+void draw_flip_down(int x1,int y1,int x2,int y2);
+void clear_flip_down(int x1,int y1,int x2,int y2);
+
 
 void admin_bike_register(int *page, int *id,LINKLIST *LIST);
 void drawgraph_admin_bike_register();
