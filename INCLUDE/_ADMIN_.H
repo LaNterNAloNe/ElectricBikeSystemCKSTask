@@ -4,6 +4,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<graphics.h>
+#include<time.h>
 #include<conio.h>
 #include<string.h>
 #include"GROCERY.H"
@@ -160,10 +161,12 @@ typedef struct {
     char rln[16];
 	int ID;
 	char ebike_ID[10];
+    char ebike_license[10];
+    char location[10];
     int apply_time;
 	int conduct_time;
     int result;
-} EBIKE_REGISTER;
+} EBIKE_INFO;
 
 void main_admin(int *page,int *ID);
 void drawgraph_admin_menu(void);
@@ -184,30 +187,21 @@ void clear_flip_down(int x1,int y1,int x2,int y2);
 
 void admin_bike_register(int *page, int *id,LINKLIST *LIST);
 void drawgraph_admin_bike_register();
-void list_search_register_request(int id_list[8],FILE *fp,int mode,int page_change,int is_clear,char *search_str,char *search_needed);
-int list_admin_register_search_is_valid(EBIKE_REGISTER TEMP,char *search_str,char *search_needed,int mode);
+void list_search_register_request(int id_list[8],FILE *fp,char *list_mode,int search_mode,int page_change,int is_clear,char *search_str,char *search_needed);
+int list_admin_register_search_is_valid(EBIKE_INFO TEMP,char *list_mode,char *search_str,char *search_needed,int mode);
+void handle_click_event_admin_bike_register(LINKLIST *LIST, int *page, char *search_str, int *id_list, FILE *fp_EBIKE_INFO_read, int mode, int selected_id);
 
 void admin_bike_license(int *page, int *id, LINKLIST *LIST);
 void drawgraph_admin_bike_license();
 void list_search_license_request(int id_list[8],FILE *fp,int mode,int page_change,int is_clear,char *search_str,char *search_needed);
-int list_admin_license_search_is_valid(EBIKE_REGISTER TEMP,char *search_str,char *search_needed,int mode);
+int list_admin_license_search_is_valid(EBIKE_INFO TEMP,char *search_str,char *search_needed,int mode);
 
 void admin_flush_graph(int *tag,int button_counts,ADMIN_BUTTONS AdminButtons[]);
 void handle_click_event_admin_main(int *page);
-int handle_select_line_admin_register(int *page);
+int handle_list_select_line_admin(int *page);
 
-void AdminswitchPage(){
-	int i,j,k;
-	setfillstyle(SOLID_FILL,MY_LIGHTBLUE);
-	for(i=0;i<16;i++)
-		for(j=0;j<12;j++)
-			for(k=0;k<=5;k++)
-			{
-				bar(i*40+20-k*4,j*40+20-k*4,i*40+20+k*4,j*40+20+k*4);
-				delay(1);
-			}
-}
-
+void AdminswitchPage();
+long int ebike_info_search(FILE *fp, char *search_str, char *search_needed);
 
 #define STRUCT_LENGTH(Struct) (sizeof(Struct)/sizeof(Struct[0]))
 

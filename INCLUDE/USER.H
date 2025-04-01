@@ -107,14 +107,14 @@ typedef struct {
 	int apply_time;
 	int conduct_time;
 	int result;
-} EBIKE_REGISTER;
+} EBIKE_INFO;
 
 void user_main(int *page);
 void drawgraph_user_main(int *page);
 void flushUserMain(int* tag, int button_count, user_button UserButtons[]);
 void user_bike_register(int* page, int* id);
 void drawgraph_user_bike_register(void);
-int ebike_register_judge(char *usrn,char *e_bike_id,int *ID);
+int EBIKE_INFO_judge(char *usrn,char *e_bike_id,int *ID);
 
 void user_bike_anual();
 void user_bike_wroteout();

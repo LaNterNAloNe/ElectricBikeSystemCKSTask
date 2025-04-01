@@ -39,7 +39,7 @@ typedef struct _LINKLIST_
 } LINKLIST;
 
 void linklist_add_data(LINKLIST *pList, LINKLIST_USER NEW_USER_DATA);
-int linklist_find_data(LINKLIST *pList, char *str, char *needed_finding);
+LINKLIST_NODE *linklist_find_data(LINKLIST *pList, char *str, char *needed_finding);
 int linklist_delete_data(LINKLIST *pList, char *usrn);
 void linklist_clear(LINKLIST *pList);
 

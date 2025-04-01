@@ -89,6 +89,8 @@
     "type_traits": "c",
     "cmath": "c",
     "limits": "c",
-    "new": "c"
+    "new": "c",
+    "text_encoding": "cpp",
+    "typeinfo": "cpp"
 }
 }

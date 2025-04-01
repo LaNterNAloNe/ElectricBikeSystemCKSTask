@@ -328,7 +328,7 @@ ACTIVE_USER_DATAGRAPH},
 		}
 
 		if (mouse_press(USER_BIKE_REGISTER_BUTTON1_X1, USER_BIKE_REGISTER_BUTTON1_Y1, USER_BIKE_REGISTER_BUTTON1_X2, USER_BIKE_REGISTER_BUTTON1_Y2) == 1) {
-			register_flag = ebike_register_judge(e_bike_id, usrn, id);
+			register_flag = EBIKE_INFO_judge(e_bike_id, usrn, id);
 			switch (register_flag) {
 			case 0:
 				anime_login_success_user();
@@ -364,61 +364,61 @@ ACTIVE_USER_DATAGRAPH},
 	int i = 0;
 	int bike_count = 0;
 	int account_counts;
-	EBIKE_REGISTER* TEMP = malloc(sizeof(EBIKE_REGISTER));
-	FILE* fp_EBIKE_REGISTER_read = fopen("C:\\EBS\\DATA\\USRDAT.TXT", "r");
+	EBIKE_INFO* TEMP = malloc(sizeof(EBIKE_INFO));
+	FILE* fp_EBIKE_INFO_read = fopen("C:\\EBS\\DATA\\USRDAT.TXT", "r");
 
-	if (TEMP == NULL || fp_EBIKE_REGISTER_read == NULL) {
+	if (TEMP == NULL || fp_EBIKE_INFO_read == NULL) {
 		if (TEMP) free(TEMP);
-		fclose(fp_EBIKE_REGISTER_read);
+		fclose(fp_EBIKE_INFO_read);
 		exit(0);
 	}
 
-	fseek(fp_EBIKE_REGISTER_read, 0, SEEK_END);
-	account_counts = ftell(fp_EBIKE_REGISTER_read) / sizeof(EBIKE_REGISTER);//初始操作完成，接下来开始遍历数据
+	fseek(fp_EBIKE_INFO_read, 0, SEEK_END);
+	account_counts = ftell(fp_EBIKE_INFO_read) / sizeof(EBIKE_INFO);//初始操作完成，接下来开始遍历数据
 
 	for (i = 0; i < account_counts; i++) {
-		fseek(fp_EBIKE_REGISTER_read, i * sizeof(EBIKE_REGISTER), SEEK_SET);
-		fread(TEMP, sizeof(EBIKE_REGISTER), 1, fp_EBIKE_REGISTER_read); //逐个读取信息，确认此id是否登记过电动车
+		fseek(fp_EBIKE_INFO_read, i * sizeof(EBIKE_INFO), SEEK_SET);
+		fread(TEMP, sizeof(EBIKE_INFO), 1, fp_EBIKE_INFO_read); //逐个读取信息，确认此id是否登记过电动车
 
 		if (*ID==TEMP->ID) {
 			free(TEMP);
-			if (fclose(fp_EBIKE_REGISTER_read) != 0) getch(), exit(0);
+			if (fclose(fp_EBIKE_INFO_read) != 0) getch(), exit(0);
 			return 0;
 		}
 	}
 	
-	if (fclose(fp_EBIKE_REGISTER_read) != 0) getch(), exit(0);
+	if (fclose(fp_EBIKE_INFO_read) != 0) getch(), exit(0);
 	free(TEMP);
 	return 1;
 }*/
 
-int ebike_register_judge(char* usrn, char* e_bike_id,int *ID) {
+int EBIKE_INFO_judge(char* usrn, char* e_bike_id,int *ID) {
 	int i = 0;
 	int account_counts;
-	EBIKE_REGISTER* TEMP = malloc(sizeof(EBIKE_REGISTER));
-	FILE* fp_EBIKE_REGISTER_readndwrite = fopen("C:\\EBS\\DATA\\USER.DAT", "rb+");
+	EBIKE_INFO* TEMP = malloc(sizeof(EBIKE_INFO));
+	FILE* fp_EBIKE_INFO_readndwrite = fopen("C:\\EBS\\DATA\\USER.DAT", "rb+");
 
-	if (TEMP == NULL || fp_EBIKE_REGISTER_readndwrite == NULL) {
+	if (TEMP == NULL || fp_EBIKE_INFO_readndwrite == NULL) {
 		if (TEMP) free(TEMP);
-		fclose(fp_EBIKE_REGISTER_readndwrite);
+		fclose(fp_EBIKE_INFO_readndwrite);
 		exit(0);
 	}
 
-	fseek(fp_EBIKE_REGISTER_readndwrite, 0, SEEK_END);
-	account_counts = ftell(fp_EBIKE_REGISTER_readndwrite) / sizeof(EBIKE_REGISTER);//初始操作完成，接下来开始遍历数据
+	fseek(fp_EBIKE_INFO_readndwrite, 0, SEEK_END);
+	account_counts = ftell(fp_EBIKE_INFO_readndwrite) / sizeof(EBIKE_INFO);//初始操作完成，接下来开始遍历数据
 
 	for (i = 0; i < account_counts; i++) {
-		fseek(fp_EBIKE_REGISTER_readndwrite, i * sizeof(EBIKE_REGISTER), SEEK_SET);
-		fread(TEMP, sizeof(EBIKE_REGISTER), 1, fp_EBIKE_REGISTER_readndwrite); //逐个读取，每个用户信息
+		fseek(fp_EBIKE_INFO_readndwrite, i * sizeof(EBIKE_INFO), SEEK_SET);
+		fread(TEMP, sizeof(EBIKE_INFO), 1, fp_EBIKE_INFO_readndwrite); //逐个读取，每个用户信息
 
 		if (strcmp(usrn, TEMP->rln) == 0) {
 			free(TEMP);
-			if (fclose(fp_EBIKE_REGISTER_readndwrite) != 0) getch(), exit(1); //发现存在用户名相同的，则注册失败
+			if (fclose(fp_EBIKE_INFO_readndwrite) != 0) getch(), exit(1); //发现存在用户名相同的，则注册失败
 			return 1;
 		}
 		if (strcmp(e_bike_id, TEMP->ebike_ID) == 0) {
 			free(TEMP);
-			if (fclose(fp_EBIKE_REGISTER_readndwrite) != 0) getch(), exit(1); //发现存在用户名相同的，则注册失败
+			if (fclose(fp_EBIKE_INFO_readndwrite) != 0) getch(), exit(1); //发现存在用户名相同的，则注册失败
 			return 2;
 		}
 	}
@@ -436,9 +436,9 @@ int ebike_register_judge(char* usrn, char* e_bike_id,int *ID) {
 	TEMP->apply_time =324;
 	TEMP->conduct_time = -1;
 	TEMP->result = -1;
-	fwrite(TEMP, sizeof(EBIKE_REGISTER), 1, fp_EBIKE_REGISTER_readndwrite);  //将注册信息写入文件
+	fwrite(TEMP, sizeof(EBIKE_INFO), 1, fp_EBIKE_INFO_readndwrite);  //将注册信息写入文件
 	free(TEMP);
-	if (fclose(fp_EBIKE_REGISTER_readndwrite) != 0) getch(), exit(1);
+	if (fclose(fp_EBIKE_INFO_readndwrite) != 0) getch(), exit(1);
 	return 0;
 
 }

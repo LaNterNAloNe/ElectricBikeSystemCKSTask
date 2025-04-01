@@ -41,7 +41,7 @@ NAME:linklist_find_data
 VALUE:pList自定链表，str要搜索的内容
 FUNCTION:利用传入的字符串，查找链表中相应内容
 **********************************************************/
-int linklist_find_data(LINKLIST *pList, char *str, char *needed_finding)
+LINKLIST_NODE *linklist_find_data(LINKLIST *pList, char *str, char *needed_finding)
 {
     LINKLIST_NODE *ptr;
     int isFound = 0;
@@ -80,10 +80,10 @@ int linklist_find_data(LINKLIST *pList, char *str, char *needed_finding)
             if(!strcmp(buffer, str))
                 isFound++;
         }
-        if (isFound) return isFound;
+        if (isFound) return ptr; // 如果找到，则返回该节点的指针
     }
 
-    return isFound;
+    return 0; // 如果没有找到，则返回NULL
 }
 
 
