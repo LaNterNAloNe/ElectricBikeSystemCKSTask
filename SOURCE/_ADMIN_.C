@@ -292,7 +292,7 @@ void handle_click_event_admin_bike_register(LINKLIST *LIST,int *page, char *sear
             temp_node = temp_node->NEXT; // 遍历链表，找到对应节点
         }
         strcpy(temp_node->USER_DATA.ebike_ID, temp_info.ebike_ID); // 将链表中对应节点的ebike_ID修改为新数据
-        
+
 
         AdminConductSuccess(ADMIN_FEATURE1_X1, ADMIN_FEATURE1_Y1, ADMIN_FEATURE1_X2, ADMIN_FEATURE1_Y2); // 操作成功后的动画
         // bar(200,200,300,300);
@@ -521,7 +521,7 @@ void list_info_admin(EBIKE_INFO TEMP,int listed_item,char *list_mode,int list_se
             puthz(ADMIN_INTERFACE_X1 + 400, ADMIN_INTERFACE_Y1 + 70 + listed_item * LIST_INTERVAL, "已处理", 16, 16, MY_GREEN);
         }
     }
-    else
+    else if (list_sequence == DESCENDING)
     {
         settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);
         puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 310 - listed_item * LIST_INTERVAL, TEMP.rln, 16, 16, MY_WHITE); // 输出姓名
@@ -539,6 +539,8 @@ void list_info_admin(EBIKE_INFO TEMP,int listed_item,char *list_mode,int list_se
             puthz(ADMIN_INTERFACE_X1 + 400, ADMIN_INTERFACE_Y1 + 310 - listed_item * LIST_INTERVAL, "已处理", 16, 16, MY_GREEN);
         }
     }
+    else
+        return; // 如果传入参数错误，则不做任何操作
 }
 
 int list_admin_register_search_is_valid(EBIKE_INFO TEMP,char *list_mode, char *search_str, char *search_needed, int search_mode)
