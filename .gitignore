@@ -3,3 +3,7 @@ output/
 
 # Ignore temporary files created by the editor
 *.SWP
+/INCLUDE/.vs/INCLUDE/v16
+*.json
+*.sqlite
+/.vs

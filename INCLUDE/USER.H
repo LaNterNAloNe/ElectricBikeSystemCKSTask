@@ -104,6 +104,8 @@ typedef struct {
 	char rln[16];
 	int ID;
 	char ebike_ID[10];
+	char ebike_license[10];
+	char location[10];
 	int apply_time;
 	int conduct_time;
 	int result;
@@ -114,7 +116,7 @@ void drawgraph_user_main(int *page);
 void flushUserMain(int* tag, int button_count, user_button UserButtons[]);
 void user_bike_register(int* page, int* id);
 void drawgraph_user_bike_register(void);
-int EBIKE_INFO_judge(char *usrn,char *e_bike_id,int *ID);
+int EBIKE_INFO_judge(char *usrn,char *e_bike_id,int *id);
 
 void user_bike_anual();
 void user_bike_wroteout();
