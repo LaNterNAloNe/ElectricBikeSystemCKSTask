@@ -41,7 +41,7 @@ NAME:linklist_find_data
 VALUE:pList自定链表，str要搜索的内容
 FUNCTION:利用传入的字符串，查找链表中相应内容
 **********************************************************/
-LINKLIST_NODE *linklist_find_data(LINKLIST *pList, char *str, char *needed_finding)
+int linklist_find_data(LINKLIST *pList, char *str, char *needed_finding)
 {
     LINKLIST_NODE *ptr;
     int isFound = 0;
@@ -50,40 +50,40 @@ LINKLIST_NODE *linklist_find_data(LINKLIST *pList, char *str, char *needed_findi
     {
         if (!strcmp(needed_finding,"username")) {
             if (!strcmp(ptr->USER_DATA.usrn, str))
-                isFound++;
+                isFound = ptr->chain_lenth; // 如果找到，则返回该节点的序号
         }
         if (!strcmp(needed_finding,"id")) {
             itoa(ptr->USER_DATA.ID,buffer,10);
             if(strcmp(buffer, str) == 0)
-                isFound++;
+                isFound = ptr->chain_lenth; // 如果找到，则返回该节点的序号
         }
         if (!strcmp(needed_finding,"realname")) {
-            if(!strcmp(ptr->USER_DATA.rln, str)) 
-                isFound++;
+            if(!strcmp(ptr->USER_DATA.rln, str))
+                isFound = ptr->chain_lenth; // 如果找到，则返回该节点的序号
         }
         if (!strcmp(needed_finding,"location")) {
             if(!strcmp(ptr->USER_DATA.location, str))
-                isFound++;
+                isFound = ptr->chain_lenth; // 如果找到，则返回该节点的序号
         }
         if (!strcmp(needed_finding,"anualcheck")) {
             itoa(ptr->USER_DATA.anual_check,buffer,10);
             if(!strcmp(buffer, str))
-                isFound++;
+                isFound = ptr->chain_lenth; // 如果找到，则返回该节点的序号
         }
         if (strcmp(needed_finding,"accountstate")) {
             itoa((int)ptr->USER_DATA.account_state-'0',buffer,10);
             if(!strcmp(buffer, str))
-                isFound++;
+                isFound = ptr->chain_lenth; // 如果找到，则返回该节点的序号
         }
         if (strcmp(needed_finding,"violations")) {
             itoa(ptr->USER_DATA.violations,buffer,10);
             if(!strcmp(buffer, str))
-                isFound++;
+                isFound = ptr->chain_lenth; // 如果找到，则返回该节点的序号
         }
-        if (isFound) return ptr; // 如果找到，则返回该节点的指针
+        if (isFound) return isFound; // 如果找到，则返回该节点的序号
     }
 
-    return 0; // 如果没有找到，则返回NULL
+    return 0; // 如果没有找到，则返回0
 }
 
 
@@ -129,16 +129,81 @@ FUNCTION:将链表释放
 //     pList->HEAD = NULL; // 清除悬空指针 
 //     free(pList);
 // }
-
 void linklist_clear(LINKLIST *pList)
 {
     LINKLIST_NODE *q;
-    LINKLIST_NODE *p;
-    for (p = pList->HEAD; p; p = q)
+    LINKLIST_NODE *p = pList->HEAD;
+    while (p != NULL)
     {
         q = p->NEXT;
         free(p);
+        p = q;
     }
-
+    pList->HEAD = NULL; // 关键修复：重置头指针
     return;
+}
+
+// void linklist_clear(LINKLIST *pList)
+// {
+//     LINKLIST_NODE *q;
+//     LINKLIST_NODE *p;
+//     for (p = pList->HEAD; p; p = q)
+//     {
+//         q = p->NEXT;
+//         free(p);
+//     }
+
+//     return;
+// }
+
+/**********************************************************
+NAME:linklist_get_user_data
+VALUE:pList自定链表
+FUNCTION:将信息获取到链表中
+**********************************************************/
+void linklist_get_user_data(LINKLIST *LIST)
+{
+    char buffer[120];        // 定义缓冲区
+    char *token;             // 定义获取截断字符串的token
+    LINKLIST_USER LIST_USER; // 定义结构体，准备加入链表
+
+    FILE *fp_USER_DATA_read = fopen("C:\\EBS\\DATA\\USRDAT.TXT", "r");
+    if (fp_USER_DATA_read == NULL)
+        getch(), exit(1);
+    fseek(fp_USER_DATA_read, 0, SEEK_SET); // 将文件指针置于开头，开始遍历文件
+
+    while (fgets(buffer, sizeof(buffer), fp_USER_DATA_read))
+    {
+        if (!strcmp(buffer, "\0"))
+            break;
+        if (!strcmp(buffer, "\n"))
+            continue;
+
+        token = strtok(buffer, ",");
+        LIST_USER.ID = token ? atoi(token) : 0;
+
+        strncpy(LIST_USER.usrn, strtok(NULL, ","), sizeof(LIST_USER.usrn));
+        strncpy(LIST_USER.rln, strtok(NULL, ","), sizeof(LIST_USER.rln));
+        strncpy(LIST_USER.location, strtok(NULL, ","), sizeof(LIST_USER.location));
+        strncpy(LIST_USER.ebike_ID, strtok(NULL, ","), sizeof(LIST_USER.ebike_ID));
+        strncpy(LIST_USER.ebike_license, strtok(NULL, ","), sizeof(LIST_USER.ebike_license));
+
+        token = strtok(NULL, ",");
+        LIST_USER.anual_check = token ? atoi(token) : 0;
+
+        token = strtok(NULL, ",");
+        LIST_USER.violations = token ? atoi(token) : 0;
+
+        token = strtok(NULL, ",");
+        LIST_USER.account_state = (token && *token) ? *token : ACTIVE;
+
+        token = strtok(NULL, ",\n");
+        LIST_USER.ebike_state = (token && *token) ? *token : ACTIVE;
+
+        linklist_add_data(LIST, LIST_USER);
+
+        memset(buffer, 0, sizeof(buffer));
+        memset(&LIST_USER, 0, sizeof(LINKLIST_USER)); // 确保结构体清零
+    }
+    fclose(fp_USER_DATA_read); // 关闭文件
 }

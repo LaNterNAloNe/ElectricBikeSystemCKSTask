@@ -1,4 +1,6 @@
-typedef struct _user{
+#include"GROCERY.H"
+
+typedef struct _LINKLIST_USER_{
     int ID;
     char usrn[15];
     char rln[16];
@@ -39,7 +41,7 @@ typedef struct _LINKLIST_
 } LINKLIST;
 
 void linklist_add_data(LINKLIST *pList, LINKLIST_USER NEW_USER_DATA);
-LINKLIST_NODE *linklist_find_data(LINKLIST *pList, char *str, char *needed_finding);
+int linklist_find_data(LINKLIST *pList, char *str, char *needed_finding);
 int linklist_delete_data(LINKLIST *pList, char *usrn);
 void linklist_clear(LINKLIST *pList);
-
+void linklist_get_user_data(LINKLIST *LIST);

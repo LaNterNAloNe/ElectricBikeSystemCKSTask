@@ -84,10 +84,23 @@
 #define ACTIVE '0'
 #define FROZEN '1'
 #define BANNED '2'
-
+//定义车辆状态
 #define ACTIVE '0'
 #define BROKEN '1'
 
+//定义处理情况
+#define PASSED 1
+#define FAILED 0
+#define PENDING -1
+
+//定义列表顺序
+#define ASCENDING 1
+#define DESCENDING 0
+// 列表参数
+#define LIST_INTERVAL 30
+#define LIST_LIMIT 8
+
+//定义调试模式
 #define debug_mode 1
 
 

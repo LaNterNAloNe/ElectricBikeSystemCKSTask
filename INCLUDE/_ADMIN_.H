@@ -143,9 +143,7 @@
 #define ACTIVE_ADMIN_FEATURE_DOWN 16
 #define ACTIVE_ADMIN_FEATURE_EXIT 20
 
-// 列表参数
-#define LIST_INTERVAL 30
-#define LIST_LIMIT 8
+
 
 typedef void (*DRAWFUNCTION) (int coord1,int coord2,int coord3,int coord4);
 typedef void (*CLEARFUNCTION) (int coord1,int coord2,int coord3,int coord4);
@@ -187,9 +185,11 @@ void clear_flip_down(int x1,int y1,int x2,int y2);
 
 void admin_bike_register(int *page, int *id,LINKLIST *LIST);
 void drawgraph_admin_bike_register();
+void handle_click_event_admin_bike_register(LINKLIST *LIST, int *page, char *search_str, int *id_list, FILE *fp_EBIKE_INFO_read, int *mode, int selected_id);
 void list_search_register_request(int id_list[8],FILE *fp,char *list_mode,int search_mode,int page_change,int is_clear,char *search_str,char *search_needed);
-int list_admin_register_search_is_valid(EBIKE_INFO TEMP,char *list_mode,char *search_str,char *search_needed,int mode);
-void handle_click_event_admin_bike_register(LINKLIST *LIST, int *page, char *search_str, int *id_list, FILE *fp_EBIKE_INFO_read, int mode, int selected_id);
+void list_info_admin(EBIKE_INFO TEMP, int listed_item, char *list_mode, int list_sequence);
+int list_admin_register_search_is_valid(EBIKE_INFO TEMP, char *list_mode, char *search_str, char *search_needed, int mode);
+
 
 void admin_bike_license(int *page, int *id, LINKLIST *LIST);
 void drawgraph_admin_bike_license();
@@ -202,6 +202,7 @@ int handle_list_select_line_admin(int *page);
 
 void AdminswitchPage();
 long int ebike_info_search(FILE *fp, char *search_str, char *search_needed);
+void AdminConductSuccess(int button_x1, int button_y1, int button_x2, int button_y2);
 
 #define STRUCT_LENGTH(Struct) (sizeof(Struct)/sizeof(Struct[0]))
 
