@@ -3,7 +3,7 @@
 /*****************************************************************
 MODULE:管理员主菜单
 *****************************************************************/
-void main_admin(int *page,int *ID){
+void main_admin(int *page,unsigned long *ID){
     int tag=ACTIVE_ADMIN_NULL;
     ADMIN_BUTTONS AdminButtons[8];
     define_admin_buttons(AdminButtons, STRUCT_LENGTH(AdminButtons)); // 定义按钮
@@ -105,13 +105,13 @@ void admin_handle_buttons_event(int *page){
 /*****************************************************************
 MODULE:管理员车辆注册
 *****************************************************************/
-void admin_bike_register(int *page, int *ID, LINKLIST *LIST)
+void admin_bike_register(int *page, unsigned long *ID, LINKLIST *LIST)
 {
     int mode=0; // 搜索模式，列出已处理清单或待处理清单，主动清除该页面时重设为0（默认列出待处理清单）
     // static int visited=0; // 是否进入乐该页面，主动清除该页面时重设为0
     char search_str[10]; // 搜索框输入信息储存
     int selected_id = -1;
-    int id_list[8] = {-1,-1,-1,-1,-1,-1,-1,-1}; // 记录当前显示的列表每行对应的ID
+    unsigned long id_list[8] = {-1,-1,-1,-1,-1,-1,-1,-1}; // 记录当前显示的列表每行对应的ID
     int tag=ACTIVE_ADMIN_NULL;
     ADMIN_BUTTONS AdminButtons[18];
     FILE *fp_EBIKE_INFO_read = fopen("C:\\EBS\\DATA\\REGISTER.DAT","rb+");
@@ -131,7 +131,7 @@ void admin_bike_register(int *page, int *ID, LINKLIST *LIST)
     while(*page == ADMIN_BIKE_REGISTER){
         admin_flush_buttons(&tag,STRUCT_LENGTH(AdminButtons),AdminButtons);
         admin_handle_buttons_event(page);
-        selected_id = handle_list_select_line_admin(page);
+        selected_id = handle_list_select_line_admin(id_list);
         newmouse(&MouseX,&MouseY,&press);
 
         admin_handle_features_event(LIST, page, search_str, id_list, fp_EBIKE_INFO_read, &mode, selected_id); // 处理点击事件
@@ -191,10 +191,10 @@ void drawgraph_admin_bike_register(){
 /*****************************************************************
 MODULE:管理员车辆上牌
 *****************************************************************/
-void admin_bike_license(int *page, int *id, LINKLIST *LIST)
+void admin_bike_license(int *page, unsigned long *id, LINKLIST *LIST)
 {
     char *search_str;
-    int id_list[8];
+    unsigned long id_list[8];
     int mode = 0;
     int selected_id;
     int tag = ACTIVE_ADMIN_NULL;
@@ -432,7 +432,7 @@ void admin_flush_buttons(int *tag, int button_counts, ADMIN_BUTTONS AdminButtons
 MODULE:该源文件全局可使用的函数模块
 *****************************************************************/
 // 列表函数，用于列出注册请求
-void admin_list_info(int id_list[8], FILE *fp, char *list_mode, int search_mode,
+void admin_list_info(unsigned long id_list[8], FILE *fp, char *list_mode, int search_mode,
                                   int page_change, int is_clear, char *search_str, char *search_needed)
 {
     // page_change为1，向下列表，为-1，向上列表，为0，不翻页
@@ -642,7 +642,7 @@ int list_is_valid(EBIKE_INFO TEMP, char *list_mode, char *search_str, char *sear
 }
 
 //绘制选中的行的图形动画，同时返回选中行对应数据的id
-int handle_list_select_line_admin(int *id_list)
+unsigned long handle_list_select_line_admin(unsigned long *id_list)
 {
     int i;
     for (i = 0; i < LIST_LIMIT; i++)
@@ -669,10 +669,10 @@ int handle_list_select_line_admin(int *id_list)
 
 
 // 查找文件中是否存在指定内容，并返回该数据块位置
-long int find_ebike_info(FILE *fp,char *search_str,char *search_needed){
+unsigned long int find_ebike_info(FILE *fp,char *search_str,char *search_needed){
     int counts;
-    long int pos;
-    long int search_pos = 0;
+    unsigned long int pos;
+    unsigned long int search_pos = 0;
     EBIKE_INFO TEMP;
 
     pos = ftell(fp); // 记录当前文件指针位置，以便后续返回
@@ -743,7 +743,7 @@ void admin_pass_failed_anime(int button_x1, int button_y1, int button_x2, int bu
     newmouse(&MouseX, &MouseY, &press); // 重新绘制
 }
 
-void admin_handle_features_event(LINKLIST *LIST, int *page, char *search_str, int *id_list, FILE *fp_EBIKE_INFO_read, int *mode, int selected_id)
+void admin_handle_features_event(LINKLIST *LIST, int *page, char *search_str, unsigned long *id_list, FILE *fp_EBIKE_INFO_read, int *mode, int selected_id)
 {
     int i;
     char list_mode[10]; // 列表依据
@@ -755,7 +755,7 @@ void admin_handle_features_event(LINKLIST *LIST, int *page, char *search_str, in
     time_t t = time(NULL); // 获取当前时间
     struct tm *tm = localtime(&t); // localtime和time都是time.h中的函数
     
-    long int search_pos = 0;       // 查找数据得到的位置
+    unsigned long int search_pos = 0;       // 查找数据得到的位置
 
     // 根据不同的页面，以不同的方式调用列表函数
     switch (*page)

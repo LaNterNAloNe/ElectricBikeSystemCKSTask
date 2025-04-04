@@ -397,41 +397,41 @@ ACTIVE_USER_DATAGRAPH},
 int EBIKE_INFO_judge(char* usrn, char* e_bike_id,int* id) {
 	int i = 0;
 	int account_counts;
-	EBIKE_INFO* TEMP ;
+	EBIKE_INFO TEMP ;
 	FILE* fp_EBIKE_INFO_readndwrite = fopen("C:\\EBS\\DATA\\REGISTER.DAT", "rb+");
 	if ( fp_EBIKE_INFO_readndwrite == NULL) {
 		fclose(fp_EBIKE_INFO_readndwrite);
 		exit(0);
 	}
-	memset(TEMP,0, sizeof(TEMP));
+	memset(&TEMP,0, sizeof(TEMP));
 	fseek(fp_EBIKE_INFO_readndwrite, 0, SEEK_END);
 	account_counts = ftell(fp_EBIKE_INFO_readndwrite) / sizeof(EBIKE_INFO);//初始操作完成，接下来开始遍历数据
 
 	for (i = 0; i < account_counts; i++) {
 		fseek(fp_EBIKE_INFO_readndwrite, i * sizeof(EBIKE_INFO), SEEK_SET);
-		fread(TEMP, sizeof(EBIKE_INFO), 1, fp_EBIKE_INFO_readndwrite); //逐个读取，每个用户信息
+		fread(&TEMP, sizeof(EBIKE_INFO), 1, fp_EBIKE_INFO_readndwrite); //逐个读取，每个用户信息
 
-		if (strcmp(usrn, TEMP->rln) == 0) {
+		if (strcmp(usrn, TEMP.rln) == 0) {
 			if (fclose(fp_EBIKE_INFO_readndwrite) != 0) getch(), exit(1); //发现存在用户名相同的，则注册失败
 			return 1;
 		}
-		if (strcmp(e_bike_id, TEMP->ebike_ID) == 0) {
+		if (strcmp(e_bike_id, TEMP.ebike_ID) == 0) {
 			if (fclose(fp_EBIKE_INFO_readndwrite) != 0) getch(), exit(1); //发现存在车牌号相同的，则注册失败
 			return 2;
 		}
 	}
 
 	//若经过了for循环仍未经过return，则代表用户名未曾注册过，可以注册
-	strcpy(TEMP->rln, usrn);			//获取账密和uid
-	strcpy(TEMP->ebike_ID, e_bike_id);
-	strcpy(TEMP->ebike_license, "license");
-	strcpy(TEMP->location, "location");
-	TEMP->ID =*id;
-	TEMP->apply_time =43;
-	TEMP->conduct_time = -1;
-	TEMP->result = -1;
+	strcpy(TEMP.rln, usrn);			//获取账密和uid
+	strcpy(TEMP.ebike_ID, e_bike_id);
+	strcpy(TEMP.ebike_license, "license");
+	strcpy(TEMP.location, "location");
+	TEMP.ID =*id;
+	TEMP.apply_time =43;
+	TEMP.conduct_time = -1;
+	TEMP.result = -1;
 	fseek(fp_EBIKE_INFO_readndwrite, 0, SEEK_END); // 确保写入位置在文件末尾
-	fwrite(TEMP, sizeof(EBIKE_INFO), 1, fp_EBIKE_INFO_readndwrite);  //将注册信息写入文件
+	fwrite(&TEMP, sizeof(EBIKE_INFO), 1, fp_EBIKE_INFO_readndwrite);  //将注册信息写入文件
 	if (fclose(fp_EBIKE_INFO_readndwrite) != 0) getch(), exit(1);
 	return 0;
 

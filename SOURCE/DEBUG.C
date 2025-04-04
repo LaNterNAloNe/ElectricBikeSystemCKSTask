@@ -1,10 +1,10 @@
 #include "DEBUG.H"
 
 /* 获取当前程序内存使用量（单位：KB） */
-unsigned long get_used_memory()
+unsigned unsigned long get_used_memory()
 {
     struct heapinfo *hi;
-    unsigned long total = 0;
+    unsigned unsigned long total = 0;
 
     // 遍历堆内存分配块
     hi->ptr = NULL;
@@ -21,7 +21,7 @@ unsigned long get_used_memory()
 void display_memory_usage(int x, int y)
 {
     static char mem_str[20];
-    unsigned long mem_used;
+    unsigned unsigned long mem_used;
 
     // 获取内存数据
     mem_used = get_used_memory();
@@ -39,10 +39,16 @@ void display_memory_usage(int x, int y)
     outtextxy(x, y + 10, mem_str);
 }
 
-void show_text(int x, int y, int value, int color)
+void show_num(int x, int y, unsigned long value, int color)
 {
     char text[20];
-    sprintf(text, "%d", value); // 将整数转换为字符串
+    sprintf(text, "%ld", value); // 将整数转换为字符串
+
+    setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
+    setcolor(BLACK);
+    setlinestyle(SOLID_LINE,0, 1);
+    rectangle(x-1, y-1, x+textwidth(text)+1, y+textheight(text)+1);
+    bar(x,y,x+textwidth(text),y+textheight(text));
     setcolor(color);
     outtextxy(x, y, text);
 }

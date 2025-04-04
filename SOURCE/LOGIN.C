@@ -2,7 +2,7 @@
 
 
 // 登录界面
-void login(int *page, int *ID) {
+void login(int *page, unsigned long *ID) {
 	
     char usrn[13] = {'\0'}; // 初始化为空
     char psw[13] = {'\0'};
@@ -53,8 +53,8 @@ void login(int *page, int *ID) {
 		else if (mouse_press(REGISTER_X1,REGISTER_Y1,REGISTER_X2,REGISTER_Y2)==1) {
 			clrmous(MouseX, MouseY);
 			switchPage();
-			*page = REGISTER_ID_INPUT; // REGISTER : 3 跳转到注册界面
-			Input_Bar(NULL, NULL, NULL, NULL, NULL,1,NULL);
+            *page = REGISTER_ID_INPUT; // REGISTER_ID_INPUT : 4 跳转到注册界面，先输入ID
+            Input_Bar(NULL, NULL, NULL, NULL, NULL,1,NULL);
 			return;
         }
 		else if (mouse_press(EXITPROGRAM_X1,EXITPROGRAM_Y1,EXITPROGRAM_X2,EXITPROGRAM_Y2)==1) {
@@ -124,7 +124,7 @@ void drawgraph_login(void){
 }
 
 //管理员登录界面
-void login_admin(int* page,int *uid) {
+void login_admin(int* page,unsigned long *ID) {
     char usrn[10] = {'\0'}; // 初始化为空
     char psw[10] = {'\0'};
     int tag = 0;
@@ -152,15 +152,16 @@ void login_admin(int* page,int *uid) {
 		if (mouse_press(ADMIN_LOGIN_X1, ADMIN_LOGIN_Y1, ADMIN_LOGIN_X2, ADMIN_LOGIN_Y2) == 1) {
 			// 检查输入是否非空且正确
 			if (usrn[0] != '\0' && psw[0] != '\0'){
-				adminlogin_judge(usrn,psw,uid);
-				if(*uid != -1){
-					anime_admin_login_success();
+                adminlogin_judge(usrn, psw, ID);
+                if (*ID != -1)
+                {
+                    anime_admin_login_success();
 					switchPage();
 					*page = MAIN_ADMIN; // MAIN_USER : 10 跳转到用户主界面
 					Input_Bar(NULL, NULL, NULL, NULL, NULL,1,NULL);  // 清除输入框记忆
                 	return; // 退出循环
-				}
-				else{
+                }
+                else{
 					anime_admin_login_fail();
 				}
 			}else 
@@ -244,11 +245,11 @@ void drawgraph_admin_login(){
 	line(EXITPROGRAM_X2, EXITPROGRAM_Y1, EXITPROGRAM_X1, EXITPROGRAM_Y2);
 }
 
-void register_id_input(int* page, int* ID) {
-	char id_input[9];
-	long id=-1;
-	int id_flag = -1;
-	int tag=0;
+void register_id_input(int* page, unsigned long* ID) {
+	char id_input[10]; // 用于存储输入的ID
+	unsigned long id=-1; // 用于存储检测通过的ID
+	int id_flag = -1; // 标明输入的ID是否合法
+	int tag=ACTIVE_NONE; // 用于记录鼠标点击状态;
 	clrmous(MouseX, MouseY);
 	save_bk_mou(MouseX, MouseY);
 	drawgraph_register_id_input();
@@ -261,34 +262,34 @@ void register_id_input(int* page, int* ID) {
 		}
 		if (mouse_press(LOGIN_X1, LOGIN_Y1, LOGIN_X2, LOGIN_Y2) == 1) {
 			id = atol(id_input);
-			id_flag = register_id_judge(id);
-			switch (id_flag) {
-			case 0:
-				*ID = id;
-				clrmous(MouseX, MouseY);
-				switchPage();
-				*page = REGISTER; // EXIT : 0，退出程序
-				return;
-			case 1:
-				setcolor(MY_RED);
-				setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
-				rectangle(PASSWORD_X1 + 2, PASSWORD_Y1 + 2, PASSWORD_X2 - 2, PASSWORD_Y2 - 2);
-				setcolor(MY_WHITE);
-				setfillstyle(SOLID_FILL, MY_WHITE);
-				bar(330, 210, 500, 250);
-				delay(200);
-				puthz(220, 230, "学号格式错误", 24, 30, MY_RED);
-				break;
-			case 2:
-				setcolor(MY_RED);
-				setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
-				rectangle(PASSWORD_X1 + 2, PASSWORD_Y1 + 2, PASSWORD_X2 - 2, PASSWORD_Y2 - 2);
-				setcolor(MY_WHITE);
-				setfillstyle(SOLID_FILL, MY_WHITE);
-				bar(330, 210, 500, 250);
-				delay(200);
-				puthz(340, 230, "学号已被注册", 24, 30, MY_RED);
-				break;
+            id_flag = register_id_judge(id);
+
+            switch (id_flag) {
+                case 0: // 转换成功，学号格式正确，未被注册
+                    *ID = id;
+                    clrmous(MouseX, MouseY);
+                    *page = REGISTER; // REGISTER : 3，进入正常注册功能
+                    return;
+                case 1: // 转换失败，学号格式错误
+                    setcolor(MY_RED);
+                    setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+                    rectangle(PASSWORD_X1 + 2, PASSWORD_Y1 + 2, PASSWORD_X2 - 2, PASSWORD_Y2 - 2);
+                    setcolor(MY_WHITE);
+                    setfillstyle(SOLID_FILL, MY_WHITE);
+                    bar(330, 210, 500, 250);
+                    delay(200);
+                    puthz(220, 230, "学号格式错误", 24, 30, MY_RED);
+                    break;
+                case 2: // 学号重复
+                    setcolor(MY_RED);
+                    setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+                    rectangle(PASSWORD_X1 + 2, PASSWORD_Y1 + 2, PASSWORD_X2 - 2, PASSWORD_Y2 - 2);
+                    setcolor(MY_WHITE);
+                    setfillstyle(SOLID_FILL, MY_WHITE);
+                    bar(330, 210, 500, 250);
+                    delay(200);
+                    puthz(340, 230, "学号已被注册", 24, 30, MY_RED);
+                    break;
 			}
 		}
 		else if (mouse_press(REGISTER_X1, REGISTER_Y1, REGISTER_X2, REGISTER_Y2) == 1) {
@@ -309,42 +310,38 @@ void register_id_input(int* page, int* ID) {
 	}
 }
 
-int register_id_judge(long id) {
+int register_id_judge(unsigned long id) {
 	int i = 0;
 	int account_counts;
-	USER_LOGIN_DATA* TEMP;
-	FILE* fp_LOGIN_USER_readndwrite = fopen("C:\\EBS\\DATA\\USER.DAT", "rb+");
+	USER_LOGIN_DATA TEMP;
+	FILE* fp_LOGIN_USER_readndwrite = fopen("C:\\EBS\\DATA\\USER.DAT", "rb");
 
-	if (fp_LOGIN_USER_readndwrite == NULL) {
+    if (fp_LOGIN_USER_readndwrite == NULL) {
 		fclose(fp_LOGIN_USER_readndwrite);
 		exit(0);
 	}
 
-	if (id == 0 || id == -1||id<100000000||id>999999999) {
+	if (id <= 0 ||id<100000000||id>999999999) {
 		if (fclose(fp_LOGIN_USER_readndwrite) != 0) getch(), exit(0);
 		return 1;//转换失败，学号格式错误
 	}
 
-	fseek(fp_LOGIN_USER_readndwrite, 0, SEEK_END);
+    fseek(fp_LOGIN_USER_readndwrite, 0, SEEK_END);
 	account_counts = ftell(fp_LOGIN_USER_readndwrite) / sizeof(USER_LOGIN_DATA);//初始操作完成，接下来开始遍历数据
 
-	for (i = 0; i < account_counts; i++) {
+    for (i = 0; i < account_counts; i++) {
 		fseek(fp_LOGIN_USER_readndwrite, i * sizeof(USER_LOGIN_DATA), SEEK_SET);
-		fread(TEMP, sizeof(USER_LOGIN_DATA), 1, fp_LOGIN_USER_readndwrite); //逐个读取，每个用户信息，直到用户名与密码均匹配
-		if (TEMP->ID==id) {
-				if (fclose(fp_LOGIN_USER_readndwrite) != 0) getch(), exit(0);
-				return 2;//学号重复
+		fread(&TEMP, sizeof(USER_LOGIN_DATA), 1, fp_LOGIN_USER_readndwrite); //逐个读取，每个用户信息，直到用户名与密码均匹配
+		if (TEMP.ID==id) {
+            if (fclose(fp_LOGIN_USER_readndwrite) != 0) getch(), exit(0);
+            return 2;//学号重复
 		}
 
 	}
-	TEMP->ID = id;
-	strcpy(TEMP->psw,"-1");
-	strcpy(TEMP->usrn, "-1");
-	TEMP->state = -1;
-	fseek(fp_LOGIN_USER_readndwrite, 0, SEEK_END); // 确保写入位置在文件末尾
-	fwrite(TEMP, sizeof(USER_LOGIN_DATA), 1, fp_LOGIN_USER_readndwrite);  //将注册信息写入文件
+    // 为什么要写入信息？在输入账密后还有一次写入信息，且当时也把ID正确赋值了，没必要在这写啊，会出问题的 -- LaNterN
 	if (fclose(fp_LOGIN_USER_readndwrite) != 0) getch(), exit(0);
-	return 0;
+
+    return 0;
 }
 
 void drawgraph_register_id_input() {
@@ -465,7 +462,7 @@ void flushRegisterIdGraph(int* tag) {
 
 
 // 注册界面
-void _register(int* page,int *ID) {
+void _register(int* page,unsigned long *ID) {
     char usrn[10] = {'\0'}; // 初始化为空
     char psw[10] = {'\0'};
     int tag = 0;
@@ -581,7 +578,7 @@ void drawgraph_register() {
 }
 
 //用户登录检测
-void userlogin_judge(char *usrn,char *psw,long *ID){
+void userlogin_judge(char *usrn,char *psw,unsigned long *ID){
 	int i=0;
 	int account_counts;
 	USER_LOGIN_DATA *TEMP;
@@ -615,7 +612,7 @@ void userlogin_judge(char *usrn,char *psw,long *ID){
 }
 
 //管理员登录检测
-void adminlogin_judge(char *usrn,char *psw,int *uid){
+void adminlogin_judge(char *usrn,char *psw,unsigned long *id){
 	int i=0;
 	int account_counts;
 	ADMIN_LOGIN_DATA *TEMP;
@@ -636,7 +633,7 @@ void adminlogin_judge(char *usrn,char *psw,int *uid){
 		if(strcmp(usrn,TEMP->usrn) == 0){
 			if(strcmp(psw,TEMP->psw) == 0){
 				//登陆成功
-				*uid = TEMP->uid;
+				*id = TEMP->uid;
 				if(fclose(fp_LOGIN_ADMIN_read)!=0) getch(),exit(0);
 				return;
 			}
@@ -649,7 +646,7 @@ void adminlogin_judge(char *usrn,char *psw,int *uid){
 }
 
 //用户注册检测
-int userregister_judge(char *usrn,char *psw,long *ID){
+int userregister_judge(char *usrn,char *psw,unsigned long *ID){
 	int i=0;
 	int account_counts;
 	USER_LOGIN_DATA *TEMP;

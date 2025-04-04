@@ -164,7 +164,7 @@ typedef struct {
 
 typedef struct {
     char rln[16];
-	int ID;
+	unsigned long ID;
 	char ebike_ID[10];
     char ebike_license[10];
     char location[10];
@@ -177,33 +177,33 @@ typedef struct {
 
 
 // 主界面
-void main_admin(int *page,int *ID);
+void main_admin(int *page,unsigned long *ID);
 void drawgraph_admin_menu(void);
 
 // 车辆注册界面
-void admin_bike_register(int *page, int *id,LINKLIST *LIST);
+void admin_bike_register(int *page, unsigned long *id,LINKLIST *LIST);
 void drawgraph_admin_bike_register();
 
 // 车辆上牌界面
-void admin_bike_license(int *page, int *id, LINKLIST *LIST);
+void admin_bike_license(int *page, unsigned long *id, LINKLIST *LIST);
 void drawgraph_admin_bike_license();
 
 // 按钮状态刷新
 void define_admin_buttons(ADMIN_BUTTONS AdminButtons[], int button_counts);
 void admin_flush_buttons(int *tag,int button_counts,ADMIN_BUTTONS AdminButtons[]);
-void admin_handle_features_event(LINKLIST *LIST, int *page, char *search_str, int *id_list,
+void admin_handle_features_event(LINKLIST *LIST, int *page, char *search_str, unsigned long *id_list,
                                  FILE *fp_EBIKE_INFO_read, int *mode, int selected_id);
 void admin_handle_buttons_event(int *page);
 
 // 列表函数
-void admin_list_info(int id_list[8], FILE *fp, char *list_mode, int search_mode, int page_change, 
+void admin_list_info(unsigned long id_list[8], FILE *fp, char *list_mode, int search_mode, int page_change, 
                     int is_clear, char *search_str, char *search_needed);
 void admin_show_info(EBIKE_INFO TEMP, int listed_item, char *list_mode, int list_sequence);
 int list_is_valid(EBIKE_INFO TEMP, char *list_mode, char *search_str, char *search_needed, int search_mode);
-int handle_list_select_line_admin(int *page);
+unsigned long handle_list_select_line_admin(unsigned long *id_list);
 
 // 搜索函数
-long int find_ebike_info(FILE *fp, char *search_str, char *search_needed);
+unsigned long int find_ebike_info(FILE *fp, char *search_str, char *search_needed);
 
 // 其他杂项
 void draw_cues(int x, int y, int null1, int null2);

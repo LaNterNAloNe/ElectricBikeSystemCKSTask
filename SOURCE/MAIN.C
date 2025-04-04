@@ -1,9 +1,9 @@
 #include"GLOBAL.H"
 
 int main(void){
-    int page=LOGIN; // 主页面
+    int page = REGISTER_ID_INPUT; // 主页面
     // int page=NULL; // 副页面
-    int ID=-1;//记录登录用户的ID
+    unsigned long ID=-1;//记录登录用户的ID
     int driver=VGA,mode=VGAHI;
     LINKLIST *LIST = (LINKLIST *)malloc(sizeof(LINKLIST));
 
@@ -25,7 +25,7 @@ int main(void){
                 login_admin(&page,&ID);
                 break;
             case REGISTER:
-                _register(&page);
+                _register(&page,&ID);
                 break;
             case REGISTER_ID_INPUT:
                 register_id_input(&page, &ID);

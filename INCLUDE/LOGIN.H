@@ -12,6 +12,7 @@
 #include"MOUSE.H"
 #include"INPUTCH.H"
 #include"HZ.H"
+#include"DEBUG.H"
 
 //定义登录界面可交互块的坐标
 #define USERNAME_X1 220
@@ -55,20 +56,20 @@
 #define MAX_LEN 14
 
 //声明函数
-void login(int *page,int *uid);
-void login_admin(int *page,int *uid);
-void _register(int *page,int *ID);
-void register_id_input(int* page, int* ID);
+void login(int *page,unsigned long *ID);
+void login_admin(int *page,unsigned long *ID);
+void _register(int *page,unsigned long *ID);
+void register_id_input(int* page, unsigned long *ID);
 void drawgraph_register_id_input(void);
 void flushRegisterIdGraph(int* tag);
-int register_id_judge(long id);
+int register_id_judge(unsigned long id);
 void drawgraph_login(void);
 void drawgraph_admin_login(void);
 void drawgraph_register(void);
 void flushLoginGraph(int *tag,int *page);
-void userlogin_judge(char *usrn,char *psw,int *uid);
-void adminlogin_judge(char *usrn,char *psw,int *uid);
-int userregister_judge(char *usrn,char *psw,long *ID);
+void userlogin_judge(char *usrn,char *psw,unsigned long *ID);
+void adminlogin_judge(char *usrn,char *psw,unsigned long *ID);
+int userregister_judge(char *usrn,char *psw,unsigned long *ID);
 void switchPage();
 void anime_register_success();
 void anime_register_fail(int err);
@@ -77,11 +78,9 @@ void anime_login_fail();
 void anime_admin_login_success();
 void anime_admin_login_fail();
 
-unsigned long get_used_memory();
-void display_memory_usage(int x, int y);
 
 typedef struct {
-    long ID;
+    unsigned long ID;
     char usrn[MAX_LEN];
     char psw[MAX_LEN];
     char state;
