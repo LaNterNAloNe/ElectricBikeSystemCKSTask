@@ -357,58 +357,76 @@ void clear_flip_down(int x1, int y1, int x2, int y2)
 
 
 // 这个函数可能还需要进一步优化，若之后出现画面抽搐的问题尚不能解决，就干这个函数
-// 2025.3.19 出错：连个静态变量索引导入结构体数组导致越界。通过将其定义值改为0暂时解决
-void admin_flush_buttons(int *tag,int button_counts,ADMIN_BUTTONS AdminButtons[]){
+// 2025.3.19 出错：连个静态变量索引导入结构体数组导致越界。通过将其定义值改为0暂时解
+// 2025.4.4 将按钮初始化模块化后，又出现了类似问题。交给AI处理后，该函数添加了一些防指针越界的语句，暂时解决了问题
+void admin_flush_buttons(int *tag, int button_counts, ADMIN_BUTTONS AdminButtons[])
+{
     int i;
     int new_tag = ACTIVE_ADMIN_NULL;
     static int last_active_index = 0;
     static int current_active_index = 0;
-    
+
+    // 检查按钮数量是否合法
+    if (button_counts <= 0 || !AdminButtons)
+    {
+        return;
+    }
+
     // 检查鼠标是否在任一按钮区域内
-    for (i = 0; i < button_counts; i++) {
+    for (i = 0; i < button_counts; i++)
+    {
         if (MouseX >= AdminButtons[i].x1 && MouseX <= AdminButtons[i].x2 &&
-            MouseY >= AdminButtons[i].y1 && MouseY <= AdminButtons[i].y2) {
+            MouseY >= AdminButtons[i].y1 && MouseY <= AdminButtons[i].y2)
+        {
             new_tag = AdminButtons[i].active_tag;
             last_active_index = current_active_index;
-            current_active_index = i; 
+            current_active_index = i;
             break;
         }
     }
 
     // 状态变化时更新
-    if (*tag != new_tag) {
+    if (*tag != new_tag)
+    {
         *tag = new_tag;
-        if (new_tag != ACTIVE_ADMIN_NULL) {
+        if (new_tag != ACTIVE_ADMIN_NULL)
+        {
             // 绘制提示（同时清除上一次高光提示）
-            if (last_active_index != -1 && last_active_index < button_counts) 
+            if (last_active_index >= 0 && last_active_index < button_counts)
+            {
                 AdminButtons[last_active_index].clearfunc(
-                AdminButtons[last_active_index].x1,
-                AdminButtons[last_active_index].y1,
-                AdminButtons[last_active_index].x2,
-                AdminButtons[last_active_index].y2);
-            if (current_active_index != -1 && current_active_index < button_counts)
+                    AdminButtons[last_active_index].x1,
+                    AdminButtons[last_active_index].y1,
+                    AdminButtons[last_active_index].x2,
+                    AdminButtons[last_active_index].y2);
+            }
+            if (current_active_index >= 0 && current_active_index < button_counts)
+            {
                 AdminButtons[current_active_index].drawfunc(
-                AdminButtons[current_active_index].x1, 
-                AdminButtons[current_active_index].y1,
-                AdminButtons[current_active_index].x2, 
-                AdminButtons[current_active_index].y2);
+                    AdminButtons[current_active_index].x1,
+                    AdminButtons[current_active_index].y1,
+                    AdminButtons[current_active_index].x2,
+                    AdminButtons[current_active_index].y2);
+            }
             last_active_index = current_active_index;
             MouseS = 1;
         }
-        else {
+        else
+        {
             // 清除提示
-            if (last_active_index != -1 && last_active_index < button_counts)
+            if (last_active_index >= 0 && last_active_index < button_counts)
+            {
                 AdminButtons[last_active_index].clearfunc(
-                AdminButtons[last_active_index].x1,
-                AdminButtons[last_active_index].y1,
-                AdminButtons[last_active_index].x2, 
-                AdminButtons[last_active_index].y2),
+                    AdminButtons[last_active_index].x1,
+                    AdminButtons[last_active_index].y1,
+                    AdminButtons[last_active_index].x2,
+                    AdminButtons[last_active_index].y2);
                 last_active_index = -1;
+            }
             MouseS = 0;
         }
     }
 }
-
 
 /*****************************************************************
 MODULE:该源文件全局可使用的函数模块

@@ -92,5 +92,6 @@
     "new": "c",
     "text_encoding": "cpp",
     "typeinfo": "cpp"
-}
+},
+"marscode.chatLanguage": "cn"
 }
