@@ -4,8 +4,8 @@
 // 登录界面
 void login(int *page, int *ID) {
 	
-    char usrn[13] = {0}; // 初始化为空
-    char psw[13] = {0};
+    char usrn[13] = {'\0'}; // 初始化为空
+    char psw[13] = {'\0'};
     int tag = 0;
 	
     clrmous(MouseX, MouseY);
@@ -126,9 +126,9 @@ void drawgraph_login(void){
 
 //管理员登录界面
 void login_admin(int* page,int *uid) {
-	char usrn[10] = { 0 }; // 初始化为空
-	char psw[10] = { 0 };
-	int tag = 0;
+    char usrn[10] = {'\0'}; // 初始化为空
+    char psw[10] = {'\0'};
+    int tag = 0;
 	// FILE *fp_LOGIN_ADMIN_read = fopen("C:\\EBS\\DATA\\ADMIN.DAT","r");
 	// if(fp_LOGIN_ADMIN_read == NULL) *page=-1,getch(),exit(0);
 	clrmous(MouseX, MouseY);
@@ -249,9 +249,9 @@ void drawgraph_admin_login(){
 
 // 注册界面
 void _register(int* page) {
-	char usrn[10] = { 0 }; // 初始化为空
-	char psw[10] = { 0 };
-	int tag = 0;
+    char usrn[10] = {'\0'}; // 初始化为空
+    char psw[10] = {'\0'};
+    int tag = 0;
 	int is_register_invalid=0;
 
 	clrmous(MouseX, MouseY);
@@ -365,11 +365,10 @@ void drawgraph_register() {
 void userlogin_judge(char *usrn,char *psw,int *ID){
 	int i=0;
 	int account_counts;
-	USER_LOGIN_DATA *TEMP=malloc(sizeof(USER_LOGIN_DATA));
+	USER_LOGIN_DATA *TEMP;
 	FILE *fp_LOGIN_USER_read = fopen("C:\\EBS\\DATA\\USER.DAT","rb");
 
-	if (TEMP == NULL || fp_LOGIN_USER_read == NULL) {
-        if (TEMP) free(TEMP);
+	if (fp_LOGIN_USER_read == NULL) {
         fclose(fp_LOGIN_USER_read);
         exit(0);
     }
@@ -385,7 +384,6 @@ void userlogin_judge(char *usrn,char *psw,int *ID){
 			if(strcmp(psw,TEMP->psw) == 0){
 				//登陆成功
 				*ID = TEMP->ID;
-				free(TEMP);
 				if(fclose(fp_LOGIN_USER_read)!=0) getch(),exit(0);
 				return;
 			}
@@ -394,7 +392,6 @@ void userlogin_judge(char *usrn,char *psw,int *ID){
 	}
 	//若完成for循环仍未经过return函数，则说明账号不存在或账号存在，密码错误
 	if(fclose(fp_LOGIN_USER_read)!=0) getch(),exit(0);
-	free(TEMP);
 	return;
 }
 
@@ -402,11 +399,10 @@ void userlogin_judge(char *usrn,char *psw,int *ID){
 void adminlogin_judge(char *usrn,char *psw,int *uid){
 	int i=0;
 	int account_counts;
-	ADMIN_LOGIN_DATA *TEMP=malloc(sizeof(ADMIN_LOGIN_DATA));
+	ADMIN_LOGIN_DATA *TEMP;
 	FILE *fp_LOGIN_ADMIN_read = fopen("C:\\EBS\\DATA\\ADMIN.DAT","rb");
 
-	if (TEMP == NULL || fp_LOGIN_ADMIN_read == NULL) {
-        if (TEMP) free(TEMP);
+	if (fp_LOGIN_ADMIN_read == NULL) {
         fclose(fp_LOGIN_ADMIN_read);
         exit(0);
     }
@@ -422,7 +418,6 @@ void adminlogin_judge(char *usrn,char *psw,int *uid){
 			if(strcmp(psw,TEMP->psw) == 0){
 				//登陆成功
 				*uid = TEMP->uid;
-				free(TEMP);
 				if(fclose(fp_LOGIN_ADMIN_read)!=0) getch(),exit(0);
 				return;
 			}
@@ -431,7 +426,6 @@ void adminlogin_judge(char *usrn,char *psw,int *uid){
 	}
 
 	if(fclose(fp_LOGIN_ADMIN_read)!=0) getch(),exit(0);
-	free(TEMP);
 	return;
 }
 
@@ -439,11 +433,10 @@ void adminlogin_judge(char *usrn,char *psw,int *uid){
 int userregister_judge(char *usrn,char *psw){
 	int i=0;
 	int account_counts;
-	USER_LOGIN_DATA *TEMP=malloc(sizeof(USER_LOGIN_DATA));
+	USER_LOGIN_DATA *TEMP;
 	FILE *fp_LOGIN_USER_readndwrite = fopen("C:\\EBS\\DATA\\USER.DAT","rb+");
 	
-	if (TEMP == NULL || fp_LOGIN_USER_readndwrite == NULL) {
-        if (TEMP) free(TEMP);
+	if (fp_LOGIN_USER_readndwrite == NULL) {
         fclose(fp_LOGIN_USER_readndwrite);
         exit(0);
     }
@@ -456,7 +449,6 @@ int userregister_judge(char *usrn,char *psw){
 		fread(TEMP,sizeof(USER_LOGIN_DATA),1,fp_LOGIN_USER_readndwrite); //逐个读取，每个用户信息
 
 		if(strcmp(usrn,TEMP->usrn) == 0){
-			free(TEMP);
 			if(fclose(fp_LOGIN_USER_readndwrite)!=0) getch(),exit(1); //发现存在用户名相同的，则注册失败
 			return 1;
 		}
@@ -468,7 +460,6 @@ int userregister_judge(char *usrn,char *psw){
 	TEMP->ID = NULL;
 	TEMP->state = ACTIVE;
 	fwrite(TEMP,sizeof(USER_LOGIN_DATA),1,fp_LOGIN_USER_readndwrite);  //将注册信息写入文件
-	free(TEMP);
 	if(fclose(fp_LOGIN_USER_readndwrite)!=0) getch(),exit(1);
 	return 0;
 
