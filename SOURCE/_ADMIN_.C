@@ -691,26 +691,36 @@ long int find_ebike_info(FILE *fp,char *search_str,char *search_needed){
 }
 
 // 点击按钮后，若能成功操作，则执行该显示动画
-void AdminConductSuccess(int button_x1, int button_y1, int button_x2, int button_y2)
+void admin_pass_failed_anime(int button_x1, int button_y1, int button_x2, int button_y2,int result)
 {
     int tick = 0;
     clrmous(MouseX, MouseY); // 清除鼠标
 
-    for (tick = 0; tick <= 80; tick++){
-        if(tick%40 == 0){
+    for (tick = 0; tick <= 80; tick++)
+    {
+        if (tick % 40 == 0)
+        {
             setfillstyle(SOLID_FILL, GREEN);
             bar(button_x1, button_y1, button_x2, button_y2);
-            puthz(button_x1 + 4, button_y1 + 8, "操作成功", 16, 16, MY_WHITE); // 绘制按钮
-        }else if(tick%40 == 20){
+            if(result == PASSED)
+                puthz(button_x1 + 4, button_y1 + 8, "通过成功", 16, 16, MY_WHITE); // 绘制按钮
+            else if(result == FAILED)
+                puthz(button_x1 + 4, button_y1 + 8, "驳回成功", 16, 16, MY_WHITE); // 绘制按钮
+        }
+        else if (tick % 40 == 20)
+        {
             setfillstyle(SOLID_FILL, MY_YELLOW);
             bar(button_x1, button_y1, button_x2, button_y2);
-            puthz(button_x1 + 4, button_y1 + 8, "操作成功", 16, 16, MY_WHITE); // 绘制按钮
+            if(result == PASSED)
+                puthz(button_x1 + 4, button_y1 + 8, "通过成功", 16, 16, MY_WHITE); // 绘制按钮
+            else if(result == FAILED)
+                puthz(button_x1 + 4, button_y1 + 8, "通过成功", 16, 16, MY_WHITE); // 绘制按钮
         }
         delay(25);
     }
     setfillstyle(SOLID_FILL, MY_YELLOW);
-    bar(button_x1, button_y1, button_x2, button_y2); // 重绘按钮
-    puthz(button_x1 + 4, button_y1 + 8, "同意申请", 16, 16, MY_WHITE); // 重新绘制按钮
+    bar(button_x1, button_y1, button_x2, button_y2);                  // 重绘按钮
+    puthz(button_x1 + 4, button_y1 + 8, "同意申请", 16, 16, MY_WHITE); // 重新绘制按钮        
 
     newmouse(&MouseX, &MouseY, &press); // 重新绘制
 }
@@ -723,8 +733,10 @@ void admin_handle_features_event(LINKLIST *LIST, int *page, char *search_str, in
     EBIKE_INFO temp_info;
     LINKLIST_NODE *temp_node = LIST->HEAD; // LAST_NODE要找到链表中特定节点，先指向头结点
     int chain_pos = -1;                    // 链表位置
-    time_t t = time(NULL);
+
+    time_t t = time(NULL); // 获取当前时间
     struct tm *tm = localtime(&t); // localtime和time都是time.h中的函数
+    
     long int search_pos = 0;       // 查找数据得到的位置
 
     // 根据不同的页面，以不同的方式调用列表函数
@@ -825,16 +837,17 @@ void admin_handle_features_event(LINKLIST *LIST, int *page, char *search_str, in
                 temp_node->USER_DATA.anual_check+=10000; // 将链表中对应节点的annual加10000(10000表示数字中表示年的部分加1)
                 break;
             case ADMIN_BIKE_BROKEN:
-                temp_node->USER_DATA.ebike_state = BROKEN; // 将链表中对应节点的broken修改为1
+                temp_node->USER_DATA.ebike_state = BROKEN; // 将链表中对应节点的ebike_state修改为BROKEN
                 break;
         }
         
 
-        AdminConductSuccess(ADMIN_FEATURE1_X1, ADMIN_FEATURE1_Y1, ADMIN_FEATURE1_X2, ADMIN_FEATURE1_Y2); // 操作成功后的动画
+        admin_pass_failed_anime(ADMIN_FEATURE1_X1, ADMIN_FEATURE1_Y1, ADMIN_FEATURE1_X2, ADMIN_FEATURE1_Y2,PASSED); // 操作成功后的动画
 
         admin_list_info(id_list, fp_EBIKE_INFO_read, list_mode, *mode, LIST_PAGEUP, LIST_FLUSH, "\0", "\0"); // 操作结束后刷新列表
 
     } 
+
     // 点击拒绝申请
     if (mouse_press(ADMIN_FEATURE2_X1, ADMIN_FEATURE2_Y1, ADMIN_FEATURE2_X2, ADMIN_FEATURE2_Y2) == 1 && selected_id != -1)
     {
@@ -857,7 +870,7 @@ void admin_handle_features_event(LINKLIST *LIST, int *page, char *search_str, in
 
         // 申请失败，不修改链表数据
 
-        AdminConductSuccess(ADMIN_FEATURE1_X1, ADMIN_FEATURE1_Y1, ADMIN_FEATURE1_X2, ADMIN_FEATURE1_Y2); // 操作成功后的动画
+        admin_pass_failed_anime(ADMIN_FEATURE1_X1, ADMIN_FEATURE1_Y1, ADMIN_FEATURE1_X2, ADMIN_FEATURE1_Y2,FAILED); // 操作成功后的动画
 
         admin_list_info(id_list, fp_EBIKE_INFO_read, list_mode, *mode, LIST_PAGEUP, LIST_FLUSH, "\0", "\0"); // 操作结束后刷新列表
     }
@@ -865,7 +878,7 @@ void admin_handle_features_event(LINKLIST *LIST, int *page, char *search_str, in
 
 void define_admin_buttons(ADMIN_BUTTONS AdminButtons[], int button_counts)
 {
-    ADMIN_BUTTONS Examples[18] = {
+    ADMIN_BUTTONS Examples[] = {
         {ADMIN_BUTTON1_X1, ADMIN_BUTTON1_X2,
          ADMIN_BUTTON1_Y1, ADMIN_BUTTON1_Y2,
          ACTIVE_ADMIN_BUTTON1, &draw_cues, &clear_cues},

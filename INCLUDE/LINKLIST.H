@@ -1,7 +1,9 @@
 #include"GROCERY.H"
 
+#define USER_DATA_FILE_NAME "C:\\EBS\\DATA\\USRDAT.TXT"
+
 typedef struct _LINKLIST_USER_{
-    int ID;
+    long int ID;
     char usrn[15];
     char rln[16];
     char location[10];
@@ -45,3 +47,4 @@ int linklist_find_data(LINKLIST *pList, char *str, char *needed_finding);
 int linklist_delete_data(LINKLIST *pList, char *usrn);
 void linklist_clear(LINKLIST *pList);
 void linklist_get_user_data(LINKLIST *LIST);
+int linklist_write_user_data(LINKLIST *pList);

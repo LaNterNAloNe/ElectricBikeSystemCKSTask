@@ -219,7 +219,7 @@ void clear_flip_up(int x1, int y1, int x2, int y2);
 void draw_flip_down(int x1, int y1, int x2, int y2);
 void clear_flip_down(int x1, int y1, int x2, int y2);
 
-void AdminConductSuccess(int button_x1, int button_y1, int button_x2, int button_y2);
+void admin_pass_failed_anime(int button_x1, int button_y1, int button_x2, int button_y2, int result);
 int admin_exitting(int *page);
 void AdminswitchPage();
 

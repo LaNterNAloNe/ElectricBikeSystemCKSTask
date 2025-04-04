@@ -83,7 +83,7 @@ int linklist_find_data(LINKLIST *pList, char *str, char *needed_finding)
         if (isFound) return isFound; // 如果找到，则返回该节点的序号
     }
 
-    return -1; // 如果没有找到，则返回0
+    return -1; // 如果没有找到，则返回-1
 }
 
 
@@ -142,7 +142,7 @@ void linklist_get_user_data(LINKLIST *LIST)
     char *token;             // 定义获取截断字符串的token
     LINKLIST_USER LIST_USER; // 定义结构体，准备加入链表
 
-    FILE *fp_USER_DATA_read = fopen("C:\\EBS\\DATA\\USRDAT.TXT", "r");
+    FILE *fp_USER_DATA_read = fopen(USER_DATA_FILE_NAME, "r");
     if (fp_USER_DATA_read == NULL)
         getch(), exit(1);
     fseek(fp_USER_DATA_read, 0, SEEK_SET); // 将文件指针置于开头，开始遍历文件
@@ -181,4 +181,62 @@ void linklist_get_user_data(LINKLIST *LIST)
         memset(&LIST_USER, 0, sizeof(LINKLIST_USER)); // 确保结构体清零
     }
     fclose(fp_USER_DATA_read); // 关闭文件
+}
+
+/**********************************************************
+NAME:linklist_write_user_data
+VALUE:pList自定链表
+FUNCTION:将链表数据原子化写入文件，确保与原读取逻辑兼容
+返回值：0成功，-1失败
+***********************************************************/
+int linklist_write_user_data(LINKLIST *pList)
+{
+    const char *TMP_FILE = "user_data.tmp"; // 临时文件名
+    const char *FINAL_FILE = USER_DATA_FILE_NAME;
+    FILE *fp = NULL;
+    LINKLIST_NODE *ptr = pList->HEAD;
+    char buffer[200]; // 扩大缓冲区防止溢出
+
+    // 1. 打开临时文件
+    fp = fopen(TMP_FILE, "w");
+    if (!fp)
+    {
+        perror("无法创建临时文件");
+        return -1;
+    }
+
+    // 2. 遍历链表并写入
+    while (ptr != NULL)
+    {
+        // 按字段顺序格式化CSV行（必须与读取逻辑严格匹配）
+        sprintf(buffer,"%d,%s,%s,%s,%s,%s,%d,%d,%c,%c\n",
+                 ptr->USER_DATA.ID,
+                 ptr->USER_DATA.usrn,
+                 ptr->USER_DATA.rln,
+                 ptr->USER_DATA.location,
+                 ptr->USER_DATA.ebike_ID,
+                 ptr->USER_DATA.ebike_license,
+                 ptr->USER_DATA.anual_check,
+                 ptr->USER_DATA.violations,
+                 ptr->USER_DATA.account_state,
+                 ptr->USER_DATA.ebike_state);
+
+        // 写入文件并检查错误
+        if (fputs(buffer, fp) == EOF)
+        {
+            fclose(fp);
+            remove(TMP_FILE);
+            return -1;
+        }
+        ptr = ptr->NEXT;
+    }
+
+    // 3. 原子化替换文件
+    fclose(fp);
+    if (rename(TMP_FILE, FINAL_FILE) != 0)
+    {
+        remove(TMP_FILE);
+        return -1;
+    }
+    return 0;
 }
