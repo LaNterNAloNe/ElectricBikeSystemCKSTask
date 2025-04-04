@@ -64,11 +64,12 @@
 #define MAIN_ADMIN 20
 #define ADMIN_BIKE_REGISTER 21
 #define ADMIN_BIKE_LICENSE 22
-#define ADMIN_BIKE_ANUAL_AND_WROTEOUT 23
-#define ADMIN_BIKE_PENALIZE 24
-#define ADMIN_INFO 25
-#define ADMIN_MESSAGE 26
-#define ADMIN_DATABASE 27
+#define ADMIN_BIKE_ANUAL 23
+#define ADMIN_BIKE_BROKEN 24
+#define ADMIN_BIKE_VIOLATION 25
+#define ADMIN_INFO 26
+#define ADMIN_MESSAGE 27
+#define ADMIN_DATABASE 28
 
 //宏定义自定义颜色盘
 #define MY_LIGHTBLUE 0
@@ -96,6 +97,18 @@
 //定义列表顺序
 #define ASCENDING 1
 #define DESCENDING 0
+//定义列表模式
+#define LIST_PENDING 0
+#define LIST_FINISHED 1
+//定义清理列表参数
+#define LIST_CLEAR 1
+#define LIST_CLEAR_CONTINUE 2
+#define LIST_FLUSH 3
+#define LIST_NO_CLEAR 0
+//定义列表翻页参数
+#define LIST_PAGEUP 1
+#define LIST_PAGEDOWN -1
+#define LIST_STAY 0
 // 列表参数
 #define LIST_INTERVAL 30
 #define LIST_LIMIT 8

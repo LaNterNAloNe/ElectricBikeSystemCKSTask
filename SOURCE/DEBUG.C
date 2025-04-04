@@ -38,3 +38,11 @@ void display_memory_usage(int x, int y)
     sprintf(mem_str, "FARMEM LEFT: %lu Byte", farcoreleft());
     outtextxy(x, y + 10, mem_str);
 }
+
+void show_text(int x, int y, int value, int color)
+{
+    char text[20];
+    sprintf(text, "%d", value); // 将整数转换为字符串
+    setcolor(color);
+    outtextxy(x, y, text);
+}

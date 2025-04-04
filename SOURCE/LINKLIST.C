@@ -25,7 +25,7 @@ void linklist_add_data(LINKLIST *pList, LINKLIST_USER NEW_USER_DATA)
         LAST_NODE->NEXT = DATA_NODE; // 查找到末尾节点后，将新加的结构体连接上去，并标明所在序号
         DATA_NODE->PREVIOUS = LAST_NODE;
         DATA_NODE->chain_lenth = LAST_NODE->chain_lenth + 1;
-    }else  // 如果头结点为空，则将新加的结构体定义为头结点
+    }else  // 如果头结点为空，则将新加的结构体定义为头结点，序号为1 --- --- 
     {
         pList->HEAD = DATA_NODE;
         DATA_NODE->chain_lenth = 1;
@@ -50,30 +50,30 @@ int linklist_find_data(LINKLIST *pList, char *str, char *needed_finding)
     {
         if (!strcmp(needed_finding,"username")) {
             if (!strcmp(ptr->USER_DATA.usrn, str))
-                isFound = ptr->chain_lenth; // 如果找到，则返回该节点的序号
+                isFound = ptr->chain_lenth;
         }
         if (!strcmp(needed_finding,"id")) {
             itoa(ptr->USER_DATA.ID,buffer,10);
             if(strcmp(buffer, str) == 0)
-                isFound = ptr->chain_lenth; // 如果找到，则返回该节点的序号
+                isFound = ptr->chain_lenth;
         }
         if (!strcmp(needed_finding,"realname")) {
             if(!strcmp(ptr->USER_DATA.rln, str))
-                isFound = ptr->chain_lenth; // 如果找到，则返回该节点的序号
+                isFound = ptr->chain_lenth;
         }
         if (!strcmp(needed_finding,"location")) {
             if(!strcmp(ptr->USER_DATA.location, str))
-                isFound = ptr->chain_lenth; // 如果找到，则返回该节点的序号
+                isFound = ptr->chain_lenth;
         }
-        if (!strcmp(needed_finding,"anualcheck")) {
+        if (!strcmp(needed_finding,"anual_check")) {
             itoa(ptr->USER_DATA.anual_check,buffer,10);
             if(!strcmp(buffer, str))
-                isFound = ptr->chain_lenth; // 如果找到，则返回该节点的序号
+                isFound = ptr->chain_lenth;
         }
-        if (strcmp(needed_finding,"accountstate")) {
+        if (strcmp(needed_finding,"account_state")) {
             itoa((int)ptr->USER_DATA.account_state-'0',buffer,10);
             if(!strcmp(buffer, str))
-                isFound = ptr->chain_lenth; // 如果找到，则返回该节点的序号
+                isFound = ptr->chain_lenth;
         }
         if (strcmp(needed_finding,"violations")) {
             itoa(ptr->USER_DATA.violations,buffer,10);
@@ -83,7 +83,7 @@ int linklist_find_data(LINKLIST *pList, char *str, char *needed_finding)
         if (isFound) return isFound; // 如果找到，则返回该节点的序号
     }
 
-    return 0; // 如果没有找到，则返回0
+    return -1; // 如果没有找到，则返回0
 }
 
 
@@ -116,19 +116,7 @@ NAME:linklist_clear
 VALUE:pList自定链表
 FUNCTION:将链表释放
 **********************************************************/
-// void linklist_clear(LINKLIST *pList) {
-//     LINKLIST_NODE *next;
-//     LINKLIST_NODE *current = pList->HEAD;
 
-//     if (!pList) return;
-//     while (current) {
-//         next = current->NEXT; // 先保存后释放 
-//         free(current);
-//         current = next;
-//     }
-//     pList->HEAD = NULL; // 清除悬空指针 
-//     free(pList);
-// }
 void linklist_clear(LINKLIST *pList)
 {
     LINKLIST_NODE *q;
@@ -142,19 +130,6 @@ void linklist_clear(LINKLIST *pList)
     pList->HEAD = NULL; // 关键修复：重置头指针
     return;
 }
-
-// void linklist_clear(LINKLIST *pList)
-// {
-//     LINKLIST_NODE *q;
-//     LINKLIST_NODE *p;
-//     for (p = pList->HEAD; p; p = q)
-//     {
-//         q = p->NEXT;
-//         free(p);
-//     }
-
-//     return;
-// }
 
 /**********************************************************
 NAME:linklist_get_user_data

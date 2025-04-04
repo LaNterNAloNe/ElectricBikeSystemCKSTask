@@ -63,6 +63,11 @@
 #define ADMIN_BUTTON6_X2 100
 #define ADMIN_BUTTON6_Y2 243
 
+#define ADMIN_BUTTON7_X1 20
+#define ADMIN_BUTTON7_Y1 250
+#define ADMIN_BUTTON7_X2 100
+#define ADMIN_BUTTON7_Y2 283
+
 #define ADMIN_EXIT_X1 10
 #define ADMIN_EXIT_Y1 440
 #define ADMIN_EXIT_X2 25
@@ -131,17 +136,19 @@
 #define ACTIVE_ADMIN_BUTTON4 4
 #define ACTIVE_ADMIN_BUTTON5 5
 #define ACTIVE_ADMIN_BUTTON6 6
-#define ACTIVE_ADMIN_EXIT 7
-#define ACTIVE_ADMIN_FEATURE1 8
-#define ACTIVE_ADMIN_FEATURE2 9
-#define ACTIVE_ADMIN_FEATURE3 10
-#define ACTIVE_ADMIN_FEATURE4 11
-#define ACTIVE_ADMIN_FEATURE5 12
-#define ACTIVE_ADMIN_FEATURE6 13
-#define ACTIVE_ADMIN_FEATURE_SEARCH 14
-#define ACTIVE_ADMIN_FEATURE_UP 15
-#define ACTIVE_ADMIN_FEATURE_DOWN 16
+#define ACTIVE_ADMIN_BUTTON7 7
+#define ACTIVE_ADMIN_EXIT 8
+#define ACTIVE_ADMIN_FEATURE1 9
+#define ACTIVE_ADMIN_FEATURE2 10
+#define ACTIVE_ADMIN_FEATURE3 11
+#define ACTIVE_ADMIN_FEATURE4 12
+#define ACTIVE_ADMIN_FEATURE5 13
+#define ACTIVE_ADMIN_FEATURE6 14
+#define ACTIVE_ADMIN_FEATURE_SEARCH 15
+#define ACTIVE_ADMIN_FEATURE_UP 16
+#define ACTIVE_ADMIN_FEATURE_DOWN 17
 #define ACTIVE_ADMIN_FEATURE_EXIT 20
+
 
 
 
@@ -161,48 +168,60 @@ typedef struct {
 	char ebike_ID[10];
     char ebike_license[10];
     char location[10];
+    int anual_check;
+    int violations;
     int apply_time;
 	int conduct_time;
     int result;
 } EBIKE_INFO;
 
+
+// 主界面
 void main_admin(int *page,int *ID);
 void drawgraph_admin_menu(void);
-void draw_cues(int x,int y,int null1,int null2);
-void clear_cues(int x1,int y1,int x2,int y2);
-void draw_rectangle(int x1,int y1,int x2,int y2);
-void clear_rectangle(int x1,int y1,int x2,int y2);
-void draw_exit(int x1,int y1,int x2,int y2);
-void clear_exit(int x1,int y1,int x2,int y2);
-int admin_exitting(int *page);
-void draw_exit_menu(int x1,int y1,int x2,int y2);
-void clear_exit_menu(int x1,int y1,int x2,int y2);
-void draw_flip_up(int x1,int y1,int x2,int y2);
-void clear_flip_up(int x1,int y1,int x2,int y2);
-void draw_flip_down(int x1,int y1,int x2,int y2);
-void clear_flip_down(int x1,int y1,int x2,int y2);
 
-
+// 车辆注册界面
 void admin_bike_register(int *page, int *id,LINKLIST *LIST);
 void drawgraph_admin_bike_register();
-void handle_click_event_admin_bike_register(LINKLIST *LIST, int *page, char *search_str, int *id_list, FILE *fp_EBIKE_INFO_read, int *mode, int selected_id);
-void list_search_register_request(int id_list[8],FILE *fp,char *list_mode,int search_mode,int page_change,int is_clear,char *search_str,char *search_needed);
-void list_info_admin(EBIKE_INFO TEMP, int listed_item, char *list_mode, int list_sequence);
-int list_admin_register_search_is_valid(EBIKE_INFO TEMP, char *list_mode, char *search_str, char *search_needed, int mode);
 
-
+// 车辆上牌界面
 void admin_bike_license(int *page, int *id, LINKLIST *LIST);
 void drawgraph_admin_bike_license();
-void list_search_license_request(int id_list[8],FILE *fp,int mode,int page_change,int is_clear,char *search_str,char *search_needed);
-int list_admin_license_search_is_valid(EBIKE_INFO TEMP,char *search_str,char *search_needed,int mode);
 
-void admin_flush_graph(int *tag,int button_counts,ADMIN_BUTTONS AdminButtons[]);
-void handle_click_event_admin_main(int *page);
+// 按钮状态刷新
+void define_admin_buttons(ADMIN_BUTTONS AdminButtons[], int button_counts);
+void admin_flush_buttons(int *tag,int button_counts,ADMIN_BUTTONS AdminButtons[]);
+void admin_handle_features_event(LINKLIST *LIST, int *page, char *search_str, int *id_list,
+                                 FILE *fp_EBIKE_INFO_read, int *mode, int selected_id);
+void admin_handle_buttons_event(int *page);
+
+// 列表函数
+void admin_list_info(int id_list[8], FILE *fp, char *list_mode, int search_mode, int page_change, 
+                    int is_clear, char *search_str, char *search_needed);
+void admin_show_info(EBIKE_INFO TEMP, int listed_item, char *list_mode, int list_sequence);
+int list_is_valid(EBIKE_INFO TEMP, char *list_mode, char *search_str, char *search_needed, int search_mode);
 int handle_list_select_line_admin(int *page);
 
-void AdminswitchPage();
-long int ebike_info_search(FILE *fp, char *search_str, char *search_needed);
+// 搜索函数
+long int find_ebike_info(FILE *fp, char *search_str, char *search_needed);
+
+// 其他杂项
+void draw_cues(int x, int y, int null1, int null2);
+void clear_cues(int x1, int y1, int x2, int y2);
+void draw_rectangle(int x1, int y1, int x2, int y2);
+void clear_rectangle(int x1, int y1, int x2, int y2);
+void draw_exit(int x1, int y1, int x2, int y2);
+void clear_exit(int x1, int y1, int x2, int y2);
+void draw_exit_menu(int x1, int y1, int x2, int y2);
+void clear_exit_menu(int x1, int y1, int x2, int y2);
+void draw_flip_up(int x1, int y1, int x2, int y2);
+void clear_flip_up(int x1, int y1, int x2, int y2);
+void draw_flip_down(int x1, int y1, int x2, int y2);
+void clear_flip_down(int x1, int y1, int x2, int y2);
+
 void AdminConductSuccess(int button_x1, int button_y1, int button_x2, int button_y2);
+int admin_exitting(int *page);
+void AdminswitchPage();
 
 #define STRUCT_LENGTH(Struct) (sizeof(Struct)/sizeof(Struct[0]))
 
