@@ -13,7 +13,6 @@ void login(int *page, int *ID) {
     drawgraph_login();
 
 	if(debug_mode == 1) display_memory_usage(400, 10); // 左上角显示 
-
     while (1) {
 		flushLoginGraph(&tag,page); // 刷新界面
 		newmouse(&MouseX, &MouseY, &press); // 刷新鼠标
@@ -54,7 +53,7 @@ void login(int *page, int *ID) {
 		else if (mouse_press(REGISTER_X1,REGISTER_Y1,REGISTER_X2,REGISTER_Y2)==1) {
 			clrmous(MouseX, MouseY);
 			switchPage();
-			*page = REGISTER; // REGISTER : 3 跳转到注册界面
+			*page = REGISTER_ID_INPUT; // REGISTER : 3 跳转到注册界面
 			Input_Bar(NULL, NULL, NULL, NULL, NULL,1,NULL);
 			return;
         }
@@ -245,10 +244,228 @@ void drawgraph_admin_login(){
 	line(EXITPROGRAM_X2, EXITPROGRAM_Y1, EXITPROGRAM_X1, EXITPROGRAM_Y2);
 }
 
+void register_id_input(int* page, int* ID) {
+	char id_input[9];
+	long id=-1;
+	int id_flag = -1;
+	int tag=0;
+	clrmous(MouseX, MouseY);
+	save_bk_mou(MouseX, MouseY);
+	drawgraph_register_id_input();
+	while (1) {
+		flushRegisterIdGraph(&tag);
+		newmouse(&MouseX, &MouseY, &press); // 刷新鼠标
+
+		if (mouse_press(PASSWORD_X1, PASSWORD_Y1, PASSWORD_X2, PASSWORD_Y2) == 1) {
+			Input_Bar(id_input, PASSWORD_X1, PASSWORD_Y1 + 5, 9, MY_WHITE, 0, 1);
+		}
+		if (mouse_press(LOGIN_X1, LOGIN_Y1, LOGIN_X2, LOGIN_Y2) == 1) {
+			id = atol(id_input);
+			id_flag = register_id_judge(id);
+			switch (id_flag) {
+			case 0:
+				*ID = id;
+				clrmous(MouseX, MouseY);
+				switchPage();
+				*page = REGISTER; // EXIT : 0，退出程序
+				return;
+			case 1:
+				setcolor(MY_RED);
+				setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+				rectangle(PASSWORD_X1 + 2, PASSWORD_Y1 + 2, PASSWORD_X2 - 2, PASSWORD_Y2 - 2);
+				setcolor(MY_WHITE);
+				setfillstyle(SOLID_FILL, MY_WHITE);
+				bar(330, 210, 500, 250);
+				delay(200);
+				puthz(220, 230, "学号格式错误", 24, 30, MY_RED);
+				break;
+			case 2:
+				setcolor(MY_RED);
+				setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+				rectangle(PASSWORD_X1 + 2, PASSWORD_Y1 + 2, PASSWORD_X2 - 2, PASSWORD_Y2 - 2);
+				setcolor(MY_WHITE);
+				setfillstyle(SOLID_FILL, MY_WHITE);
+				bar(330, 210, 500, 250);
+				delay(200);
+				puthz(340, 230, "学号已被注册", 24, 30, MY_RED);
+				break;
+			}
+		}
+		else if (mouse_press(REGISTER_X1, REGISTER_Y1, REGISTER_X2, REGISTER_Y2) == 1) {
+			clrmous(MouseX, MouseY);
+			switchPage();
+			*page = LOGIN; 
+			Input_Bar(NULL, NULL, NULL, NULL, NULL, 1, NULL);
+			return;
+		}
+		else if (mouse_press(EXITPROGRAM_X1, EXITPROGRAM_Y1, EXITPROGRAM_X2, EXITPROGRAM_Y2) == 1) {
+			clrmous(MouseX, MouseY);
+			switchPage();
+			*page = EXIT; // EXIT : 0，退出程序
+			return;
+		}
+
+		delay(25); // 50hz刷新率
+	}
+}
+
+int register_id_judge(long id) {
+	int i = 0;
+	int account_counts;
+	USER_LOGIN_DATA* TEMP;
+	FILE* fp_LOGIN_USER_readndwrite = fopen("C:\\EBS\\DATA\\USER.DAT", "rb+");
+
+	if (fp_LOGIN_USER_readndwrite == NULL) {
+		fclose(fp_LOGIN_USER_readndwrite);
+		exit(0);
+	}
+
+	if (id == 0 || id == -1||id<100000000||id>999999999) {
+		if (fclose(fp_LOGIN_USER_readndwrite) != 0) getch(), exit(0);
+		return 1;//转换失败，学号格式错误
+	}
+
+	fseek(fp_LOGIN_USER_readndwrite, 0, SEEK_END);
+	account_counts = ftell(fp_LOGIN_USER_readndwrite) / sizeof(USER_LOGIN_DATA);//初始操作完成，接下来开始遍历数据
+
+	for (i = 0; i < account_counts; i++) {
+		fseek(fp_LOGIN_USER_readndwrite, i * sizeof(USER_LOGIN_DATA), SEEK_SET);
+		fread(TEMP, sizeof(USER_LOGIN_DATA), 1, fp_LOGIN_USER_readndwrite); //逐个读取，每个用户信息，直到用户名与密码均匹配
+		if (TEMP->ID==id) {
+				if (fclose(fp_LOGIN_USER_readndwrite) != 0) getch(), exit(0);
+				return 2;//学号重复
+		}
+
+	}
+	TEMP->ID = id;
+	strcpy(TEMP->psw,"-1");
+	strcpy(TEMP->usrn, "-1");
+	TEMP->state = -1;
+	fseek(fp_LOGIN_USER_readndwrite, 0, SEEK_END); // 确保写入位置在文件末尾
+	fwrite(TEMP, sizeof(USER_LOGIN_DATA), 1, fp_LOGIN_USER_readndwrite);  //将注册信息写入文件
+	if (fclose(fp_LOGIN_USER_readndwrite) != 0) getch(), exit(0);
+	return 0;
+}
+
+void drawgraph_register_id_input() {
+	setfillstyle(1, 0);
+	setcolor(MY_LIGHTBLUE);
+	bar(0, 0, 640, 480);
+	setlinestyle(SOLID_LINE, 0, THICK_WIDTH);//大框
+	setfillstyle(SOLID_FILL, MY_WHITE);
+	bar(120, 120, 520, 390);
+	setcolor(MY_BLACK);
+	setfillstyle(SOLID_FILL, MY_BLACK);
+	bar(121, 169, 519, 171);
+
+	setcolor(MY_LIGHTGRAY);//输入框
+	setlinestyle(0, 0, THICK_WIDTH);
+	line(PASSWORD_X1, PASSWORD_Y1, PASSWORD_X2, PASSWORD_Y1);
+	line(PASSWORD_X1, PASSWORD_Y1, PASSWORD_X1, PASSWORD_Y2);
+	line(PASSWORD_X1, PASSWORD_Y2, PASSWORD_X2, PASSWORD_Y2);
+	line(PASSWORD_X2, PASSWORD_Y1, PASSWORD_X2, PASSWORD_Y2);
+	setcolor(4);
+	setlinestyle(0, 0, THICK_WIDTH);
+	setfillstyle(1, 4);
+	bar(230, 320, 330, 370);//分别为登录，注册
+	bar(360, 320, 460, 370);
+	puthz(94, 50, "校园电动车管理系统", 48, 50, MY_WHITE);
+	puthz(240, 135, "身份认证", 32, 45, MY_BLACK);
+	puthz(140, 258, "学号", 24, 30, MY_BLACK);
+	puthz(LOGIN_X1 + 24, LOGIN_Y1 + 12, "确认", 24, 30, MY_WHITE);
+	puthz(REGISTER_X1 + 24, REGISTER_Y1 + 12, "返回", 24, 30, MY_WHITE);
 	
+	setcolor(4);
+	setlinestyle(0, 0, NORM_WIDTH);
+	line(EXITPROGRAM_X1, EXITPROGRAM_Y1, EXITPROGRAM_X2, EXITPROGRAM_Y2);
+	line(EXITPROGRAM_X2, EXITPROGRAM_Y1, EXITPROGRAM_X1, EXITPROGRAM_Y2);
+}
+
+void flushRegisterIdGraph(int* tag) {
+	if (MouseX >= PASSWORD_X1 && MouseX <= PASSWORD_X2 && MouseY >= PASSWORD_Y1 && MouseY <= PASSWORD_Y2)
+		MouseS = 2; // 假设设置为手形图标
+	else if ((MouseX >= LOGIN_X1 && MouseX <= LOGIN_X2 && MouseY >= LOGIN_Y1 && MouseY <= LOGIN_Y2 ) ||
+		(MouseX >= REGISTER_X1 && MouseX <= REGISTER_X2 && MouseY >= REGISTER_Y1 && MouseY <= REGISTER_Y2 ) ||
+		(MouseX >= EXITPROGRAM_X1 && MouseX <= EXITPROGRAM_X2 && MouseY >= EXITPROGRAM_Y1 && MouseY <= EXITPROGRAM_Y2))
+		MouseS = 1; // 假设设置为手形图标
+	else
+		MouseS = 0; // 恢复默认箭头
+
+	setlinestyle(SOLID_LINE, 0, NORM_WIDTH);
+	// 处理可交互窗口的鼠标移动事件 **显示激活状态**
+	
+	if (MouseX >= PASSWORD_X1 && MouseX <= PASSWORD_X2 && MouseY >= PASSWORD_Y1 && MouseY <= PASSWORD_Y2) {
+		*tag = ACTIVE_PASSWORD;
+		setcolor(GREEN);
+		rectangle(PASSWORD_X1 - 2, PASSWORD_Y1 - 2, PASSWORD_X2 + 2, PASSWORD_Y2 + 2);
+	}
+	else if (MouseX >= LOGIN_X1 && MouseX <= LOGIN_X2 && MouseY >= LOGIN_Y1 && MouseY <= LOGIN_Y2) {
+		*tag = ACTIVE_LOGIN;
+		setcolor(GREEN);
+		rectangle(LOGIN_X1 - 2, LOGIN_Y1 - 2, LOGIN_X2 + 2, LOGIN_Y2 + 2);
+	}
+	else if (MouseX >= REGISTER_X1 && MouseX <= REGISTER_X2 && MouseY >= REGISTER_Y1 && MouseY <= REGISTER_Y2) {
+		*tag = ACTIVE_REGISTER;
+		setcolor(GREEN);
+		rectangle(REGISTER_X1 - 2, REGISTER_Y1 - 2, REGISTER_X2 + 2, REGISTER_Y2 + 2);
+	}
+	else if ((MouseX >= EXITPROGRAM_X1 && MouseX <= EXITPROGRAM_X2 && MouseY >= EXITPROGRAM_Y1 && MouseY <= EXITPROGRAM_Y2) && *tag == ACTIVE_NONE) {
+		*tag = EXIT_PROGRAM;
+		setcolor(RED);
+		setlinestyle(0, 0, THICK_WIDTH);
+		line(EXITPROGRAM_X1, EXITPROGRAM_Y1, EXITPROGRAM_X2, EXITPROGRAM_Y2);
+		line(EXITPROGRAM_X2, EXITPROGRAM_Y1, EXITPROGRAM_X1, EXITPROGRAM_Y2); // 使叉变粗
+
+		setcolor(BLACK);
+		setlinestyle(0, 0, 2);
+		line(EXITPROGRAM_X2 + 20, EXITPROGRAM_Y1, EXITPROGRAM_X2 + 100, EXITPROGRAM_Y1);
+		line(EXITPROGRAM_X2 + 20, EXITPROGRAM_Y1, EXITPROGRAM_X2 + 20, EXITPROGRAM_Y1 + 40);
+		line(EXITPROGRAM_X2 + 20, EXITPROGRAM_Y1 + 40, EXITPROGRAM_X2 + 100, EXITPROGRAM_Y1 + 40);
+		line(EXITPROGRAM_X2 + 100, EXITPROGRAM_Y1, EXITPROGRAM_X2 + 100, EXITPROGRAM_Y1 + 40);
+		setfillstyle(SOLID_FILL, BLUE);
+		bar(EXITPROGRAM_X2 + 20, EXITPROGRAM_Y1, EXITPROGRAM_X2 + 120, EXITPROGRAM_Y2);
+		puthz(EXITPROGRAM_X2 + 20, EXITPROGRAM_Y1 + 8, "退出程序", 24, 25, WHITE); // 输出提示文本和背景
+	}
+
+	//***  处理可交互窗口的鼠标移动事件 **取消激活状态**  ***//
+	if ((MouseX < PASSWORD_X1 || MouseX > PASSWORD_X2 || MouseY < PASSWORD_Y1 || MouseY > PASSWORD_Y2) && (*tag == ACTIVE_PASSWORD)) {
+		*tag = ACTIVE_NONE;
+		setcolor(WHITE);
+		rectangle(PASSWORD_X1 - 2, PASSWORD_Y1 - 2, PASSWORD_X2 + 2, PASSWORD_Y2 + 2);
+	}
+	//登录预注册的两个红色按钮共用一个else if语句
+	else if ((MouseX < LOGIN_X1 || MouseX > LOGIN_X2 || MouseY < LOGIN_Y1 || MouseY > LOGIN_Y2)
+		&& (*tag == ACTIVE_LOGIN)) {
+		*tag = ACTIVE_NONE;
+		setcolor(WHITE);
+		rectangle(LOGIN_X1 - 2, LOGIN_Y1 - 2, LOGIN_X2 + 2, LOGIN_Y2 + 2);
+	}
+	else if ((MouseX < REGISTER_X1 || MouseX > REGISTER_X2 || MouseY < REGISTER_Y1 || MouseY > REGISTER_Y2)
+		&& *tag == ACTIVE_REGISTER) {
+		*tag = ACTIVE_NONE;
+		setcolor(WHITE);
+		rectangle(REGISTER_X1 - 2, REGISTER_Y1 - 2, REGISTER_X2 + 2, REGISTER_Y2 + 2);
+	}
+	else if ((MouseX < EXITPROGRAM_X1 || MouseX > EXITPROGRAM_X2 || MouseY < EXITPROGRAM_Y1 || MouseY > EXITPROGRAM_Y2) && (*tag == EXIT_PROGRAM)) {
+		*tag = ACTIVE_NONE;
+		setfillstyle(SOLID_FILL, 0);
+		bar(EXITPROGRAM_X1, EXITPROGRAM_Y1, EXITPROGRAM_X2, EXITPROGRAM_Y2); // 清理叉
+
+		setcolor(RED);
+		setlinestyle(0, 0, NORM_WIDTH);
+		line(EXITPROGRAM_X1, EXITPROGRAM_Y1, EXITPROGRAM_X2, EXITPROGRAM_Y2);
+		line(EXITPROGRAM_X2, EXITPROGRAM_Y1, EXITPROGRAM_X1, EXITPROGRAM_Y2); // 重新画叉
+
+		setfillstyle(SOLID_FILL, 0);
+		bar(EXITPROGRAM_X2 + 20, EXITPROGRAM_Y1, EXITPROGRAM_X2 + 120, EXITPROGRAM_Y2); // 清理提示文本
+	}
+
+}
+
+
 
 // 注册界面
-void _register(int* page) {
+void _register(int* page,int *ID) {
     char usrn[10] = {'\0'}; // 初始化为空
     char psw[10] = {'\0'};
     int tag = 0;
@@ -276,10 +493,11 @@ void _register(int* page) {
 		if (mouse_press(LOGIN_X1, LOGIN_Y1, LOGIN_X2, LOGIN_Y2) == 1) {
 			// 检查输入是否非空且正确
 			if (usrn[0] != '\0' && psw[0] != '\0'){
-				is_register_invalid = userregister_judge(usrn,psw);
+				is_register_invalid = userregister_judge(usrn,psw,ID);
 				if(!is_register_invalid){
 					anime_register_success();
 					*page = LOGIN;
+					*ID = -1;
 					Input_Bar(NULL, NULL, NULL, NULL, NULL,1,NULL);  // 清除输入框记忆
 					return;
 				}
@@ -298,6 +516,7 @@ void _register(int* page) {
 			clrmous(MouseX, MouseY);
 			switchPage();
 			*page = LOGIN; //此时这个键是“返回登录”，跳转到登录界面
+			*ID = -1;
 			Input_Bar(NULL, NULL, NULL, NULL, NULL,1,NULL);
 			return;
 		}
@@ -362,7 +581,7 @@ void drawgraph_register() {
 }
 
 //用户登录检测
-void userlogin_judge(char *usrn,char *psw,int *ID){
+void userlogin_judge(char *usrn,char *psw,long *ID){
 	int i=0;
 	int account_counts;
 	USER_LOGIN_DATA *TEMP;
@@ -430,7 +649,7 @@ void adminlogin_judge(char *usrn,char *psw,int *uid){
 }
 
 //用户注册检测
-int userregister_judge(char *usrn,char *psw){
+int userregister_judge(char *usrn,char *psw,long *ID){
 	int i=0;
 	int account_counts;
 	USER_LOGIN_DATA *TEMP;
@@ -457,7 +676,7 @@ int userregister_judge(char *usrn,char *psw){
 	//若经过了for循环仍未经过return，则代表用户名未曾注册过，可以注册
 	strcpy(TEMP->usrn,usrn);			//获取账密和uid
 	strcpy(TEMP->psw,psw);
-	TEMP->ID = NULL;
+	TEMP->ID = *ID;
 	TEMP->state = ACTIVE;
 	fwrite(TEMP,sizeof(USER_LOGIN_DATA),1,fp_LOGIN_USER_readndwrite);  //将注册信息写入文件
 	if(fclose(fp_LOGIN_USER_readndwrite)!=0) getch(),exit(1);

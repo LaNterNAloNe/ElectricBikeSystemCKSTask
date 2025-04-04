@@ -397,15 +397,13 @@ ACTIVE_USER_DATAGRAPH},
 int EBIKE_INFO_judge(char* usrn, char* e_bike_id,int* id) {
 	int i = 0;
 	int account_counts;
-	EBIKE_INFO* TEMP = malloc(sizeof(EBIKE_INFO));
+	EBIKE_INFO* TEMP ;
 	FILE* fp_EBIKE_INFO_readndwrite = fopen("C:\\EBS\\DATA\\REGISTER.DAT", "rb+");
-	if (TEMP == NULL || fp_EBIKE_INFO_readndwrite == NULL) {
-		if (TEMP) free(TEMP);
+	if ( fp_EBIKE_INFO_readndwrite == NULL) {
 		fclose(fp_EBIKE_INFO_readndwrite);
 		exit(0);
 	}
 	memset(TEMP,0, sizeof(TEMP));
-
 	fseek(fp_EBIKE_INFO_readndwrite, 0, SEEK_END);
 	account_counts = ftell(fp_EBIKE_INFO_readndwrite) / sizeof(EBIKE_INFO);//初始操作完成，接下来开始遍历数据
 
@@ -414,12 +412,10 @@ int EBIKE_INFO_judge(char* usrn, char* e_bike_id,int* id) {
 		fread(TEMP, sizeof(EBIKE_INFO), 1, fp_EBIKE_INFO_readndwrite); //逐个读取，每个用户信息
 
 		if (strcmp(usrn, TEMP->rln) == 0) {
-			free(TEMP);
 			if (fclose(fp_EBIKE_INFO_readndwrite) != 0) getch(), exit(1); //发现存在用户名相同的，则注册失败
 			return 1;
 		}
 		if (strcmp(e_bike_id, TEMP->ebike_ID) == 0) {
-			free(TEMP);
 			if (fclose(fp_EBIKE_INFO_readndwrite) != 0) getch(), exit(1); //发现存在车牌号相同的，则注册失败
 			return 2;
 		}
@@ -436,7 +432,6 @@ int EBIKE_INFO_judge(char* usrn, char* e_bike_id,int* id) {
 	TEMP->result = -1;
 	fseek(fp_EBIKE_INFO_readndwrite, 0, SEEK_END); // 确保写入位置在文件末尾
 	fwrite(TEMP, sizeof(EBIKE_INFO), 1, fp_EBIKE_INFO_readndwrite);  //将注册信息写入文件
-	free(TEMP);
 	if (fclose(fp_EBIKE_INFO_readndwrite) != 0) getch(), exit(1);
 	return 0;
 

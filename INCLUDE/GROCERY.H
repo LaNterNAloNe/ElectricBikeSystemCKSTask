@@ -51,6 +51,7 @@
 #define LOGIN 1
 #define LOGIN_ADMIN 2
 #define REGISTER 3
+#define REGISTER_ID_INPUT 4
 
 #define MAIN_USER 10
 #define USER_BIKE_REGISTER 11
