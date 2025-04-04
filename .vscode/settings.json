@@ -91,7 +91,8 @@
     "limits": "c",
     "new": "c",
     "text_encoding": "cpp",
-    "typeinfo": "cpp"
+    "typeinfo": "cpp",
+    "LOGIN copy.C": "cpp"
 },
 "marscode.chatLanguage": "cn"
 }
