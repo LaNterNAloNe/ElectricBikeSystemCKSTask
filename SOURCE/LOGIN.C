@@ -247,7 +247,7 @@ void drawgraph_admin_login(){
 
 void register_id_input(int* page, unsigned long* ID) {
 	char id_input[10]; // 用于存储输入的ID
-	unsigned long id=-1; // 用于存储检测通过的ID
+	unsigned long id=0; // 用于存储检测通过的ID
 	int id_flag = -1; // 标明输入的ID是否合法
 	int tag=ACTIVE_NONE; // 用于记录鼠标点击状态;
 	clrmous(MouseX, MouseY);

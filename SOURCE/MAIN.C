@@ -3,7 +3,7 @@
 int main(void){
     int page = REGISTER_ID_INPUT; // 主页面
     // int page=NULL; // 副页面
-    unsigned long ID=-1;//记录登录用户的ID
+    unsigned long ID=0;//记录登录用户的ID
     int driver=VGA,mode=VGAHI;
     LINKLIST *LIST = (LINKLIST *)malloc(sizeof(LINKLIST));
 
