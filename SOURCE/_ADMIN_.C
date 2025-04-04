@@ -858,6 +858,7 @@ void admin_handle_features_event(LINKLIST *LIST, int *page, char *search_str, in
                 temp_node->USER_DATA.ebike_state = BROKEN; // 将链表中对应节点的ebike_state修改为BROKEN
                 break;
         }
+        linklist_write_user_data(LIST); // 将链表数据写入文件
         
 
         admin_pass_failed_anime(ADMIN_FEATURE1_X1, ADMIN_FEATURE1_Y1, ADMIN_FEATURE1_X2, ADMIN_FEATURE1_Y2,PASSED); // 操作成功后的动画
