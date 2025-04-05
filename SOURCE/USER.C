@@ -267,7 +267,7 @@ int handle_click_main(int button_num, user_button UserButtons[]){
 
 
 
-void user_bike_register(int* page, int* id)
+void user_bike_register(int* page, unsigned long* id)
 {
 	int tag = 0;
 	int click = -1;
@@ -309,8 +309,16 @@ ACTIVE_USER_DATAGRAPH},
 	clrmous(MouseX, MouseY);
 	save_bk_mou(MouseX, MouseY);
 	drawgraph_user_main(page);
+
+	if (!ebike_user_judge(id)){
+		setfillstyle(SOLID_FILL, MY_WHITE);
+		bar(150, 60, 640, 480);
+		puthz(280, 260, "您已注册过电动车", 32, 40, MY_BLACK);
+		delay(3000);
+		*page = MAIN_USER;
+		return;
+	}
 	drawgraph_user_bike_register();
-	//new_user = ebike_user_judge(id);
 	while (1) {
 		flushUserMain(&tag, STRUCT_LENGTH(UserButtons), UserButtons); // 刷新界面
 		flushUserRegister(&tag);
@@ -346,15 +354,14 @@ ACTIVE_USER_DATAGRAPH},
 		delay(25); // 50hz刷新率
 	}
 }
-/*int ebike_user_judge(int* ID) {
+int ebike_user_judge(unsigned long *ID) {
 	int i = 0;
 	int bike_count = 0;
 	int account_counts;
-	EBIKE_INFO* TEMP = malloc(sizeof(EBIKE_INFO));
+	EBIKE_INFO TEMP;
 	FILE* fp_EBIKE_INFO_read = fopen("C:\\EBS\\DATA\\REGISTER.DAT", "r");
 
-	if (TEMP == NULL || fp_EBIKE_INFO_read == NULL) {
-		if (TEMP) free(TEMP);
+	if (fp_EBIKE_INFO_read == NULL) {
 		fclose(fp_EBIKE_INFO_read);
 		exit(0);
 	}
@@ -364,19 +371,17 @@ ACTIVE_USER_DATAGRAPH},
 
 	for (i = 0; i < account_counts; i++) {
 		fseek(fp_EBIKE_INFO_read, i * sizeof(EBIKE_INFO), SEEK_SET);
-		fread(TEMP, sizeof(EBIKE_INFO), 1, fp_EBIKE_INFO_read); //逐个读取信息，确认此id是否登记过电动车
+		fread(&TEMP, sizeof(EBIKE_INFO), 1, fp_EBIKE_INFO_read); //逐个读取信息，确认此id是否登记过电动车
 
-		if (*ID==TEMP->ID) {
-			free(TEMP);
+		if (*ID==TEMP.ID) {
 			if (fclose(fp_EBIKE_INFO_read) != 0) getch(), exit(0);
 			return 0;
 		}
 	}
 	
 	if (fclose(fp_EBIKE_INFO_read) != 0) getch(), exit(0);
-	free(TEMP);
 	return 1;
-}*/
+}
 
 void flushUserRegister(int* tag) {
 	if ((MouseX >= USER_BIKE_REGISTER_INPUT1_X1 && MouseX <= USER_BIKE_REGISTER_INPUT1_X2 && MouseY >= USER_BIKE_REGISTER_INPUT1_Y1 && MouseY <= USER_BIKE_REGISTER_INPUT1_Y2) ||
@@ -389,7 +394,7 @@ void flushUserRegister(int* tag) {
 		MouseS = 0;
 }
 
-int EBIKE_INFO_judge(char* usrn, char* e_bike_id,int* id) {
+int EBIKE_INFO_judge(char* usrn, char* e_bike_id,unsigned long* id) {
 	int i = 0;
 	int account_counts;
 	EBIKE_INFO TEMP ;
@@ -523,7 +528,7 @@ void drawgraph_user_bike_register() {
 	bar(USER_BIKE_REGISTER_BUTTON1_X1, USER_BIKE_REGISTER_BUTTON1_Y1, USER_BIKE_REGISTER_BUTTON1_X2, USER_BIKE_REGISTER_BUTTON1_Y2);
 	bar(USER_BIKE_REGISTER_BUTTON2_X1, USER_BIKE_REGISTER_BUTTON2_Y1, USER_BIKE_REGISTER_BUTTON2_X2, USER_BIKE_REGISTER_BUTTON2_Y2);
 	puthz(USER_BIKE_REGISTER_BUTTON1_X1 + 10, USER_BIKE_REGISTER_BUTTON1_Y1 + 10, "登记", 24, 30, MY_WHITE);
-	puthz(USER_BIKE_REGISTER_BUTTON2_X1 + 10, USER_BIKE_REGISTER_BUTTON2_Y1 + 10, "修改", 24, 30, MY_WHITE);
+	puthz(USER_BIKE_REGISTER_BUTTON2_X1 + 10, USER_BIKE_REGISTER_BUTTON2_Y1 + 10, "反馈", 24, 30, MY_WHITE);
 
 	puthz(170, 290, "电动车座位数", 24, 20, MY_BLACK);
 	puthz(170, 340, "电动车品牌", 24, 20, MY_BLACK);
