@@ -60,9 +60,9 @@ void login(int *page,unsigned long *ID);
 void login_admin(int *page,unsigned long *ID);
 void _register(int *page,unsigned long *ID);
 void register_id_input(int* page, unsigned long *ID);
-void drawgraph_register_id_input(void);
 void flushRegisterIdGraph(int* tag);
 int register_id_judge(unsigned long id);
+void drawgraph_register_id_input(void);
 void drawgraph_login(void);
 void drawgraph_admin_login(void);
 void drawgraph_register(void);
@@ -77,6 +77,7 @@ void anime_login_success();
 void anime_login_fail();
 void anime_admin_login_success();
 void anime_admin_login_fail();
+void anime_id_input_success();
 
 
 typedef struct {

@@ -276,6 +276,8 @@ void register_id_input(int* page, unsigned long* ID) {
                     *ID = id;
                     clrmous(MouseX, MouseY);
                     *page = REGISTER; // REGISTER : 3，进入正常注册功能
+					anime_id_input_success();
+					switchPage();
                     return;
                 case 1: // 转换失败，学号格式错误
                     setcolor(MY_RED);
@@ -1020,3 +1022,32 @@ void anime_register_fail(int err){
 	puthz(LOGIN_X1+8, LOGIN_Y1+12, "确认注册", 24, 20, MY_WHITE);
 	
 }
+
+void anime_id_input_success() {
+	int blinkTick = 0;
+	clrmous(MouseX, MouseY);
+
+	setfillstyle(SOLID_FILL, MY_LIGHTBLUE);
+	bar(330, 210, 500, 250);//覆盖原先错误提示
+
+	setcolor(LIGHTGREEN);
+	rectangle(USERNAME_X1 + 2, USERNAME_Y1 + 2, USERNAME_X2 - 2, USERNAME_Y2 - 2);
+	rectangle(PASSWORD_X1 + 2, PASSWORD_Y1 + 2, PASSWORD_X2 - 2, PASSWORD_Y2 - 2);
+
+	while (blinkTick < 100) {
+		if (blinkTick % 20 == 0 && blinkTick % 40 != 0) {
+			setfillstyle(SOLID_FILL, MY_GREEN);
+			bar(LOGIN_X1, LOGIN_Y1, LOGIN_X2, LOGIN_Y2);
+			puthz(LOGIN_X1 + 8, LOGIN_Y1 + 12, "认证成功", 24, 20, MY_WHITE);
+		}
+		else if (blinkTick % 40 == 0) {
+			setfillstyle(SOLID_FILL, MY_LIGHTBLUE);
+			bar(LOGIN_X1, LOGIN_Y1, LOGIN_X2, LOGIN_Y2);
+			puthz(LOGIN_X1 + 8, LOGIN_Y1 + 12, "认证成功", 24, 20, MY_WHITE);
+		}
+		blinkTick++;
+		delay(25);
+	}
+}
+
+

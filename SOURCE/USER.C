@@ -272,8 +272,8 @@ void user_bike_register(int* page, int* id)
 	int tag = 0;
 	int click = -1;
 	int register_flag = 0;
-	char usrn[16] = {0}; // 初始化为空
-	char e_bike_id[10] = {0};
+	char usrn[16] = {'\0'}; // 初始化为空
+	char e_bike_id[10] = {'\0'};
 	user_button UserButtons[] = {
 {USER_BIKE_REGISTER_X1, USER_BIKE_REGISTER_X2,
 USER_BIKE_REGISTER_Y1, USER_BIKE_REGISTER_Y2,
@@ -313,7 +313,7 @@ ACTIVE_USER_DATAGRAPH},
 	//new_user = ebike_user_judge(id);
 	while (1) {
 		flushUserMain(&tag, STRUCT_LENGTH(UserButtons), UserButtons); // 刷新界面
-		//flushUserRegister(&tag, STRUCT_LENGTH(UserButtons), UserButtons);
+		flushUserRegister(&tag);
 		newmouse(&MouseX, &MouseY, &press);
 		click = handle_click_main(STRUCT_LENGTH(UserButtons), UserButtons);
 		if (click == LOGIN || click==EXIT) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_REGISTER
@@ -329,8 +329,7 @@ ACTIVE_USER_DATAGRAPH},
 
 		if (mouse_press(USER_BIKE_REGISTER_BUTTON1_X1, USER_BIKE_REGISTER_BUTTON1_Y1, USER_BIKE_REGISTER_BUTTON1_X2, USER_BIKE_REGISTER_BUTTON1_Y2) == 1) {
 			register_flag = EBIKE_INFO_judge(usrn, e_bike_id,id);
-			switch (register_flag) {
-			case 0:
+			if (register_flag == 0) {
 				anime_login_success_user();
 				setfillstyle(SOLID_FILL, MY_WHITE);
 				bar(150, 60, 640, 480);
@@ -340,24 +339,9 @@ ACTIVE_USER_DATAGRAPH},
 				delay(3000);
 				*page = MAIN_USER;
 				return;
-			case 1:
-				setcolor(MY_RED);
-				setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
-				rectangle(USER_BIKE_REGISTER_INPUT1_X1 + 2, USER_BIKE_REGISTER_INPUT1_Y1 + 2, USER_BIKE_REGISTER_INPUT1_X2 - 2, USER_BIKE_REGISTER_INPUT1_Y2 - 2);
-				rectangle(USER_BIKE_REGISTER_INPUT2_X1 + 2, USER_BIKE_REGISTER_INPUT2_Y1 + 2, USER_BIKE_REGISTER_INPUT2_X2 - 2, USER_BIKE_REGISTER_INPUT2_Y2 - 2);
-				puthz(330, 140, "姓名重复", 16, 15, MY_RED);
-				break;
-
-			case 2:
-				setcolor(MY_RED);
-				setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
-				rectangle(USER_BIKE_REGISTER_INPUT1_X1 + 2, USER_BIKE_REGISTER_INPUT1_Y1 + 2, USER_BIKE_REGISTER_INPUT1_X2 - 2, USER_BIKE_REGISTER_INPUT1_Y2 - 2);
-				rectangle(USER_BIKE_REGISTER_INPUT2_X1 + 2, USER_BIKE_REGISTER_INPUT2_Y1 + 2, USER_BIKE_REGISTER_INPUT2_X2 - 2, USER_BIKE_REGISTER_INPUT2_Y2 - 2);
-				puthz(330, 203, "车牌号重复", 16, 15, MY_RED);
-			
-				break;
 			}
-			
+			else 
+				anime_user_bike_register_fail(register_flag);
 		}
 		delay(25); // 50hz刷新率
 	}
@@ -394,6 +378,17 @@ ACTIVE_USER_DATAGRAPH},
 	return 1;
 }*/
 
+void flushUserRegister(int* tag) {
+	if ((MouseX >= USER_BIKE_REGISTER_INPUT1_X1 && MouseX <= USER_BIKE_REGISTER_INPUT1_X2 && MouseY >= USER_BIKE_REGISTER_INPUT1_Y1 && MouseY <= USER_BIKE_REGISTER_INPUT1_Y2) ||
+		(MouseX >= USER_BIKE_REGISTER_INPUT2_X1 && MouseX <= USER_BIKE_REGISTER_INPUT2_X2 && MouseY >= USER_BIKE_REGISTER_INPUT2_Y1 && MouseY <= USER_BIKE_REGISTER_INPUT2_Y2))
+		MouseS = 2;
+	else if ((MouseX >= USER_BIKE_REGISTER_BUTTON1_X1 && MouseX <= USER_BIKE_REGISTER_BUTTON1_X2 && MouseY >= USER_BIKE_REGISTER_BUTTON1_Y1 && MouseY <= USER_BIKE_REGISTER_BUTTON1_Y2) ||
+		(MouseX >= USER_BIKE_REGISTER_BUTTON2_X1 && MouseX <= USER_BIKE_REGISTER_BUTTON2_X2 && MouseY >= USER_BIKE_REGISTER_BUTTON2_Y1 && MouseY <= USER_BIKE_REGISTER_BUTTON2_Y2))
+		MouseS = 1;
+	else
+		MouseS = 0;
+}
+
 int EBIKE_INFO_judge(char* usrn, char* e_bike_id,int* id) {
 	int i = 0;
 	int account_counts;
@@ -402,6 +397,14 @@ int EBIKE_INFO_judge(char* usrn, char* e_bike_id,int* id) {
 	if ( fp_EBIKE_INFO_readndwrite == NULL) {
 		fclose(fp_EBIKE_INFO_readndwrite);
 		exit(0);
+	}
+	if (usrn[0] == '\0') {
+		if (fclose(fp_EBIKE_INFO_readndwrite) != 0) getch(), exit(1);
+		return 3;
+	}
+	if (e_bike_id[0] == '\0') {
+		if (fclose(fp_EBIKE_INFO_readndwrite) != 0) getch(), exit(1);
+		return 4;
 	}
 	memset(&TEMP,0, sizeof(TEMP));
 	fseek(fp_EBIKE_INFO_readndwrite, 0, SEEK_END);
@@ -463,7 +466,41 @@ void anime_login_success_user() {
 		delay(25);
 	}
 }
+void anime_user_bike_register_fail(int flag) {
+	setcolor(MY_WHITE);
+	setfillstyle(SOLID_FILL, MY_WHITE);
+	setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+	rectangle(USER_BIKE_REGISTER_INPUT1_X1 + 1, USER_BIKE_REGISTER_INPUT1_Y1 + 1, USER_BIKE_REGISTER_INPUT1_X2 - 1, USER_BIKE_REGISTER_INPUT1_Y2 - 1);
+	rectangle(USER_BIKE_REGISTER_INPUT2_X1 + 1, USER_BIKE_REGISTER_INPUT2_Y1 + 1, USER_BIKE_REGISTER_INPUT2_X2 - 1, USER_BIKE_REGISTER_INPUT2_Y2 - 1);
+	bar(400, 130, 520, 156);
+	bar(400, 193, 520, 219);
+	setcolor(MY_LIGHTGRAY);
+	setlinestyle(SOLID_LINE, 0, NORM_WIDTH);
+	rectangle(USER_BIKE_REGISTER_INPUT1_X1, USER_BIKE_REGISTER_INPUT1_Y1, USER_BIKE_REGISTER_INPUT1_X2, USER_BIKE_REGISTER_INPUT1_Y2);
+	rectangle(USER_BIKE_REGISTER_INPUT2_X1, USER_BIKE_REGISTER_INPUT2_Y1, USER_BIKE_REGISTER_INPUT2_X2, USER_BIKE_REGISTER_INPUT2_Y2);//清除错误提示，恢复初始状态
 
+	setcolor(MY_RED);
+	setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+	switch (flag) {
+	case 1:
+		rectangle(USER_BIKE_REGISTER_INPUT1_X1 + 1, USER_BIKE_REGISTER_INPUT1_Y1 + 1, USER_BIKE_REGISTER_INPUT1_X2 - 1, USER_BIKE_REGISTER_INPUT1_Y2 - 1);
+		puthz(410, 140, "姓名重复", 16, 15, MY_RED);
+		return;
+	case 2:
+		rectangle(USER_BIKE_REGISTER_INPUT2_X1 + 2, USER_BIKE_REGISTER_INPUT2_Y1 + 1, USER_BIKE_REGISTER_INPUT2_X2 - 1, USER_BIKE_REGISTER_INPUT2_Y2 - 1);
+		puthz(410, 203, "车牌号重复", 16, 15, MY_RED);
+		return;
+	case 3:
+		rectangle(USER_BIKE_REGISTER_INPUT1_X1 + 2, USER_BIKE_REGISTER_INPUT1_Y1 + 1, USER_BIKE_REGISTER_INPUT1_X2 - 1, USER_BIKE_REGISTER_INPUT1_Y2 - 1);
+		puthz(410, 140, "请输入姓名", 16, 15, MY_RED);
+		return;
+	case 4:
+		rectangle(USER_BIKE_REGISTER_INPUT2_X1 + 2, USER_BIKE_REGISTER_INPUT2_Y1 + 1, USER_BIKE_REGISTER_INPUT2_X2 - 1, USER_BIKE_REGISTER_INPUT2_Y2 - 1);
+		puthz(410, 203, "请输入车牌号", 16, 15, MY_RED);
+		return;
+	}
+
+}
 
 void drawgraph_user_bike_register() {
 	
