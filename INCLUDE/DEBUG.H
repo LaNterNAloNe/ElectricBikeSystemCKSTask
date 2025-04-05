@@ -11,5 +11,6 @@ unsigned long get_used_memory();
 void display_memory_usage(int x, int y);
 
 void show_num(int x, int y,unsigned long value, int color);
+void show_text(int x, int y, char *text, int color);
 
 #endif

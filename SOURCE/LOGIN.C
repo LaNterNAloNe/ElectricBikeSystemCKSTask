@@ -138,7 +138,7 @@ void login_admin(int* page,unsigned long *ID) {
 
 	while (1) {
 		flushLoginGraph(&tag,page); // 刷新界面
-		newmouse(&MouseX, &MouseY, &press); // 刷新鼠标
+        newmouse(&MouseX, &MouseY, &press); // 刷新鼠标
 
 		// 处理鼠标点击事件
 		if (mouse_press(USERNAME_X1, USERNAME_Y1, USERNAME_X2, USERNAME_Y2) == 1) {
@@ -272,22 +272,20 @@ void register_id_input(int* page, unsigned long* ID) {
                     return;
                 case 1: // 转换失败，学号格式错误
                     setcolor(MY_RED);
-                    setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+                    setlinestyle(SOLID_LINE, 0, NORM_WIDTH);
                     rectangle(PASSWORD_X1 + 2, PASSWORD_Y1 + 2, PASSWORD_X2 - 2, PASSWORD_Y2 - 2);
                     setcolor(MY_WHITE);
                     setfillstyle(SOLID_FILL, MY_WHITE);
                     bar(330, 210, 500, 250);
-                    delay(200);
                     puthz(220, 230, "学号格式错误", 24, 30, MY_RED);
                     break;
                 case 2: // 学号重复
                     setcolor(MY_RED);
-                    setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+                    setlinestyle(SOLID_LINE, 0, NORM_WIDTH);
                     rectangle(PASSWORD_X1 + 2, PASSWORD_Y1 + 2, PASSWORD_X2 - 2, PASSWORD_Y2 - 2);
                     setcolor(MY_WHITE);
                     setfillstyle(SOLID_FILL, MY_WHITE);
                     bar(330, 210, 500, 250);
-                    delay(200);
                     puthz(340, 230, "学号已被注册", 24, 30, MY_RED);
                     break;
 			}
@@ -649,7 +647,7 @@ void adminlogin_judge(char *usrn,char *psw,unsigned long *id){
 int userregister_judge(char *usrn,char *psw,unsigned long *ID){
 	int i=0;
 	int account_counts;
-	USER_LOGIN_DATA *TEMP;
+	USER_LOGIN_DATA TEMP;
 	FILE *fp_LOGIN_USER_readndwrite = fopen("C:\\EBS\\DATA\\USER.DAT","rb+");
 	
 	if (fp_LOGIN_USER_readndwrite == NULL) {
@@ -662,20 +660,20 @@ int userregister_judge(char *usrn,char *psw,unsigned long *ID){
 
 	for(i=0;i<account_counts;i++){
 		fseek(fp_LOGIN_USER_readndwrite,i*sizeof(USER_LOGIN_DATA),SEEK_SET);
-		fread(TEMP,sizeof(USER_LOGIN_DATA),1,fp_LOGIN_USER_readndwrite); //逐个读取，每个用户信息
+		fread(&TEMP,sizeof(USER_LOGIN_DATA),1,fp_LOGIN_USER_readndwrite); //逐个读取，每个用户信息
 
-		if(strcmp(usrn,TEMP->usrn) == 0){
+		if(strcmp(usrn,TEMP.usrn) == 0){
 			if(fclose(fp_LOGIN_USER_readndwrite)!=0) getch(),exit(1); //发现存在用户名相同的，则注册失败
 			return 1;
 		}
 	}
 
 	//若经过了for循环仍未经过return，则代表用户名未曾注册过，可以注册
-	strcpy(TEMP->usrn,usrn);			//获取账密和uid
-	strcpy(TEMP->psw,psw);
-	TEMP->ID = *ID;
-	TEMP->state = ACTIVE;
-	fwrite(TEMP,sizeof(USER_LOGIN_DATA),1,fp_LOGIN_USER_readndwrite);  //将注册信息写入文件
+	strcpy(TEMP.usrn,usrn);			//获取账密和uid
+	strcpy(TEMP.psw,psw);
+	TEMP.ID = *ID;
+	TEMP.state = ACTIVE;
+	fwrite(&TEMP,sizeof(USER_LOGIN_DATA),1,fp_LOGIN_USER_readndwrite);  //将注册信息写入文件
 	if(fclose(fp_LOGIN_USER_readndwrite)!=0) getch(),exit(1);
 	return 0;
 
