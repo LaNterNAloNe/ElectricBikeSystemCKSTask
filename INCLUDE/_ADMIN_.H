@@ -73,6 +73,11 @@
 #define ADMIN_EXIT_X2 25
 #define ADMIN_EXIT_Y2 455
 
+#define ADMIN_INFO_X1 40
+#define ADMIN_INFO_Y1 435
+#define ADMIN_INFO_X2 60
+#define ADMIN_INFO_Y2 460
+
 #define ADMIN_EXIT_MENU_X1 10
 #define ADMIN_EXIT_MENU_Y1 380
 #define ADMIN_EXIT_MENU_X2 80
@@ -148,6 +153,7 @@
 #define ACTIVE_ADMIN_FEATURE_UP 16
 #define ACTIVE_ADMIN_FEATURE_DOWN 17
 #define ACTIVE_ADMIN_FEATURE_EXIT 20
+#define ACTIVE_ADMIN_INFO 21
 
 
 
@@ -186,6 +192,7 @@ void admin_manage_bike_module(int *page, unsigned long *ID, LINKLIST *LIST, char
 // 绘制画面
 void drawgraph_admin_menu(void);
 void drawgraph_admin_feature(int page);
+void drawgraph_admin_info(unsigned long ID);
 
 // 按钮状态刷新
 void define_admin_buttons(ADMIN_BUTTONS AdminButtons[], int button_counts);
@@ -205,6 +212,8 @@ unsigned long handle_list_select_line_admin(unsigned long *id_list);
 unsigned long int find_ebike_info(FILE *fp, char *search_str, char *search_needed);
 
 // 其他杂项
+void draw_person(int x1,int y1,int x2,int y2);
+void clear_person(int x1,int y1,int x2,int y2);
 void draw_cues(int x, int y, int null1, int null2);
 void clear_cues(int x1, int y1, int x2, int y2);
 void draw_rectangle(int x1, int y1, int x2, int y2);

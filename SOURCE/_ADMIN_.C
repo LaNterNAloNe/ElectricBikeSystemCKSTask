@@ -5,7 +5,7 @@ MODULE:管理员主菜单
 *****************************************************************/
 void main_admin(int *page,unsigned long *ID){
     int tag=ACTIVE_ADMIN_NULL;
-    ADMIN_BUTTONS AdminButtons[8];
+    ADMIN_BUTTONS AdminButtons[9];
     define_admin_buttons(AdminButtons, STRUCT_LENGTH(AdminButtons)); // 定义按钮
 
     clrmous(MouseX, MouseY);
@@ -36,7 +36,7 @@ void admin_manage_bike_module(int *page, unsigned long *ID, LINKLIST *LIST, char
     unsigned long id_list[8] = {-1, -1, -1, -1, -1, -1, -1, -1}; // 记录当前显示的列表每行对应的ID
     int tag = ACTIVE_ADMIN_NULL;
     int temp_page = *page; // 记录当前页面
-    ADMIN_BUTTONS AdminButtons[18]; //"C:\\EBS\\DATA\\REGISTER.DAT"
+    ADMIN_BUTTONS AdminButtons[19];
     FILE *fp_EBIKE_INFO_read = fopen(file_path, "rb+");
     if (!fp_EBIKE_INFO_read)
         exit(1);
@@ -69,6 +69,27 @@ void admin_manage_bike_module(int *page, unsigned long *ID, LINKLIST *LIST, char
     Input_Bar(NULL, NULL, NULL, NULL, NULL, 1, NULL);
     fclose(fp_EBIKE_INFO_read);
     return;
+}
+
+/*****************************************************************
+MODULE:查看管理员信息
+*****************************************************************/
+void admin_info(int *page, unsigned long *ID){
+    int tag = ACTIVE_ADMIN_NULL;
+    ADMIN_BUTTONS AdminButtons[9];
+    define_admin_buttons(AdminButtons, STRUCT_LENGTH(AdminButtons)); // 定义按钮
+    clrmous(MouseX, MouseY);
+    drawgraph_admin_menu(); // 初始化界面
+    
+    while(*page == ADMIN_INFO){
+        admin_flush_buttons(&tag,STRUCT_LENGTH(AdminButtons),AdminButtons);
+        admin_handle_buttons_event(page);
+        newmouse(&MouseX, &MouseY, &press);
+
+        drawgraph_admin_info(*ID); // 显示管理员信息
+
+        delay(25);
+    }
 }
 
 /*****************************************************************
@@ -126,6 +147,20 @@ void drawgraph_admin_menu(void)
     puthz(ADMIN_MENU_X1 + 25, ADMIN_MENU_Y1 + 225, "数据一览", 16, 18, MY_WHITE); // 输出文本
     puthz(ADMIN_MENU_X1 + 25, ADMIN_MENU_Y1 + 265, "信息中心", 16, 18, MY_WHITE); // 输出文本
 
+    setcolor(MY_WHITE);
+    setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+    line(ADMIN_MENU_X1 + 6, ADMIN_MENU_Y2 - 170, ADMIN_MENU_X1 + 6, ADMIN_MENU_Y2 - 144); // 绘制直线
+    setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
+    bar(ADMIN_MENU_X1 + 8, ADMIN_MENU_Y2 - 170, ADMIN_MENU_X1 + 90, ADMIN_MENU_Y2 - 144); // 绘制填充矩形
+
+    setcolor(MY_GREEN);
+    settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);
+    outtextxy(ADMIN_MENU_X1 + 10, ADMIN_MENU_Y2 - 170, "ELECTRONIC"); // 输出文本
+    outtextxy(ADMIN_MENU_X1 + 10, ADMIN_MENU_Y2 - 160, "BIKE");      // 输出文本
+    outtextxy(ADMIN_MENU_X1 + 10, ADMIN_MENU_Y2 - 150, "SYSTEM"); // 输出文本
+
+    clear_person(ADMIN_INFO_X1, ADMIN_INFO_Y1, ADMIN_INFO_X2, ADMIN_INFO_Y2);
+
     clear_exit(ADMIN_EXIT_X1, ADMIN_EXIT_Y1, ADMIN_EXIT_X2, ADMIN_EXIT_Y2);
 }
 
@@ -135,23 +170,28 @@ void drawgraph_admin_feature(int page)
     {
     case ADMIN_BIKE_REGISTER: // 车辆注册
         puthz(ADMIN_INTERFACE_X1 + 5, ADMIN_INTERFACE_Y1 + 5, "车辆注册审核", 24, 20, MY_WHITE);
+        draw_cues(ADMIN_BUTTON1_X2+10, ADMIN_BUTTON1_Y1, NULL, NULL); // 绘制箭头，标明当前打开页面为此
         break;
     case ADMIN_BIKE_LICENSE: // 车辆上牌
         puthz(ADMIN_INTERFACE_X1 + 5, ADMIN_INTERFACE_Y1 + 5, "车辆上牌审核", 24, 20, MY_WHITE);
-        break;
-    case ADMIN_BIKE_ANUAL: // 车辆年审
-        puthz(ADMIN_INTERFACE_X1 + 5, ADMIN_INTERFACE_Y1 + 5, "车辆年审审核", 24, 20, MY_WHITE);
-        break;
-    case ADMIN_BIKE_VIOLATION: // 车辆违规
-        puthz(ADMIN_INTERFACE_X1 + 5, ADMIN_INTERFACE_Y1 + 5, "车辆违规审核", 24, 20, MY_WHITE);
+        draw_cues(ADMIN_BUTTON2_X2+10, ADMIN_BUTTON2_Y1, NULL, NULL); // 绘制箭头，标明当前打开页面为此
         break;
     case ADMIN_BIKE_BROKEN: // 车辆报废
         puthz(ADMIN_INTERFACE_X1 + 5, ADMIN_INTERFACE_Y1 + 5, "车辆报废审核", 24, 20, MY_WHITE);
+        draw_cues(ADMIN_BUTTON3_X2 + 10, ADMIN_BUTTON3_Y1, NULL, NULL); // 绘制箭头，标明当前打开页面为此
+        break;
+    case ADMIN_BIKE_VIOLATION: // 车辆违规
+        puthz(ADMIN_INTERFACE_X1 + 5, ADMIN_INTERFACE_Y1 + 5, "车辆违规审核", 24, 20, MY_WHITE);
+        draw_cues(ADMIN_BUTTON4_X2 + 10, ADMIN_BUTTON4_Y1, NULL, NULL); // 绘制箭头，标明当前打开页面为此
+        break;
+    case ADMIN_BIKE_ANUAL: // 车辆年审
+        puthz(ADMIN_INTERFACE_X1 + 5, ADMIN_INTERFACE_Y1 + 5, "车辆年审审核", 24, 20, MY_WHITE);
+        draw_cues(ADMIN_BUTTON5_X2+10, ADMIN_BUTTON5_Y1, NULL, NULL); // 绘制箭头，标明当前打开页面为此
         break;
     }
 
     puthz(ADMIN_INTERFACE_X1 + 140, ADMIN_INTERFACE_Y1 + 10, "待处理项目", 16, 16, MY_WHITE);
-    setcolor(MY_WHITE);
+    setcolor(MY_RED);
     settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);
     outtextxy(ADMIN_INTERFACE_X1 + 130, ADMIN_INTERFACE_Y1 + 15, "-");
 
@@ -180,8 +220,8 @@ void drawgraph_admin_feature(int page)
     bar(ADMIN_FEATURE6_X1, ADMIN_FEATURE6_Y1, ADMIN_FEATURE6_X2, ADMIN_FEATURE6_Y2);
     puthz(ADMIN_FEATURE1_X1 + 4, ADMIN_FEATURE1_Y1 + 8, "同意申请", 16, 16, MY_WHITE);
     puthz(ADMIN_FEATURE2_X1 + 4, ADMIN_FEATURE2_Y1 + 8, "驳回申请", 16, 16, MY_WHITE);
-    puthz(ADMIN_FEATURE3_X1 + 4, ADMIN_FEATURE3_Y1 + 8, "已处理", 16, 16, MY_WHITE);
-    puthz(ADMIN_FEATURE4_X1 + 4, ADMIN_FEATURE4_Y1 + 8, "待处理", 16, 16, MY_WHITE);
+    puthz(ADMIN_FEATURE3_X1 + 11, ADMIN_FEATURE3_Y1 + 8, "已处理", 16, 16, MY_WHITE);
+    puthz(ADMIN_FEATURE4_X1 + 11, ADMIN_FEATURE4_Y1 + 8, "待处理", 16, 16, MY_WHITE);
 
     setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
     bar(ADMIN_FEATURE_SEARCH_X1, ADMIN_FEATURE_SEARCH_Y1, ADMIN_FEATURE_SEARCH_X2, ADMIN_FEATURE_SEARCH_Y2);
@@ -200,6 +240,34 @@ void drawgraph_admin_feature(int page)
     clear_flip_down(ADMIN_FEATURE_DOWN_X1, ADMIN_FEATURE_DOWN_Y1, ADMIN_FEATURE_DOWN_X2, ADMIN_FEATURE_DOWN_Y2);
 }
 
+void drawgraph_admin_info(unsigned long ID)
+{
+    char buffer[20]; // 用于存储格式化后的字符串
+
+    puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 20, "你好！", 24, 30, MY_WHITE); // 输出文本
+
+    sprintf(buffer, "%lu", ID); // 将 ID 转换为字符串
+    setcolor(MY_WHITE);
+    settextstyle(SCRIPT_FONT, HORIZ_DIR, 2);
+    outtextxy(ADMIN_INTERFACE_X1 + 110, ADMIN_INTERFACE_Y1 + 16, buffer); // 输出名称
+}
+
+void draw_person(int x1,int y1,int x2,int y2){
+    setfillstyle(SOLID_FILL, MY_YELLOW);
+    bar(x1 - 3, y1 - 3, x2 + 3, y2 + 3);
+    setcolor(MY_BLACK);
+    setfillstyle(SOLID_FILL, MY_BLACK);
+    pieslice(x1+10, y1 +7, 0, 360, 6);   // 绘制人头
+    pieslice(x1+10, y1 + 22, 0, 180, 11); // 绘制身体
+}
+void clear_person(int x1,int y1,int x2,int y2){
+    setfillstyle(SOLID_FILL, MY_YELLOW);
+    bar(x1 - 3, y1 - 3, x2 + 3, y2 + 3);
+    setcolor(MY_BLACK);
+    setfillstyle(SOLID_FILL, MY_BLACK);
+    pieslice(x1+10, y1 +7, 0, 360, 5);   // 绘制人头
+    pieslice(x1+10, y1 + 22, 0, 180, 10); // 绘制身体
+}
 
 void draw_cues(int x, int y,int null1,int null2){
     setcolor(MY_GREEN);
@@ -710,10 +778,13 @@ void define_admin_buttons(ADMIN_BUTTONS AdminButtons[], int button_counts)
          ACTIVE_ADMIN_BUTTON6, &draw_cues, &clear_cues},
         {ADMIN_BUTTON7_X1, ADMIN_BUTTON7_X2,
          ADMIN_BUTTON7_Y1, ADMIN_BUTTON7_Y2,
-         ACTIVE_ADMIN_BUTTON7, &draw_cues,  &clear_cues},
+         ACTIVE_ADMIN_BUTTON7, &draw_cues, &clear_cues},
         {ADMIN_EXIT_X1, ADMIN_EXIT_X2,
          ADMIN_EXIT_Y1, ADMIN_EXIT_Y2,
          ACTIVE_ADMIN_EXIT, &draw_exit, &clear_exit},
+        {ADMIN_INFO_X1, ADMIN_INFO_X2,
+         ADMIN_INFO_Y1, ADMIN_INFO_Y2,
+         ACTIVE_ADMIN_INFO, &draw_person, &clear_person},
         {ADMIN_FEATURE1_X1, ADMIN_FEATURE1_X2,
          ADMIN_FEATURE1_Y1, ADMIN_FEATURE1_Y2,
          ACTIVE_ADMIN_FEATURE1, &draw_rectangle, &clear_rectangle},
@@ -767,6 +838,15 @@ void admin_handle_buttons_event(int *page)
         if (!admin_exitting(page))
         {
             AdminswitchPage();
+            return;
+        }
+    }
+    /*查看个人信息*/
+    if (mouse_press(ADMIN_INFO_X1, ADMIN_INFO_Y1, ADMIN_INFO_X2, ADMIN_INFO_Y2) == 1)
+    {
+        if (*page != ADMIN_INFO)
+        {
+            *page = ADMIN_INFO;
             return;
         }
     }
