@@ -3,11 +3,14 @@
 
 // 登录界面
 void login(int *page, unsigned long *ID) {
-	
+
+    
     char usrn[13] = {'\0'}; // 初始化为空
     char psw[13] = {'\0'};
     int tag = 0;
-	
+
+    *ID = 0; // 初始化用户ID
+
     clrmous(MouseX, MouseY);
     save_bk_mou(MouseX, MouseY);
     drawgraph_login();
@@ -128,9 +131,10 @@ void login_admin(int* page,unsigned long *ID) {
     char usrn[10] = {'\0'}; // 初始化为空
     char psw[10] = {'\0'};
     int tag = 0;
-	// FILE *fp_LOGIN_ADMIN_read = fopen("C:\\EBS\\DATA\\ADMIN.DAT","r");
-	// if(fp_LOGIN_ADMIN_read == NULL) *page=-1,getch(),exit(0);
-	clrmous(MouseX, MouseY);
+
+    *ID = 0; // 初始化用户ID
+
+    clrmous(MouseX, MouseY);
 	save_bk_mou(MouseX, MouseY);
 	drawgraph_admin_login();
 
@@ -250,7 +254,10 @@ void register_id_input(int* page, unsigned long* ID) {
 	unsigned long id=0; // 用于存储检测通过的ID
 	int id_flag = -1; // 标明输入的ID是否合法
 	int tag=ACTIVE_NONE; // 用于记录鼠标点击状态;
-	clrmous(MouseX, MouseY);
+
+    *ID = 0; // 初始化用户ID
+
+    clrmous(MouseX, MouseY);
 	save_bk_mou(MouseX, MouseY);
 	drawgraph_register_id_input();
 	while (1) {
@@ -465,6 +472,8 @@ void _register(int* page,unsigned long *ID) {
     char psw[10] = {'\0'};
     int tag = 0;
 	int is_register_invalid=0;
+
+    // 成功进入注册界面后，以记录第一层界面的ID，此时无需清理ID
 
 	clrmous(MouseX, MouseY);
 	save_bk_mou(MouseX, MouseY);

@@ -178,15 +178,14 @@ typedef struct {
 
 // 主界面
 void main_admin(int *page,unsigned long *ID);
+// 车辆信息处理界面
+void admin_manage_bike_module(int *page, unsigned long *ID, LINKLIST *LIST, char *file_path, char *list_mode);
+
+
+
+// 绘制画面
 void drawgraph_admin_menu(void);
-
-// 车辆注册界面
-void admin_bike_register(int *page, unsigned long *id,LINKLIST *LIST);
-void drawgraph_admin_bike_register();
-
-// 车辆上牌界面
-void admin_bike_license(int *page, unsigned long *id, LINKLIST *LIST);
-void drawgraph_admin_bike_license();
+void drawgraph_admin_feature(int page);
 
 // 按钮状态刷新
 void define_admin_buttons(ADMIN_BUTTONS AdminButtons[], int button_counts);

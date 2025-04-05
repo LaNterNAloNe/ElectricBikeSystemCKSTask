@@ -25,7 +25,58 @@ void main_admin(int *page,unsigned long *ID){
     
 }
 
-void drawgraph_admin_menu(void){
+/*****************************************************************
+MODULE:管理员车辆管理模块
+*****************************************************************/
+void admin_manage_bike_module(int *page, unsigned long *ID, LINKLIST *LIST, char *file_path, char *list_mode){
+    int mode = 0; // 搜索模式，列出已处理清单或待处理清单，主动清除该页面时重设为0（默认列出待处理清单）
+    // static int visited=0; // 是否进入乐该页面，主动清除该页面时重设为0
+    char search_str[10]; // 搜索框输入信息储存
+    int selected_id = -1;
+    unsigned long id_list[8] = {-1, -1, -1, -1, -1, -1, -1, -1}; // 记录当前显示的列表每行对应的ID
+    int tag = ACTIVE_ADMIN_NULL;
+    int temp_page = *page; // 记录当前页面
+    ADMIN_BUTTONS AdminButtons[18]; //"C:\\EBS\\DATA\\REGISTER.DAT"
+    FILE *fp_EBIKE_INFO_read = fopen(file_path, "rb+");
+    if (!fp_EBIKE_INFO_read)
+        exit(1);
+
+    define_admin_buttons(AdminButtons, STRUCT_LENGTH(AdminButtons)); // 定义按钮
+
+    fseek(fp_EBIKE_INFO_read, 0, SEEK_SET);
+    drawgraph_admin_menu();
+    drawgraph_admin_feature(*page);
+
+    // 列出数据
+    admin_list_info(id_list, fp_EBIKE_INFO_read, list_mode, mode, LIST_PAGEUP, LIST_CLEAR_CONTINUE, "\0", "\0");
+
+    if (debug_mode == 1)
+        display_memory_usage(400, 10); // 左上角显示
+
+    while (*page == temp_page)
+    {
+        admin_flush_buttons(&tag, STRUCT_LENGTH(AdminButtons), AdminButtons);
+        admin_handle_buttons_event(page);
+        selected_id = handle_list_select_line_admin(id_list);
+        newmouse(&MouseX, &MouseY, &press);
+
+        admin_handle_features_event(LIST, page, search_str, id_list, fp_EBIKE_INFO_read, &mode, selected_id); // 处理点击事件
+
+        delay(25);
+    }
+
+    admin_list_info(NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL);
+    Input_Bar(NULL, NULL, NULL, NULL, NULL, 1, NULL);
+    fclose(fp_EBIKE_INFO_read);
+    return;
+}
+
+/*****************************************************************
+MODULE:绘制画面、刷新画面和处理鼠标点击的画图函数
+*****************************************************************/
+
+void drawgraph_admin_menu(void)
+{
     int i;
 
     /*** 绘制菜单 ***/
@@ -33,20 +84,20 @@ void drawgraph_admin_menu(void){
     bar(ADMIN_MENU_X1, ADMIN_MENU_Y1, ADMIN_MENU_X2, ADMIN_MENU_Y2);
     setcolor(BLUE);
     setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
-    rectangle(ADMIN_MENU_X1+2, ADMIN_MENU_Y1+2, ADMIN_MENU_X2-2, ADMIN_MENU_Y2-2);
+    rectangle(ADMIN_MENU_X1 + 2, ADMIN_MENU_Y1 + 2, ADMIN_MENU_X2 - 2, ADMIN_MENU_Y2 - 2);
     setcolor(MY_BLACK);
     setlinestyle(SOLID_LINE, 0, NORM_WIDTH);
-    rectangle(ADMIN_MENU_X1+2, ADMIN_MENU_Y1+2, ADMIN_MENU_X2-2, ADMIN_MENU_Y2-2);
+    rectangle(ADMIN_MENU_X1 + 2, ADMIN_MENU_Y1 + 2, ADMIN_MENU_X2 - 2, ADMIN_MENU_Y2 - 2);
 
     /*** 绘制交互界面（暂为空白） ***/
     setfillstyle(SOLID_FILL, BLUE);
     bar(ADMIN_INTERFACE_X1, ADMIN_INTERFACE_Y1, ADMIN_INTERFACE_X2, ADMIN_INTERFACE_Y2);
     setcolor(CYAN);
     setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
-    rectangle(ADMIN_INTERFACE_X1+2, ADMIN_INTERFACE_Y1+2, ADMIN_INTERFACE_X2-2, ADMIN_INTERFACE_Y2-2);
+    rectangle(ADMIN_INTERFACE_X1 + 2, ADMIN_INTERFACE_Y1 + 2, ADMIN_INTERFACE_X2 - 2, ADMIN_INTERFACE_Y2 - 2);
     setcolor(MY_LIGHTGRAY);
     setlinestyle(SOLID_LINE, 0, NORM_WIDTH);
-    rectangle(ADMIN_INTERFACE_X1+2, ADMIN_INTERFACE_Y1+2, ADMIN_INTERFACE_X2-2, ADMIN_INTERFACE_Y2-2);
+    rectangle(ADMIN_INTERFACE_X1 + 2, ADMIN_INTERFACE_Y1 + 2, ADMIN_INTERFACE_X2 - 2, ADMIN_INTERFACE_Y2 - 2);
 
     // /*** 绘制交互界面B（暂为空白） ***/
     // setfillstyle(SOLID_FILL, BLUE);
@@ -59,11 +110,12 @@ void drawgraph_admin_menu(void){
     // rectangle(INTERFACE_B_X1+2, INTERFACE_B_Y1+2, INTERFACE_B_X2-2, INTERFACE_B_Y2-2);
 
     setcolor(MY_WHITE);
-    for(i=0;i<7;i++) {
+    for (i = 0; i < 7; i++)
+    {
         setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
-        line(ADMIN_MENU_X1+10,ADMIN_MENU_Y1+45+i*40,ADMIN_MENU_X2-10,ADMIN_MENU_Y1+45+i*40);
+        line(ADMIN_MENU_X1 + 10, ADMIN_MENU_Y1 + 45 + i * 40, ADMIN_MENU_X2 - 10, ADMIN_MENU_Y1 + 45 + i * 40);
         setlinestyle(SOLID_LINE, 0, NORM_WIDTH);
-        line(ADMIN_MENU_X1+6,ADMIN_MENU_Y1+45+i*40,ADMIN_MENU_X2-6,ADMIN_MENU_Y1+45+i*40);
+        line(ADMIN_MENU_X1 + 6, ADMIN_MENU_Y1 + 45 + i * 40, ADMIN_MENU_X2 - 6, ADMIN_MENU_Y1 + 45 + i * 40);
         delay(10);
     }
     puthz(ADMIN_MENU_X1 + 25, ADMIN_MENU_Y1 + 25, "车辆注册", 16, 18, MY_WHITE);  // 输出文本
@@ -74,168 +126,48 @@ void drawgraph_admin_menu(void){
     puthz(ADMIN_MENU_X1 + 25, ADMIN_MENU_Y1 + 225, "数据一览", 16, 18, MY_WHITE); // 输出文本
     puthz(ADMIN_MENU_X1 + 25, ADMIN_MENU_Y1 + 265, "信息中心", 16, 18, MY_WHITE); // 输出文本
 
-    clear_exit(ADMIN_EXIT_X1,ADMIN_EXIT_Y1,ADMIN_EXIT_X2,ADMIN_EXIT_Y2);
-
+    clear_exit(ADMIN_EXIT_X1, ADMIN_EXIT_Y1, ADMIN_EXIT_X2, ADMIN_EXIT_Y2);
 }
 
-void admin_handle_buttons_event(int *page){
-    if (mouse_press(ADMIN_EXIT_X1,ADMIN_EXIT_Y1,ADMIN_EXIT_X2,ADMIN_EXIT_Y2) == 1) {
-        if(!admin_exitting(page)){
-            AdminswitchPage();
-            return;
-        }
-    }
-
-    /*车辆注册*/
-    if (mouse_press(ADMIN_BUTTON1_X1,ADMIN_BUTTON1_Y1,ADMIN_BUTTON1_X2,ADMIN_BUTTON1_Y2)==1 && 
-        *page != ADMIN_BIKE_REGISTER) {
-        *page = ADMIN_BIKE_REGISTER;
-        return;
-    }
-    /*车辆上牌*/
-    if (mouse_press(ADMIN_BUTTON2_X1, ADMIN_BUTTON2_Y1, ADMIN_BUTTON2_X2, ADMIN_BUTTON2_Y2) == 1 &&
-        *page != ADMIN_BIKE_LICENSE){
-        *page = ADMIN_BIKE_LICENSE;
-        return;
-    }
-}
-
-
-
-/*****************************************************************
-MODULE:管理员车辆注册
-*****************************************************************/
-void admin_bike_register(int *page, unsigned long *ID, LINKLIST *LIST)
+void drawgraph_admin_feature(int page)
 {
-    int mode=0; // 搜索模式，列出已处理清单或待处理清单，主动清除该页面时重设为0（默认列出待处理清单）
-    // static int visited=0; // 是否进入乐该页面，主动清除该页面时重设为0
-    char search_str[10]; // 搜索框输入信息储存
-    int selected_id = -1;
-    unsigned long id_list[8] = {-1,-1,-1,-1,-1,-1,-1,-1}; // 记录当前显示的列表每行对应的ID
-    int tag=ACTIVE_ADMIN_NULL;
-    ADMIN_BUTTONS AdminButtons[18];
-    FILE *fp_EBIKE_INFO_read = fopen("C:\\EBS\\DATA\\REGISTER.DAT","rb+");
-    if(!fp_EBIKE_INFO_read) exit(1);
-
-    define_admin_buttons(AdminButtons, STRUCT_LENGTH(AdminButtons)); // 定义按钮
-
-    fseek(fp_EBIKE_INFO_read,0,SEEK_SET);
-    drawgraph_admin_menu();
-    drawgraph_admin_bike_register();
-    
-    // 列出数据
-    admin_list_info(id_list, fp_EBIKE_INFO_read, "register", mode, LIST_PAGEUP, LIST_CLEAR_CONTINUE, "\0", "\0");
-
-    if(debug_mode == 1) display_memory_usage(400, 10); // 左上角显示 
-
-    while(*page == ADMIN_BIKE_REGISTER){
-        admin_flush_buttons(&tag,STRUCT_LENGTH(AdminButtons),AdminButtons);
-        admin_handle_buttons_event(page);
-        selected_id = handle_list_select_line_admin(id_list);
-        newmouse(&MouseX,&MouseY,&press);
-
-        admin_handle_features_event(LIST, page, search_str, id_list, fp_EBIKE_INFO_read, &mode, selected_id); // 处理点击事件
-
-        delay(25);
-    }
-
-    fclose(fp_EBIKE_INFO_read);
-    admin_list_info(NULL, NULL, NULL,NULL, NULL, 1, NULL, NULL);
-    Input_Bar(NULL, NULL, NULL, NULL, NULL,1,NULL);
-    return;
-}
-
-
-
-void drawgraph_admin_bike_register(){
-    puthz(ADMIN_INTERFACE_X1+5,ADMIN_INTERFACE_Y1+5,"车辆注册审核",24,20,MY_WHITE);
-    puthz(ADMIN_INTERFACE_X1+140,ADMIN_INTERFACE_Y1+10,"待处理项目",16,16,MY_WHITE);
-    settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);
-    outtextxy(ADMIN_INTERFACE_X1+130,ADMIN_INTERFACE_Y1+15,"-");
-    puthz(ADMIN_INTERFACE_X1+20,ADMIN_INTERFACE_Y1+40,"姓名",16,16,MY_WHITE);
-    puthz(ADMIN_INTERFACE_X1+100,ADMIN_INTERFACE_Y1+40,"学号",16,16,MY_WHITE);
-    puthz(ADMIN_INTERFACE_X1+200,ADMIN_INTERFACE_Y1+40,"车辆车牌号",16,16,MY_WHITE);
-    puthz(ADMIN_INTERFACE_X1+300,ADMIN_INTERFACE_Y1+40,"申请日期",16,16,MY_WHITE);
-    puthz(ADMIN_INTERFACE_X1+400,ADMIN_INTERFACE_Y1+40,"处理情况",16,16,MY_WHITE);
-
-    setfillstyle(SOLID_FILL,MY_YELLOW);
-    bar(ADMIN_FEATURE1_X1,ADMIN_FEATURE1_Y1,ADMIN_FEATURE1_X2,ADMIN_FEATURE1_Y2);
-    bar(ADMIN_FEATURE2_X1,ADMIN_FEATURE2_Y1,ADMIN_FEATURE2_X2,ADMIN_FEATURE2_Y2);
-    bar(ADMIN_FEATURE3_X1,ADMIN_FEATURE3_Y1,ADMIN_FEATURE3_X2,ADMIN_FEATURE3_Y2);
-    bar(ADMIN_FEATURE4_X1,ADMIN_FEATURE4_Y1,ADMIN_FEATURE4_X2,ADMIN_FEATURE4_Y2);
-    bar(ADMIN_FEATURE5_X1,ADMIN_FEATURE5_Y1,ADMIN_FEATURE5_X2,ADMIN_FEATURE5_Y2);
-    bar(ADMIN_FEATURE6_X1,ADMIN_FEATURE6_Y1,ADMIN_FEATURE6_X2,ADMIN_FEATURE6_Y2);
-    puthz(ADMIN_FEATURE1_X1+4,ADMIN_FEATURE1_Y1+8,"同意申请",16,16,MY_WHITE);
-    puthz(ADMIN_FEATURE2_X1+4,ADMIN_FEATURE2_Y1+8,"驳回申请",16,16,MY_WHITE);
-    puthz(ADMIN_FEATURE3_X1+4,ADMIN_FEATURE3_Y1+8,"已处理",16,16,MY_WHITE);
-    puthz(ADMIN_FEATURE4_X1+4,ADMIN_FEATURE4_Y1+8,"待处理",16,16,MY_WHITE);
-    
-    setfillstyle(SOLID_FILL,MY_LIGHTGRAY);
-    bar(ADMIN_FEATURE_SEARCH_X1,ADMIN_FEATURE_SEARCH_Y1,ADMIN_FEATURE_SEARCH_X2,ADMIN_FEATURE_SEARCH_Y2);
-    setcolor(MY_BLACK);
-    setlinestyle(SOLID_LINE,0,NORM_WIDTH);
-    rectangle(ADMIN_FEATURE_SEARCH_X1,ADMIN_FEATURE_SEARCH_Y1,ADMIN_FEATURE_SEARCH_X2,ADMIN_FEATURE_SEARCH_Y2);
-
-    setlinestyle(SOLID_LINE,0,THICK_WIDTH); // 小放大镜，提示为搜索框
-    line(ADMIN_FEATURE_SEARCH_X1+5,ADMIN_FEATURE_SEARCH_Y2-7,ADMIN_FEATURE_SEARCH_X1+12,ADMIN_FEATURE_SEARCH_Y2-14);
-    circle(ADMIN_FEATURE_SEARCH_X1+16,ADMIN_FEATURE_SEARCH_Y2-18,5);
-
-    // setfillstyle(SOLID_FILL,MY_GREEN);
-    // bar(ADMIN_INTERFACE_X1+10,ADMIN_INTERFACE_Y1+70,ADMIN_INTERFACE_X1+500,ADMIN_INTERFACE_Y1+390); // 清理列表
-    clear_exit(ADMIN_FEATURE_EXIT_X1,ADMIN_FEATURE_EXIT_Y1,ADMIN_FEATURE_EXIT_X2,ADMIN_FEATURE_EXIT_Y2);
-    clear_flip_up(ADMIN_FEATURE_UP_X1, ADMIN_FEATURE_UP_Y1, ADMIN_FEATURE_UP_X2, ADMIN_FEATURE_UP_Y2);
-    clear_flip_down(ADMIN_FEATURE_DOWN_X1, ADMIN_FEATURE_DOWN_Y1, ADMIN_FEATURE_DOWN_X2, ADMIN_FEATURE_DOWN_Y2);
-}
-
-
-/*****************************************************************
-MODULE:管理员车辆上牌
-*****************************************************************/
-void admin_bike_license(int *page, unsigned long *id, LINKLIST *LIST)
-{
-    char *search_str;
-    unsigned long id_list[8];
-    int mode = 0;
-    int selected_id;
-    int tag = ACTIVE_ADMIN_NULL;
-    ADMIN_BUTTONS AdminButtons[18];
-    FILE *fp_EBIKE_LICENSE_read = fopen("C:\\EBS\\DATA\\LICENSE.DAT", "rb+");
-    if (!fp_EBIKE_LICENSE_read)
-        exit(1);
-
-    define_admin_buttons(AdminButtons, STRUCT_LENGTH(AdminButtons)); // 定义按钮
-
-    fseek(fp_EBIKE_LICENSE_read, 0, SEEK_SET);
-
-    drawgraph_admin_menu();
-    drawgraph_admin_bike_license(); // 画出界面
-
-    if (debug_mode == 1)
-        display_memory_usage(400, 10); // 左上角显示
-
-    admin_list_info(id_list,fp_EBIKE_LICENSE_read, "license", mode, LIST_PAGEUP, LIST_CLEAR_CONTINUE, "\0", "\0"); // 列出数据
-
-    while(*page == ADMIN_BIKE_LICENSE)
+    switch (page)
     {
-        admin_flush_buttons(&tag, STRUCT_LENGTH(AdminButtons), AdminButtons);
-        admin_handle_buttons_event(page);
-        selected_id = handle_list_select_line_admin(id_list);
-        newmouse(&MouseX, &MouseY, &press);
-
-        admin_handle_features_event(LIST, page, search_str, id_list, fp_EBIKE_LICENSE_read, &mode, selected_id); // 处理点击事件
+    case ADMIN_BIKE_REGISTER: // 车辆注册
+        puthz(ADMIN_INTERFACE_X1 + 5, ADMIN_INTERFACE_Y1 + 5, "车辆注册审核", 24, 20, MY_WHITE);
+        break;
+    case ADMIN_BIKE_LICENSE: // 车辆上牌
+        puthz(ADMIN_INTERFACE_X1 + 5, ADMIN_INTERFACE_Y1 + 5, "车辆上牌审核", 24, 20, MY_WHITE);
+        break;
+    case ADMIN_BIKE_ANUAL: // 车辆年审
+        puthz(ADMIN_INTERFACE_X1 + 5, ADMIN_INTERFACE_Y1 + 5, "车辆年审审核", 24, 20, MY_WHITE);
+        break;
+    case ADMIN_BIKE_VIOLATION: // 车辆违规
+        puthz(ADMIN_INTERFACE_X1 + 5, ADMIN_INTERFACE_Y1 + 5, "车辆违规审核", 24, 20, MY_WHITE);
+        break;
+    case ADMIN_BIKE_BROKEN: // 车辆报废
+        puthz(ADMIN_INTERFACE_X1 + 5, ADMIN_INTERFACE_Y1 + 5, "车辆报废审核", 24, 20, MY_WHITE);
+        break;
     }
-    fclose(fp_EBIKE_LICENSE_read);
-}
 
-void drawgraph_admin_bike_license()
-{
-    puthz(ADMIN_INTERFACE_X1 + 5, ADMIN_INTERFACE_Y1 + 5, "车辆上牌审核", 24, 20, MY_WHITE);
     puthz(ADMIN_INTERFACE_X1 + 140, ADMIN_INTERFACE_Y1 + 10, "待处理项目", 16, 16, MY_WHITE);
+    setcolor(MY_WHITE);
     settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);
     outtextxy(ADMIN_INTERFACE_X1 + 130, ADMIN_INTERFACE_Y1 + 15, "-");
-    puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 40, "姓名", 16, 16, MY_WHITE);
-    puthz(ADMIN_INTERFACE_X1 + 100, ADMIN_INTERFACE_Y1 + 40, "学号", 16, 16, MY_WHITE);
-    puthz(ADMIN_INTERFACE_X1 + 200, ADMIN_INTERFACE_Y1 + 40, "车辆车牌号", 16, 16, MY_WHITE);
+
+    if (page == ADMIN_BIKE_REGISTER || page == ADMIN_BIKE_LICENSE || page == ADMIN_BIKE_ANUAL)
+    { // 车辆注册，车辆上牌，车辆年审
+        puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 40, "姓名", 16, 16, MY_WHITE);
+        puthz(ADMIN_INTERFACE_X1 + 100, ADMIN_INTERFACE_Y1 + 40, "学号", 16, 16, MY_WHITE);
+        puthz(ADMIN_INTERFACE_X1 + 200, ADMIN_INTERFACE_Y1 + 40, "车辆车牌号", 16, 16, MY_WHITE);
+    }
+    else if (page == ADMIN_BIKE_VIOLATION || page == ADMIN_BIKE_BROKEN)
+    { // 车辆违规，车辆报废
+        puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 40, "学号", 16, 16, MY_WHITE);
+        puthz(ADMIN_INTERFACE_X1 + 100, ADMIN_INTERFACE_Y1 + 40, "车辆车牌号", 16, 16, MY_WHITE);
+        puthz(ADMIN_INTERFACE_X1 + 200, ADMIN_INTERFACE_Y1 + 40, "地点", 16, 16, MY_WHITE);
+    }
+
     puthz(ADMIN_INTERFACE_X1 + 300, ADMIN_INTERFACE_Y1 + 40, "申请日期", 16, 16, MY_WHITE);
     puthz(ADMIN_INTERFACE_X1 + 400, ADMIN_INTERFACE_Y1 + 40, "处理情况", 16, 16, MY_WHITE);
 
@@ -263,15 +195,12 @@ void drawgraph_admin_bike_license()
 
     // setfillstyle(SOLID_FILL,MY_GREEN);
     // bar(ADMIN_INTERFACE_X1+10,ADMIN_INTERFACE_Y1+70,ADMIN_INTERFACE_X1+500,ADMIN_INTERFACE_Y1+390); // 清理列表
-
-    clear_exit(ADMIN_FEATURE_EXIT_X1,ADMIN_FEATURE_EXIT_Y1,ADMIN_FEATURE_EXIT_X2,ADMIN_FEATURE_EXIT_Y2);
+    clear_exit(ADMIN_FEATURE_EXIT_X1, ADMIN_FEATURE_EXIT_Y1, ADMIN_FEATURE_EXIT_X2, ADMIN_FEATURE_EXIT_Y2);
     clear_flip_up(ADMIN_FEATURE_UP_X1, ADMIN_FEATURE_UP_Y1, ADMIN_FEATURE_UP_X2, ADMIN_FEATURE_UP_Y2);
     clear_flip_down(ADMIN_FEATURE_DOWN_X1, ADMIN_FEATURE_DOWN_Y1, ADMIN_FEATURE_DOWN_X2, ADMIN_FEATURE_DOWN_Y2);
 }
 
-/*****************************************************************
-MODULE:刷新画面和处理鼠标点击的画图函数
-*****************************************************************/
+
 void draw_cues(int x, int y,int null1,int null2){
     setcolor(MY_GREEN);
     setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
@@ -311,7 +240,6 @@ void clear_exit(int x1,int y1,int x2,int y2){
     line(x1,y1,x2,y2);
     line(x2,y1,x1,y2);
 }
-
 
 void draw_exit_menu(int x1,int y1,int x2,int y2){
     setcolor(MY_BLACK);
@@ -482,7 +410,7 @@ void admin_list_info(unsigned long id_list[8], FILE *fp, char *list_mode, int se
     }
 
     if (counts && page_change == 1)
-    { // 收到下翻指令，或改变当前列表状态后从七点开始重新刷新列表
+    { // 收到下翻指令，或改变当前列表状态后从起点开始重新刷新列表
         /*条件判断*/
         if (end >= counts - 1)
         {
@@ -588,14 +516,23 @@ void admin_list_info(unsigned long id_list[8], FILE *fp, char *list_mode, int se
 void admin_show_info(EBIKE_INFO TEMP, int listed_item, char *list_mode, int list_sequence)
 {
     char buffer[50];
+    itoa(TEMP.ID, buffer, 10); // 将ID转换为字符串
+
     if (list_sequence == ASCENDING)
     {
         settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);
-        puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70 + listed_item * 20, TEMP.rln, 16, 16, MY_WHITE); // 输出姓名
-        itoa(TEMP.ID, buffer, 10);
-        outtextxy(ADMIN_INTERFACE_X1 + 100, ADMIN_INTERFACE_Y1 + 70 + listed_item * LIST_INTERVAL, buffer);        // 输出ID
-        outtextxy(ADMIN_INTERFACE_X1 + 200, ADMIN_INTERFACE_Y1 + 70 + listed_item * LIST_INTERVAL, TEMP.ebike_ID); // 输出电动车车牌号
-        outtextxy(ADMIN_INTERFACE_X1 + 300, ADMIN_INTERFACE_Y1 + 70 + listed_item * LIST_INTERVAL, buffer);        // 输出请求时间
+
+        if (strcmp(list_mode, "register") == 0 || strcmp(list_mode, "license") || strcmp(list_mode,"anual")){
+            puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70 + listed_item * 20, TEMP.rln, 16, 16, MY_WHITE); // 输出姓名
+            outtextxy(ADMIN_INTERFACE_X1 + 100, ADMIN_INTERFACE_Y1 + 70 + listed_item * LIST_INTERVAL, buffer);        // 输出ID
+            outtextxy(ADMIN_INTERFACE_X1 + 200, ADMIN_INTERFACE_Y1 + 70 + listed_item * LIST_INTERVAL, TEMP.ebike_ID); // 输出电动车车牌号
+        }else if (strcmp(list_mode, "broken") == 0 || strcmp(list_mode, "violation") == 0){
+            outtextxy(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70 + listed_item * LIST_INTERVAL, buffer);        // 输出ID
+            outtextxy(ADMIN_INTERFACE_X1 + 100, ADMIN_INTERFACE_Y1 + 70 + listed_item * LIST_INTERVAL, TEMP.ebike_ID); // 输出电动车车牌号
+            outtextxy(ADMIN_INTERFACE_X1 + 200, ADMIN_INTERFACE_Y1 + 70 + listed_item * LIST_INTERVAL, TEMP.location); // 输出地址
+        }
+
+        outtextxy(ADMIN_INTERFACE_X1 + 300, ADMIN_INTERFACE_Y1 + 70 + listed_item * LIST_INTERVAL, buffer); // 输出请求时间
 
         if (TEMP.conduct_time == -1)
         { // 输出处理状态
@@ -609,10 +546,17 @@ void admin_show_info(EBIKE_INFO TEMP, int listed_item, char *list_mode, int list
     else if (list_sequence == DESCENDING)
     {
         settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);
-        puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 310 - listed_item * LIST_INTERVAL, TEMP.rln, 16, 16, MY_WHITE); // 输出姓名
-        itoa(TEMP.ID, buffer, 10);
-        outtextxy(ADMIN_INTERFACE_X1 + 100, ADMIN_INTERFACE_Y1 + 310 - listed_item * LIST_INTERVAL, buffer);        // 输出ID
-        outtextxy(ADMIN_INTERFACE_X1 + 200, ADMIN_INTERFACE_Y1 + 310 - listed_item * LIST_INTERVAL, TEMP.ebike_ID); // 输出电动车车牌号
+
+        if (strcmp(list_mode, "register") == 0 || strcmp(list_mode, "license") == 0){
+            puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 310 - listed_item * LIST_INTERVAL, TEMP.rln, 16, 16, MY_WHITE); // 输出姓名
+            outtextxy(ADMIN_INTERFACE_X1 + 100, ADMIN_INTERFACE_Y1 + 310 - listed_item * LIST_INTERVAL, buffer);        // 输出ID
+            outtextxy(ADMIN_INTERFACE_X1 + 200, ADMIN_INTERFACE_Y1 + 310 - listed_item * LIST_INTERVAL, TEMP.ebike_ID); 
+        }else if(strcmp(list_mode, "broken") == 0 || strcmp(list_mode, "violation") == 0){
+            outtextxy(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 310 - listed_item * LIST_INTERVAL, buffer);        // 输出ID
+            outtextxy(ADMIN_INTERFACE_X1 + 200, ADMIN_INTERFACE_Y1 + 310 - listed_item * LIST_INTERVAL, TEMP.ebike_ID); // 输出电动车车牌号
+            outtextxy(ADMIN_INTERFACE_X1 + 300, ADMIN_INTERFACE_Y1 + 310 - listed_item * LIST_INTERVAL, TEMP.location); // 输出地址
+        }
+
         outtextxy(ADMIN_INTERFACE_X1 + 300, ADMIN_INTERFACE_Y1 + 310 - listed_item * LIST_INTERVAL, buffer);        // 输出请求时间
 
         if (TEMP.conduct_time == -1)
@@ -743,158 +687,6 @@ void admin_pass_failed_anime(int button_x1, int button_y1, int button_x2, int bu
     newmouse(&MouseX, &MouseY, &press); // 重新绘制
 }
 
-void admin_handle_features_event(LINKLIST *LIST, int *page, char *search_str, unsigned long *id_list, FILE *fp_EBIKE_INFO_read, int *mode, int selected_id)
-{
-    int i;
-    char list_mode[10]; // 列表依据
-    char buffer[50];
-    EBIKE_INFO temp_info;
-    LINKLIST_NODE *temp_node = LIST->HEAD; // LAST_NODE要找到链表中特定节点，先指向头结点
-    int chain_pos = -1;                    // 链表位置
-
-    time_t t = time(NULL); // 获取当前时间
-    struct tm *tm = localtime(&t); // localtime和time都是time.h中的函数
-    
-    unsigned long int search_pos = 0;       // 查找数据得到的位置
-
-    // 根据不同的页面，以不同的方式调用列表函数
-    switch (*page)
-    {
-    case ADMIN_BIKE_REGISTER:
-        strcpy(list_mode, "register");
-        break;
-    case ADMIN_BIKE_LICENSE:
-        strcpy(list_mode, "license");
-        break;
-    case ADMIN_BIKE_VIOLATION:
-        strcpy(list_mode, "violation");
-        break;
-    case ADMIN_BIKE_ANUAL:
-        strcpy(list_mode, "annual");
-        break;
-    case ADMIN_BIKE_BROKEN:
-        strcpy(list_mode, "broken");
-        break;
-    }
-
-    if (mouse_press(ADMIN_FEATURE_EXIT_X1, ADMIN_FEATURE_EXIT_Y1, ADMIN_FEATURE_EXIT_X2, ADMIN_FEATURE_EXIT_Y2) == 1)
-    {
-        *page = MAIN_ADMIN;
-    } // 当在功能界面点击叉，退出功能界面
-
-    if (mouse_press(ADMIN_FEATURE_SEARCH_X1, ADMIN_FEATURE_SEARCH_Y1, ADMIN_FEATURE_SEARCH_X2, ADMIN_FEATURE_SEARCH_Y2) == 1 &&
-        *page == ADMIN_BIKE_REGISTER)
-    {
-        Input_Bar(search_str, ADMIN_FEATURE_SEARCH_X1 + 25, ADMIN_FEATURE_SEARCH_Y1 + 2, 9, MY_LIGHTGRAY, 0, 1);
-
-        selected_id = -1; // 清除选中行
-        setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
-        bar(ADMIN_INTERFACE_X1 + 10, ADMIN_INTERFACE_Y1 + 70, ADMIN_INTERFACE_X1 + 18, ADMIN_INTERFACE_Y1 + 310); // 清理所有选中行高亮
-
-        admin_list_info(id_list, fp_EBIKE_INFO_read, list_mode, *mode, 0, 2, search_str, "ID"); // 搜索后刷新列表
-        
-    } // 点击输入框后退回
-
-    if (mouse_press(ADMIN_FEATURE3_X1, ADMIN_FEATURE3_Y1, ADMIN_FEATURE3_X2, ADMIN_FEATURE3_Y2) == 1 &&
-        *mode == 0)
-    {
-        *mode = 1;
-        setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
-        bar(ADMIN_INTERFACE_X1 + 140, ADMIN_INTERFACE_Y1 + 10, ADMIN_INTERFACE_X1 + 230, ADMIN_INTERFACE_Y1 + 30);
-        puthz(ADMIN_INTERFACE_X1 + 140, ADMIN_INTERFACE_Y1 + 10, "已处理项目", 16, 16, MY_WHITE);
-        admin_list_info(id_list, fp_EBIKE_INFO_read, list_mode, *mode, LIST_PAGEUP, LIST_CLEAR_CONTINUE, search_str, "ID");
-    } // 点击已处理后显示已处理
-
-    if (mouse_press(ADMIN_FEATURE4_X1, ADMIN_FEATURE4_Y1, ADMIN_FEATURE4_X2, ADMIN_FEATURE4_Y2) == 1 &&
-        *mode == 1)
-    {
-        *mode = 0;
-        setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
-        bar(ADMIN_INTERFACE_X1 + 140, ADMIN_INTERFACE_Y1 + 10, ADMIN_INTERFACE_X1 + 230, ADMIN_INTERFACE_Y1 + 30);
-        puthz(ADMIN_INTERFACE_X1 + 140, ADMIN_INTERFACE_Y1 + 10, "未处理项目", 16, 16, MY_WHITE);
-        admin_list_info(id_list, fp_EBIKE_INFO_read, list_mode, *mode, LIST_PAGEUP, LIST_CLEAR_CONTINUE, search_str, "ID");
-    } // 点击未处理后显示未处理
-
-    // 点击同意申请
-    if (mouse_press(ADMIN_FEATURE1_X1, ADMIN_FEATURE1_Y1, ADMIN_FEATURE1_X2, ADMIN_FEATURE1_Y2) == 1 && selected_id != -1)
-    {
-        itoa(selected_id, buffer, 10);                                 // 将选中行的ID转化为字符串
-        if ((chain_pos = linklist_find_data(LIST, buffer, "id")) == -1) // 查找链表中是否存在该ID，若找不到，则不进行任何操作
-            return;
-
-        search_pos = find_ebike_info(fp_EBIKE_INFO_read, buffer, "id"); // 查找数据块
-        if (search_pos == 0)
-            return; // 如果没有找到数据块，则不进行任何操作，若能找到，则进一步处理数据
-
-        // 修改数据块
-        sprintf(buffer, "%04d%02d%02d", tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday); // 格式化时间字符串
-        fread(&temp_info, sizeof(EBIKE_INFO), 1, fp_EBIKE_INFO_read);                     // 读取数据块
-        temp_info.conduct_time = atoi(buffer);                                            // 将时间字符串转化为int型数据，并赋值给conduct_time
-        temp_info.result = PASSED;                                                        // 将result赋值为已处理
-
-        fseek(fp_EBIKE_INFO_read, search_pos, SEEK_SET);               // 定位到数据块
-        fwrite(&temp_info, sizeof(EBIKE_INFO), 1, fp_EBIKE_INFO_read); // 将新数据写入数据块
-
-        // 修改链表数据
-        for (i = 0; i < chain_pos; i++)
-        {
-            temp_node = temp_node->NEXT; // 遍历链表，找到对应节点
-        }
-        //根据不同的页面，修改链表中对应节点的特定数据
-        switch(*page){
-            case ADMIN_BIKE_REGISTER:
-                strcpy(temp_node->USER_DATA.ebike_ID, temp_info.ebike_ID); // 将链表中对应节点的ebike_ID修改为新数据
-                break;
-            case ADMIN_BIKE_LICENSE:
-                strcpy(temp_node->USER_DATA.ebike_license, temp_info.ebike_license); // 将链表中对应节点的ebike_license修改为新数据
-                break;
-            case ADMIN_BIKE_VIOLATION:
-                temp_node->USER_DATA.violations++;; // 将链表中对应节点的violations加1
-                break;
-            case ADMIN_BIKE_ANUAL:
-                temp_node->USER_DATA.anual_check+=10000; // 将链表中对应节点的annual加10000(10000表示数字中表示年的部分加1)
-                break;
-            case ADMIN_BIKE_BROKEN:
-                temp_node->USER_DATA.ebike_state = BROKEN; // 将链表中对应节点的ebike_state修改为BROKEN
-                break;
-        }
-        linklist_write_user_data(LIST); // 将链表数据写入文件
-        
-
-        admin_pass_failed_anime(ADMIN_FEATURE1_X1, ADMIN_FEATURE1_Y1, ADMIN_FEATURE1_X2, ADMIN_FEATURE1_Y2,PASSED); // 操作成功后的动画
-
-        admin_list_info(id_list, fp_EBIKE_INFO_read, list_mode, *mode, LIST_PAGEUP, LIST_FLUSH, "\0", "\0"); // 操作结束后刷新列表
-
-    } 
-
-    // 点击拒绝申请
-    if (mouse_press(ADMIN_FEATURE2_X1, ADMIN_FEATURE2_Y1, ADMIN_FEATURE2_X2, ADMIN_FEATURE2_Y2) == 1 && selected_id != -1)
-    {
-        itoa(selected_id, buffer, 10);
-        if (!(chain_pos = linklist_find_data(LIST, buffer, "id")))
-            return; // 选中行，点击同意申请，若出现未能找到数据的情况，则不进行任何操作
-
-        search_pos = find_ebike_info(fp_EBIKE_INFO_read, buffer, "id"); // 查找数据块
-        if (search_pos == 0)
-            return; // 如果没有找到数据块，则不进行任何操作，若能找到，则进一步处理数据
-
-        // 修改数据块
-        sprintf(buffer, "%04d%02d%02d", tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday); // 格式化时间字符串
-        fread(&temp_info, sizeof(EBIKE_INFO), 1, fp_EBIKE_INFO_read);                     // 读取数据块
-        temp_info.conduct_time = atoi(buffer);                                            // 将时间字符串转化为int型数据，并赋值给conduct_time
-        temp_info.result = FAILED;                                                        // 将result赋值为已处理
-
-        fseek(fp_EBIKE_INFO_read, search_pos, SEEK_SET);               // 定位到数据块
-        fwrite(&temp_info, sizeof(EBIKE_INFO), 1, fp_EBIKE_INFO_read); // 将新数据写入数据块
-
-        // 申请失败，不修改链表数据
-
-        admin_pass_failed_anime(ADMIN_FEATURE1_X1, ADMIN_FEATURE1_Y1, ADMIN_FEATURE1_X2, ADMIN_FEATURE1_Y2,FAILED); // 操作成功后的动画
-
-        admin_list_info(id_list, fp_EBIKE_INFO_read, list_mode, *mode, LIST_PAGEUP, LIST_FLUSH, "\0", "\0"); // 操作结束后刷新列表
-    }
-}
-
 void define_admin_buttons(ADMIN_BUTTONS AdminButtons[], int button_counts)
 {
     ADMIN_BUTTONS Examples[] = {
@@ -964,6 +756,207 @@ void define_admin_buttons(ADMIN_BUTTONS AdminButtons[], int button_counts)
         AdminButtons[i].active_tag = Examples[i].active_tag;
         AdminButtons[i].drawfunc = Examples[i].drawfunc;
         AdminButtons[i].clearfunc = Examples[i].clearfunc;
+    }
+}
+
+void admin_handle_buttons_event(int *page)
+{
+    /*返回主界面或退出程序*/
+    if (mouse_press(ADMIN_EXIT_X1, ADMIN_EXIT_Y1, ADMIN_EXIT_X2, ADMIN_EXIT_Y2) == 1)
+    {
+        if (!admin_exitting(page))
+        {
+            AdminswitchPage();
+            return;
+        }
+    }
+
+    /*车辆注册*/
+    if (mouse_press(ADMIN_BUTTON1_X1, ADMIN_BUTTON1_Y1, ADMIN_BUTTON1_X2, ADMIN_BUTTON1_Y2) == 1 &&
+        *page != ADMIN_BIKE_REGISTER)
+    {
+        *page = ADMIN_BIKE_REGISTER;
+        return;
+    }
+    /*车辆上牌*/
+    if (mouse_press(ADMIN_BUTTON2_X1, ADMIN_BUTTON2_Y1, ADMIN_BUTTON2_X2, ADMIN_BUTTON2_Y2) == 1 &&
+        *page != ADMIN_BIKE_LICENSE)
+    {
+        *page = ADMIN_BIKE_LICENSE;
+        return;
+    }
+    /*车辆报废*/
+    if (mouse_press(ADMIN_BUTTON3_X1, ADMIN_BUTTON3_Y1, ADMIN_BUTTON3_X2, ADMIN_BUTTON3_Y2) == 1 &&
+        *page != ADMIN_BIKE_BROKEN)
+    {
+        *page = ADMIN_BIKE_BROKEN;
+        return;
+    }
+    /*车辆违规*/
+    if (mouse_press(ADMIN_BUTTON4_X1, ADMIN_BUTTON4_Y1, ADMIN_BUTTON4_X2, ADMIN_BUTTON4_Y2) == 1 &&
+        *page != ADMIN_BIKE_VIOLATION)
+    {
+        *page = ADMIN_BIKE_VIOLATION;
+        return;
+    }
+    /*车辆年审*/
+    if (mouse_press(ADMIN_BUTTON5_X1, ADMIN_BUTTON5_Y1, ADMIN_BUTTON5_X2, ADMIN_BUTTON5_Y2) == 1 &&
+        *page != ADMIN_BIKE_ANUAL)
+    {
+        *page = ADMIN_BIKE_ANUAL;
+        return;
+    }
+}
+
+void admin_handle_features_event(LINKLIST *LIST, int *page, char *search_str, unsigned long *id_list, FILE *fp_EBIKE_INFO_read, int *mode, int selected_id)
+{
+    int i;
+    char list_mode[10]; // 列表依据
+    char buffer[50];
+    EBIKE_INFO temp_info;
+    LINKLIST_NODE *temp_node = LIST->HEAD; // LAST_NODE要找到链表中特定节点，先指向头结点
+    int chain_pos = -1;                    // 链表位置
+
+    time_t t = time(NULL);         // 获取当前时间
+    struct tm *tm = localtime(&t); // localtime和time都是time.h中的函数
+
+    unsigned long int search_pos = 0; // 查找数据得到的位置
+
+    // 根据不同的页面，以不同的方式调用列表函数
+    switch (*page)
+    {
+    case ADMIN_BIKE_REGISTER:
+        strcpy(list_mode, "register");
+        break;
+    case ADMIN_BIKE_LICENSE:
+        strcpy(list_mode, "license");
+        break;
+    case ADMIN_BIKE_VIOLATION:
+        strcpy(list_mode, "violation");
+        break;
+    case ADMIN_BIKE_ANUAL:
+        strcpy(list_mode, "annual");
+        break;
+    case ADMIN_BIKE_BROKEN:
+        strcpy(list_mode, "broken");
+        break;
+    }
+
+    if (mouse_press(ADMIN_FEATURE_EXIT_X1, ADMIN_FEATURE_EXIT_Y1, ADMIN_FEATURE_EXIT_X2, ADMIN_FEATURE_EXIT_Y2) == 1)
+    {
+        *page = MAIN_ADMIN;
+    } // 当在功能界面点击叉，退出功能界面
+
+    if (mouse_press(ADMIN_FEATURE_SEARCH_X1, ADMIN_FEATURE_SEARCH_Y1, ADMIN_FEATURE_SEARCH_X2, ADMIN_FEATURE_SEARCH_Y2) == 1 &&
+        *page == ADMIN_BIKE_REGISTER)
+    {
+        Input_Bar(search_str, ADMIN_FEATURE_SEARCH_X1 + 25, ADMIN_FEATURE_SEARCH_Y1 + 2, 9, MY_LIGHTGRAY, 0, 1);
+
+        selected_id = -1; // 清除选中行
+        setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
+        bar(ADMIN_INTERFACE_X1 + 10, ADMIN_INTERFACE_Y1 + 70, ADMIN_INTERFACE_X1 + 18, ADMIN_INTERFACE_Y1 + 310); // 清理所有选中行高亮
+
+        admin_list_info(id_list, fp_EBIKE_INFO_read, list_mode, *mode, 0, 2, search_str, "ID"); // 搜索后刷新列表
+
+    } // 点击输入框后退回
+
+    if (mouse_press(ADMIN_FEATURE3_X1, ADMIN_FEATURE3_Y1, ADMIN_FEATURE3_X2, ADMIN_FEATURE3_Y2) == 1 &&
+        *mode == 0)
+    {
+        *mode = 1;
+        setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
+        bar(ADMIN_INTERFACE_X1 + 140, ADMIN_INTERFACE_Y1 + 10, ADMIN_INTERFACE_X1 + 230, ADMIN_INTERFACE_Y1 + 30);
+        puthz(ADMIN_INTERFACE_X1 + 140, ADMIN_INTERFACE_Y1 + 10, "已处理项目", 16, 16, MY_WHITE);
+        admin_list_info(id_list, fp_EBIKE_INFO_read, list_mode, *mode, LIST_PAGEUP, LIST_CLEAR_CONTINUE, search_str, "ID");
+    } // 点击已处理后显示已处理
+
+    if (mouse_press(ADMIN_FEATURE4_X1, ADMIN_FEATURE4_Y1, ADMIN_FEATURE4_X2, ADMIN_FEATURE4_Y2) == 1 &&
+        *mode == 1)
+    {
+        *mode = 0;
+        setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
+        bar(ADMIN_INTERFACE_X1 + 140, ADMIN_INTERFACE_Y1 + 10, ADMIN_INTERFACE_X1 + 230, ADMIN_INTERFACE_Y1 + 30);
+        puthz(ADMIN_INTERFACE_X1 + 140, ADMIN_INTERFACE_Y1 + 10, "未处理项目", 16, 16, MY_WHITE);
+        admin_list_info(id_list, fp_EBIKE_INFO_read, list_mode, *mode, LIST_PAGEUP, LIST_CLEAR_CONTINUE, search_str, "ID");
+    } // 点击未处理后显示未处理
+
+    // 点击同意申请
+    if (mouse_press(ADMIN_FEATURE1_X1, ADMIN_FEATURE1_Y1, ADMIN_FEATURE1_X2, ADMIN_FEATURE1_Y2) == 1 && selected_id != -1)
+    {
+        itoa(selected_id, buffer, 10);                                  // 将选中行的ID转化为字符串
+        if ((chain_pos = linklist_find_data(LIST, buffer, "id")) == -1) // 查找链表中是否存在该ID，若找不到，则不进行任何操作
+            return;
+
+        search_pos = find_ebike_info(fp_EBIKE_INFO_read, buffer, "id"); // 查找数据块
+        if (search_pos == 0)
+            return; // 如果没有找到数据块，则不进行任何操作，若能找到，则进一步处理数据
+
+        // 修改数据块
+        sprintf(buffer, "%04d%02d%02d", tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday); // 格式化时间字符串
+        fread(&temp_info, sizeof(EBIKE_INFO), 1, fp_EBIKE_INFO_read);                     // 读取数据块
+        temp_info.conduct_time = atoi(buffer);                                            // 将时间字符串转化为int型数据，并赋值给conduct_time
+        temp_info.result = PASSED;                                                        // 将result赋值为已处理
+
+        fseek(fp_EBIKE_INFO_read, search_pos, SEEK_SET);               // 定位到数据块
+        fwrite(&temp_info, sizeof(EBIKE_INFO), 1, fp_EBIKE_INFO_read); // 将新数据写入数据块
+
+        // 修改链表数据
+        for (i = 0; i < chain_pos; i++)
+        {
+            temp_node = temp_node->NEXT; // 遍历链表，找到对应节点
+        }
+        // 根据不同的页面，修改链表中对应节点的特定数据
+        switch (*page)
+        {
+        case ADMIN_BIKE_REGISTER:
+            strcpy(temp_node->USER_DATA.ebike_ID, temp_info.ebike_ID); // 将链表中对应节点的ebike_ID修改为新数据
+            break;
+        case ADMIN_BIKE_LICENSE:
+            strcpy(temp_node->USER_DATA.ebike_license, temp_info.ebike_license); // 将链表中对应节点的ebike_license修改为新数据
+            break;
+        case ADMIN_BIKE_VIOLATION:
+            temp_node->USER_DATA.violations++;
+            ; // 将链表中对应节点的violations加1
+            break;
+        case ADMIN_BIKE_ANUAL:
+            temp_node->USER_DATA.anual_check += 10000; // 将链表中对应节点的annual加10000(10000表示数字中表示年的部分加1)
+            break;
+        case ADMIN_BIKE_BROKEN:
+            temp_node->USER_DATA.ebike_state = BROKEN; // 将链表中对应节点的ebike_state修改为BROKEN
+            break;
+        }
+        linklist_write_user_data(LIST); // 将链表数据写入文件
+
+        admin_pass_failed_anime(ADMIN_FEATURE1_X1, ADMIN_FEATURE1_Y1, ADMIN_FEATURE1_X2, ADMIN_FEATURE1_Y2, PASSED); // 操作成功后的动画
+
+        admin_list_info(id_list, fp_EBIKE_INFO_read, list_mode, *mode, LIST_PAGEUP, LIST_FLUSH, "\0", "\0"); // 操作结束后刷新列表
+    }
+
+    // 点击拒绝申请
+    if (mouse_press(ADMIN_FEATURE2_X1, ADMIN_FEATURE2_Y1, ADMIN_FEATURE2_X2, ADMIN_FEATURE2_Y2) == 1 && selected_id != -1)
+    {
+        itoa(selected_id, buffer, 10);
+        if (!(chain_pos = linklist_find_data(LIST, buffer, "id")))
+            return; // 选中行，点击同意申请，若出现未能找到数据的情况，则不进行任何操作
+
+        search_pos = find_ebike_info(fp_EBIKE_INFO_read, buffer, "id"); // 查找数据块
+        if (search_pos == 0)
+            return; // 如果没有找到数据块，则不进行任何操作，若能找到，则进一步处理数据
+
+        // 修改数据块
+        sprintf(buffer, "%04d%02d%02d", tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday); // 格式化时间字符串
+        fread(&temp_info, sizeof(EBIKE_INFO), 1, fp_EBIKE_INFO_read);                     // 读取数据块
+        temp_info.conduct_time = atoi(buffer);                                            // 将时间字符串转化为int型数据，并赋值给conduct_time
+        temp_info.result = FAILED;                                                        // 将result赋值为已处理
+
+        fseek(fp_EBIKE_INFO_read, search_pos, SEEK_SET);               // 定位到数据块
+        fwrite(&temp_info, sizeof(EBIKE_INFO), 1, fp_EBIKE_INFO_read); // 将新数据写入数据块
+
+        // 申请失败，不修改链表数据
+
+        admin_pass_failed_anime(ADMIN_FEATURE1_X1, ADMIN_FEATURE1_Y1, ADMIN_FEATURE1_X2, ADMIN_FEATURE1_Y2, FAILED); // 操作成功后的动画
+
+        admin_list_info(id_list, fp_EBIKE_INFO_read, list_mode, *mode, LIST_PAGEUP, LIST_FLUSH, "\0", "\0"); // 操作结束后刷新列表
     }
 }
 

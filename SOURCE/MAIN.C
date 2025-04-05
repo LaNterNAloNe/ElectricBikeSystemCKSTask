@@ -1,7 +1,7 @@
 #include"GLOBAL.H"
 
 int main(void){
-    int page = REGISTER_ID_INPUT; // 主页面
+    int page = MAIN_ADMIN; // 主页面
     // int page=NULL; // 副页面
     unsigned long ID=0;//记录登录用户的ID
     int driver=VGA,mode=VGAHI;
@@ -42,10 +42,19 @@ int main(void){
                 main_admin(&page,&ID);
                 break;
             case ADMIN_BIKE_REGISTER:
-                admin_bike_register(&page,&ID,LIST);
+                admin_manage_bike_module(&page, &ID, LIST,"C:\\EBS\\DATA\\REGISTER.DAT","register");
                 break;
             case ADMIN_BIKE_LICENSE:
-                admin_bike_license(&page, &ID, LIST);
+                admin_manage_bike_module(&page, &ID, LIST,"C:\\EBS\\DATA\\LICENSE.DAT","license");
+                break;
+            case ADMIN_BIKE_ANUAL:
+                admin_manage_bike_module(&page, &ID, LIST,"C:\\EBS\\DATA\\ANUAL.DAT","anual");
+                break;
+            case ADMIN_BIKE_VIOLATION:
+                admin_manage_bike_module(&page, &ID, LIST,"C:\\EBS\\DATA\\VIOLA.DAT","violation");
+                break;
+            case ADMIN_BIKE_BROKEN:
+                admin_manage_bike_module(&page, &ID, LIST,"C:\\EBS\\DATA\\BROKEN.DAT","broken");
                 break;
         }
     }
