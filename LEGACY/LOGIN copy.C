@@ -12,7 +12,7 @@ void login(int *page, int *ID) {
     save_bk_mou(MouseX, MouseY);
     drawgraph_login();
 
-	if(debug_mode == 1) display_memory_usage(400, 10); // 左上角显示 
+	if(debug_mode == 1) display_memory_usage(400, 10); // 显示调试参数 
 
     while (1) {
 		flushLoginGraph(&tag,page); // 刷新界面
@@ -135,7 +135,7 @@ void login_admin(int* page,int *uid) {
 	save_bk_mou(MouseX, MouseY);
 	drawgraph_admin_login();
 
-	if(debug_mode == 1) display_memory_usage(400, 10); // 左上角显示 
+	if(debug_mode == 1) display_memory_usage(400, 10); // 显示调试参数 
 
 	while (1) {
 		flushLoginGraph(&tag,page); // 刷新界面
@@ -258,7 +258,7 @@ void _register(int* page) {
 	save_bk_mou(MouseX, MouseY);
 	drawgraph_register();
 
-	if(debug_mode == 1) display_memory_usage(400, 10); // 左上角显示 
+	if(debug_mode == 1) display_memory_usage(400, 10); // 显示调试参数 
 	
 	while (1) {
 		flushLoginGraph(&tag,page); // 刷新界面

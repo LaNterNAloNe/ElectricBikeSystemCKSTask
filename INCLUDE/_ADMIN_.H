@@ -133,32 +133,41 @@
 #define ADMIN_FEATURE_DOWN_X2 400
 #define ADMIN_FEATURE_DOWN_Y2 415
 
-//定义激活状态
-#define ACTIVE_ADMIN_NULL 0
-#define ACTIVE_ADMIN_BUTTON1 1
-#define ACTIVE_ADMIN_BUTTON2 2
-#define ACTIVE_ADMIN_BUTTON3 3
-#define ACTIVE_ADMIN_BUTTON4 4
-#define ACTIVE_ADMIN_BUTTON5 5
-#define ACTIVE_ADMIN_BUTTON6 6
-#define ACTIVE_ADMIN_BUTTON7 7
-#define ACTIVE_ADMIN_EXIT 8
-#define ACTIVE_ADMIN_FEATURE1 9
-#define ACTIVE_ADMIN_FEATURE2 10
-#define ACTIVE_ADMIN_FEATURE3 11
-#define ACTIVE_ADMIN_FEATURE4 12
-#define ACTIVE_ADMIN_FEATURE5 13
-#define ACTIVE_ADMIN_FEATURE6 14
-#define ACTIVE_ADMIN_FEATURE_SEARCH 15
-#define ACTIVE_ADMIN_FEATURE_UP 16
-#define ACTIVE_ADMIN_FEATURE_DOWN 17
-#define ACTIVE_ADMIN_FEATURE_EXIT 20
-#define ACTIVE_ADMIN_INFO 21
+//定义数据一览视图代号
+enum
+{
+    ADMIN_DATABASE_NULL = 0,
+    ADMIN_DATABASE_USER_INFO,
+    ADMIN_DATABASE_EBIKE_INFO,
+    ADMIN_DATABASE_EBIKE_PASS_IN_OUT,
+} ADMIN_DATABASE_FLAG;
 
+// 定义激活状态
+enum
+{
+    ACTIVE_ADMIN_NULL = 0,
+    ACTIVE_ADMIN_BUTTON1,
+    ACTIVE_ADMIN_BUTTON2,
+    ACTIVE_ADMIN_BUTTON3,
+    ACTIVE_ADMIN_BUTTON4,
+    ACTIVE_ADMIN_BUTTON5,
+    ACTIVE_ADMIN_BUTTON6,
+    ACTIVE_ADMIN_BUTTON7,
+    ACTIVE_ADMIN_EXIT,
+    ACTIVE_ADMIN_FEATURE1,
+    ACTIVE_ADMIN_FEATURE2,
+    ACTIVE_ADMIN_FEATURE3,
+    ACTIVE_ADMIN_FEATURE4,
+    ACTIVE_ADMIN_FEATURE5,
+    ACTIVE_ADMIN_FEATURE6,
+    ACTIVE_ADMIN_FEATURE_SEARCH,
+    ACTIVE_ADMIN_FEATURE_UP,
+    ACTIVE_ADMIN_FEATURE_DOWN,
+    ACTIVE_ADMIN_FEATURE_EXIT,
+    ACTIVE_ADMIN_INFO,
+} ADMIN_ACTIVE_TAG;
 
-
-
-typedef void (*DRAWFUNCTION) (int coord1,int coord2,int coord3,int coord4);
+typedef void (*DRAWFUNCTION)(int coord1, int coord2, int coord3, int coord4);
 typedef void (*CLEARFUNCTION) (int coord1,int coord2,int coord3,int coord4);
 
 typedef struct {
@@ -186,12 +195,16 @@ typedef struct {
 void main_admin(int *page,unsigned long *ID);
 // 车辆信息处理界面
 void admin_manage_bike_module(int *page, unsigned long *ID, LINKLIST *LIST, char *file_path, char *list_mode);
-
+// 数据一览界面
+void admin_database(int *page, unsigned long *ID);
+// 管理员信息界面
+void admin_info(int *page, unsigned long *ID);
 
 
 // 绘制画面
 void drawgraph_admin_menu(void);
 void drawgraph_admin_feature(int page);
+void drawgraph_admin_database(void);
 void drawgraph_admin_info(unsigned long ID);
 
 // 按钮状态刷新
@@ -200,6 +213,7 @@ void admin_flush_buttons(int *tag,int button_counts,ADMIN_BUTTONS AdminButtons[]
 void admin_handle_features_event(LINKLIST *LIST, int *page, char *search_str, unsigned long *id_list,
                                  FILE *fp_EBIKE_INFO_read, int *mode, int selected_id);
 void admin_handle_buttons_event(int *page);
+void admin_handle_database_event();
 
 // 列表函数
 void admin_list_info(unsigned long id_list[8], FILE *fp, char *list_mode, int search_mode, int page_change, 

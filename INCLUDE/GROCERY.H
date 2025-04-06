@@ -1,6 +1,10 @@
 #ifndef GROCERY_H
 #define GROCERY_H
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <time.h>
+
 #define NUM0 0x5230
 #define NUM1 0x4f31
 #define NUM2 0x5032
@@ -45,7 +49,7 @@
 #define ZERO 0x0b30
 
 
-//定义page各个状态
+
 #define TEST -1
 #define EXIT 0
 #define LOGIN 1
@@ -57,10 +61,10 @@
 #define USER_BIKE_REGISTER 11
 #define USER_BIKE_LICENSE 12
 #define USER_BIKE_ANUAL 13
-#define USER_BIKE_WROTEOUT 131
-#define USER_INFO 14
-#define USER_MESSAGE 15
-#define USER_DATAGRAPH 16
+#define USER_BIKE_WROTEOUT 14
+#define USER_INFO 15
+#define USER_MESSAGE 16
+#define USER_DATAGRAPH 17
 
 #define MAIN_ADMIN 20
 #define ADMIN_BIKE_REGISTER 21

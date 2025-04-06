@@ -56,6 +56,9 @@ int main(void){
             case ADMIN_BIKE_BROKEN:
                 admin_manage_bike_module(&page, &ID, LIST,"C:\\EBS\\DATA\\BROKEN.DAT","broken");
                 break;
+            case ADMIN_DATABASE:
+                admin_database(&page, &ID);
+                break;
             case ADMIN_INFO:
                 admin_info(&page, &ID);
                 break;

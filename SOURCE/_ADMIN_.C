@@ -12,7 +12,7 @@ void main_admin(int *page,unsigned long *ID){
     drawgraph_admin_menu(); // 初始化界面
     mouseinit();
 
-    if(debug_mode == 1) display_memory_usage(400, 10); // 左上角显示 
+    if(debug_mode == 1) display_memory_usage(400, 10); // 显示调试参数 
 
     while(*page == MAIN_ADMIN){
         admin_flush_buttons(&tag,STRUCT_LENGTH(AdminButtons),AdminButtons);
@@ -51,7 +51,7 @@ void admin_manage_bike_module(int *page, unsigned long *ID, LINKLIST *LIST, char
     admin_list_info(id_list, fp_EBIKE_INFO_read, list_mode, mode, LIST_PAGEUP, LIST_CLEAR_CONTINUE, "\0", "\0");
 
     if (debug_mode == 1)
-        display_memory_usage(400, 10); // 左上角显示
+        display_memory_usage(400, 10); // 显示调试参数
 
     while (*page == temp_page)
     {
@@ -80,13 +80,40 @@ void admin_info(int *page, unsigned long *ID){
     define_admin_buttons(AdminButtons, STRUCT_LENGTH(AdminButtons)); // 定义按钮
     clrmous(MouseX, MouseY);
     drawgraph_admin_menu(); // 初始化界面
-    
+
+    if (debug_mode == 1)
+        display_memory_usage(400, 10); // 显示调试参数
+
     while(*page == ADMIN_INFO){
         admin_flush_buttons(&tag,STRUCT_LENGTH(AdminButtons),AdminButtons);
         admin_handle_buttons_event(page);
         newmouse(&MouseX, &MouseY, &press);
 
         drawgraph_admin_info(*ID); // 显示管理员信息
+
+        delay(25);
+    }
+}
+
+/*****************************************************************
+MODULE:数据一览界面
+*****************************************************************/
+void admin_database(int *page, unsigned long *ID){
+    int tag = ACTIVE_ADMIN_NULL;
+    ADMIN_BUTTONS AdminButtons[19];
+    define_admin_buttons(AdminButtons, STRUCT_LENGTH(AdminButtons)); // 定义按钮 
+    clrmous(MouseX, MouseY);
+    drawgraph_admin_menu(); // 绘制界面
+    drawgraph_admin_database();
+
+    if (debug_mode == 1)
+        display_memory_usage(400, 10); // 显示调试参数
+
+    while (*page == ADMIN_DATABASE){
+        admin_flush_buttons(&tag, STRUCT_LENGTH(AdminButtons), AdminButtons);
+        admin_handle_buttons_event(page);
+        admin_handle_database_event();
+        newmouse(&MouseX, &MouseY, &press);
 
         delay(25);
     }
@@ -190,6 +217,7 @@ void drawgraph_admin_feature(int page)
         break;
     }
 
+
     puthz(ADMIN_INTERFACE_X1 + 140, ADMIN_INTERFACE_Y1 + 10, "待处理项目", 16, 16, MY_WHITE);
     setcolor(MY_RED);
     settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);
@@ -222,6 +250,41 @@ void drawgraph_admin_feature(int page)
     puthz(ADMIN_FEATURE2_X1 + 4, ADMIN_FEATURE2_Y1 + 8, "驳回申请", 16, 16, MY_WHITE);
     puthz(ADMIN_FEATURE3_X1 + 11, ADMIN_FEATURE3_Y1 + 8, "已处理", 16, 16, MY_WHITE);
     puthz(ADMIN_FEATURE4_X1 + 11, ADMIN_FEATURE4_Y1 + 8, "待处理", 16, 16, MY_WHITE);
+
+    setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
+    bar(ADMIN_FEATURE_SEARCH_X1, ADMIN_FEATURE_SEARCH_Y1, ADMIN_FEATURE_SEARCH_X2, ADMIN_FEATURE_SEARCH_Y2);
+    setcolor(MY_BLACK);
+    setlinestyle(SOLID_LINE, 0, NORM_WIDTH);
+    rectangle(ADMIN_FEATURE_SEARCH_X1, ADMIN_FEATURE_SEARCH_Y1, ADMIN_FEATURE_SEARCH_X2, ADMIN_FEATURE_SEARCH_Y2);
+
+    setlinestyle(SOLID_LINE, 0, THICK_WIDTH); // 小放大镜，提示为搜索框
+    line(ADMIN_FEATURE_SEARCH_X1 + 5, ADMIN_FEATURE_SEARCH_Y2 - 7, ADMIN_FEATURE_SEARCH_X1 + 12, ADMIN_FEATURE_SEARCH_Y2 - 14);
+    circle(ADMIN_FEATURE_SEARCH_X1 + 16, ADMIN_FEATURE_SEARCH_Y2 - 18, 5);
+
+    // setfillstyle(SOLID_FILL,MY_GREEN);
+    // bar(ADMIN_INTERFACE_X1+10,ADMIN_INTERFACE_Y1+70,ADMIN_INTERFACE_X1+500,ADMIN_INTERFACE_Y1+390); // 清理列表
+    clear_exit(ADMIN_FEATURE_EXIT_X1, ADMIN_FEATURE_EXIT_Y1, ADMIN_FEATURE_EXIT_X2, ADMIN_FEATURE_EXIT_Y2);
+    clear_flip_up(ADMIN_FEATURE_UP_X1, ADMIN_FEATURE_UP_Y1, ADMIN_FEATURE_UP_X2, ADMIN_FEATURE_UP_Y2);
+    clear_flip_down(ADMIN_FEATURE_DOWN_X1, ADMIN_FEATURE_DOWN_Y1, ADMIN_FEATURE_DOWN_X2, ADMIN_FEATURE_DOWN_Y2);
+}
+
+void drawgraph_admin_database(void)
+{
+    puthz(ADMIN_INTERFACE_X1 + 15, ADMIN_INTERFACE_Y1 + 5, "数据一览", 24, 20, MY_WHITE);
+    draw_cues(ADMIN_BUTTON6_X2 + 10, ADMIN_BUTTON6_Y1, NULL, NULL); // 绘制箭头，标明当前打开页面为此
+
+    setfillstyle(SOLID_FILL, MY_YELLOW);
+    bar(ADMIN_FEATURE1_X1, ADMIN_FEATURE1_Y1, ADMIN_FEATURE1_X2, ADMIN_FEATURE1_Y2);
+    bar(ADMIN_FEATURE2_X1, ADMIN_FEATURE2_Y1, ADMIN_FEATURE2_X2, ADMIN_FEATURE2_Y2);
+    bar(ADMIN_FEATURE3_X1, ADMIN_FEATURE3_Y1, ADMIN_FEATURE3_X2, ADMIN_FEATURE3_Y2);
+    bar(ADMIN_FEATURE4_X1, ADMIN_FEATURE4_Y1, ADMIN_FEATURE4_X2, ADMIN_FEATURE4_Y2);
+    bar(ADMIN_FEATURE5_X1, ADMIN_FEATURE5_Y1, ADMIN_FEATURE5_X2, ADMIN_FEATURE5_Y2);
+    bar(ADMIN_FEATURE6_X1, ADMIN_FEATURE6_Y1, ADMIN_FEATURE6_X2, ADMIN_FEATURE6_Y2);
+    puthz(ADMIN_FEATURE1_X1 + 4, ADMIN_FEATURE1_Y1 + 8, "用户信息", 16, 16, MY_WHITE);
+    puthz(ADMIN_FEATURE2_X1 + 4, ADMIN_FEATURE2_Y1 + 8, "注册车辆", 16, 16, MY_WHITE);
+    puthz(ADMIN_FEATURE3_X1 + 4, ADMIN_FEATURE3_Y1 + 8, "上牌车辆", 16, 16, MY_WHITE);
+    puthz(ADMIN_FEATURE4_X1 + 4, ADMIN_FEATURE4_Y1 + 8, "报废车辆", 16, 16, MY_WHITE);
+    puthz(ADMIN_FEATURE5_X1 + 4, ADMIN_FEATURE5_Y1 + 8, "违规车辆", 16, 16, MY_WHITE);
 
     setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
     bar(ADMIN_FEATURE_SEARCH_X1, ADMIN_FEATURE_SEARCH_Y1, ADMIN_FEATURE_SEARCH_X2, ADMIN_FEATURE_SEARCH_Y2);
@@ -886,6 +949,14 @@ void admin_handle_buttons_event(int *page)
         *page = ADMIN_BIKE_ANUAL;
         return;
     }
+
+    /*数据一揽*/
+    if (mouse_press(ADMIN_BUTTON6_X1, ADMIN_BUTTON6_Y1, ADMIN_BUTTON6_X2, ADMIN_BUTTON6_Y2) == 1 &&
+        *page!= ADMIN_DATABASE)
+    {
+        *page = ADMIN_DATABASE;
+        return; 
+    }
 }
 
 void admin_handle_features_event(LINKLIST *LIST, int *page, char *search_str, unsigned long *id_list, FILE *fp_EBIKE_INFO_read, int *mode, int selected_id)
@@ -896,9 +967,6 @@ void admin_handle_features_event(LINKLIST *LIST, int *page, char *search_str, un
     EBIKE_INFO temp_info;
     LINKLIST_NODE *temp_node = LIST->HEAD; // LAST_NODE要找到链表中特定节点，先指向头结点
     int chain_pos = -1;                    // 链表位置
-
-    time_t t = time(NULL);         // 获取当前时间
-    struct tm *tm = localtime(&t); // localtime和time都是time.h中的函数
 
     unsigned long int search_pos = 0; // 查找数据得到的位置
 
@@ -972,9 +1040,9 @@ void admin_handle_features_event(LINKLIST *LIST, int *page, char *search_str, un
             return; // 如果没有找到数据块，则不进行任何操作，若能找到，则进一步处理数据
 
         // 修改数据块
-        sprintf(buffer, "%04d%02d%02d", tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday); // 格式化时间字符串
+        
         fread(&temp_info, sizeof(EBIKE_INFO), 1, fp_EBIKE_INFO_read);                     // 读取数据块
-        temp_info.conduct_time = atoi(buffer);                                            // 将时间字符串转化为int型数据，并赋值给conduct_time
+        temp_info.conduct_time = get_time();                                              // 将时间字符串转化为int型数据，并赋值给conduct_time
         temp_info.result = PASSED;                                                        // 将result赋值为已处理
 
         fseek(fp_EBIKE_INFO_read, search_pos, SEEK_SET);               // 定位到数据块
@@ -1024,9 +1092,8 @@ void admin_handle_features_event(LINKLIST *LIST, int *page, char *search_str, un
             return; // 如果没有找到数据块，则不进行任何操作，若能找到，则进一步处理数据
 
         // 修改数据块
-        sprintf(buffer, "%04d%02d%02d", tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday); // 格式化时间字符串
         fread(&temp_info, sizeof(EBIKE_INFO), 1, fp_EBIKE_INFO_read);                     // 读取数据块
-        temp_info.conduct_time = atoi(buffer);                                            // 将时间字符串转化为int型数据，并赋值给conduct_time
+        temp_info.conduct_time = get_time();                                              // 将时间字符串转化为int型数据，并赋值给conduct_time
         temp_info.result = FAILED;                                                        // 将result赋值为已处理
 
         fseek(fp_EBIKE_INFO_read, search_pos, SEEK_SET);               // 定位到数据块
@@ -1037,6 +1104,19 @@ void admin_handle_features_event(LINKLIST *LIST, int *page, char *search_str, un
         admin_pass_failed_anime(ADMIN_FEATURE1_X1, ADMIN_FEATURE1_Y1, ADMIN_FEATURE1_X2, ADMIN_FEATURE1_Y2, FAILED); // 操作成功后的动画
 
         admin_list_info(id_list, fp_EBIKE_INFO_read, list_mode, *mode, LIST_PAGEUP, LIST_FLUSH, "\0", "\0"); // 操作结束后刷新列表
+    }
+}
+
+void admin_handle_database_event(int *flag)
+{
+    /*点击用户信息*/
+    if (mouse_press(ADMIN_FEATURE1_X1, ADMIN_FEATURE1_Y1, ADMIN_FEATURE1_X2, ADMIN_FEATURE1_Y2) == 1)
+    {
+        if (*flag != ADMIN_BIKE_REGISTER)
+        {
+            *flag = ADMIN_BIKE_REGISTER;
+            return;
+        }
     }
 }
 
