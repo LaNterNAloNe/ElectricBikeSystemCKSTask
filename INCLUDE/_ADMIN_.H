@@ -206,20 +206,22 @@ void admin_info(int *page, unsigned long *ID);
 void drawgraph_admin_menu(void);
 void drawgraph_admin_feature(int page);
 void drawgraph_admin_database(void);
+void drawgraph_admin_database_user_info(void);
 void drawgraph_admin_info(unsigned long ID);
 
 // 按钮状态刷新
 void define_admin_buttons(ADMIN_BUTTONS AdminButtons[], int button_counts);
 void admin_flush_buttons(int *tag,int button_counts,ADMIN_BUTTONS AdminButtons[]);
-void admin_handle_features_event(LINKLIST *LIST, int *page, char *search_str, unsigned long *id_list,
+void admin_handle_manage_feature_event(LINKLIST *LIST, int *page, char *search_str, unsigned long *id_list,
                                  FILE *fp_EBIKE_INFO_read, int *mode, int selected_id);
 void admin_handle_buttons_event(int *page);
-void admin_handle_database_event();
+void admin_handle_database_event(int *flag,int *page);
 
 // 列表函数
-void admin_list_info(unsigned long id_list[8], FILE *fp, char *list_mode, int search_mode, int page_change, 
+void admin_list_info(unsigned long id_list[8], FILE *fp, char *file_type, char *list_mode, int search_mode, int page_change, 
                     int is_clear, char *search_str, char *search_needed);
-void admin_show_info(EBIKE_INFO TEMP, int listed_item, char *list_mode, int list_sequence);
+void admin_show_ebike_manage_info(EBIKE_INFO TEMP, int listed_item, char *list_mode, int list_sequence);
+void admin_show_user_info(USER_LOGIN_DATA TEMP, int listed_item, char *list_mode, int list_sequence);
 int list_ebike_data_is_valid(EBIKE_INFO TEMP, char *list_mode, char *search_str, char *search_needed, int search_mode);
 int list_user_data_is_valid(USER_LOGIN_DATA TEMP, char *list_mode, char *search_str, char *search_needed, int search_mode);
 unsigned long handle_list_select_line_admin(unsigned long *id_list);
