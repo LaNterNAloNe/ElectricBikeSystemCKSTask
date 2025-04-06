@@ -989,6 +989,7 @@ void admin_handle_buttons_event(int *page)
 void admin_handle_features_event(LINKLIST *LIST, int *page, char *search_str, unsigned long *id_list, FILE *fp_EBIKE_INFO_read, int *mode, int selected_id)
 {
     int i;
+    char time[10];//作为get_approx_time函数参数
     char list_mode[10]; // 列表依据
     char buffer[50];
     EBIKE_INFO temp_info;
@@ -1069,7 +1070,11 @@ void admin_handle_features_event(LINKLIST *LIST, int *page, char *search_str, un
         // 修改数据块
         
         fread(&temp_info, sizeof(EBIKE_INFO), 1, fp_EBIKE_INFO_read);                     // 读取数据块
+<<<<<<< HEAD
         temp_info.conduct_time = get_approx_time(NULL);                                              // 将时间字符串转化为int型数据，并赋值给conduct_time
+=======
+        temp_info.conduct_time = get_approx_time(time);                                              // 将时间字符串转化为int型数据，并赋值给conduct_time
+>>>>>>> c84d1cfcada03c02ee4e3548cb51eb53427a7957
         temp_info.result = PASSED;                                                        // 将result赋值为已处理
 
         fseek(fp_EBIKE_INFO_read, search_pos, SEEK_SET);               // 定位到数据块
@@ -1120,7 +1125,11 @@ void admin_handle_features_event(LINKLIST *LIST, int *page, char *search_str, un
 
         // 修改数据块
         fread(&temp_info, sizeof(EBIKE_INFO), 1, fp_EBIKE_INFO_read);                     // 读取数据块
+<<<<<<< HEAD
         temp_info.conduct_time = get_approx_time(NULL);                                              // 将时间字符串转化为int型数据，并赋值给conduct_time
+=======
+        temp_info.conduct_time = get_approx_time(time);                                              // 将时间字符串转化为int型数据，并赋值给conduct_time
+>>>>>>> c84d1cfcada03c02ee4e3548cb51eb53427a7957
         temp_info.result = FAILED;                                                        // 将result赋值为已处理
 
         fseek(fp_EBIKE_INFO_read, search_pos, SEEK_SET);               // 定位到数据块

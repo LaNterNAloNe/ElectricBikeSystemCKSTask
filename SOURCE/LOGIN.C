@@ -277,6 +277,7 @@ void register_id_input(int* page, unsigned long* ID) {
                     clrmous(MouseX, MouseY);
                     *page = REGISTER; // REGISTER : 3，进入正常注册功能
 					anime_id_input_success();
+					Input_Bar(NULL, NULL, NULL, NULL, NULL, 1, NULL);
 					switchPage();
                     return;
                 case 1: // 转换失败，学号格式错误
@@ -472,6 +473,8 @@ void flushRegisterIdGraph(int* tag) {
 void _register(int* page,unsigned long *ID) {
     char usrn[10] = {'\0'}; // 初始化为空
     char psw[10] = {'\0'};
+	char time_string[10] = { '\0' };
+	unsigned long time=0;//系统时间
     int tag = 0;
 	int is_register_invalid=0;
 
@@ -499,7 +502,8 @@ void _register(int* page,unsigned long *ID) {
 		if (mouse_press(LOGIN_X1, LOGIN_Y1, LOGIN_X2, LOGIN_Y2) == 1) {
 			// 检查输入是否非空且正确
 			if (usrn[0] != '\0' && psw[0] != '\0'){
-				is_register_invalid = userregister_judge(usrn,psw,ID);
+				time=get_approx_time(time_string);
+				is_register_invalid = userregister_judge(usrn,psw,ID,time);
 				if(!is_register_invalid){
 					anime_register_success();
 					*page = LOGIN;
@@ -655,7 +659,7 @@ void adminlogin_judge(char *usrn,char *psw,unsigned long *id){
 }
 
 //用户注册检测
-int userregister_judge(char *usrn,char *psw,unsigned long *ID){
+int userregister_judge(char *usrn,char *psw,unsigned long *ID,unsigned long time){
 	int i=0;
 	int account_counts;
 	USER_LOGIN_DATA TEMP;
@@ -684,6 +688,7 @@ int userregister_judge(char *usrn,char *psw,unsigned long *ID){
 	strcpy(TEMP.psw,psw);
 	TEMP.ID = *ID;
 	TEMP.state = ACTIVE;
+	TEMP.register_time = time;
 	fwrite(&TEMP,sizeof(USER_LOGIN_DATA),1,fp_LOGIN_USER_readndwrite);  //将注册信息写入文件
 	if(fclose(fp_LOGIN_USER_readndwrite)!=0) getch(),exit(1);
 	return 0;
@@ -1027,11 +1032,11 @@ void anime_id_input_success() {
 	int blinkTick = 0;
 	clrmous(MouseX, MouseY);
 
-	setfillstyle(SOLID_FILL, MY_LIGHTBLUE);
+	setfillstyle(SOLID_FILL, MY_WHITE);
 	bar(330, 210, 500, 250);//覆盖原先错误提示
 
 	setcolor(LIGHTGREEN);
-	rectangle(USERNAME_X1 + 2, USERNAME_Y1 + 2, USERNAME_X2 - 2, USERNAME_Y2 - 2);
+	setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
 	rectangle(PASSWORD_X1 + 2, PASSWORD_Y1 + 2, PASSWORD_X2 - 2, PASSWORD_Y2 - 2);
 
 	while (blinkTick < 100) {
