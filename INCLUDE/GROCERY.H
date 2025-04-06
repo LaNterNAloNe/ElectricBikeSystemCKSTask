@@ -122,7 +122,7 @@
 #define debug_mode 1
 
 unsigned long get_approx_time(char *time_buffer);
-void get_exact_time(char *time_buffer);
+unsigned long get_exact_time(char *time_buffer);
 
 
 #endif

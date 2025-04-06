@@ -69,7 +69,7 @@ void drawgraph_register(void);
 void flushLoginGraph(int *tag,int *page);
 void userlogin_judge(char *usrn,char *psw,unsigned long *ID);
 void adminlogin_judge(char *usrn,char *psw,unsigned long *ID);
-int userregister_judge(char *usrn,char *psw,unsigned long *ID);
+int userregister_judge(char *usrn,char *psw,unsigned long *ID,unsigned long time);
 void switchPage();
 void anime_register_success();
 void anime_register_fail(int err);
@@ -84,6 +84,7 @@ typedef struct {
     unsigned long ID;
     char usrn[MAX_LEN];
     char psw[MAX_LEN];
+    unsigned long register_time;
     char state;
 }USER_LOGIN_DATA;
 //若要修改结构体信息，则记得删掉之前的.DAT文件重新写入账号信息
