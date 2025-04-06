@@ -1042,7 +1042,7 @@ void admin_handle_features_event(LINKLIST *LIST, int *page, char *search_str, un
         // 修改数据块
         
         fread(&temp_info, sizeof(EBIKE_INFO), 1, fp_EBIKE_INFO_read);                     // 读取数据块
-        temp_info.conduct_time = get_time();                                              // 将时间字符串转化为int型数据，并赋值给conduct_time
+        temp_info.conduct_time = get_approx_time();                                              // 将时间字符串转化为int型数据，并赋值给conduct_time
         temp_info.result = PASSED;                                                        // 将result赋值为已处理
 
         fseek(fp_EBIKE_INFO_read, search_pos, SEEK_SET);               // 定位到数据块
@@ -1093,7 +1093,7 @@ void admin_handle_features_event(LINKLIST *LIST, int *page, char *search_str, un
 
         // 修改数据块
         fread(&temp_info, sizeof(EBIKE_INFO), 1, fp_EBIKE_INFO_read);                     // 读取数据块
-        temp_info.conduct_time = get_time();                                              // 将时间字符串转化为int型数据，并赋值给conduct_time
+        temp_info.conduct_time = get_approx_time();                                              // 将时间字符串转化为int型数据，并赋值给conduct_time
         temp_info.result = FAILED;                                                        // 将result赋值为已处理
 
         fseek(fp_EBIKE_INFO_read, search_pos, SEEK_SET);               // 定位到数据块
