@@ -490,8 +490,8 @@ void admin_flush_buttons(int *tag, int button_counts, ADMIN_BUTTONS AdminButtons
 /*****************************************************************
 MODULE:该源文件全局可使用的函数模块
 *****************************************************************/
-// 列表函数，用于列出注册请求
-void admin_list_info(unsigned long id_list[8], FILE *fp, char *list_mode, int search_mode,
+// 列表函数，用于列出相应
+void admin_list_info(unsigned long id_list[8], FILE *fp, char *file_type, char *list_mode, int search_mode,
                                   int page_change, int is_clear, char *search_str, char *search_needed)
 {
     // page_change为1，向下列表，为-1，向上列表，为0，不翻页
@@ -501,6 +501,8 @@ void admin_list_info(unsigned long id_list[8], FILE *fp, char *list_mode, int se
     // list_mode为列表依据，"register"为列出注册请求，"license"为列出上牌请求, "broken"为列出报废请求， "violation"为列出违规请求
     // search_mode为搜过模式，0代表搜索未处理，1代表搜索已处理
     // search_str为搜索字符串，search_needed为搜索依据
+
+    /* 1.定义变量 */
     int i;
     int listed_item = 0;  // 列出的数量
     static int start = 0; // 储存当前列表第一个所在的位置
@@ -508,19 +510,35 @@ void admin_list_info(unsigned long id_list[8], FILE *fp, char *list_mode, int se
     int temp_start = 0;
     int temp_end = 0;
     int counts = 0;
-    // int search_times = 0; // 记录搜索次数
-    EBIKE_INFO TEMP;
+    int flag = -1;
+    EBIKE_INFO ebike_temp;
+    USER_LOGIN_DATA user_temp;
 
+    /* 2.判断数据类型 */
+    if(strcmp(file_type,"ebike")==0){
+        flag = 0;
+    }else if(strcmp(file_type,"user")==0){
+        flag = 1;
+    }else {
+        return; // 若指明文件类型错误，则不做任何操作 
+    }
+
+    /* 3.获取文件长度 */
     fseek(fp, 0, SEEK_END); // 定位到文件末尾
-    counts = ftell(fp) / sizeof(EBIKE_INFO);
+    if (flag = 0)
+        counts = ftell(fp) / sizeof(EBIKE_INFO);
+    else if (flag = 1)
+        counts = ftell(fp) / sizeof(USER_LOGIN_DATA);
 
+    /* 4.初始化列表记录 */
     for (i = 0; i < 8; i++)
     {
-        id_list[i] = -1;
-    } // 开始列表前一定清理列表记录
+        id_list[i] = 0;
+    }
 
+    /* 5.判断是否需要清理或刷新列表 */
     switch (is_clear)
-    { // 清理列表状态
+    {
     case 1:
         setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
         bar(ADMIN_INTERFACE_X1 + 10, ADMIN_INTERFACE_Y1 + 70, ADMIN_INTERFACE_X1 + 500, ADMIN_INTERFACE_Y1 + 350); // 清理列表
@@ -538,43 +556,51 @@ void admin_list_info(unsigned long id_list[8], FILE *fp, char *list_mode, int se
         bar(ADMIN_INTERFACE_X1 + 10, ADMIN_INTERFACE_Y1 + 70, ADMIN_INTERFACE_X1 + 500, ADMIN_INTERFACE_Y1 + 350); // 清理列表
         end = start;                                                                                               // 从start开始扫描重新列表
         break;
+    default:
+        break;
     }
 
+    /* 6.前置操作完成，正式开始列表 */
     if (counts && page_change == 1)
     { // 收到下翻指令，或改变当前列表状态后从起点开始重新刷新列表
-        /*条件判断*/
+
+        /* 条件判断 （仅在车辆信息管理操作时需要检测） */
         if (end >= counts - 1)
         {
             return; // 如果end指向结尾的数据，则不做任何操作
         }
-        fseek(fp, (end + 1) * sizeof(TEMP), SEEK_SET); // 先判断接下来是否有可以列出的数据
-        while (1)
+
+        if(flag = 0)
+            fseek(fp, (end + 1) * sizeof(ebike_temp), SEEK_SET); // 先判断接下来是否有可以列出的数据
+
+        while (flag = 0)
         {
-            if (fread(&TEMP, sizeof(TEMP), 1, fp))
-            { // 到文件末尾都没有发现可列表的，则不执行下翻列表操作
-                return;
+            if (fread(&ebike_temp, sizeof(ebike_temp), 1, fp)) // 读取下一个数据块
+            {
+                return; // 到文件末尾都没有发现可列表的，则不执行下翻列表操作
             }
-            if (list_is_valid(TEMP, list_mode, search_str, search_needed, search_mode))
+            
+            if (list_ebike_data_is_valid(ebike_temp, list_mode, search_str, search_needed, search_mode))
                 break; // 下翻查找是一旦读到可以被列出的，则可以执行下翻列表操作
         }
 
         /*列表操作*/
-        fseek(fp, (end + 1) * sizeof(TEMP), SEEK_SET); // 经过while不返回到原函数则可移植性下翻列表操作
+        fseek(fp, (end + 1) * sizeof(ebike_temp), SEEK_SET); // 经过while不返回到原函数则可移植性下翻列表操作
         start = ++end;
         setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
         bar(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70, ADMIN_INTERFACE_X1 + 500, ADMIN_INTERFACE_Y1 + 390); // 清理列表
 
         while (listed_item < 8)
         {
-            if (!fread(&TEMP, sizeof(TEMP), 1, fp))
+            if (!fread(&ebike_temp, sizeof(ebike_temp), 1, fp))
                 break; // 读取数据，直到达到文件末尾
             end++;     // 先将end指向读取的数据的头部
-            if (!list_is_valid(TEMP, list_mode, search_str, search_needed, search_mode))
+            if (!list_ebike_data_is_valid(ebike_temp, list_mode, search_str, search_needed, search_mode))
                 continue; // 如果下翻读取时读到的数据不符条件，则进行下一轮循环
 
-            admin_show_info(TEMP, listed_item, list_mode, ASCENDING); // 输出数据
+            admin_show_info(ebike_temp, listed_item, list_mode, ASCENDING); // 输出数据
 
-            id_list[listed_item] = TEMP.ID;
+            id_list[listed_item] = ebike_temp.ID;
             listed_item++;
         }
     }
@@ -592,10 +618,10 @@ void admin_list_info(unsigned long id_list[8], FILE *fp, char *list_mode, int se
         { // 当能进入这个循环，说明列表上页有可列出数据且溢出
             if (!temp_start)
                 break; // 到文件开头都没有发现可列表的，则不执行上翻列表操作
-            fseek(fp, (temp_start - 1) * sizeof(TEMP), SEEK_SET);
-            fread(&TEMP, sizeof(TEMP), 1, fp); // 读取上一个数据块
+            fseek(fp, (temp_start - 1) * sizeof(ebike_temp), SEEK_SET);
+            fread(&ebike_temp, sizeof(ebike_temp), 1, fp); // 读取上一个数据块
             temp_end = --temp_start;
-            if (list_is_valid(TEMP, list_mode, search_str, search_needed, search_mode))
+            if (list_ebike_data_is_valid(ebike_temp, list_mode, search_str, search_needed, search_mode))
                 break; // 上翻查找到一个可列出数据，则可以上翻
         }
 
@@ -607,32 +633,32 @@ void admin_list_info(unsigned long id_list[8], FILE *fp, char *list_mode, int se
 
         while (listed_item < 8)
         { // 由于此时是从后往前读取数据，因此是从下往上列表
-            fseek(fp, (start - 1) * sizeof(TEMP), SEEK_SET);
-            fread(&TEMP, sizeof(TEMP), 1, fp); // 读取数据，直到查找到未被处理的注册请求
-            if (!list_is_valid(TEMP, list_mode, search_str, search_needed, search_mode))
+            fseek(fp, (start - 1) * sizeof(ebike_temp), SEEK_SET);
+            fread(&ebike_temp, sizeof(ebike_temp), 1, fp); // 读取数据，直到查找到未被处理的注册请求
+            if (!list_ebike_data_is_valid(ebike_temp, list_mode, search_str, search_needed, search_mode))
                 continue; // 如果下翻读取时读到的数据不符条件，则进行下一轮循环
 
-            admin_show_info(TEMP, listed_item, list_mode, DESCENDING); // 输出数据
+            admin_show_info(ebike_temp, listed_item, list_mode, DESCENDING); // 输出数据
 
-            id_list[listed_item] = TEMP.ID;
+            id_list[listed_item] = ebike_temp.ID;
             listed_item++;
         }
     }
     else if (counts && page_change == 0)
     { // 不翻页，输出原内容
-        fseek(fp, (start) * sizeof(TEMP), SEEK_SET);
+        fseek(fp, (start) * sizeof(ebike_temp), SEEK_SET);
         while (listed_item < 8)
         {
-            if (!fread(&TEMP, sizeof(TEMP), 1, fp))
+            if (!fread(&ebike_temp, sizeof(ebike_temp), 1, fp))
             { // 读取数据，直到查找到八个可列出数据
                 return;
             }
-            if (!list_is_valid(TEMP, list_mode, search_str, search_needed, search_mode))
+            if (!list_ebike_data_is_valid(ebike_temp, list_mode, search_str, search_needed, search_mode))
                 continue; // 如果下翻读取时读到的数据不符条件，则进行下一轮循环
 
-            admin_show_info(TEMP, listed_item, list_mode, ASCENDING); // 输出数据
+            admin_show_info(ebike_temp, listed_item, list_mode, ASCENDING); // 输出数据
 
-            id_list[listed_item] = TEMP.ID;
+            id_list[listed_item] = ebike_temp.ID;
             listed_item++;
         }
     }
@@ -704,7 +730,7 @@ void admin_show_info(EBIKE_INFO TEMP, int listed_item, char *list_mode, int list
 }
 
 // 判断一个数据块是否应该列出
-int list_is_valid(EBIKE_INFO TEMP, char *list_mode, char *search_str, char *search_needed, int search_mode)
+int list_ebike_data_is_valid(EBIKE_INFO TEMP, char *list_mode, char *search_str, char *search_needed, int search_mode)
 {
     if (
         (TEMP.conduct_time != -1 && search_mode == 0 || TEMP.conduct_time > 0 && search_mode == 1) &&
@@ -715,6 +741,7 @@ int list_is_valid(EBIKE_INFO TEMP, char *list_mode, char *search_str, char *sear
     else
         return 0;
 }
+
 
 //绘制选中的行的图形动画，同时返回选中行对应数据的id
 unsigned long handle_list_select_line_admin(unsigned long *id_list)
@@ -1042,7 +1069,7 @@ void admin_handle_features_event(LINKLIST *LIST, int *page, char *search_str, un
         // 修改数据块
         
         fread(&temp_info, sizeof(EBIKE_INFO), 1, fp_EBIKE_INFO_read);                     // 读取数据块
-        temp_info.conduct_time = get_approx_time();                                              // 将时间字符串转化为int型数据，并赋值给conduct_time
+        temp_info.conduct_time = get_approx_time(NULL);                                              // 将时间字符串转化为int型数据，并赋值给conduct_time
         temp_info.result = PASSED;                                                        // 将result赋值为已处理
 
         fseek(fp_EBIKE_INFO_read, search_pos, SEEK_SET);               // 定位到数据块
@@ -1093,7 +1120,7 @@ void admin_handle_features_event(LINKLIST *LIST, int *page, char *search_str, un
 
         // 修改数据块
         fread(&temp_info, sizeof(EBIKE_INFO), 1, fp_EBIKE_INFO_read);                     // 读取数据块
-        temp_info.conduct_time = get_approx_time();                                              // 将时间字符串转化为int型数据，并赋值给conduct_time
+        temp_info.conduct_time = get_approx_time(NULL);                                              // 将时间字符串转化为int型数据，并赋值给conduct_time
         temp_info.result = FAILED;                                                        // 将result赋值为已处理
 
         fseek(fp_EBIKE_INFO_read, search_pos, SEEK_SET);               // 定位到数据块
@@ -1115,9 +1142,14 @@ void admin_handle_database_event(int *flag)
         if (*flag != ADMIN_BIKE_REGISTER)
         {
             *flag = ADMIN_BIKE_REGISTER;
+
             return;
         }
     }
+}
+
+void admin_list_user_info(){
+    
 }
 
 int admin_exitting(int *page)

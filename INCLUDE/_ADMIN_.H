@@ -12,6 +12,7 @@
 #include"MOUSE.H"
 #include"HZ.H"
 #include"debug.h"
+#include"LOGIN.H"
 
 
 //定义界面坐标
@@ -219,7 +220,8 @@ void admin_handle_database_event();
 void admin_list_info(unsigned long id_list[8], FILE *fp, char *list_mode, int search_mode, int page_change, 
                     int is_clear, char *search_str, char *search_needed);
 void admin_show_info(EBIKE_INFO TEMP, int listed_item, char *list_mode, int list_sequence);
-int list_is_valid(EBIKE_INFO TEMP, char *list_mode, char *search_str, char *search_needed, int search_mode);
+int list_ebike_data_is_valid(EBIKE_INFO TEMP, char *list_mode, char *search_str, char *search_needed, int search_mode);
+int list_user_data_is_valid(USER_LOGIN_DATA TEMP, char *list_mode, char *search_str, char *search_needed, int search_mode);
 unsigned long handle_list_select_line_admin(unsigned long *id_list);
 
 // 搜索函数

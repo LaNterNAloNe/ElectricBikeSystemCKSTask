@@ -85,6 +85,7 @@ typedef struct {
     char usrn[MAX_LEN];
     char psw[MAX_LEN];
     char state;
+    long register_time;
 }USER_LOGIN_DATA;
 //若要修改结构体信息，则记得删掉之前的.DAT文件重新写入账号信息
 
