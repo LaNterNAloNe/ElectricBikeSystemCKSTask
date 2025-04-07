@@ -217,7 +217,7 @@ void admin_flush_buttons(int *tag,int button_counts,ADMIN_BUTTONS AdminButtons[]
 void admin_handle_manage_feature_event(LINKLIST *LIST, int *page, char *search_str, unsigned long *id_list,
                                  FILE *fp_EBIKE_INFO_read, int *mode, int selected_id);
 void admin_handle_buttons_event(int *page);
-void admin_handle_database_event(LINKLIST *LIST, int *flag,int *page, unsigned long *id_list, FILE *fp_EBIKE_INFO_read);
+void admin_handle_database_event(LINKLIST *LIST, int *flag,int *page, unsigned long *id_list, FILE *fp_EBIKE_INFO_read, char *search_str);
 
 // ÁÐ±íº¯Êý
 void admin_list_info(LINKLIST *LIST, unsigned long id_list[8], FILE *fp, char *file_type, char *list_mode, int search_mode, int page_change, 

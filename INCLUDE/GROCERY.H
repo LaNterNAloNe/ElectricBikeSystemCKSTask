@@ -111,8 +111,8 @@
 #define LIST_FLUSH 3
 #define LIST_NO_CLEAR 0
 //定义列表翻页参数
-#define LIST_PAGEUP 1
-#define LIST_PAGEDOWN -1
+#define LIST_PAGEDOWN 1
+#define LIST_PAGEUP -1
 #define LIST_STAY 0
 // 列表参数
 #define LIST_INTERVAL 30

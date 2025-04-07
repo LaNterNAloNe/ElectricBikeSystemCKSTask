@@ -666,7 +666,8 @@ int userregister_judge(char *usrn,char *psw,unsigned long *ID,unsigned long time
 	FILE *fp_LOGIN_USER_readndwrite = fopen("C:\\EBS\\DATA\\USER.DAT","rb+");
 	
 	if (fp_LOGIN_USER_readndwrite == NULL) {
-        fclose(fp_LOGIN_USER_readndwrite);
+        // fclose(fp_LOGIN_USER_readndwrite);
+        getch();
         exit(0);
     }
 
@@ -678,7 +679,11 @@ int userregister_judge(char *usrn,char *psw,unsigned long *ID,unsigned long time
 		fread(&TEMP,sizeof(USER_LOGIN_DATA),1,fp_LOGIN_USER_readndwrite); //逐个读取，每个用户信息
 
 		if(strcmp(usrn,TEMP.usrn) == 0){
-			if(fclose(fp_LOGIN_USER_readndwrite)!=0) getch(),exit(1); //发现存在用户名相同的，则注册失败
+			if(fclose(fp_LOGIN_USER_readndwrite)!=0) {
+                getch();
+                exit(1); // 发现存在用户名相同的，则注册失败
+            }
+            
 			return 1;
 		}
 	}
@@ -689,10 +694,10 @@ int userregister_judge(char *usrn,char *psw,unsigned long *ID,unsigned long time
 	TEMP.ID = *ID;
 	TEMP.state = ACTIVE;
 	TEMP.register_time = time;
+    fseek(fp_LOGIN_USER_readndwrite,0,SEEK_END); // 定位到文件末尾
 	fwrite(&TEMP,sizeof(USER_LOGIN_DATA),1,fp_LOGIN_USER_readndwrite);  //将注册信息写入文件
 	if(fclose(fp_LOGIN_USER_readndwrite)!=0) getch(),exit(1);
 	return 0;
-
 }
  
 

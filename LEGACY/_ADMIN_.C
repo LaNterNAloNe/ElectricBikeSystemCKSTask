@@ -30,7 +30,7 @@ void admin_bike_register(int *page, unsigned long *ID, LINKLIST *LIST)
     drawgraph_admin_feature(*page);
 
     // 列出数据
-    admin_list_info(LIST, id_list, fp_EBIKE_INFO_read, "register", mode, LIST_PAGEUP, LIST_CLEAR_CONTINUE, "\0", "\0");
+    admin_list_info(LIST, id_list, fp_EBIKE_INFO_read, "register", mode, LIST_PAGEDOWN, LIST_CLEAR_CONTINUE, "\0", "\0");
 
     if (debug_mode == 1)
         display_memory_usage(400, 10); // 显示调试参数
@@ -78,7 +78,7 @@ void admin_bike_license(int *page, unsigned long *id, LINKLIST *LIST)
     if (debug_mode == 1)
         display_memory_usage(400, 10); // 显示调试参数
 
-    admin_list_info(LIST, id_list, fp_EBIKE_LICENSE_read, "license", mode, LIST_PAGEUP, LIST_CLEAR_CONTINUE, "\0", "\0"); // 列出数据
+    admin_list_info(LIST, id_list, fp_EBIKE_LICENSE_read, "license", mode, LIST_PAGEDOWN, LIST_CLEAR_CONTINUE, "\0", "\0"); // 列出数据
 
     while (*page == ADMIN_BIKE_LICENSE)
     {
@@ -120,7 +120,7 @@ void admin_bike_broken(int *page, unsigned long *id, LINKLIST *LIST)
     if (debug_mode == 1)
         display_memory_usage(400, 10); // 显示调试参数
 
-    admin_list_info(LIST, id_list, fp_EBIKE_INFO_read, "broken", mode, LIST_PAGEUP, LIST_CLEAR_CONTINUE, "\0", "\0"); // 列出数据
+    admin_list_info(LIST, id_list, fp_EBIKE_INFO_read, "broken", mode, LIST_PAGEDOWN, LIST_CLEAR_CONTINUE, "\0", "\0"); // 列出数据
 
     while (*page == ADMIN_BIKE_BROKEN)
     {
@@ -162,7 +162,7 @@ void admin_bike_anual(int *page, unsigned long *id, LINKLIST *LIST)
     if (debug_mode == 1)
         display_memory_usage(400, 10); // 显示调试参数
 
-    admin_list_info(LIST, id_list, fp_EBIKE_INFO_read, "anual", mode, LIST_PAGEUP, LIST_CLEAR_CONTINUE, "\0", "\0"); // 列出数据
+    admin_list_info(LIST, id_list, fp_EBIKE_INFO_read, "anual", mode, LIST_PAGEDOWN, LIST_CLEAR_CONTINUE, "\0", "\0"); // 列出数据
 
     while (*page == ADMIN_BIKE_ANUAL)
     {
@@ -204,7 +204,7 @@ void admin_bike_violation(int *page, unsigned long *id, LINKLIST *LIST)
     if (debug_mode == 1)
         display_memory_usage(400, 10); // 显示调试参数
 
-    admin_list_info(LIST, id_list, fp_EBIKE_INFO_read, "violation", mode, LIST_PAGEUP, LIST_CLEAR_CONTINUE, "\0", "\0"); // 列出数据
+    admin_list_info(LIST, id_list, fp_EBIKE_INFO_read, "violation", mode, LIST_PAGEDOWN, LIST_CLEAR_CONTINUE, "\0", "\0"); // 列出数据
 
     while (*page == ADMIN_BIKE_VIOLATION)
     {
