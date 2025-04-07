@@ -134,14 +134,16 @@
 #define ADMIN_FEATURE_DOWN_X2 400
 #define ADMIN_FEATURE_DOWN_Y2 415
 
-//定义数据一览视图代号
+//定义数据标志
 enum
 {
     ADMIN_DATABASE_NULL = 0,
+    ADMIN_DATABASE_EBIKE_MANAGE,
     ADMIN_DATABASE_USER_INFO,
     ADMIN_DATABASE_EBIKE_INFO,
     ADMIN_DATABASE_EBIKE_PASS_IN_OUT,
-} ADMIN_DATABASE_FLAG;
+}
+ADMIN_DATABASE_FLAG;
 
 // 定义激活状态
 enum
@@ -197,7 +199,7 @@ void main_admin(int *page,unsigned long *ID);
 // 车辆信息处理界面
 void admin_manage_bike_module(int *page, unsigned long *ID, LINKLIST *LIST, char *file_path, char *list_mode);
 // 数据一览界面
-void admin_database(int *page, unsigned long *ID);
+void admin_database(int *page, unsigned long *ID, LINKLIST *LIST);
 // 管理员信息界面
 void admin_info(int *page, unsigned long *ID);
 
@@ -215,10 +217,10 @@ void admin_flush_buttons(int *tag,int button_counts,ADMIN_BUTTONS AdminButtons[]
 void admin_handle_manage_feature_event(LINKLIST *LIST, int *page, char *search_str, unsigned long *id_list,
                                  FILE *fp_EBIKE_INFO_read, int *mode, int selected_id);
 void admin_handle_buttons_event(int *page);
-void admin_handle_database_event(int *flag,int *page);
+void admin_handle_database_event(LINKLIST *LIST, int *flag,int *page, unsigned long *id_list, FILE *fp_EBIKE_INFO_read);
 
 // 列表函数
-void admin_list_info(unsigned long id_list[8], FILE *fp, char *file_type, char *list_mode, int search_mode, int page_change, 
+void admin_list_info(LINKLIST *LIST, unsigned long id_list[8], FILE *fp, char *file_type, char *list_mode, int search_mode, int page_change, 
                     int is_clear, char *search_str, char *search_needed);
 void admin_show_ebike_manage_info(EBIKE_INFO TEMP, int listed_item, char *list_mode, int list_sequence);
 void admin_show_user_info(USER_LOGIN_DATA TEMP, int listed_item, char *list_mode, int list_sequence);

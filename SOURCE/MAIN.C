@@ -31,33 +31,33 @@ int main(void){
                 register_id_input(&page, &ID);
                 break;
 
-            // USER_MAIN_GRAPH.C
+            // USER.C
             case MAIN_USER:
                 user_main(&page);break;
             case USER_BIKE_REGISTER:
                 user_bike_register(&page, &ID); break;
 
-            //ADMIN_MAIN_GRAPH.C
+            //ADMIN.C
             case MAIN_ADMIN:
                 main_admin(&page,&ID);
                 break;
             case ADMIN_BIKE_REGISTER:
-                admin_manage_bike_module(&page, &ID, LIST,"C:\\EBS\\DATA\\REGISTER.DAT","register");
+                admin_manage_bike_module(&page, &ID, LIST,"DATA\\REGISTER.DAT","register");
                 break;
             case ADMIN_BIKE_LICENSE:
-                admin_manage_bike_module(&page, &ID, LIST,"C:\\EBS\\DATA\\LICENSE.DAT","license");
+                admin_manage_bike_module(&page, &ID, LIST,"DATA\\LICENSE.DAT","license");
                 break;
             case ADMIN_BIKE_ANUAL:
-                admin_manage_bike_module(&page, &ID, LIST,"C:\\EBS\\DATA\\ANUAL.DAT","anual");
+                admin_manage_bike_module(&page, &ID, LIST,"DATA\\ANUAL.DAT","anual");
                 break;
             case ADMIN_BIKE_VIOLATION:
-                admin_manage_bike_module(&page, &ID, LIST,"C:\\EBS\\DATA\\VIOLA.DAT","violation");
+                admin_manage_bike_module(&page, &ID, LIST,"DATA\\VIOLA.DAT","violation");
                 break;
             case ADMIN_BIKE_BROKEN:
-                admin_manage_bike_module(&page, &ID, LIST,"C:\\EBS\\DATA\\BROKEN.DAT","broken");
+                admin_manage_bike_module(&page, &ID, LIST,"DATA\\BROKEN.DAT","broken");
                 break;
             case ADMIN_DATABASE:
-                admin_database(&page, &ID);
+                admin_database(&page, &ID, LIST);
                 break;
             case ADMIN_INFO:
                 admin_info(&page, &ID);

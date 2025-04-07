@@ -502,7 +502,7 @@ void _register(int* page,unsigned long *ID) {
 		if (mouse_press(LOGIN_X1, LOGIN_Y1, LOGIN_X2, LOGIN_Y2) == 1) {
 			// 检查输入是否非空且正确
 			if (usrn[0] != '\0' && psw[0] != '\0'){
-				time=get_approx_time(time_string);
+				time=get_approx_time(time_string); // 获取系统时间
 				is_register_invalid = userregister_judge(usrn,psw,ID,time);
 				if(!is_register_invalid){
 					anime_register_success();
