@@ -118,6 +118,11 @@
 #define LIST_INTERVAL 30
 #define LIST_LIMIT 8
 
+//输入框
+#define INPUTBAR_NO_CLEAR 0
+#define INPUTBAR_CLEAR 1
+#define INPUTBAR_CLEAR_CONTINUE 2
+
 //定义调试模式
 #define debug_mode 1
 

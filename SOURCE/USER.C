@@ -341,7 +341,7 @@ ACTIVE_USER_DATAGRAPH},
 				anime_login_success_user();
 				setfillstyle(SOLID_FILL, MY_WHITE);
 				bar(150, 60, 640, 480);
-				Input_Bar(NULL, NULL, NULL, NULL, NULL, 1, NULL);
+				Input_Bar(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
 				puthz(280, 260, "您已登记成功", 32, 40, MY_BLACK);
 				puthz(320, 300, "请等待审核", 32, 40, MY_BLACK);
 				delay(3000);

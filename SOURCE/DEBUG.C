@@ -43,6 +43,7 @@ void show_num(int x, int y, unsigned long value, int color)
 {
     char text[20];
     sprintf(text, "%ld", value); // 将整数转换为字符串
+    settextstyle(DEFAULT_FONT, HORIZ_DIR, 1); // 设置字体样式和大小
 
     setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
     setcolor(BLACK);

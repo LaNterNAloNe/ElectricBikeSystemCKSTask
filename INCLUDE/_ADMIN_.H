@@ -224,8 +224,9 @@ void admin_list_info(LINKLIST *LIST, unsigned long id_list[8], FILE *fp, char *f
                     int is_clear, char *search_str, char *search_needed);
 void admin_show_ebike_manage_info(EBIKE_INFO TEMP, int listed_item, char *list_mode, int list_sequence);
 void admin_show_user_info(USER_LOGIN_DATA TEMP, int listed_item, char *list_mode, int list_sequence);
-int list_ebike_data_is_valid(EBIKE_INFO TEMP, char *list_mode, char *search_str, char *search_needed, int search_mode);
-int list_user_data_is_valid(USER_LOGIN_DATA TEMP, char *list_mode, char *search_str, char *search_needed, int search_mode);
+int list_ebike_manage_is_valid(EBIKE_INFO TEMP, char *list_mode, char *search_str, char *search_needed, int search_mode);
+int list_user_data_is_valid(USER_LOGIN_DATA TEMP, char *search_str, char *search_needed);
+void list_show_page_index(unsigned int page_index, unsigned int page_count);
 unsigned long handle_list_select_line_admin(unsigned long *id_list);
 
 // ËÑË÷º¯Êý

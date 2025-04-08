@@ -277,7 +277,7 @@ void register_id_input(int* page, unsigned long* ID) {
                     clrmous(MouseX, MouseY);
                     *page = REGISTER; // REGISTER : 3，进入正常注册功能
 					anime_id_input_success();
-					Input_Bar(NULL, NULL, NULL, NULL, NULL, 1, NULL);
+					Input_Bar(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
 					switchPage();
                     return;
                 case 1: // 转换失败，学号格式错误
@@ -304,7 +304,7 @@ void register_id_input(int* page, unsigned long* ID) {
 			clrmous(MouseX, MouseY);
 			switchPage();
 			*page = LOGIN; 
-			Input_Bar(NULL, NULL, NULL, NULL, NULL, 1, NULL);
+			Input_Bar(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
 			return;
 		}
 		else if (mouse_press(EXITPROGRAM_X1, EXITPROGRAM_Y1, EXITPROGRAM_X2, EXITPROGRAM_Y2) == 1) {

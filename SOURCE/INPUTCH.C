@@ -32,9 +32,7 @@ int Input_Bar(char* ip,int x,int y,int lim,int color,int is_clear_memory,int is_
 	char lim_str_buffer[3];							   //生成超出限制提示的字符串
 	char out_of_limit_warnning[20]={'\0'};
 	itoa(lim,lim_str_buffer,10);
-	strcat(out_of_limit_warnning,"OUT OF LIMIT(");
-	strcat(out_of_limit_warnning,lim_str_buffer);
-	strcat(out_of_limit_warnning,")");
+    sprintf(out_of_limit_warnning, "%s%s%s", "OUT OF LIMIT(", lim_str_buffer,")");
 
 	if(is_clear_memory){                         //如果收到清除记忆需求，则判断：1.只清除记忆，并退出函数 2.清除记忆，并执行接下来的代码
 		memory_count = 0;
