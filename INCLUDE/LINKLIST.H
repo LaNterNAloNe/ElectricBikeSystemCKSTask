@@ -3,13 +3,13 @@
 #define USER_DATA_FILE_NAME "C:\\EBS\\DATA\\USRDAT.TXT"
 
 typedef struct _LINKLIST_USER_{
-    unsigned long int ID;
+    unsigned long ID;
     char usrn[15];
     char rln[16];
     char location[10];
     char ebike_ID[10];
     char ebike_license[7];
-    int anual_check;
+    unsigned long anual_check;
     int violations;
     char account_state;
     char ebike_state;

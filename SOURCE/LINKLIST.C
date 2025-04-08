@@ -155,7 +155,7 @@ void linklist_get_user_data(LINKLIST *LIST)
             continue;
 
         token = strtok(buffer, ",");
-        LIST_USER.ID = token ? atoi(token) : 0;
+        LIST_USER.ID = token ? atol(token) : 0;
 
         strncpy(LIST_USER.usrn, strtok(NULL, ","), sizeof(LIST_USER.usrn));
         strncpy(LIST_USER.rln, strtok(NULL, ","), sizeof(LIST_USER.rln));
@@ -164,7 +164,7 @@ void linklist_get_user_data(LINKLIST *LIST)
         strncpy(LIST_USER.ebike_license, strtok(NULL, ","), sizeof(LIST_USER.ebike_license));
 
         token = strtok(NULL, ",");
-        LIST_USER.anual_check = token ? atoi(token) : 0;
+        LIST_USER.anual_check = token ? atol(token) : 0;
 
         token = strtok(NULL, ",");
         LIST_USER.violations = token ? atoi(token) : 0;

@@ -606,7 +606,7 @@ void admin_list_info(LINKLIST *LIST, unsigned long id_list[8], FILE *fp, char *f
             }
         }
     }
-    
+
     // 计算页面数量时使用 valid_counts
     page_count = valid_counts / 8 + (valid_counts % 8 ? 1 : 0);
     if (page_count < 1)
@@ -708,7 +708,8 @@ void admin_list_info(LINKLIST *LIST, unsigned long id_list[8], FILE *fp, char *f
             {
                 fseek(fp, (end) * sizeof(ebike_temp), SEEK_SET);
                 if (!fread(&ebike_temp, sizeof(ebike_temp), 1, fp)){
-                    puthz(ADMIN_INTERFACE_X1 + 180, ADMIN_INTERFACE_Y1 + 70 + listed_item * LIST_INTERVAL, "没有更多数据了哦！", 16, 16, MY_RED);
+                    end--; // 若读取到文件末尾，则将end指向文件末尾的前一个数据块，防止越界
+                    puthz(ADMIN_INTERFACE_X1 + 190, ADMIN_INTERFACE_Y1 + 70 + listed_item * LIST_INTERVAL, "没有更多数据了哦！", 16, 16, MY_RED);
                     break; // 读取数据，直到达到文件末尾
                 }
                 if (!list_ebike_manage_is_valid(ebike_temp, list_mode, search_str, search_needed, search_mode)){
@@ -724,7 +725,8 @@ void admin_list_info(LINKLIST *LIST, unsigned long id_list[8], FILE *fp, char *f
             {
                 fseek(fp, (end) * sizeof(user_temp), SEEK_SET);
                 if (!fread(&user_temp, sizeof(user_temp), 1, fp)){
-                    puthz(ADMIN_INTERFACE_X1 + 180, ADMIN_INTERFACE_Y1 + 70 + listed_item * LIST_INTERVAL, "没有更多数据了哦！", 16, 16, MY_RED);
+                    end--; // 若读取到文件末尾，则将end指向文件末尾的前一个数据块，防止越界
+                    puthz(ADMIN_INTERFACE_X1 + 190, ADMIN_INTERFACE_Y1 + 70 + listed_item * LIST_INTERVAL, "没有更多数据了哦！", 16, 16, MY_RED);
                     break; // 读取数据，直到达到文件末尾
                 }
                 if (!list_user_data_is_valid(user_temp, search_str, search_needed)){
@@ -735,9 +737,10 @@ void admin_list_info(LINKLIST *LIST, unsigned long id_list[8], FILE *fp, char *f
                 admin_show_user_info(user_temp, listed_item, list_mode, ASCENDING); // 输出数据
                 id_list[listed_item] = user_temp.ID;
             }
-
-            end++; // 先将end指向读取的数据的头部
+            
             listed_item++;
+            if(listed_item < 8 || end < counts) end++; // 将end指向读取的数据的头部
+            
         }
         return;
     }
@@ -822,13 +825,12 @@ void admin_list_info(LINKLIST *LIST, unsigned long id_list[8], FILE *fp, char *f
                 admin_show_user_info(user_temp, listed_item, list_mode, DESCENDING); // 输出数据
                 id_list[7 - listed_item] = user_temp.ID;                             // 记录ID
             }
-
+            
             listed_item++;
-            if (listed_item < 8) start--; // start在后面条件自减，防止start越界
+            if (listed_item < 8 || start > 0) start--; // start在后面条件自减，防止start越界
+            else if(start == 0)
+                break; // 若start指向开头，则不执行上翻列表操作，防止start越界
         }
-        show_num(10, 10,start, MY_WHITE); // 显示页码
-        show_num(10, 20, end, MY_WHITE);   // 显示页码
-        show_text(10, 30, search_str, MY_WHITE); // 显示页码
         return;
     }
     else if (valid_counts > 0 && page_change == LIST_STAY)
@@ -837,7 +839,7 @@ void admin_list_info(LINKLIST *LIST, unsigned long id_list[8], FILE *fp, char *f
         if (debug_mode == 1)
             puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 100, "检查四", 16, 16, MY_RED);
 
-        end = start - 1; // start - 1 是为了在下面寻欢时第一次循环后end与start相等（即头与尾相等，指代一个数据）
+        end = start; // end不能赋为负数，因为end为无符号整形数
 
         setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
         bar(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70, ADMIN_INTERFACE_X1 + 500, ADMIN_INTERFACE_Y1 + 300); // 清理列表
@@ -849,7 +851,8 @@ void admin_list_info(LINKLIST *LIST, unsigned long id_list[8], FILE *fp, char *f
             {
                 fseek(fp, (start + listed_item) * sizeof(ebike_temp), SEEK_SET);
                 if (!fread(&ebike_temp, sizeof(ebike_temp), 1, fp)){
-                    puthz(ADMIN_INTERFACE_X1 + 180, ADMIN_INTERFACE_Y1 + 70 + listed_item * LIST_INTERVAL, "没有更多数据了哦！", 16, 16, MY_RED);
+                    end--; // 若读取到文件末尾，则将end指向文件末尾的前一个数据块，防止越界
+                    puthz(ADMIN_INTERFACE_X1 + 190, ADMIN_INTERFACE_Y1 + 70 + listed_item * LIST_INTERVAL, "没有更多数据了哦！", 16, 16, MY_RED);
                     return; // 读取数据，直到达到文件末尾
                 } // 读取数据，直到查找到八个可列出数据
 
@@ -864,9 +867,11 @@ void admin_list_info(LINKLIST *LIST, unsigned long id_list[8], FILE *fp, char *f
             }
             else if (flag == ADMIN_DATABASE_USER_INFO)
             {
-                fseek(fp, (start + listed_item) * sizeof(user_temp), SEEK_SET);
+                fseek(fp, (end) * sizeof(user_temp), SEEK_SET); 
+                // 此处不要传入start + listed_item，因为listed_item可能一直不会改变，导致读取的数据不会改变，进入死循环 2025.4.8
                 if (!fread(&user_temp, sizeof(user_temp), 1, fp)){
-                    puthz(ADMIN_INTERFACE_X1 + 180, ADMIN_INTERFACE_Y1 + 70 + listed_item * LIST_INTERVAL, "没有更多数据了哦！", 16, 16, MY_RED);
+                    end--; // 若读取到文件末尾，则将end指向文件末尾的前一个数据块，防止越界
+                    puthz(ADMIN_INTERFACE_X1 + 190, ADMIN_INTERFACE_Y1 + 70 + listed_item * LIST_INTERVAL, "没有更多数据了哦！", 16, 16, MY_RED);
                     return;
                 } // 读取数据，直到查找到八个可列出数据
 
@@ -879,9 +884,9 @@ void admin_list_info(LINKLIST *LIST, unsigned long id_list[8], FILE *fp, char *f
 
                 id_list[listed_item] = user_temp.ID;
             }
-
-            end++;
+            
             listed_item++;
+            if(listed_item < 8) end++; // 将end指向读取的数据的头部
         }
         return;
     }
@@ -1011,7 +1016,7 @@ int list_ebike_manage_is_valid(EBIKE_INFO TEMP, char *list_mode, char *search_st
         (TEMP.conduct_time != -1 && search_mode == 0 || TEMP.conduct_time > 0 && search_mode == 1) &&
         (!strcmp(list_mode, "register") || !strcmp(list_mode, "license") || !strcmp(list_mode, "anual") ||
          !strcmp(list_mode, "broken") || !strcmp(list_mode, "violation")) &&
-        (!strcmp(search_str, "\0") || TEMP.ID == atoi(search_str) && strcmp(search_needed, "ID"))
+        (!strcmp(search_str, "\0") || TEMP.ID == atol(search_str) && !strcmp(search_needed, "ID"))
     )
         return 1;
     else
@@ -1020,7 +1025,7 @@ int list_ebike_manage_is_valid(EBIKE_INFO TEMP, char *list_mode, char *search_st
 int list_user_data_is_valid(USER_LOGIN_DATA TEMP, char *search_str, char *search_needed)
 {
     if (
-        ((!strcmp(search_str, "\0") || TEMP.ID == atoi(search_str) && strcmp(search_needed, "ID")))
+        ((!strcmp(search_str, "\0") || TEMP.ID == atol(search_str) && !strcmp(search_needed, "ID")))
     )
         return 1;
     else
@@ -1086,12 +1091,12 @@ unsigned long int find_ebike_info(FILE *fp,char *search_str,char *search_needed)
             
 
         if ((strcmp(search_needed, "realname") == 0 && strcmp(TEMP.rln, search_str) == 0) ||
-            (strcmp(search_needed, "id") == 0 && TEMP.ID == atoi(search_str)) ||
+            (strcmp(search_needed, "id") == 0 && TEMP.ID == atol(search_str)) ||
             (strcmp(search_needed, "ebike_id") == 0 && strcmp(TEMP.ebike_ID, search_str) == 0) ||
             (strcmp(search_needed, "ebike_license") == 0 && strcmp(TEMP.ebike_license, search_str) == 0) ||
             (strcmp(search_needed, "location") == 0 && strcmp(TEMP.location, search_str) == 0) ||
-            (strcmp(search_needed, "apply_time") == 0 && TEMP.apply_time == atoi(search_str)) ||
-            (strcmp(search_needed, "conduct_time") == 0 && TEMP.conduct_time == atoi(search_str)) ||
+            (strcmp(search_needed, "apply_time") == 0 && TEMP.apply_time == atol(search_str)) ||
+            (strcmp(search_needed, "conduct_time") == 0 && TEMP.conduct_time == atol(search_str)) ||
             (strcmp(search_needed, "result") == 0 && TEMP.result == atoi(search_str))
             )
         {
@@ -1492,14 +1497,9 @@ void admin_handle_database_event(LINKLIST *LIST, int *flag , int *page, unsigned
     if (mouse_press(ADMIN_FEATURE_SEARCH_X1, ADMIN_FEATURE_SEARCH_Y1, ADMIN_FEATURE_SEARCH_X2, ADMIN_FEATURE_SEARCH_Y2) == 1)
     {
         Input_Bar(search_str, ADMIN_FEATURE_SEARCH_X1 + 25, ADMIN_FEATURE_SEARCH_Y1 + 2, 9, MY_LIGHTGRAY, 0, 1);
-        if(strcmp(search_str,"\0") == 0){
-            admin_list_info(LIST, id_list, fp, file_type, NULL, NULL, LIST_STAY, LIST_CLEAR_CONTINUE, "\0", "\0"); // 搜索框为空，刷新列表
-            return;
-        }
-        else {
-            admin_list_info(LIST, id_list, fp, file_type, NULL, NULL, LIST_STAY, LIST_CLEAR_CONTINUE, search_str, "ID"); // 搜索后刷新列表
-            return;
-        }
+
+        admin_list_info(LIST, id_list, fp, file_type, NULL, NULL, LIST_STAY, LIST_CLEAR_CONTINUE, search_str, "ID"); // 搜索后刷新列表
+        return;
     }
 }
 

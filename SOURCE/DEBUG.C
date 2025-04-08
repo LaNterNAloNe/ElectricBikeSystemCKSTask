@@ -55,8 +55,11 @@ void show_num(int x, int y, unsigned long value, int color)
 }
 
 void show_text(int x, int y, char *text, int color){
-    setcolor(color);
+    setcolor(MY_BLACK);
     setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
+    setlinestyle(SOLID_LINE, 0, 1);
     bar(x,y,x+textwidth(text),y+textheight(text));
+    rectangle(x - 1, y - 1, x + textwidth(text) + 1, y + textheight(text) + 1);
+    setcolor(color);
     outtextxy(x, y, text);
 }
