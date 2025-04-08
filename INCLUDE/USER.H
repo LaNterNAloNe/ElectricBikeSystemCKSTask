@@ -6,8 +6,9 @@
 #include <string.h>
 #include <conio.h>
 #include <DOS.H>
+#include <time.h>
 #include <ctype.h>
-#include <stdlib.H>
+#include <stdlib.h>
 #include"GROCERY.H"
 #include"MOUSE.H"
 #include"INPUTCH.H"
@@ -106,8 +107,8 @@ typedef struct {
 	char ebike_ID[10];
 	char ebike_license[10];
 	char location[10];
-	int apply_time;
-	int conduct_time;
+	unsigned long apply_time;
+	unsigned long conduct_time;
 	int result;
 } EBIKE_INFO;
 
@@ -115,11 +116,17 @@ void user_main(int *page);
 void drawgraph_user_main(int *page);
 void flushUserMain(int* tag, int button_count, user_button UserButtons[]);
 void user_bike_register(int* page, unsigned long* id);
-void drawgraph_user_bike_register(void);
+void drawgraph_user_bike_register_new(void);
+void drawgraph_user_bike_register_info(unsigned long *id);
 void flushUserRegister(int *tag);
 int EBIKE_INFO_judge(char *usrn,char *e_bike_id,unsigned long *id);
 void anime_user_bike_register_fail(int flag);
 int ebike_user_judge(unsigned long* ID);
+void user_bike_register_getinfo(EBIKE_INFO *user_info,unsigned long *id);
+
+void user_bike_license(int* page, unsigned long* id);
+void drawgraph_user_bike_license();
+
 
 void user_bike_anual();
 void user_bike_wroteout();

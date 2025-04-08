@@ -67,14 +67,10 @@ ACTIVE_USER_DATAGRAPH,USER_DATAGRAPH},
 }
 
 void drawgraph_user_main(int *page) {
-	setrgbpalette(MY_LIGHTBLUE, 12, 158, 245);//浅蓝背景-1
-	setrgbpalette(MY_LIGHTGRAY, 235, 235, 235);//浅灰框-1
-	setrgbpalette(MY_BLACK, 0, 0, 0);//黑色
-	setrgbpalette(MY_YELLOW, 240, 230, 75);//黄色
-	setrgbpalette(MY_RED, 255, 0, 0);//红色
-	setrgbpalette(MY_WHITE, 255, 255, 255);//白色
+	char time_string[10] = { '\0' };
+	unsigned long time = get_approx_time(time_string);
 	
-
+	initcolorpalette();
 	setbkcolor(MY_LIGHTBLUE);//主界面
 	setfillstyle(1, 0);
 	setcolor(MY_LIGHTBLUE);
@@ -90,6 +86,10 @@ void drawgraph_user_main(int *page) {
 	setcolor(MY_LIGHTGRAY);
 	setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
 	rectangle(151, 61, 639, 479);
+
+	settextstyle(DEFAULT_FONT, HORIZ_DIR, 2); // 默认字体，水平方向，大小2
+	setcolor(MY_WHITE);
+	outtextxy(15, 450, time_string);
 
 	/*setcolor(MY_WHITE);//功能按钮
 	rectangle(USER_BIKE_REGISTER_X1, USER_BIKE_REGISTER_Y1, USER_BIKE_REGISTER_X2, USER_BIKE_REGISTER_Y2);
@@ -310,21 +310,32 @@ ACTIVE_USER_DATAGRAPH},
 	save_bk_mou(MouseX, MouseY);
 	drawgraph_user_main(page);
 
-	if (!ebike_user_judge(id)){
+	
+
+	if (!ebike_user_judge(id)) {
 		setfillstyle(SOLID_FILL, MY_WHITE);
 		bar(150, 60, 640, 480);
-		puthz(280, 260, "您已注册过电动车", 32, 40, MY_BLACK);
-		delay(3000);
-		*page = MAIN_USER;
-		return;
+		drawgraph_user_bike_register_info(id);
+		clrmous(MouseX, MouseY);
+		save_bk_mou(MouseX, MouseY);
+		while (1) {
+			flushUserMain(&tag, STRUCT_LENGTH(UserButtons), UserButtons); // 刷新界面
+			newmouse(&MouseX, &MouseY, &press); // 刷新鼠标
+			click = handle_click_main(STRUCT_LENGTH(UserButtons), UserButtons);
+			if (click == LOGIN || click == EXIT || click == USER_BIKE_REGISTER) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_REGISTER
+				*page = click;
+				return;
+			}
+			delay(25);
+		}
 	}
-	drawgraph_user_bike_register();
+	drawgraph_user_bike_register_new();
 	while (1) {
 		flushUserMain(&tag, STRUCT_LENGTH(UserButtons), UserButtons); // 刷新界面
 		flushUserRegister(&tag);
 		newmouse(&MouseX, &MouseY, &press);
 		click = handle_click_main(STRUCT_LENGTH(UserButtons), UserButtons);
-		if (click == LOGIN || click==EXIT) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_REGISTER
+		if (click == LOGIN || click==USER_BIKE_LICENSE ||click==EXIT) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_REGISTER
 			*page = click;
 			return;
 		}//菜单界面点击
@@ -435,7 +446,7 @@ int EBIKE_INFO_judge(char* usrn, char* e_bike_id,unsigned long* id) {
 	strcpy(TEMP.ebike_license, "license");
 	strcpy(TEMP.location, "location");
 	TEMP.ID =*id;
-	TEMP.apply_time =43;
+	TEMP.apply_time =get_approx_time(NULL);
 	TEMP.conduct_time = -1;
 	TEMP.result = -1;
 	fseek(fp_EBIKE_INFO_readndwrite, 0, SEEK_END); // 确保写入位置在文件末尾
@@ -507,7 +518,7 @@ void anime_user_bike_register_fail(int flag) {
 
 }
 
-void drawgraph_user_bike_register() {
+void drawgraph_user_bike_register_new() {
 	
 	puthz(260, 80, "电动车登记", 32,40, MY_BLACK);
 	setcolor(MY_BLACK);
@@ -537,9 +548,137 @@ void drawgraph_user_bike_register() {
 	puthz(520, 340, "未登记", 24, 20, MY_BLACK);
 }
 
-void user_bike_license()
-{
+void drawgraph_user_bike_register_info(unsigned long *id) {
+	EBIKE_INFO user_info;
+	char id_string[20];
+	char apply_time_string[20];//一定要给sprintf留出足够缓冲区
+	char conduct_time_string[20];
+	user_bike_register_getinfo(&user_info,id);
+	sprintf(id_string, "%lu", *id);
+	sprintf(apply_time_string, "%lu",user_info.apply_time);
+	sprintf(conduct_time_string, "%lu", user_info.conduct_time);
 	
+	puthz(260, 80, "电动车信息", 32, 40, MY_BLACK);
+	setcolor(MY_BLACK);
+	setlinestyle(SOLID_LINE, 0, NORM_WIDTH);
+	setfillstyle(SOLID_FILL, MY_BLACK);
+	bar(151, 120, 640, 123);
+
+	settextstyle(DEFAULT_FONT, HORIZ_DIR, 2); // 默认字体，水平方向，大小2
+	setcolor(MY_BLACK);
+	
+	puthz(170, 140, "姓名", 24, 20, MY_BLACK);
+	outtextxy(260, 142, user_info.rln);
+	puthz(170, 190, "车牌号", 24, 20, MY_BLACK);
+	outtextxy(260, 192, user_info.ebike_ID);
+	puthz(170, 240, "学号", 24, 20, MY_BLACK);
+	outtextxy(260, 242, id_string);
+	puthz(170, 290, "登记时间", 24, 20, MY_BLACK);
+	outtextxy(260, 292, apply_time_string);
+	puthz(390, 290, "处理时间", 24, 20, MY_BLACK);
+	outtextxy(510, 292, conduct_time_string);
+	puthz(170, 340, "登记情况", 24, 20, MY_BLACK);
+	puthz(260, 340, "待定", 24, 20, MY_BLACK);
+	puthz(390, 340, "电动车状态", 24, 20, MY_BLACK);
+	puthz(510, 340, "待定", 24, 20, MY_BLACK);
+}
+
+void user_bike_register_getinfo(EBIKE_INFO* user_info,unsigned long *id) {
+	int i = 0;
+	int account_counts;
+	EBIKE_INFO TEMP;
+	FILE* fp_EBIKE_INFO_readndwrite = fopen("C:\\EBS\\DATA\\REGISTER.DAT", "rb");
+	if (fp_EBIKE_INFO_readndwrite == NULL) {
+		fclose(fp_EBIKE_INFO_readndwrite);
+		exit(0);
+	}
+	
+	memset(&TEMP, 0, sizeof(TEMP));
+	fseek(fp_EBIKE_INFO_readndwrite, 0, SEEK_END);
+	account_counts = ftell(fp_EBIKE_INFO_readndwrite) / sizeof(EBIKE_INFO);//初始操作完成，接下来开始遍历数据
+
+	for (i = 0; i < account_counts; i++) {
+		fseek(fp_EBIKE_INFO_readndwrite, i * sizeof(EBIKE_INFO), SEEK_SET);
+		fread(&TEMP, sizeof(EBIKE_INFO), 1, fp_EBIKE_INFO_readndwrite); //逐个读取，每个用户信息
+
+		if (*id==TEMP.ID) {
+			strcpy(user_info->rln,TEMP.rln);			//获取账密和uid
+			strcpy(user_info->ebike_ID,TEMP.ebike_ID);
+			strcpy(user_info->ebike_license,TEMP.ebike_license);
+			strcpy(user_info->location,TEMP.location);
+			user_info->apply_time = TEMP.apply_time;
+			user_info->conduct_time = TEMP.conduct_time;
+			user_info->result = TEMP.result;
+			if (fclose(fp_EBIKE_INFO_readndwrite) != 0) getch(), exit(1);
+			return;
+		}
+	}
+	if (fclose(fp_EBIKE_INFO_readndwrite) != 0) getch(), exit(1);
+		return ;
+}
+
+void user_bike_license(int *page,unsigned long *id)
+{
+	int tag = 0;
+	int click = -1;
+	int register_flag = 0;
+	char usrn[16] = { '\0' }; // 初始化为空
+	char e_bike_id[10] = { '\0' };
+	user_button UserButtons[] = {
+{USER_BIKE_REGISTER_X1, USER_BIKE_REGISTER_X2,
+USER_BIKE_REGISTER_Y1, USER_BIKE_REGISTER_Y2,
+ACTIVE_USER_BIKE_REGISTER},
+
+{USER_BIKE_LICENSE_X1, USER_BIKE_LICENSE_X2,
+		USER_BIKE_LICENSE_Y1, USER_BIKE_LICENSE_Y2,
+		ACTIVE_USER_BIKE_LICENSE},
+
+{USER_BIKE_ANUAL_X1, USER_BIKE_ANUAL_X2,
+USER_BIKE_ANUAL_Y1, USER_BIKE_ANUAL_Y2,
+ACTIVE_USER_BIKE_ANUAL},
+
+{USER_BIKE_WROTEOUT_X1, USER_BIKE_WROTEOUT_X2,
+USER_BIKE_WROTEOUT_Y1, USER_BIKE_WROTEOUT_Y2,
+ACTIVE_USER_BIKE_WROTEOUT},
+
+{USER_INFO_X1, USER_INFO_X2,
+USER_INFO_Y1, USER_INFO_Y2,
+ACTIVE_USER_INFO},
+
+{USER_MESSAGE_X1, USER_MESSAGE_X2,
+USER_MESSAGE_Y1, USER_MESSAGE_Y2,
+ACTIVE_USER_MESSAGE},
+
+{USER_DATAGRAPH_X1, USER_DATAGRAPH_X2,
+USER_DATAGRAPH_Y1, USER_DATAGRAPH_Y2,
+ACTIVE_USER_DATAGRAPH},
+
+{USER_BACK_X1,USER_BACK_X2,USER_BACK_Y1,USER_BACK_Y2,ACTIVE_USER_BACK,LOGIN},
+{USER_EXIT_X1,USER_EXIT_X2,USER_EXIT_Y1,USER_EXIT_Y2,ACTIVE_USER_EXIT,EXIT},
+	};
+	clrmous(MouseX, MouseY);
+	save_bk_mou(MouseX, MouseY);
+	drawgraph_user_main(page);
+	drawgraph_user_bike_license();
+	while (1) {
+		flushUserMain(&tag, STRUCT_LENGTH(UserButtons), UserButtons); // 刷新界面
+		flushUserRegister(&tag);
+		newmouse(&MouseX, &MouseY, &press);
+		click = handle_click_main(STRUCT_LENGTH(UserButtons), UserButtons);
+		if (click == LOGIN || click == USER_BIKE_REGISTER || click == EXIT) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_REGISTER
+			*page = click;
+			return;
+		}//菜单界面点击
+	}
+}
+
+void drawgraph_user_bike_license() {
+	initcolorpalatte();
+	puthz(170, 290, "电动车座位数", 24, 20, MY_BLACK);
+	puthz(170, 340, "电动车品牌", 24, 20, MY_BLACK);
+	puthz(400, 290, "电动车购买时间", 24, 20, MY_BLACK);
+	puthz(400, 340, "登记情况", 24, 20, MY_BLACK);
+
 }
 
 void user_bike_anual()
