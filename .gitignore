@@ -7,4 +7,4 @@ output/
 *.json
 *.sqlite
 /.vs
-/USER.DAT
+

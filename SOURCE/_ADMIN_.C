@@ -535,13 +535,13 @@ void admin_list_info(LINKLIST *LIST, unsigned long id_list[8], FILE *fp, char *f
     /* 1.定义变量 */
     int i;
     int listed_item = 0;  // 列出的数量
-    static unsigned int start = 0; // 储存当前列表第一个所在的位置
-    static unsigned int end = 0;   // 储存当前列表最后一个所在的位置
+    static unsigned int start = 0; // 储存当前列表第一个的物理位置
+    static unsigned int end = 0;   // 储存当前列表最后一个物理位置
     unsigned int temp_start = 0;
     unsigned int temp_end = 0;  // 储存临时的列表第一个和最后一个位置
-    int counts = 0; // 记录文件长度
-    int valid_counts = 0;
-    int flag = -1; // 记录文件类型，值>=0
+    int counts = 0; // 文件长度
+    int valid_counts = 0; // 有效数据量
+    int flag = -1; // 文件类型
     unsigned int page_count = 0;  // 记录页面数量，值>=0
     static unsigned int page_index = 0; // 记录搜索开始的位置
     char buffer[10];
@@ -622,27 +622,27 @@ void admin_list_info(LINKLIST *LIST, unsigned long id_list[8], FILE *fp, char *f
     /* 5.判断是否需要清理或刷新列表 */
     switch (is_clear)
     {
-    case 1:
-        setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
-        bar(ADMIN_INTERFACE_X1 + 10, ADMIN_INTERFACE_Y1 + 70, ADMIN_INTERFACE_X1 + 500, ADMIN_INTERFACE_Y1 + 300); // 清理列表
-        start = 0;
-        end = 0;
-        page_index = 1;
-        return;
-    case 2:
-        setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
-        bar(ADMIN_INTERFACE_X1 + 10, ADMIN_INTERFACE_Y1 + 70, ADMIN_INTERFACE_X1 + 500, ADMIN_INTERFACE_Y1 + 300); // 清理列表
-        start = 0;
-        end = 0;
-        page_index = 1;
-        break;
-    case 3:
-        setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
-        bar(ADMIN_INTERFACE_X1 + 10, ADMIN_INTERFACE_Y1 + 70, ADMIN_INTERFACE_X1 + 500, ADMIN_INTERFACE_Y1 + 300); // 清理列表
-        end = start;                                                                                               // 从start开始扫描重新列表
-        break;
-    default:
-        break;
+        case 1:
+            setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
+            bar(ADMIN_INTERFACE_X1 + 10, ADMIN_INTERFACE_Y1 + 70, ADMIN_INTERFACE_X1 + 500, ADMIN_INTERFACE_Y1 + 300); // 清理列表
+            start = 0;
+            end = 0;
+            page_index = 1;
+            return;
+        case 2:
+            setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
+            bar(ADMIN_INTERFACE_X1 + 10, ADMIN_INTERFACE_Y1 + 70, ADMIN_INTERFACE_X1 + 500, ADMIN_INTERFACE_Y1 + 300); // 清理列表
+            start = 0;
+            end = 0;
+            page_index = 1;
+            break;
+        case 3:
+            setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
+            bar(ADMIN_INTERFACE_X1 + 10, ADMIN_INTERFACE_Y1 + 70, ADMIN_INTERFACE_X1 + 500, ADMIN_INTERFACE_Y1 + 300); // 清理列表
+            end = start;                                                                                               // 从start开始扫描重新列表
+            break;
+        default:
+            break;
     }
 
     if (debug_mode == 1)
@@ -675,7 +675,8 @@ void admin_list_info(LINKLIST *LIST, unsigned long id_list[8], FILE *fp, char *f
                 {
                     return; // 到文件末尾都没有发现可列表的，则不执行下翻列表操作
                 }
-                if (list_ebike_manage_is_valid(ebike_temp, list_mode, search_str, search_needed, search_mode)){
+                if (list_ebike_manage_is_valid(ebike_temp, list_mode, search_str, search_needed, search_mode))
+                {
                     break; // 下翻查找是一旦读到可以被列出的，则可以执行下翻列表操作
                 }
             }
@@ -688,7 +689,7 @@ void admin_list_info(LINKLIST *LIST, unsigned long id_list[8], FILE *fp, char *f
                 }
                 if (list_user_data_is_valid(user_temp, search_str, search_needed))
                 {
-                    break; // 下翻查找是一旦读到可以被列出的，则可以执行下翻列表操作}
+                    break; // 下翻查找一旦读到可以被列出的，则可以执行下翻列表操作
                 }
             }
         }
@@ -762,12 +763,14 @@ void admin_list_info(LINKLIST *LIST, unsigned long id_list[8], FILE *fp, char *f
         { // 当能进入这个循环，说明列表上页有可列出数据且溢出
             if (flag == ADMIN_DATABASE_EBIKE_MANAGE)
             {
-                if(fseek(fp, (--temp_start) * sizeof(ebike_temp), SEEK_SET)){
+                if(fseek(fp, (--temp_start) * sizeof(ebike_temp), SEEK_SET))
+                {
                     return; // 到文件开头都没有发现可列表的，则不执行上翻列表操作
                 }
                 fread(&ebike_temp, sizeof(ebike_temp), 1, fp); // 读取上一个数据块
                 
-                if (list_ebike_manage_is_valid(ebike_temp, list_mode, search_str, search_needed, search_mode)){
+                if (list_ebike_manage_is_valid(ebike_temp, list_mode, search_str, search_needed, search_mode))
+                {
                     break; // 上翻查找到一个可列出数据，则可以上翻
                 }
                 temp_end = --temp_start;
@@ -817,7 +820,8 @@ void admin_list_info(LINKLIST *LIST, unsigned long id_list[8], FILE *fp, char *f
             {
                 fseek(fp, (start) * sizeof(user_temp), SEEK_SET);
                 fread(&user_temp, sizeof(user_temp), 1, fp);
-                if (!list_user_data_is_valid(user_temp, search_str, search_needed)){
+                if (!list_user_data_is_valid(user_temp, search_str, search_needed))
+                {
                     start--;
                     continue; // 如果下翻读取时读到的数据不符条件，则进行下一轮循环 
                 }
@@ -829,7 +833,7 @@ void admin_list_info(LINKLIST *LIST, unsigned long id_list[8], FILE *fp, char *f
             listed_item++;
             if (listed_item < 8 || start > 0) start--; // start在后面条件自减，防止start越界
             else if(start == 0)
-                break; // 若start指向开头，则不执行上翻列表操作，防止start越界
+                break; // 防止start越界
         }
         return;
     }

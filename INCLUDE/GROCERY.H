@@ -5,21 +5,24 @@
 #include <stdio.h>
 #include <time.h>
 
-#define NUM0 0x5230
-#define NUM1 0x4f31
-#define NUM2 0x5032
-#define NUM3 0x5133
-#define NUM4 0x4134
-#define NUM5 0x4c35
-#define NUM6 0x4d36
-#define NUM7 0x4737
-#define NUM8 0x4838
-#define NUM9 0x4939
-#define F1 0x3b
-#define F2 0x3c
-#define F3 0x3d
-#define F4 0x3e
-#define F5 0x3f
+/* 数字键（取低字节ASCII码） */
+#define NUM0 0x30 // '0'
+#define NUM1 0x31 // '1'
+#define NUM2 0x32 // '2'
+#define NUM3 0x33 // '3'
+#define NUM4 0x34 // '4'
+#define NUM5 0x35 // '5'
+#define NUM6 0x36 // '6'
+#define NUM7 0x37 // '7'
+#define NUM8 0x38 // '8'
+#define NUM9 0x39 // '9'
+
+/* 功能键（无标准ASCII，展示扫描码） */
+#define F1 0x3B
+#define F2 0x3C
+#define F3 0x3D
+#define F4 0x3E
+#define F5 0x3F
 #define F6 0x40
 #define F7 0x41
 #define F8 0x42
@@ -27,26 +30,40 @@
 #define F10 0x44
 #define F11 0x57
 #define F12 0x58
-#define TILDE 0x29
-#define TAB 0x0F
-#define BACKSLASH 0x2B
-#define ENTER 0x1c0d
-#define BACK 0x0e08
-#define ESC 0x011b
-#define KEYBOARD_RIGHT 185
-#define KEYBOARD_LEFT 186
-#define KEYBOARD_UP 183
-#define KEYBOARD_DOWN 184
-#define ONE 0x0231
-#define TWO 0x0332
-#define THREE 0x0433
-#define FOUR 0x0534
-#define FIVE 0x0635
-#define SIX 0x0736
-#define SEVEN 0x0837
-#define EIGHT 0x0938
-#define NINE 0x0a39
-#define ZERO 0x0b30
+
+/* 符号与控制键 */
+#define TILDE 0x60     // '`'
+#define TAB 0x09       // '\t'
+#define SPACE 0x20     // ' '
+#define ENTER 0x0D     // '\r'
+#define ESCAPE 0x1B    // ESC
+#define BACKSPACE 0x08 // '\b'
+#define BACKSLASH 0x5C // '\'
+
+/* 方向键（无ASCII，保留原十进制值） */
+#define UP 0x4800 // 上箭头（↑）
+#define DOWN 0x5000 // 下箭头（↓）
+#define LEFT 0x4B00     // 左箭头（←）
+#define RIGHT 0x4D00    // 右箭头（→）
+
+/* 控制键（无ASCII，展示扫描码） */
+#define CAPSLOCK 0x3A
+#define SHIFT 0x2A
+#define CTRL 0x1D
+#define ALT 0x38
+
+/* 数字区扩展键（取低字节ASCII） */
+#define ZERO 0x30  // '0'
+#define ONE 0x31   // '1'
+#define TWO 0x32   // '2'
+#define THREE 0x33 // '3'
+#define FOUR 0x34  // '4'
+#define FIVE 0x35  // '5'
+#define SIX 0x36   // '6'
+#define SEVEN 0x37 // '7'
+#define EIGHT 0x38 // '8'
+#define NINE 0x39  // '9'
+
 
 
 
