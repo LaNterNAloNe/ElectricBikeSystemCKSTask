@@ -673,7 +673,6 @@ ACTIVE_USER_DATAGRAPH},
 }
 
 void drawgraph_user_bike_license() {
-	initcolorpalatte();
 	puthz(170, 290, "电动车座位数", 24, 20, MY_BLACK);
 	puthz(170, 340, "电动车品牌", 24, 20, MY_BLACK);
 	puthz(400, 290, "电动车购买时间", 24, 20, MY_BLACK);

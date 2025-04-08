@@ -110,6 +110,33 @@ int linklist_delete_data(LINKLIST *pList, char *usrn)
     return 0;
 }
 
+/**********************************************************
+NAME:linklist_get_length
+VALUE:pList自定链表
+FUNCTION:获取链表的长度
+**********************************************************/
+int linklist_get_length(LINKLIST *pList)
+{
+    int length = 0;
+    LINKLIST_NODE *ptr = pList->HEAD; // 定义一个指针指向链表头
+    while(ptr){
+        length++;
+        ptr = ptr->NEXT; // 遍历链表，直到指针为空
+    }
+    return length;
+}
+
+/**********************************************************
+NAME:linklist_get_to_node
+VALUE:pList自定链表，index要查找的节点的序号，ptr要矫正的节点指针
+FUNCTION:将传入的指针矫正到相应的节点
+**********************************************************/
+void linklist_get_to_node(LINKLIST *pList, int index, LINKLIST_NODE *ptr){
+    int i;
+    for(i = 1, ptr = pList->HEAD; i <= index; i++, ptr = ptr->NEXT);
+    return;
+}
+
 
 /**********************************************************
 NAME:linklist_clear
@@ -187,7 +214,7 @@ void linklist_get_user_data(LINKLIST *LIST)
 NAME:linklist_write_user_data
 VALUE:pList自定链表
 FUNCTION:将链表数据原子化写入文件，确保与原读取逻辑兼容
-返回值：0成功，-1失败
+RETURN:0成功，-1失败
 ***********************************************************/
 int linklist_write_user_data(LINKLIST *pList)
 {
