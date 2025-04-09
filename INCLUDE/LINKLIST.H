@@ -1,3 +1,6 @@
+#ifndef LINKLIST_H
+#define LINKLIST_H
+
 #include"GROCERY.H"
 
 #define USER_DATA_FILE_NAME "C:\\EBS\\DATA\\USRDAT.TXT"
@@ -50,3 +53,5 @@ void linklist_get_to_node(LINKLIST *pList, int index, LINKLIST_NODE *ptr);
 void linklist_clear(LINKLIST *pList);
 void linklist_get_user_data(LINKLIST *LIST);
 int linklist_write_user_data(LINKLIST *pList);
+
+#endif

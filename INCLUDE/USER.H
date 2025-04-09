@@ -14,6 +14,7 @@
 #include"INPUTCH.H"
 #include"HZ.H"
 #include "LINKLIST.H"
+#include "_ADMIN_.H"
 
 //∞¥≈•Œª÷√
 #define USER_BIKE_REGISTER_X1 0
@@ -101,16 +102,16 @@ typedef struct {
 	int page;
 }user_button;
 
-typedef struct {
-	char rln[16];
-	unsigned long ID;
-	char ebike_ID[10];
-	char ebike_license[10];
-	char location[10];
-	unsigned long apply_time;
-	unsigned long conduct_time;
-	int result;
-} EBIKE_INFO;
+// typedef struct {
+// 	char rln[16];
+// 	unsigned long ID;
+// 	char ebike_ID[10];
+// 	char ebike_license[10];
+// 	char location[10];
+// 	unsigned long apply_time;
+// 	unsigned long conduct_time;
+// 	int result;
+// } EBIKE_INFO;
 
 void user_main(int *page);
 void drawgraph_user_main(int *page);

@@ -13,7 +13,7 @@
 #include"HZ.H"
 #include"debug.h"
 #include"LOGIN.H"
-
+#include"LIST.H"
 
 //定义界面坐标
 #define ADMIN_MENU_X1 0
@@ -142,8 +142,7 @@ enum
     ADMIN_DATABASE_USER_INFO,
     ADMIN_DATABASE_EBIKE_INFO,
     ADMIN_DATABASE_EBIKE_PASS_IN_OUT,
-}
-ADMIN_DATABASE_FLAG;
+};
 
 // 定义激活状态
 enum
@@ -168,7 +167,7 @@ enum
     ACTIVE_ADMIN_FEATURE_DOWN,
     ACTIVE_ADMIN_FEATURE_EXIT,
     ACTIVE_ADMIN_INFO,
-} ADMIN_ACTIVE_TAG;
+};
 
 typedef void (*DRAWFUNCTION)(int coord1, int coord2, int coord3, int coord4);
 typedef void (*CLEARFUNCTION) (int coord1,int coord2,int coord3,int coord4);
@@ -180,7 +179,7 @@ typedef struct {
     CLEARFUNCTION clearfunc;
 } ADMIN_BUTTONS;
 
-typedef struct {
+typedef struct _EBIKE_INFO_{
     char rln[16];
 	unsigned long ID;
 	char ebike_ID[10];
@@ -218,18 +217,6 @@ void admin_handle_manage_feature_event(LINKLIST *LIST, int *page, char *search_s
                                        FILE *fp_EBIKE_INFO_read, int *mode, int selected_id);
 void admin_handle_buttons_event(int *page);
 void admin_handle_database_event(LINKLIST *LIST, int *flag,int *page, unsigned long *id_list, FILE *fp_EBIKE_INFO_read, char *search_str);
-
-// 列表函数
-void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned long id_list[], FILE *fp, char *file_type,
-                     char *list_mode, int search_mode, int page_change, int is_clear, char *search_str, char *search_needed);
-void admin_show_ebike_manage_info(EBIKE_INFO TEMP, const int max, const int interval, int listed_item, char *list_mode, int list_sequence);
-void admin_show_user_info(USER_LOGIN_DATA TEMP, const int max, const int interval, int listed_item, int list_sequence);
-void admin_show_ebike_info(LINKLIST_USER usrdat, const int max, const int interval, int listed_item, int list_sequence);
-int list_ebike_manage_is_valid(EBIKE_INFO TEMP, char *list_mode, char *search_str, char *search_needed, int search_mode);
-int list_user_data_is_valid(USER_LOGIN_DATA TEMP, char *search_str, char *search_needed);
-int list_ebike_info_is_valid(LINKLIST_USER usrdat, char *search_str, char *search_needed);
-void list_show_page_index(unsigned int page_index, unsigned int page_count, const int max, const int interval);
-void handle_list_select_line_admin(unsigned long id_list[], unsigned long *selected_id, const int max, const int interval);
 
 // 搜索函数
 unsigned long int find_ebike_info(FILE *fp, char *search_str, char *search_needed);

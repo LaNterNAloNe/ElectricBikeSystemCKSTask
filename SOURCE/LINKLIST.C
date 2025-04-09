@@ -163,51 +163,102 @@ NAME:linklist_get_user_data
 VALUE:pList自定链表
 FUNCTION:将信息获取到链表中
 **********************************************************/
+// void linklist_get_user_data(LINKLIST *LIST)
+// {
+//     char buffer[120];        // 定义缓冲区
+//     char *token;             // 定义获取截断字符串的token
+//     LINKLIST_USER LIST_USER; // 定义结构体，准备加入链表
+
+//     FILE *fp_USER_DATA_read = fopen(USER_DATA_FILE_NAME, "r");
+//     if (fp_USER_DATA_read == NULL)
+//         getch(), exit(1);
+//     fseek(fp_USER_DATA_read, 0, SEEK_END); // 将文件指针置于开头，开始遍历文件
+//     if (ftell(fp_USER_DATA_read) == 0) { // 如果文件为空，则直接返回
+//         fclose(fp_USER_DATA_read);
+//         return;
+//     }
+
+//     fseek(fp_USER_DATA_read, 0, SEEK_SET); // 将文件指针置于开头，开始遍历文件
+
+//     while (fgets(buffer, sizeof(buffer), fp_USER_DATA_read))
+//     {
+//         if (!strcmp(buffer, "\0"))
+//             break;
+//         if (!strcmp(buffer, "\n"))
+//             continue;
+
+//         token = strtok(buffer, ",");
+//         LIST_USER.ID = token ? atol(token) : 0;
+
+//         strncpy(LIST_USER.usrn, strtok(NULL, ","), sizeof(LIST_USER.usrn));
+//         strncpy(LIST_USER.rln, strtok(NULL, ","), sizeof(LIST_USER.rln));
+//         strncpy(LIST_USER.location, strtok(NULL, ","), sizeof(LIST_USER.location));
+//         strncpy(LIST_USER.ebike_ID, strtok(NULL, ","), sizeof(LIST_USER.ebike_ID));
+//         strncpy(LIST_USER.ebike_license, strtok(NULL, ","), sizeof(LIST_USER.ebike_license));
+
+//         token = strtok(NULL, ",");
+//         LIST_USER.anual_check = token ? atol(token) : 0;
+
+//         token = strtok(NULL, ",");
+//         LIST_USER.violations = token ? atoi(token) : 0;
+
+//         token = strtok(NULL, ",");
+//         LIST_USER.account_state = (token && *token) ? *token : ACTIVE;
+
+//         token = strtok(NULL, ",\n");
+//         LIST_USER.ebike_state = (token && *token) ? *token : ACTIVE;
+
+//         linklist_add_data(LIST, LIST_USER);
+
+//         memset(buffer, 0, sizeof(buffer));
+//         memset(&LIST_USER, 0, sizeof(LINKLIST_USER)); // 确保结构体清零
+//     }
+//     fclose(fp_USER_DATA_read); // 关闭文件
+// }
+
 void linklist_get_user_data(LINKLIST *LIST)
 {
-    char buffer[120];        // 定义缓冲区
-    char *token;             // 定义获取截断字符串的token
-    LINKLIST_USER LIST_USER; // 定义结构体，准备加入链表
+    int parsed;
+    char buffer[120];
+    LINKLIST_USER LIST_USER;
+    FILE *fp = fopen(USER_DATA_FILE_NAME, "r");
+    if (!fp)
+        exit(1);
 
-    FILE *fp_USER_DATA_read = fopen(USER_DATA_FILE_NAME, "r");
-    if (fp_USER_DATA_read == NULL)
-        getch(), exit(1);
-    fseek(fp_USER_DATA_read, 0, SEEK_SET); // 将文件指针置于开头，开始遍历文件
-
-    while (fgets(buffer, sizeof(buffer), fp_USER_DATA_read))
+    // 预判空文件（原逻辑保留）
+    fseek(fp, 0, SEEK_END);
+    if (ftell(fp) == 0)
     {
-        if (!strcmp(buffer, "\0"))
-            break;
-        if (!strcmp(buffer, "\n"))
+        fclose(fp);
+        return;
+    }
+    fseek(fp, 0, SEEK_SET);
+
+    while (fgets(buffer, sizeof(buffer), fp))
+    {
+        if (buffer[0] == '\0')
             continue;
 
-        token = strtok(buffer, ",");
-        LIST_USER.ID = token ? atol(token) : 0;
+        // 改进2：使用sscanf替代strtok
+        parsed = sscanf(buffer,
+                        "%19[^,],%19[^,],%19[^,],%19[^,],%19[^,],%ld,%d,%c,%c",
+                        LIST_USER.usrn,
+                        LIST_USER.rln,
+                        LIST_USER.location,
+                        LIST_USER.ebike_ID,
+                        LIST_USER.ebike_license,
+                        &LIST_USER.anual_check,
+                        &LIST_USER.violations,
+                        &LIST_USER.account_state,
+                        &LIST_USER.ebike_state);
 
-        strncpy(LIST_USER.usrn, strtok(NULL, ","), sizeof(LIST_USER.usrn));
-        strncpy(LIST_USER.rln, strtok(NULL, ","), sizeof(LIST_USER.rln));
-        strncpy(LIST_USER.location, strtok(NULL, ","), sizeof(LIST_USER.location));
-        strncpy(LIST_USER.ebike_ID, strtok(NULL, ","), sizeof(LIST_USER.ebike_ID));
-        strncpy(LIST_USER.ebike_license, strtok(NULL, ","), sizeof(LIST_USER.ebike_license));
-
-        token = strtok(NULL, ",");
-        LIST_USER.anual_check = token ? atol(token) : 0;
-
-        token = strtok(NULL, ",");
-        LIST_USER.violations = token ? atoi(token) : 0;
-
-        token = strtok(NULL, ",");
-        LIST_USER.account_state = (token && *token) ? *token : ACTIVE;
-
-        token = strtok(NULL, ",\n");
-        LIST_USER.ebike_state = (token && *token) ? *token : ACTIVE;
+        LIST_USER.account_state = (parsed >= 8) ? LIST_USER.account_state : ACTIVE;
+        LIST_USER.ebike_state = (parsed >= 9) ? LIST_USER.ebike_state : ACTIVE;
 
         linklist_add_data(LIST, LIST_USER);
-
-        memset(buffer, 0, sizeof(buffer));
-        memset(&LIST_USER, 0, sizeof(LINKLIST_USER)); // 确保结构体清零
+        memset(&LIST_USER, 0, sizeof(LINKLIST_USER));
     }
-    fclose(fp_USER_DATA_read); // 关闭文件
+    fclose(fp);
 }
 
 /**********************************************************
