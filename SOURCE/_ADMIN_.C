@@ -32,7 +32,7 @@ void admin_manage_bike_module(int *page, unsigned long *ID, LINKLIST *LIST, char
     int mode = 0; // 搜索模式，列出已处理清单或待处理清单，主动清除该页面时重设为0（默认列出待处理清单）
     // static int visited=0; // 是否进入乐该页面，主动清除该页面时重设为0
     char search_str[20]; // 搜索框输入信息储存
-    int selected_id = -1;
+    unsigned long selected_id = 0;
     unsigned long id_list[8] = {0,0,0,0,0,0,0,0}; // 记录当前显示的列表每行对应的ID
     int tag = ACTIVE_ADMIN_NULL;
     int temp_page = *page; // 记录当前页面
@@ -58,7 +58,7 @@ void admin_manage_bike_module(int *page, unsigned long *ID, LINKLIST *LIST, char
     {
         admin_flush_buttons(&tag, STRUCT_LENGTH(AdminButtons), AdminButtons);
         admin_handle_buttons_event(page);
-        selected_id = handle_list_select_line_admin(id_list, LIST_LIMIT, LIST_INTERVAL);
+        handle_list_select_line_admin(id_list, &selected_id, LIST_LIMIT, LIST_INTERVAL);
         newmouse(&MouseX, &MouseY, &press);
 
         admin_handle_manage_feature_event(LIST, page, search_str, id_list, fp_EBIKE_INFO_read, &mode, selected_id); // 处理点击事件
@@ -102,6 +102,7 @@ MODULE:数据一览界面
 void admin_database(int *page, unsigned long *ID , LINKLIST *LIST){
     int tag = ACTIVE_ADMIN_NULL;
     int flag = ADMIN_DATABASE_NULL; // 数据一览视图代号
+    unsigned long selected_id = 0;
     unsigned long id_list[8] = {0,0,0,0,0,0,0,0}; // 记录当前显示的列表每行对应的ID
     char search_str[20] = "\0"; // 搜索框输入信息储存
     ADMIN_BUTTONS AdminButtons[19];
@@ -123,6 +124,8 @@ void admin_database(int *page, unsigned long *ID , LINKLIST *LIST){
         admin_flush_buttons(&tag, STRUCT_LENGTH(AdminButtons), AdminButtons);
         admin_handle_buttons_event(page);
         admin_handle_database_event(LIST, &flag, page, id_list, fp_USER_LOGIN_DATA_read,search_str); // 处理点击事件
+        handle_list_select_line_admin(id_list, &selected_id, LIST_LIMIT, LIST_INTERVAL);
+
         newmouse(&MouseX, &MouseY, &press);
 
         delay(25);
@@ -558,8 +561,10 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval,unsigned 
     LINKLIST_NODE *node = NULL;
 
     if(debug_mode == 1){
-        bar(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 40, ADMIN_INTERFACE_X1 + 100, ADMIN_INTERFACE_Y1 + 140); // 清理列表
-        puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 40, "检查一", 16, 16, MY_RED);
+        setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
+        bar(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70 + max * interval, 
+            ADMIN_INTERFACE_X1 + 320, ADMIN_INTERFACE_Y1 + 90 + max * interval); // 清理列表
+        puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70 + max * interval, "检查一", 16, 16, MY_RED);
     }
         
     /* 2.判断数据类型 */
@@ -576,7 +581,7 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval,unsigned 
     }
 
     if (debug_mode == 1)
-        puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 60, "检查二", 16, 16, MY_RED);
+        puthz(ADMIN_INTERFACE_X1 + 80, ADMIN_INTERFACE_Y1 + 70 + max * interval, "检查二", 16, 16, MY_RED);
 
     /* 3.获取文件长度或初始化读取条件 */
     fseek(fp, 0, SEEK_END);
@@ -658,30 +663,27 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval,unsigned 
     {
         case 1:
             setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
-            bar(ADMIN_INTERFACE_X1 + 10, ADMIN_INTERFACE_Y1 + 70, ADMIN_INTERFACE_X1 + 500, ADMIN_INTERFACE_Y1 + 300); // 清理列表
+            bar(ADMIN_INTERFACE_X1 + 10, ADMIN_INTERFACE_Y1 + 70, 
+                ADMIN_INTERFACE_X1 + 500, ADMIN_INTERFACE_Y1 + 70 + max * interval); // 清理列表
             start = 0;
             end = 0;
             page_index = 1;
             node = NULL;
             return;
         case 2:
-            setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
-            bar(ADMIN_INTERFACE_X1 + 10, ADMIN_INTERFACE_Y1 + 70, ADMIN_INTERFACE_X1 + 500, ADMIN_INTERFACE_Y1 + 300); // 清理列表
             start = 0;
             end = 0;
             page_index = 1;
             break;
         case 3:
-            setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
-            bar(ADMIN_INTERFACE_X1 + 10, ADMIN_INTERFACE_Y1 + 70, ADMIN_INTERFACE_X1 + 500, ADMIN_INTERFACE_Y1 + 300); // 清理列表
-            end = start;                                                                                               // 从start开始扫描重新列表
+            end = start; // 从start开始扫描重新列表
             break;
         default:
             break;
     }
 
     if (debug_mode == 1)
-        puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 80, "检查三", 16, 16, MY_RED);
+        puthz(ADMIN_INTERFACE_X1 + 140, ADMIN_INTERFACE_Y1 + 70 + max * interval, "检查三", 16, 16, MY_RED);
 
     /* 6.前置操作完成，正式开始列表 */
     // 收到下翻指令，或改变当前列表状态后从起点开始重新刷新列表 //
@@ -689,7 +691,7 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval,unsigned 
     { 
 
         if (debug_mode == 1)
-            puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 100, "检查四", 16, 16, MY_RED);
+            puthz(ADMIN_INTERFACE_X1 + 200, ADMIN_INTERFACE_Y1 + 70 + max * interval, "检查四", 16, 16, MY_RED);
 
         /* 条件判断 */
         if (end >= valid_counts - 1)
@@ -744,12 +746,13 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval,unsigned 
         temp_end = temp_start;
 
         if (debug_mode == 1)
-            puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 120, "检查五", 16, 16, MY_RED);
+            puthz(ADMIN_INTERFACE_X1 + 260, ADMIN_INTERFACE_Y1 + 70 + max * interval, "检查五", 16, 16, MY_RED);
 
         /* 列表操作 */
         setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
-        bar(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70, ADMIN_INTERFACE_X1 + 500, ADMIN_INTERFACE_Y1 + 300); // 清理列表
-        list_show_page_index(++page_index, page_count); // 显示页码
+        bar(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70, 
+            ADMIN_INTERFACE_X1 + 500, ADMIN_INTERFACE_Y1 + 70 + max * interval); // 清理列表
+        list_show_page_index(++page_index, page_count, max, interval);                                             // 显示页码
 
         while (listed_item < max)
         {
@@ -816,7 +819,7 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval,unsigned 
     { 
 
         if (debug_mode == 1)
-            puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 100, "检查四", 16, 16, MY_RED);
+            puthz(ADMIN_INTERFACE_X1 + 200, ADMIN_INTERFACE_Y1 + 70 + max * interval, "检查四", 16, 16, MY_RED);
 
         /*条件判断*/
         if (start <= 0)
@@ -873,12 +876,13 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval,unsigned 
 
         // 此处 temp_start 和 temp_end 都应为 start - 1 或更小//
         if(debug_mode == 1)
-            puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 120, "检查五", 16, 16, MY_RED);
+            puthz(ADMIN_INTERFACE_X1 + 260, ADMIN_INTERFACE_Y1 + 70 + max * interval, "检查五", 16, 16, MY_RED);
 
         /*列表操作*/
         setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
-        bar(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70, ADMIN_INTERFACE_X1 + 500, ADMIN_INTERFACE_Y1 + 300); // 清理列表
-        list_show_page_index(--page_index, page_count); // 更新页面索引
+        bar(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70, 
+            ADMIN_INTERFACE_X1 + 500, ADMIN_INTERFACE_Y1 + 70 + max * interval); // 清理列表
+        list_show_page_index(--page_index, page_count, max, interval);                                             // 更新页面索引
 
         while (listed_item < max)
         { // 由于此时是从后往前读取数据，因此是从下往上列表
@@ -940,15 +944,19 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval,unsigned 
     {
 
         if (debug_mode == 1)
-            puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 100, "检查四", 16, 16, MY_RED);
+            puthz(ADMIN_INTERFACE_X1 + 200, ADMIN_INTERFACE_Y1 + 70 + max * interval, "检查四", 16, 16, MY_RED);
 
         end = start; // end不能赋为负数，因为end为无符号整形数
+
+        if (debug_mode == 1)
+            puthz(ADMIN_INTERFACE_X1 + 260, ADMIN_INTERFACE_Y1 + 70 + max * interval, "检查五", 16, 16, MY_RED);
 
         temp_start = start;
         temp_end = start; // 临时储存，先利用临时变量获取下一个可列出数据块的位置，如果没有则不会影响start和end的值
         setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
-        bar(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70, ADMIN_INTERFACE_X1 + 500, ADMIN_INTERFACE_Y1 + 300); // 清理列表
-        list_show_page_index(page_index, page_count); // 显示页码
+        bar(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70, 
+            ADMIN_INTERFACE_X1 + 500, ADMIN_INTERFACE_Y1 + 70 + max * interval); // 清理列表
+        list_show_page_index(page_index, page_count, max, interval);                                               // 显示页码
 
         while (listed_item < max)
         {
@@ -1017,14 +1025,14 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval,unsigned 
     }
     else
     {
-        list_show_page_index(0, 0);
+        list_show_page_index(0, 0, max, interval);
         puthz(ADMIN_INTERFACE_X1 + 120, ADMIN_INTERFACE_Y1 + 70, "未找到对应数据或传入参数错误", 16, 16, MY_RED);
         node = NULL; // 防止野指针
         return;
     }
     
     // 到函数末尾都还没返回，则出现异常，输出异常信息
-    list_show_page_index(0, 0);
+    list_show_page_index(0, 0, max, interval);
     puthz(ADMIN_INTERFACE_X1 + 120, ADMIN_INTERFACE_Y1 + 70, "函数执行异常", 16, 16, MY_RED);
     node = NULL; // 防止野指针
 }
@@ -1238,22 +1246,24 @@ int list_ebike_info_is_valid(LINKLIST_USER usrdat, char *search_str, char *searc
 }
 
 // 绘制页码
-void list_show_page_index(unsigned int page_index, unsigned int page_count)
+void list_show_page_index(unsigned int page_index, unsigned int page_count, const int max, const int interval)
 {
     char buffer[20];
 
     setcolor(MY_WHITE);
     setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
-    bar(ADMIN_INTERFACE_X1 + 460, ADMIN_INTERFACE_Y1 + 300, ADMIN_INTERFACE_X1 + 500, ADMIN_INTERFACE_Y1 + 320); // 清理页码
+    bar(ADMIN_INTERFACE_X1 + 460, ADMIN_INTERFACE_Y1 + 70 + max * interval, 
+        ADMIN_INTERFACE_X1 + 500, ADMIN_INTERFACE_Y1 + 80 + max * interval); // 清理页码
     sprintf(buffer, "<%d/%d>", page_index, page_count);                                                          // 格式化页码
     settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);
-    outtextxy(ADMIN_INTERFACE_X1 + 460, ADMIN_INTERFACE_Y1 + 310, buffer); // 输出页码
+    outtextxy(ADMIN_INTERFACE_X1 + 460, ADMIN_INTERFACE_Y1 + 70 + max * interval, buffer); // 输出页码
 }
 
 //绘制选中的行的图形动画，同时返回选中行对应数据的id
-unsigned long handle_list_select_line_admin(unsigned long *id_list, const int max, const int interval)
+void handle_list_select_line_admin(unsigned long id_list[], unsigned long *selected_id, const int max, const int interval)
 {
     int i;
+    unsigned long previous_selected_id = *selected_id;
     for (i = 0; i < max; i++)
     {
         if (mouse_press(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70 + i * interval,
@@ -1264,16 +1274,23 @@ unsigned long handle_list_select_line_admin(unsigned long *id_list, const int ma
             bar(ADMIN_INTERFACE_X1 + 10, ADMIN_INTERFACE_Y1 + 70, ADMIN_INTERFACE_X1 + 18, ADMIN_INTERFACE_Y1 + 310); // 清理所有高亮
             setfillstyle(SOLID_FILL, MY_YELLOW);
             bar(ADMIN_INTERFACE_X1 + 10, ADMIN_INTERFACE_Y1 + 70 + i * interval,
-                ADMIN_INTERFACE_X1 + 18, ADMIN_INTERFACE_Y1 + 70 + (i + 1) * interval - 1); // 生成当前高亮
+                ADMIN_INTERFACE_X1 + 18, ADMIN_INTERFACE_Y1 + 70 + i * interval + interval / (interval / 15)); // 生成当前高亮
 
             setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
-            bar(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70 + 8 * interval,
-                ADMIN_INTERFACE_X1 + 400, ADMIN_INTERFACE_Y1 + 70 + 8 * interval + 20); // 清理选中行具体信息
+            bar(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 90 + 8 * interval,
+                ADMIN_INTERFACE_X1 + 400, ADMIN_INTERFACE_Y1 + 90 + 8 * interval + 20); // 清理选中行显示的具体信息
             
-            return id_list[i];
+            *selected_id = id_list[i];
         }
     }
-    return NULL;
+    if (previous_selected_id == *selected_id &&
+        mouse_press(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70,
+                    ADMIN_INTERFACE_X1 + 400, ADMIN_INTERFACE_Y1 + 70 + max * interval) == -1)
+    {
+        setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
+        bar(ADMIN_INTERFACE_X1 + 10, ADMIN_INTERFACE_Y1 + 70, ADMIN_INTERFACE_X1 + 18, ADMIN_INTERFACE_Y1 + 310); // 清理所有高亮
+        *selected_id = 0; // 如果点击时没有选中任何行，则将selected_id设置为0
+    }
 }
 
 

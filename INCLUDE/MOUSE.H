@@ -13,7 +13,7 @@ void save_bk_mou(int x,int y);//瀛橀紶鏍�?儗鏅?
 void clrmous(int x,int y);//娓呴櫎榧犳爣
 void drawmous(int x,int y);//鐢�?�紶�??
 void newmouse(int *nx,int *ny,int *nbuttons);   //鏇存柊榧犳爣
-unsigned int Getpixel64k(int x, int y);
+
 
 extern int MouseX;
 extern int MouseY;

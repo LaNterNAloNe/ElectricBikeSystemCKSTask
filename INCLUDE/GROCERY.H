@@ -133,7 +133,7 @@
 #define LIST_STAY 0
 // 列表参数
 #define LIST_INTERVAL 30
-#define LIST_LIMIT 3
+#define LIST_LIMIT 8
 
 //输入框
 #define INPUTBAR_NO_CLEAR 0
