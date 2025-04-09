@@ -36,8 +36,8 @@ typedef struct _LINKLISTNODE_
 {
     int chain_lenth;
     LINKLIST_USER USER_DATA;
-    struct LINKLIST_NODE *PREVIOUS;
-    struct LINKLIST_NODE *NEXT;
+    struct _LINKLISTNODE_ *PREVIOUS;
+    struct _LINKLISTNODE_ *NEXT;
 } LINKLIST_NODE;
 
 typedef struct _LINKLIST_

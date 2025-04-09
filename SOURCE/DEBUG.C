@@ -32,10 +32,10 @@ void display_memory_usage(int x, int y)
     // 图形模式输出（带背景刷新）
     setcolor(WHITE);
     setfillstyle(SOLID_FILL, BLUE);
-    // bar(x - 5, y - 5, x + textwidth(mem_str) + 5, y + textheight(mem_str) + 5);
+    bar(x - 5, y - 5, x + 100, y + 20);
     settextstyle(DEFAULT_FONT, NULL, 1);
     outtextxy(x, y, mem_str);
-    sprintf(mem_str, "FARMEM LEFT: %lu Byte", farcoreleft());
+    sprintf(mem_str, "FARMEM: %lu Byte", farcoreleft());
     outtextxy(x, y + 10, mem_str);
 }
 

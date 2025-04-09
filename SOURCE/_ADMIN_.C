@@ -136,12 +136,25 @@ void admin_database(int *page, unsigned long *ID , LINKLIST *LIST){
     fclose(fp_USER_LOGIN_DATA_read);
 }
 
-void admin_modify_data(int *page, unsigned long *ID, LINKLIST *LIST, char *file_path, char *list_mode){
-    // void far *sv_bk = farmalloc(imagesize(0, 0, 639, 479)); // 保存图像
-    // getimage(0, 0, 639, 479, sv_bk); // 保存图像
+void admin_modify_data(){
+    unsigned *sv_bk = malloc(imagesize(0, 0, 255, 255)); // 保存图像
+    if (!sv_bk) exit(1);
 
-    setwritemode(XOR_PUT);                      // 设置写入模式为异或
+    show_num(10, 10, 1, MY_WHITE);
+    getimage(0, 0, 255, 255, sv_bk); // 保存图像
 
+    show_num(10, 20, 2, MY_WHITE);
+    setwritemode(OR_PUT);                      // 设置写入模式为异或
+    setfillstyle(SOLID_FILL, MY_LIGHTBLUE);         // 设置填充样式为实心
+    bar(0,0,640,480);                           // 清除整个屏幕
+
+    show_num(10, 30, 3, MY_WHITE);
+
+    setwritemode(COPY_PUT);                     // 设置写入模式为复制
+    putimage(0, 0, sv_bk, COPY_PUT);            // 恢复图像
+    free(sv_bk);                                // 释放内存
+    show_num(10, 40, 4, MY_WHITE);
+    getch();
 }
 
 /*****************************************************************
@@ -1006,6 +1019,11 @@ void admin_handle_database_event(LINKLIST *LIST, int *flag , int *page, unsigned
 
         admin_list_info(LIST, LIST_LIMIT, LIST_INTERVAL, id_list, fp, file_type, NULL, NULL, LIST_STAY, LIST_CLEAR_CONTINUE, search_str, "ID"); // 搜索后刷新列表
         return;
+    }
+    /*点击修改信息*/
+    if (mouse_press(ADMIN_FEATURE6_X1, ADMIN_FEATURE6_Y1, ADMIN_FEATURE6_X2, ADMIN_FEATURE6_Y2) == 1)
+    {
+        admin_modify_data();
     }
 }
 

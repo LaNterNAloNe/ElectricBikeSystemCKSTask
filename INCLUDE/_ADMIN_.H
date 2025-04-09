@@ -199,6 +199,7 @@ void main_admin(int *page,unsigned long *ID);
 void admin_manage_bike_module(int *page, unsigned long *ID, LINKLIST *LIST, char *file_path, char *list_mode);
 // 数据一览界面
 void admin_database(int *page, unsigned long *ID, LINKLIST *LIST);
+void admin_modify_data();
 // 管理员信息界面
 void admin_info(int *page, unsigned long *ID);
 

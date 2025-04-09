@@ -45,7 +45,33 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
         puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70 + max * interval, "检查一", 16, 16, MY_RED);
     }
 
-    /* 2.判断数据类型 */
+    /* 2.判断是否需要清理或刷新列表 */
+    switch (is_clear)
+    {
+    case 1:
+        setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
+        bar(ADMIN_INTERFACE_X1 + 10, ADMIN_INTERFACE_Y1 + 70,
+            ADMIN_INTERFACE_X1 + 500, ADMIN_INTERFACE_Y1 + 70 + max * interval); // 清理列表
+        start = 0;
+        end = 0;
+        page_index = 1;
+        node = NULL;
+        return;
+    case 2:
+        bar(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70,
+            ADMIN_INTERFACE_X1 + 500, ADMIN_INTERFACE_Y1 + 70 + max * interval); // 清理列表
+        start = 0;
+        end = 0;
+        page_index = 1;
+        break;
+    case 3:
+        end = start; // 从start开始扫描重新列表
+        break;
+    default:
+        break;
+    }
+
+    /* 3.判断数据类型 */
     if (strcmp(file_type, "ebike_manage") == 0)
     {
         flag = ADMIN_DATABASE_EBIKE_MANAGE;
@@ -70,7 +96,7 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
     if (debug_mode == 1)
         puthz(ADMIN_INTERFACE_X1 + 80, ADMIN_INTERFACE_Y1 + 70 + max * interval, "检查二", 16, 16, MY_RED);
 
-    /* 3.获取文件长度或初始化读取条件 */
+    /* 4.获取文件长度或初始化读取条件 */
     fseek(fp, 0, SEEK_END);
     switch (flag)
     {
@@ -143,36 +169,10 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
     if (page_count < 1)
         page_index = 0;
 
-    /* 4.初始化列表记录 */
+    /* 5.初始化列表记录 */
     for (i = 0; i < max; i++)
     {
         id_list[i] = 0;
-    }
-
-    /* 5.判断是否需要清理或刷新列表 */
-    switch (is_clear)
-    {
-    case 1:
-        setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
-        bar(ADMIN_INTERFACE_X1 + 10, ADMIN_INTERFACE_Y1 + 70,
-            ADMIN_INTERFACE_X1 + 500, ADMIN_INTERFACE_Y1 + 70 + max * interval); // 清理列表
-        start = 0;
-        end = 0;
-        page_index = 1;
-        node = NULL;
-        return;
-    case 2:
-        bar(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70,
-            ADMIN_INTERFACE_X1 + 500, ADMIN_INTERFACE_Y1 + 70 + max * interval); // 清理列表
-        start = 0;
-        end = 0;
-        page_index = 1;
-        break;
-    case 3:
-        end = start; // 从start开始扫描重新列表
-        break;
-    default:
-        break;
     }
 
     if (debug_mode == 1)

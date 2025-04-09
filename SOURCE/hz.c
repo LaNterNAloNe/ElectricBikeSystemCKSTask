@@ -61,10 +61,15 @@ void puthz(int x, int y,char *s,int flag,int part,int color)
 							/*====================================================
 								以上是一个汉字显示完
 							====================================================*/
-							x+=part;        //给x 一个偏移量part
-							s+=2;           //汉字里存放的是内码，2个字节，所以要加2
+                            // show_num(600, 10, *s, color);
+                            // show_num(600, 20, *(s + 1), color);
+                            // show_num(600, 30, weima, color);
+                            // show_num(600, 40, quma, color);
+                            // getch();
 
-						}
+                            x+=part;        //给x 一个偏移量part
+							s+=2;           //汉字里存放的是内码，2个字节，所以要加2
+                        }
 						x=x0;y0+=flag+10; //一行汉字显示完后,重新从左侧开始输出汉字，给y一个偏移量
 					}
 
@@ -227,6 +232,6 @@ void puthz(int x, int y,char *s,int flag,int part,int color)
 
 	}
 
-	fclose(hzk_p);
+    fclose(hzk_p);
 }
 
