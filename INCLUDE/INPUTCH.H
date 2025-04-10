@@ -8,6 +8,8 @@
 #include"GROCERY.H"
 #include"MOUSE.H"
 
+#define MAX_MEM 10
+
 typedef struct {
     int x, y;
     char content[50];
@@ -15,6 +17,5 @@ typedef struct {
 } InputMemory;
  
 int Input_Bar(char* ip,int x,int y,int lim,int color,int is_clear_memory,int is_visible);
-// int Input_Invis(char* ip,int x,int y,int lim,int color,int *page);                      
 
 #endif

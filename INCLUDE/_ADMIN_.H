@@ -32,6 +32,14 @@
 #define ADMIN_INTERFACE_Y1 0
 #define ADMIN_INTERFACE_X2 640
 #define ADMIN_INTERFACE_Y2 480
+#define ADMIN_LIST_DATA_INTERFACE_X1 20
+#define ADMIN_LIST_DATA_INTERFACE_Y1 40
+#define ADMIN_LIST_DATA_INTERFACE_X2 220
+#define ADMIN_LIST_DATA_INTERFACE_Y2 440
+#define ADMIN_MODIFY_DATA_INTERFACE_X1 220
+#define ADMIN_MODIFY_DATA_INTERFACE_Y1 40
+#define ADMIN_MODIFY_DATA_INTERFACE_X2 620
+#define ADMIN_MODIFY_DATA_INTERFACE_Y2 440
 
 //定义按钮坐标
 #define ADMIN_BUTTON1_X1 20
@@ -134,6 +142,50 @@
 #define ADMIN_FEATURE_DOWN_X2 400
 #define ADMIN_FEATURE_DOWN_Y2 415
 
+#define ADMIN_MODIFY_DATA_EXIT_X1 20
+#define ADMIN_MODIFY_DATA_EXIT_Y1 10
+#define ADMIN_MODIFY_DATA_EXIT_X2 40
+#define ADMIN_MODIFY_DATA_EXIT_Y2 30
+
+#define ADMIN_MODIFY_DATA_SAVE_X1 600
+#define ADMIN_MODIFY_DATA_SAVE_Y1 10
+#define ADMIN_MODIFY_DATA_SAVE_X2 620
+#define ADMIN_MODIFY_DATA_SAVE_Y2 30
+
+#define ADMIN_MODIFY_DATA_INPUTBAR1_X1 230
+#define ADMIN_MODIFY_DATA_INPUTBAR1_Y1 80
+#define ADMIN_MODIFY_DATA_INPUTBAR1_X2 530
+#define ADMIN_MODIFY_DATA_INPUTBAR1_Y2 110
+#define ADMIN_MODIFY_DATA_INPUTBAR2_X1 230
+#define ADMIN_MODIFY_DATA_INPUTBAR2_Y1 120
+#define ADMIN_MODIFY_DATA_INPUTBAR2_X2 530
+#define ADMIN_MODIFY_DATA_INPUTBAR2_Y2 150
+#define ADMIN_MODIFY_DATA_INPUTBAR3_X1 230
+#define ADMIN_MODIFY_DATA_INPUTBAR3_Y1 160
+#define ADMIN_MODIFY_DATA_INPUTBAR3_X2 530
+#define ADMIN_MODIFY_DATA_INPUTBAR3_Y2 190
+#define ADMIN_MODIFY_DATA_INPUTBAR4_X1 230
+#define ADMIN_MODIFY_DATA_INPUTBAR4_Y1 200
+#define ADMIN_MODIFY_DATA_INPUTBAR4_X2 530
+#define ADMIN_MODIFY_DATA_INPUTBAR4_Y2 230
+#define ADMIN_MODIFY_DATA_INPUTBAR5_X1 230
+#define ADMIN_MODIFY_DATA_INPUTBAR5_Y1 240
+#define ADMIN_MODIFY_DATA_INPUTBAR5_X2 530
+#define ADMIN_MODIFY_DATA_INPUTBAR5_Y2 270
+#define ADMIN_MODIFY_DATA_INPUTBAR6_X1 230
+#define ADMIN_MODIFY_DATA_INPUTBAR6_Y1 280
+#define ADMIN_MODIFY_DATA_INPUTBAR6_X2 530
+#define ADMIN_MODIFY_DATA_INPUTBAR6_Y2 310
+#define ADMIN_MODIFY_DATA_INPUTBAR7_X1 230
+#define ADMIN_MODIFY_DATA_INPUTBAR7_Y1 320
+#define ADMIN_MODIFY_DATA_INPUTBAR7_X2 530
+#define ADMIN_MODIFY_DATA_INPUTBAR7_Y2 350
+#define ADMIN_MODIFY_DATA_INPUTBAR8_X1 230
+#define ADMIN_MODIFY_DATA_INPUTBAR8_Y1 460
+#define ADMIN_MODIFY_DATA_INPUTBAR8_X2 530
+#define ADMIN_MODIFY_DATA_INPUTBAR8_Y2 440
+
+
 //定义数据标志
 enum
 {
@@ -167,6 +219,18 @@ enum
     ACTIVE_ADMIN_FEATURE_DOWN,
     ACTIVE_ADMIN_FEATURE_EXIT,
     ACTIVE_ADMIN_INFO,
+    ACTIVE_ADMIN_MODIFY_EXIT,
+    ACTIVE_ADMIN_MODIFY_SAVE,
+    ACTIVE_ADMIN_MODIFY_INPUTBAR1,
+    ACTIVE_ADMIN_MODIFY_INPUTBAR2,
+    ACTIVE_ADMIN_MODIFY_INPUTBAR3,
+    ACTIVE_ADMIN_MODIFY_INPUTBAR4,
+    ACTIVE_ADMIN_MODIFY_INPUTBAR5,
+    ACTIVE_ADMIN_MODIFY_INPUTBAR6,
+    ACTIVE_ADMIN_MODIFY_INPUTBAR7,
+    ACTIVE_ADMIN_MODIFY_INPUTBAR8,
+    ACTIVE_ADMIN_MODIFY_INPUTBAR9,
+    ACTIVE_ADMIN_MODIFY_INPUTBAR10,
 };
 
 typedef void (*DRAWFUNCTION)(int coord1, int coord2, int coord3, int coord4);
@@ -199,7 +263,7 @@ void main_admin(int *page,unsigned long *ID);
 void admin_manage_bike_module(int *page, unsigned long *ID, LINKLIST *LIST, char *file_path, char *list_mode);
 // 数据一览界面
 void admin_database(int *page, unsigned long *ID, LINKLIST *LIST);
-void admin_modify_data();
+void admin_modify_data(unsigned long user_id);
 // 管理员信息界面
 void admin_info(int *page, unsigned long *ID);
 
@@ -209,24 +273,28 @@ void drawgraph_admin_menu(void);
 void drawgraph_admin_feature(int page);
 void drawgraph_admin_database(void);
 void drawgraph_admin_database_user_info(void);
+void drawgraph_admin_modify_data(unsigned long user_id);
 void drawgraph_admin_info(unsigned long ID);
 
 // 按钮状态刷新
-void define_admin_buttons(ADMIN_BUTTONS AdminButtons[], int button_counts);
+void define_admin_buttons(ADMIN_BUTTONS AdminButtons[], int page);
 void admin_flush_buttons(int *tag,int button_counts,ADMIN_BUTTONS AdminButtons[]);
 void admin_handle_manage_feature_event(LINKLIST *LIST, int *page, char *search_str, unsigned long *id_list,
                                        FILE *fp_EBIKE_INFO_read, int *mode, int selected_id);
 void admin_handle_buttons_event(int *page);
-void admin_handle_database_event(LINKLIST *LIST, int *flag,int *page, unsigned long *id_list, FILE *fp_EBIKE_INFO_read, char *search_str);
+void admin_handle_database_event(LINKLIST *LIST, int *flag, int *page, unsigned long *id_list,
+                                 FILE *fp_EBIKE_INFO_read, char *search_str, unsigned long selected_id);
 
 // 搜索函数
-unsigned long int find_ebike_info(FILE *fp, char *search_str, char *search_needed);
+unsigned long find_file_info(FILE *fp, char *file_type, char *search_str, char *search_needed);
 
 // 其他杂项
 void draw_person(int x1,int y1,int x2,int y2);
 void clear_person(int x1,int y1,int x2,int y2);
 void draw_cues(int x, int y, int null1, int null2);
 void clear_cues(int x1, int y1, int x2, int y2);
+void draw_accept(int x1,int y1,int x2,int y2);
+void clear_accept(int x1,int y1,int x2,int y2);
 void draw_rectangle(int x1, int y1, int x2, int y2);
 void clear_rectangle(int x1, int y1, int x2, int y2);
 void draw_exit(int x1, int y1, int x2, int y2);

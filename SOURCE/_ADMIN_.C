@@ -6,7 +6,7 @@ MODULE:管理员主菜单
 void main_admin(int *page,unsigned long *ID){
     int tag=ACTIVE_ADMIN_NULL;
     ADMIN_BUTTONS AdminButtons[9];
-    define_admin_buttons(AdminButtons, STRUCT_LENGTH(AdminButtons)); // 定义按钮
+    define_admin_buttons(AdminButtons, MAIN_ADMIN); // 定义按钮
 
     clrmous(MouseX, MouseY);
     drawgraph_admin_menu(); // 初始化界面
@@ -41,7 +41,7 @@ void admin_manage_bike_module(int *page, unsigned long *ID, LINKLIST *LIST, char
     if (!fp_EBIKE_INFO_read)
         exit(1);
 
-    define_admin_buttons(AdminButtons, STRUCT_LENGTH(AdminButtons)); // 定义按钮
+    define_admin_buttons(AdminButtons, *page); // 定义按钮
 
     fseek(fp_EBIKE_INFO_read, 0, SEEK_SET);
     drawgraph_admin_menu();
@@ -78,7 +78,7 @@ MODULE:查看管理员信息
 void admin_info(int *page, unsigned long *ID){
     int tag = ACTIVE_ADMIN_NULL;
     ADMIN_BUTTONS AdminButtons[9];
-    define_admin_buttons(AdminButtons, STRUCT_LENGTH(AdminButtons)); // 定义按钮
+    define_admin_buttons(AdminButtons, *page); // 定义按钮
     clrmous(MouseX, MouseY);
     drawgraph_admin_menu(); // 初始化界面
 
@@ -112,7 +112,7 @@ void admin_database(int *page, unsigned long *ID , LINKLIST *LIST){
     }
     // 列出车辆信息时，通过链表获取数据，因此不定义文件指针
 
-    define_admin_buttons(AdminButtons, STRUCT_LENGTH(AdminButtons)); // 定义按钮 
+    define_admin_buttons(AdminButtons, *page); // 定义按钮 
     clrmous(MouseX, MouseY);
     drawgraph_admin_menu(); // 绘制界面
     drawgraph_admin_database();
@@ -123,7 +123,7 @@ void admin_database(int *page, unsigned long *ID , LINKLIST *LIST){
     while (*page == ADMIN_DATABASE){
         admin_flush_buttons(&tag, STRUCT_LENGTH(AdminButtons), AdminButtons);
         admin_handle_buttons_event(page);
-        admin_handle_database_event(LIST, &flag, page, id_list, fp_USER_LOGIN_DATA_read,search_str); // 处理点击事件
+        admin_handle_database_event(LIST, &flag, page, id_list, fp_USER_LOGIN_DATA_read,search_str,selected_id); // 处理点击事件
         handle_list_select_line_admin(id_list, &selected_id, LIST_LIMIT, LIST_INTERVAL);
 
         newmouse(&MouseX, &MouseY, &press);
@@ -136,25 +136,36 @@ void admin_database(int *page, unsigned long *ID , LINKLIST *LIST){
     fclose(fp_USER_LOGIN_DATA_read);
 }
 
-void admin_modify_data(){
-    unsigned *sv_bk = malloc(imagesize(0, 0, 255, 255)); // 保存图像
-    if (!sv_bk) exit(1);
+void admin_modify_data(unsigned long user_id)
+{
+    int tag = ACTIVE_ADMIN_NULL;
+    int isReturn = 0; // 是否返回;
+    ADMIN_BUTTONS AdminButtons[3];
+    define_admin_buttons(AdminButtons, ADMIN_MODIFY_DATA_USER_INFO); // 定义按钮
 
-    show_num(10, 10, 1, MY_WHITE);
-    getimage(0, 0, 255, 255, sv_bk); // 保存图像
+    clrmous(MouseX, MouseY);
+    drawgraph_admin_modify_data(user_id); // 绘制界面
+    newmouse(&MouseX, &MouseY, &press);
 
-    show_num(10, 20, 2, MY_WHITE);
-    setwritemode(OR_PUT);                      // 设置写入模式为异或
-    setfillstyle(SOLID_FILL, MY_LIGHTBLUE);         // 设置填充样式为实心
-    bar(0,0,640,480);                           // 清除整个屏幕
+    if (debug_mode == 1)
+        display_memory_usage(400, 10); // 显示调试参数
 
-    show_num(10, 30, 3, MY_WHITE);
+    while (!isReturn){
+        admin_flush_buttons(&tag, STRUCT_LENGTH(AdminButtons), AdminButtons);
+        newmouse(&MouseX, &MouseY, &press);
 
-    setwritemode(COPY_PUT);                     // 设置写入模式为复制
-    putimage(0, 0, sv_bk, COPY_PUT);            // 恢复图像
-    free(sv_bk);                                // 释放内存
-    show_num(10, 40, 4, MY_WHITE);
-    getch();
+        if (mouse_press(ADMIN_MODIFY_DATA_EXIT_X1, ADMIN_MODIFY_DATA_EXIT_Y1, 
+            ADMIN_MODIFY_DATA_EXIT_X2, ADMIN_MODIFY_DATA_EXIT_Y2) == 1) // 点击返回
+        {
+            isReturn = 1; // 标记为返回
+        }
+        
+        delay(25);
+    }
+    clrmous(MouseX, MouseY);
+    drawgraph_admin_menu(); // 绘制界面
+    drawgraph_admin_database();
+    drawgraph_admin_database_user_info();
 }
 
 /*****************************************************************
@@ -383,6 +394,82 @@ void drawgraph_admin_database_ebike_info(void)
     puthz(ADMIN_INTERFACE_X1 + 460, ADMIN_INTERFACE_Y1 + 40, "状态", 16, 16, MY_WHITE);
 }
 
+void drawgraph_admin_modify_data(unsigned long user_id)
+{
+    FILE *fp = fopen("DATA\\USER.DAT", "rb");
+    USER_LOGIN_DATA user_temp;
+    unsigned long pos;
+    char buffer1[20]; // 用于存储格式化后的字符串
+    char buffer2[20]; // 用于存储格式化后的字符串
+
+    if (fp == NULL)
+    {
+        exit(1);
+        return;
+    }
+
+    setwritemode(XOR_PUT);
+    setfillstyle(LTBKSLASH_FILL, MY_GREEN); // 设置填充样式为实心
+    bar(0, 0, 640, 480);                    // 清除整个屏幕
+
+    setwritemode(COPY_PUT);
+    setfillstyle(SOLID_FILL, MY_YELLOW);
+    bar(ADMIN_LIST_DATA_INTERFACE_X1, ADMIN_LIST_DATA_INTERFACE_Y1,
+        ADMIN_LIST_DATA_INTERFACE_X2, ADMIN_LIST_DATA_INTERFACE_Y2); // 绘制列出数据的矩形框
+    setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
+    bar(ADMIN_MODIFY_DATA_INTERFACE_X1, ADMIN_MODIFY_DATA_INTERFACE_Y1,
+        ADMIN_MODIFY_DATA_INTERFACE_X2, ADMIN_MODIFY_DATA_INTERFACE_Y2); // 绘制操作空间的矩形框
+    puthz(255, 10, "修改数据", 24, 35, MY_WHITE);                        // 绘制标题
+
+    clear_exit(ADMIN_MODIFY_DATA_EXIT_X1, ADMIN_MODIFY_DATA_EXIT_Y1,
+               ADMIN_MODIFY_DATA_EXIT_X2, ADMIN_MODIFY_DATA_EXIT_Y2); // 绘制退出按钮
+    clear_accept(ADMIN_MODIFY_DATA_SAVE_X1, ADMIN_MODIFY_DATA_SAVE_Y1,
+                 ADMIN_MODIFY_DATA_SAVE_X2, ADMIN_MODIFY_DATA_SAVE_Y2); // 绘制保存按钮
+
+    puthz(ADMIN_LIST_DATA_INTERFACE_X1 + 10, ADMIN_LIST_DATA_INTERFACE_Y1 + 10, "原先数据", 16, 16, MY_WHITE);
+    puthz(ADMIN_MODIFY_DATA_INTERFACE_X1 + 10, ADMIN_MODIFY_DATA_INTERFACE_Y1 + 10, "你将修改为", 16, 16, MY_WHITE);
+
+    puthz(ADMIN_LIST_DATA_INTERFACE_X1 + 10, ADMIN_LIST_DATA_INTERFACE_Y1 + 50, "学号", 16, 16, MY_WHITE);
+    puthz(ADMIN_LIST_DATA_INTERFACE_X1 + 10, ADMIN_LIST_DATA_INTERFACE_Y1 + 90, "用户名", 16, 16, MY_WHITE);
+    puthz(ADMIN_LIST_DATA_INTERFACE_X1 + 10, ADMIN_LIST_DATA_INTERFACE_Y1 + 130, "密码", 16, 16, MY_WHITE);
+    puthz(ADMIN_LIST_DATA_INTERFACE_X1 + 10, ADMIN_LIST_DATA_INTERFACE_Y1 + 170, "注册时间", 16, 16, MY_WHITE);
+    puthz(ADMIN_LIST_DATA_INTERFACE_X1 + 10, ADMIN_LIST_DATA_INTERFACE_Y1 + 210, "状态", 16, 16, MY_WHITE);
+
+    // 显示原先数据
+    ltoa(user_id, buffer1, 10); // 将 ID 转换为字符串
+    pos = find_file_info(fp, "user_info", buffer1, "id");
+    if (pos == 0)
+    {
+        puthz(ADMIN_LIST_DATA_INTERFACE_X1 + 100, ADMIN_LIST_DATA_INTERFACE_Y1 + 50, "无此用户", 16, 16, MY_WHITE); // 显示错误提示
+        return;
+    } // 查找用户信息
+    fseek(fp, pos, SEEK_SET);
+    fread(&user_temp, sizeof(USER_LOGIN_DATA), 1, fp);
+    
+    setcolor(MY_WHITE);
+    outtextxy(ADMIN_LIST_DATA_INTERFACE_X1 + 80, ADMIN_LIST_DATA_INTERFACE_Y1 + 54, buffer1); // 显示学号
+    outtextxy(ADMIN_LIST_DATA_INTERFACE_X1 + 80, ADMIN_LIST_DATA_INTERFACE_Y1 + 94, user_temp.usrn); // 显示用户名
+    outtextxy(ADMIN_LIST_DATA_INTERFACE_X1 + 80, ADMIN_LIST_DATA_INTERFACE_Y1 + 134, user_temp.psw); // 显示密码
+    ltoa(user_temp.register_time, buffer2, 10); // 将注册时间转换为字符串
+    sprintf(buffer1, "%.4s.%.2s.%.2s", buffer2, buffer2 + 4, buffer2 + 6);
+    outtextxy(ADMIN_LIST_DATA_INTERFACE_X1 + 80, ADMIN_LIST_DATA_INTERFACE_Y1 + 174, buffer1); // 显示注册时间
+
+    if (user_temp.state == ACTIVE)
+    {
+        puthz(ADMIN_LIST_DATA_INTERFACE_X1 + 80, ADMIN_LIST_DATA_INTERFACE_Y1 + 210, "正常", 16, 16, MY_GREEN); // 显示状态
+    }
+    else if (user_temp.state == FROZEN)
+    {
+        puthz(ADMIN_LIST_DATA_INTERFACE_X1 + 80, ADMIN_LIST_DATA_INTERFACE_Y1 + 210, "冻结", 16, 16, MY_LIGHTBLUE); // 显示状态
+    }
+    else if (user_temp.state == BANNED)
+    {
+        puthz(ADMIN_LIST_DATA_INTERFACE_X1 + 80, ADMIN_LIST_DATA_INTERFACE_Y1 + 210, "封禁", 16, 16, MY_RED); // 显示状态
+    }
+
+    fclose(fp);
+}
+
 void drawgraph_admin_info(unsigned long ID)
 {
     char buffer[20]; // 用于存储格式化后的字符串
@@ -424,12 +511,30 @@ void clear_cues(int x1, int y1, int x2, int y2){
     bar(x1-13,y1+6,x2-79,y2);
 }
 
+void draw_accept(int x1,int y1,int x2,int y2){
+    setfillstyle(SOLID_FILL, MY_YELLOW);
+    bar(x1 - 1, y1 - 1, x2 + 1, y2 + 1);
+
+    setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+    setcolor(MY_GREEN);
+    line(x1, y1 + 10, x1 + 10, y2);
+    line(x1 + 10, y2, x2, y1);
+}
+void clear_accept(int x1,int y1,int x2,int y2){
+    setfillstyle(SOLID_FILL, MY_YELLOW);
+    bar(x1 - 1, y1 - 1, x2 + 1, y2 + 1);
+
+    setlinestyle(SOLID_LINE, 0, NORM_WIDTH);
+    setcolor(MY_GREEN);
+    line(x1, y1 + 10, x1 + 10, y2);
+    line(x1 + 10, y2, x2, y1);
+}
+
 void draw_rectangle(int x1,int y1,int x2,int y2){
     setcolor(MY_WHITE);
     setlinestyle(SOLID_LINE,0,NORM_WIDTH);
     rectangle(x1-2,y1-2,x2+2,y2+2);
 }
-
 void clear_rectangle(int x1,int y1,int x2,int y2){
     setcolor(MY_LIGHTGRAY);
     setlinestyle(SOLID_LINE,0,NORM_WIDTH);
@@ -572,43 +677,47 @@ MODULE:该源文件全局可使用的函数模块
 *****************************************************************/
 
 // 查找文件中是否存在指定内容，并返回该数据块位置
-unsigned long int find_ebike_info(FILE *fp,char *search_str,char *search_needed){
-    int counts;
-    unsigned long int pos;
-    unsigned long int search_pos = 0;
-    EBIKE_INFO TEMP;
+unsigned long find_file_info(FILE *fp, char *file_type,char *search_str,char *search_needed){
+    int counts = 0;
+    EBIKE_INFO ebike_temp;
+    USER_LOGIN_DATA USER_TEMP;
 
-    pos = ftell(fp); // 记录当前文件指针位置，以便后续返回
-
-    fseek(fp,0,SEEK_END);
-    counts = ftell(fp) / sizeof(EBIKE_INFO);
     fseek(fp,0,SEEK_SET); // 获取文件长度
-    
-    while(fread(&TEMP,sizeof(EBIKE_INFO),1,fp)){
-        if(TEMP.ID == NULL){
-            fseek(fp, pos, SEEK_SET); // 将文件指针移回原先位置
-            return 0;
-        } // 查找到文件结束时仍未找到，则返回0
-            
 
-        if ((strcmp(search_needed, "realname") == 0 && strcmp(TEMP.rln, search_str) == 0) ||
-            (strcmp(search_needed, "id") == 0 && TEMP.ID == atol(search_str)) ||
-            (strcmp(search_needed, "ebike_id") == 0 && strcmp(TEMP.ebike_ID, search_str) == 0) ||
-            (strcmp(search_needed, "ebike_license") == 0 && strcmp(TEMP.ebike_license, search_str) == 0) ||
-            (strcmp(search_needed, "location") == 0 && strcmp(TEMP.location, search_str) == 0) ||
-            (strcmp(search_needed, "apply_time") == 0 && TEMP.apply_time == atol(search_str)) ||
-            (strcmp(search_needed, "conduct_time") == 0 && TEMP.conduct_time == atol(search_str)) ||
-            (strcmp(search_needed, "result") == 0 && TEMP.result == atoi(search_str))
-            )
+    if(strcmp(file_type,"user_info") == 0){ // 查找用户信息
+        while (fread(&USER_TEMP, sizeof(USER_LOGIN_DATA), 1, fp)) // 遍历文件中的所有数据块，当读取到文件末尾时，fread返回0，退出循环
         {
-            fseek(fp, -sizeof(EBIKE_INFO), SEEK_CUR); // 将文件指针移动到对应数据前
-            search_pos = ftell(fp);                   // 记录数据块位置
-            fseek(fp, pos, SEEK_SET);                 // 将文件指针移回原先位置
-            break;
-        } // 查找到后，跳出循环
+            if ((strcmp(search_needed, "id") == 0 && USER_TEMP.ID == atol(search_str)) ||
+                (strcmp(search_needed, "usrn") == 0 && strcmp(USER_TEMP.usrn, search_str) == 0) ||
+                (strcmp(search_needed, "psw") == 0 && strcmp(USER_TEMP.psw, search_str) == 0) ||
+                (strcmp(search_needed, "register_time") == 0 && USER_TEMP.register_time == atol(search_str)) ||
+                (strcmp(search_needed, "state") == 0 && USER_TEMP.state == (char)atoi(search_str)))
+            {
+                return counts * sizeof(USER_LOGIN_DATA);
+            }
+            counts++;
+        }
     }
+    else if(strcmp(file_type,"ebike_manage") == 0){ // 查找车辆管理信息
+        while (fread(&ebike_temp, sizeof(EBIKE_INFO), 1, fp)) // 遍历文件中的所有数据块，当读取到文件末尾时，fread返回0，退出循环
+        {
+            if ((strcmp(search_needed, "realname") == 0 && strcmp(ebike_temp.rln, search_str) == 0) ||
+                (strcmp(search_needed, "id") == 0 && ebike_temp.ID == atol(search_str)) ||
+                (strcmp(search_needed, "ebike_id") == 0 && strcmp(ebike_temp.ebike_ID, search_str) == 0) ||
+                (strcmp(search_needed, "ebike_license") == 0 && strcmp(ebike_temp.ebike_license, search_str) == 0) ||
+                (strcmp(search_needed, "location") == 0 && strcmp(ebike_temp.location, search_str) == 0) ||
+                (strcmp(search_needed, "apply_time") == 0 && ebike_temp.apply_time == atol(search_str)) ||
+                (strcmp(search_needed, "conduct_time") == 0 && ebike_temp.conduct_time == atol(search_str)) ||
+                (strcmp(search_needed, "result") == 0 && ebike_temp.result == atoi(search_str)))
+            {
+                return counts * sizeof(EBIKE_INFO);
+            }
+            counts++;
+        }
+    }
+    
 
-    return search_pos; // 文件指针位置返回到原先位置
+    return 0; // 文件指针位置返回到原先位置
 }
 
 // 点击按钮后，若能成功操作，则执行该显示动画
@@ -646,8 +755,7 @@ void admin_pass_failed_anime(int button_x1, int button_y1, int button_x2, int bu
     newmouse(&MouseX, &MouseY, &press); // 重新绘制
 }
 
-void define_admin_buttons(ADMIN_BUTTONS AdminButtons[], int button_counts)
-{
+void define_admin_buttons(ADMIN_BUTTONS AdminButtons[], int page) {
     ADMIN_BUTTONS Examples[] = {
         {ADMIN_BUTTON1_X1, ADMIN_BUTTON1_X2,
          ADMIN_BUTTON1_Y1, ADMIN_BUTTON1_Y2,
@@ -705,20 +813,95 @@ void define_admin_buttons(ADMIN_BUTTONS AdminButtons[], int button_counts)
          ACTIVE_ADMIN_FEATURE_UP, &draw_flip_up, &clear_flip_up},
         {ADMIN_FEATURE_DOWN_X1, ADMIN_FEATURE_DOWN_X2,
          ADMIN_FEATURE_DOWN_Y1, ADMIN_FEATURE_DOWN_Y2,
-         ACTIVE_ADMIN_FEATURE_DOWN, &draw_flip_down, &clear_flip_down}};
+         ACTIVE_ADMIN_FEATURE_DOWN, &draw_flip_down, &clear_flip_down},
+        {ADMIN_MODIFY_DATA_EXIT_X1, ADMIN_MODIFY_DATA_EXIT_X2,
+         ADMIN_MODIFY_DATA_EXIT_Y1, ADMIN_MODIFY_DATA_EXIT_Y2,
+         ACTIVE_ADMIN_MODIFY_EXIT, &draw_exit, &clear_exit},
+        {ADMIN_MODIFY_DATA_SAVE_X1, ADMIN_MODIFY_DATA_SAVE_X2,
+         ADMIN_MODIFY_DATA_SAVE_Y1, ADMIN_MODIFY_DATA_SAVE_Y2,
+         ACTIVE_ADMIN_MODIFY_SAVE, &draw_accept, &clear_accept},
+        {ADMIN_MODIFY_DATA_INPUTBAR1_X1, ADMIN_MODIFY_DATA_INPUTBAR1_X2,
+         ADMIN_MODIFY_DATA_INPUTBAR1_Y1, ADMIN_MODIFY_DATA_INPUTBAR1_Y2,
+         ACTIVE_ADMIN_MODIFY_INPUTBAR1, &draw_rectangle, &clear_rectangle},
+        {ADMIN_MODIFY_DATA_INPUTBAR2_X1, ADMIN_MODIFY_DATA_INPUTBAR2_X2,
+         ADMIN_MODIFY_DATA_INPUTBAR2_Y1, ADMIN_MODIFY_DATA_INPUTBAR2_Y2,
+         ACTIVE_ADMIN_MODIFY_INPUTBAR2, &draw_rectangle, &clear_rectangle},
+        {ADMIN_MODIFY_DATA_INPUTBAR3_X1, ADMIN_MODIFY_DATA_INPUTBAR3_X2,
+         ADMIN_MODIFY_DATA_INPUTBAR3_Y1, ADMIN_MODIFY_DATA_INPUTBAR3_Y2,
+         ACTIVE_ADMIN_MODIFY_INPUTBAR3, &draw_rectangle, &clear_rectangle},
+        {ADMIN_MODIFY_DATA_INPUTBAR4_X1, ADMIN_MODIFY_DATA_INPUTBAR4_X2,
+         ADMIN_MODIFY_DATA_INPUTBAR4_Y1, ADMIN_MODIFY_DATA_INPUTBAR4_Y2,
+         ACTIVE_ADMIN_MODIFY_INPUTBAR4, &draw_rectangle, &clear_rectangle},
+        {ADMIN_MODIFY_DATA_INPUTBAR5_X1, ADMIN_MODIFY_DATA_INPUTBAR5_X2,
+         ADMIN_MODIFY_DATA_INPUTBAR5_Y1, ADMIN_MODIFY_DATA_INPUTBAR5_Y2,
+         ACTIVE_ADMIN_MODIFY_INPUTBAR5, &draw_rectangle, &clear_rectangle},
+        {ADMIN_MODIFY_DATA_INPUTBAR6_X1, ADMIN_MODIFY_DATA_INPUTBAR6_X2,
+         ADMIN_MODIFY_DATA_INPUTBAR6_Y1, ADMIN_MODIFY_DATA_INPUTBAR6_Y2,
+         ACTIVE_ADMIN_MODIFY_INPUTBAR6, &draw_rectangle, &clear_rectangle},
+        {ADMIN_MODIFY_DATA_INPUTBAR7_X1, ADMIN_MODIFY_DATA_INPUTBAR7_X2,
+         ADMIN_MODIFY_DATA_INPUTBAR7_Y1, ADMIN_MODIFY_DATA_INPUTBAR7_Y2,
+         ACTIVE_ADMIN_MODIFY_INPUTBAR7, &draw_rectangle, &clear_rectangle},
+        {ADMIN_MODIFY_DATA_INPUTBAR8_X1, ADMIN_MODIFY_DATA_INPUTBAR8_X2,
+         ADMIN_MODIFY_DATA_INPUTBAR8_Y1, ADMIN_MODIFY_DATA_INPUTBAR8_Y2,
+         ACTIVE_ADMIN_MODIFY_INPUTBAR8, &draw_rectangle, &clear_rectangle},
+    }; // 最大数量29
     int i;
-    for (i = 0; i < button_counts; i++)
+    int j;
+
+    if (page == MAIN_ADMIN)
     {
-        if(i >= STRUCT_LENGTH(Examples))
-            break;
-        AdminButtons[i].x1 = Examples[i].x1;
-        AdminButtons[i].x2 = Examples[i].x2;
-        AdminButtons[i].y1 = Examples[i].y1;
-        AdminButtons[i].y2 = Examples[i].y2;
-        AdminButtons[i].active_tag = Examples[i].active_tag;
-        AdminButtons[i].drawfunc = Examples[i].drawfunc;
-        AdminButtons[i].clearfunc = Examples[i].clearfunc;
+        for (i = 0, j = 0; i < 9; i++, j++)
+        {
+            AdminButtons[j].x1 = Examples[i].x1;
+            AdminButtons[j].x2 = Examples[i].x2;
+            AdminButtons[j].y1 = Examples[i].y1;
+            AdminButtons[j].y2 = Examples[i].y2;
+            AdminButtons[j].active_tag = Examples[i].active_tag;
+            AdminButtons[j].drawfunc = Examples[i].drawfunc;
+            AdminButtons[j].clearfunc = Examples[i].clearfunc;
+        }
     }
+    else if (
+             page == ADMIN_BIKE_REGISTER || 
+             page == ADMIN_BIKE_LICENSE || 
+             page == ADMIN_BIKE_BROKEN || 
+             page == ADMIN_BIKE_VIOLATION || 
+             page == ADMIN_BIKE_ANUAL || 
+             page == ADMIN_DATABASE
+            )
+    {
+        for (i = 0, j = 0; i < 19; i++, j++)
+        {
+            AdminButtons[j].x1 = Examples[i].x1;
+            AdminButtons[j].x2 = Examples[i].x2;
+            AdminButtons[j].y1 = Examples[i].y1;
+            AdminButtons[j].y2 = Examples[i].y2;
+            AdminButtons[j].active_tag = Examples[i].active_tag;
+            AdminButtons[j].drawfunc = Examples[i].drawfunc;
+            AdminButtons[j].clearfunc = Examples[i].clearfunc;
+        }
+    }
+    else if (page == ADMIN_MODIFY_DATA_USER_INFO)
+    {
+        for (i = 19, j = 0; i < 21; i++, j++)
+        {
+            AdminButtons[j].x1 = Examples[i].x1;
+            AdminButtons[j].x2 = Examples[i].x2;
+            AdminButtons[j].y1 = Examples[i].y1;
+            AdminButtons[j].y2 = Examples[i].y2;
+            AdminButtons[j].active_tag = Examples[i].active_tag;
+            AdminButtons[j].drawfunc = Examples[i].drawfunc;
+            AdminButtons[j].clearfunc = Examples[i].clearfunc;
+        }
+        AdminButtons[2].x1 = Examples[22].x1;
+        AdminButtons[2].x2 = Examples[22].x2;
+        AdminButtons[2].y1 = Examples[22].y1;
+        AdminButtons[2].y2 = Examples[22].y2;
+        AdminButtons[2].active_tag = Examples[22].active_tag;
+        AdminButtons[2].drawfunc = Examples[22].drawfunc;
+        AdminButtons[2].clearfunc = Examples[22].clearfunc;
+    }
+
 }
 
 void admin_handle_buttons_event(int *page)
@@ -865,8 +1048,7 @@ void admin_handle_manage_feature_event(LINKLIST *LIST, int *page, char *search_s
         if ((chain_pos = linklist_find_data(LIST, buffer, "id")) == -1) // 查找链表中是否存在该ID，若找不到，则不进行任何操作
             return;
 
-        search_pos = find_ebike_info(fp_EBIKE_INFO_read, buffer, "id"); // 查找数据块
-        if (search_pos == 0)
+        if (find_file_info(fp_EBIKE_INFO_read, "ebike_manage", buffer, "id") == 0)
             return; // 如果没有找到数据块，则不进行任何操作，若能找到，则进一步处理数据
 
         // 修改数据块
@@ -918,8 +1100,7 @@ void admin_handle_manage_feature_event(LINKLIST *LIST, int *page, char *search_s
         if (!(chain_pos = linklist_find_data(LIST, buffer, "id")))
             return; // 选中行，点击同意申请，若出现未能找到数据的情况，则不进行任何操作
 
-        search_pos = find_ebike_info(fp_EBIKE_INFO_read, buffer, "id"); // 查找数据块
-        if (search_pos == 0)
+        if (find_file_info(fp_EBIKE_INFO_read, "ebike_manage", buffer, "id") == 0)
             return; // 如果没有找到数据块，则不进行任何操作，若能找到，则进一步处理数据
 
         // 修改数据块
@@ -940,7 +1121,8 @@ void admin_handle_manage_feature_event(LINKLIST *LIST, int *page, char *search_s
     temp_node = NULL; // 释放指针
 }
 
-void admin_handle_database_event(LINKLIST *LIST, int *flag , int *page, unsigned long *id_list, FILE *fp, char *search_str)
+void admin_handle_database_event(LINKLIST *LIST, int *flag, int *page, unsigned long *id_list, 
+                                 FILE *fp, char *search_str, unsigned long selected_id)
 {
     char file_type[20];
 
@@ -1023,7 +1205,11 @@ void admin_handle_database_event(LINKLIST *LIST, int *flag , int *page, unsigned
     /*点击修改信息*/
     if (mouse_press(ADMIN_FEATURE6_X1, ADMIN_FEATURE6_Y1, ADMIN_FEATURE6_X2, ADMIN_FEATURE6_Y2) == 1)
     {
-        admin_modify_data();
+        if (selected_id != 0){
+            admin_modify_data(selected_id);
+            admin_list_info(LIST, LIST_LIMIT, LIST_INTERVAL, id_list, fp, file_type, NULL, NULL, LIST_STAY, LIST_NO_CLEAR, search_str, "ID");
+        }
+        return;
     }
 }
 

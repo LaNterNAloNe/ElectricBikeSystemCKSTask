@@ -17,9 +17,9 @@ RETURN:无
 int Input_Bar(char* ip,int x,int y,int lim,int color,int is_clear_memory,int is_visible) 
 //输入内容，输入框左上角坐标x,y，字数限制，输入框颜色，是否清除输入记忆，输入字符是否可见
 //注意：该输入函数要求输入框宽度为25
-{   
-	static InputMemory memory_pool[5];
-	static int memory_count = 0;                       //记录总共输入了多少个输入框
+{
+    static InputMemory memory_pool[MAX_MEM];
+    static int memory_count = 0;                       //记录总共输入了多少个输入框
 
 	int i = 0;                                         //记录输入框位置
 	int j = 0;  									   //原定义位置不变 
@@ -36,13 +36,14 @@ int Input_Bar(char* ip,int x,int y,int lim,int color,int is_clear_memory,int is_
 
 	if(is_clear_memory){                         //如果收到清除记忆需求，则判断：1.只清除记忆，并退出函数 2.清除记忆，并执行接下来的代码
 		memory_count = 0;
-		for (i = 0; i < 5; i++) {
-			memory_pool[i].x = 0;
+        for (i = 0; i < MAX_MEM; i++)
+        {
+            memory_pool[i].x = 0;
 			memory_pool[i].y = 0;
 			memory_pool[i].cursor_pos = 0;
 			strcpy(memory_pool[i].content, "");
-		}
-		if(is_clear_memory == 1) return;
+        }
+        if(is_clear_memory == 1) return;
 	}
 	
 	for (i = 0; i < memory_count; i++) {               //查找对应的输入内容，并记录输入数
