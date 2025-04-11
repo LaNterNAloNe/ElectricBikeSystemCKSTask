@@ -64,7 +64,6 @@ int main(void){
                 break;
         }
     }
-    clrmous(MouseX,MouseY);
     drawExittingProgram(page);
 
     linklist_clear(LIST); // 清理链表
@@ -84,6 +83,7 @@ void initcolorpalette(){
 }
 
 void drawExittingProgram(int err){
+    clrmous(MouseX, MouseY); // 隐藏鼠标
     setfillstyle(SOLID_FILL, CYAN);
     bar(120,120,520,390);
     if(err == 0) puthz(180, 200, "你正在退出程序，按任意键退出", 24, 20, MY_WHITE);

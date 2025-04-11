@@ -136,36 +136,75 @@ void admin_database(int *page, unsigned long *ID , LINKLIST *LIST){
     fclose(fp_USER_LOGIN_DATA_read);
 }
 
-void admin_modify_data(unsigned long user_id)
+void admin_modify_data(LINKLIST *LIST, FILE *fp, char *file_type, unsigned long user_id)
 {
     int tag = ACTIVE_ADMIN_NULL;
+    int flag = -1;
     int isReturn = 0; // 是否返回;
-    ADMIN_BUTTONS AdminButtons[3];
+    ADMIN_BUTTONS AdminButtons[12];
     define_admin_buttons(AdminButtons, ADMIN_MODIFY_DATA_USER_INFO); // 定义按钮
 
     clrmous(MouseX, MouseY);
     drawgraph_admin_modify_data(user_id); // 绘制界面
     newmouse(&MouseX, &MouseY, &press);
 
+    if(strcmp(file_type, "user_data") == 0){ // 修改用户信息
+        flag = ADMIN_DATABASE_USER_INFO;
+    }else if(strcmp(file_type, "ebike_data") == 0){ // 修改车辆信息
+        flag = ADMIN_DATABASE_EBIKE_INFO;
+    }else if(strcmp(file_type, "ebike_pass_in_out") == 0){ // 修改车辆出入记录
+        flag = ADMIN_DATABASE_EBIKE_PASS_IN_OUT;
+    }else { // 错误
+        return;
+    }
+
     if (debug_mode == 1)
         display_memory_usage(400, 10); // 显示调试参数
 
     while (!isReturn){
-        admin_flush_buttons(&tag, STRUCT_LENGTH(AdminButtons), AdminButtons);
-        newmouse(&MouseX, &MouseY, &press);
-
-        if (mouse_press(ADMIN_MODIFY_DATA_EXIT_X1, ADMIN_MODIFY_DATA_EXIT_Y1, 
-            ADMIN_MODIFY_DATA_EXIT_X2, ADMIN_MODIFY_DATA_EXIT_Y2) == 1) // 点击返回
-        {
-            isReturn = 1; // 标记为返回
+        if(flag = ADMIN_DATABASE_USER_INFO){ // 修改用户信息
+            admin_flush_buttons(&tag, 3, AdminButtons);
+            admin_handle_modify_user_data_event(fp, user_id, &isReturn); // 处理点击事件
         }
-        
+        newmouse(&MouseX, &MouseY, &press);
         delay(25);
     }
     clrmous(MouseX, MouseY);
     drawgraph_admin_menu(); // 绘制界面
     drawgraph_admin_database();
     drawgraph_admin_database_user_info();
+}
+
+void admin_handle_modify_user_data_event(FILE *fp, unsigned long user_id, int *isReturn){
+    static char psw_buffer[15] = "\0"; // 输入框输入信息储存
+
+    // 处理点击事件
+    if (mouse_press(ADMIN_MODIFY_DATA_SAVE_X1, ADMIN_MODIFY_DATA_SAVE_Y1,
+                    ADMIN_MODIFY_DATA_SAVE_X2, ADMIN_MODIFY_DATA_SAVE_Y2) == 1) // 点击保存
+    {
+        // 保存修改后的用户信息到文件中 
+        if(strcmp(psw_buffer, "\0") != 0){ // 修改密码
+            if(modify_user_info(fp, user_id, psw_buffer, "password") == 0) // 修改密码
+            {
+                return;
+            }
+            Input_Bar(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
+            memset(psw_buffer, '\0', sizeof(psw_buffer)); // 清空密码输入框
+            *isReturn = 1;                                 // 标记为返回
+        }
+    }
+    if (mouse_press(ADMIN_MODIFY_DATA_INPUTBAR3_X1, ADMIN_MODIFY_DATA_INPUTBAR3_Y1,
+                    ADMIN_MODIFY_DATA_INPUTBAR3_X2, ADMIN_MODIFY_DATA_INPUTBAR3_Y2) == 1) // 点击密码框
+    {
+        Input_Bar(psw_buffer, ADMIN_MODIFY_DATA_INPUTBAR3_X1, ADMIN_MODIFY_DATA_INPUTBAR3_Y1, 13, MY_LIGHTGRAY, INPUTBAR_NO_CLEAR, 1);
+    }
+    if (mouse_press(ADMIN_MODIFY_DATA_EXIT_X1, ADMIN_MODIFY_DATA_EXIT_Y1,
+                    ADMIN_MODIFY_DATA_EXIT_X2, ADMIN_MODIFY_DATA_EXIT_Y2) == 1) // 点击返回
+    {
+        Input_Bar(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
+        memset(psw_buffer, '\0', sizeof(psw_buffer)); // 清空密码输入框
+        *isReturn = 1; // 标记为返回
+    }
 }
 
 /*****************************************************************
@@ -405,7 +444,6 @@ void drawgraph_admin_modify_data(unsigned long user_id)
     if (fp == NULL)
     {
         exit(1);
-        return;
     }
 
     setwritemode(XOR_PUT);
@@ -413,12 +451,22 @@ void drawgraph_admin_modify_data(unsigned long user_id)
     bar(0, 0, 640, 480);                    // 清除整个屏幕
 
     setwritemode(COPY_PUT);
+    setfillstyle(SOLID_FILL, MY_BLACK);
+    bar(ADMIN_LIST_DATA_INTERFACE_X1+5, ADMIN_LIST_DATA_INTERFACE_Y1+5,
+        ADMIN_LIST_DATA_INTERFACE_X2+5, ADMIN_LIST_DATA_INTERFACE_Y2+5); // 绘制列出数据的背景矩形框
+    setfillstyle(SOLID_FILL, MY_BLACK);
+    bar(ADMIN_MODIFY_DATA_INTERFACE_X1+5, ADMIN_MODIFY_DATA_INTERFACE_Y1+5,
+        ADMIN_MODIFY_DATA_INTERFACE_X2+5, ADMIN_MODIFY_DATA_INTERFACE_Y2+5); // 绘制操作空间的背景矩形框
     setfillstyle(SOLID_FILL, MY_YELLOW);
     bar(ADMIN_LIST_DATA_INTERFACE_X1, ADMIN_LIST_DATA_INTERFACE_Y1,
         ADMIN_LIST_DATA_INTERFACE_X2, ADMIN_LIST_DATA_INTERFACE_Y2); // 绘制列出数据的矩形框
     setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
     bar(ADMIN_MODIFY_DATA_INTERFACE_X1, ADMIN_MODIFY_DATA_INTERFACE_Y1,
         ADMIN_MODIFY_DATA_INTERFACE_X2, ADMIN_MODIFY_DATA_INTERFACE_Y2); // 绘制操作空间的矩形框
+    setcolor(MY_BLACK);
+    setlinestyle(DASHED_LINE, 0, NORM_WIDTH); // 设置线宽为1
+    rectangle(ADMIN_LIST_DATA_INTERFACE_X1+2, ADMIN_LIST_DATA_INTERFACE_Y1+2,
+              ADMIN_MODIFY_DATA_INTERFACE_X2-2, ADMIN_MODIFY_DATA_INTERFACE_Y2-2); // 绘制列出数据的矩形框
     puthz(255, 10, "修改数据", 24, 35, MY_WHITE);                        // 绘制标题
 
     clear_exit(ADMIN_MODIFY_DATA_EXIT_X1, ADMIN_MODIFY_DATA_EXIT_Y1,
@@ -429,45 +477,65 @@ void drawgraph_admin_modify_data(unsigned long user_id)
     puthz(ADMIN_LIST_DATA_INTERFACE_X1 + 10, ADMIN_LIST_DATA_INTERFACE_Y1 + 10, "原先数据", 16, 16, MY_WHITE);
     puthz(ADMIN_MODIFY_DATA_INTERFACE_X1 + 10, ADMIN_MODIFY_DATA_INTERFACE_Y1 + 10, "你将修改为", 16, 16, MY_WHITE);
 
-    puthz(ADMIN_LIST_DATA_INTERFACE_X1 + 10, ADMIN_LIST_DATA_INTERFACE_Y1 + 50, "学号", 16, 16, MY_WHITE);
-    puthz(ADMIN_LIST_DATA_INTERFACE_X1 + 10, ADMIN_LIST_DATA_INTERFACE_Y1 + 90, "用户名", 16, 16, MY_WHITE);
-    puthz(ADMIN_LIST_DATA_INTERFACE_X1 + 10, ADMIN_LIST_DATA_INTERFACE_Y1 + 130, "密码", 16, 16, MY_WHITE);
-    puthz(ADMIN_LIST_DATA_INTERFACE_X1 + 10, ADMIN_LIST_DATA_INTERFACE_Y1 + 170, "注册时间", 16, 16, MY_WHITE);
-    puthz(ADMIN_LIST_DATA_INTERFACE_X1 + 10, ADMIN_LIST_DATA_INTERFACE_Y1 + 210, "状态", 16, 16, MY_WHITE);
+    puthz(ADMIN_LIST_DATA_INTERFACE_X1 + 10, ADMIN_MODIFY_DATA_INPUTBAR1_Y1 + 7, "学号", 16, 16, MY_WHITE);
+    puthz(ADMIN_LIST_DATA_INTERFACE_X1 + 10, ADMIN_MODIFY_DATA_INPUTBAR2_Y1 + 7, "用户名", 16, 16, MY_WHITE);
+    puthz(ADMIN_LIST_DATA_INTERFACE_X1 + 10, ADMIN_MODIFY_DATA_INPUTBAR3_Y1 + 7, "密码", 16, 16, MY_WHITE);
+    puthz(ADMIN_LIST_DATA_INTERFACE_X1 + 10, ADMIN_MODIFY_DATA_INPUTBAR4_Y1 + 7, "注册时间", 16, 16, MY_WHITE);
+    puthz(ADMIN_LIST_DATA_INTERFACE_X1 + 10, ADMIN_MODIFY_DATA_INPUTBAR5_Y1 + 7, "状态", 16, 16, MY_WHITE);
 
     // 显示原先数据
     ltoa(user_id, buffer1, 10); // 将 ID 转换为字符串
     pos = find_file_info(fp, "user_info", buffer1, "id");
     if (pos == 0)
     {
-        puthz(ADMIN_LIST_DATA_INTERFACE_X1 + 100, ADMIN_LIST_DATA_INTERFACE_Y1 + 50, "无此用户", 16, 16, MY_WHITE); // 显示错误提示
+        puthz(ADMIN_LIST_DATA_INTERFACE_X1 + 100, ADMIN_LIST_DATA_INTERFACE_Y1 + 50, "无此用户", 16, 16, MY_RED); // 显示错误提示
         return;
     } // 查找用户信息
     fseek(fp, pos, SEEK_SET);
     fread(&user_temp, sizeof(USER_LOGIN_DATA), 1, fp);
     
     setcolor(MY_WHITE);
-    outtextxy(ADMIN_LIST_DATA_INTERFACE_X1 + 80, ADMIN_LIST_DATA_INTERFACE_Y1 + 54, buffer1); // 显示学号
-    outtextxy(ADMIN_LIST_DATA_INTERFACE_X1 + 80, ADMIN_LIST_DATA_INTERFACE_Y1 + 94, user_temp.usrn); // 显示用户名
-    outtextxy(ADMIN_LIST_DATA_INTERFACE_X1 + 80, ADMIN_LIST_DATA_INTERFACE_Y1 + 134, user_temp.psw); // 显示密码
+    outtextxy(ADMIN_LIST_DATA_INTERFACE_X1 + 80, ADMIN_MODIFY_DATA_INPUTBAR1_Y1 + 11, buffer1);       // 显示学号
+    outtextxy(ADMIN_LIST_DATA_INTERFACE_X1 + 80, ADMIN_MODIFY_DATA_INPUTBAR2_Y1 + 11, user_temp.usrn); // 显示用户名
+    outtextxy(ADMIN_LIST_DATA_INTERFACE_X1 + 80, ADMIN_MODIFY_DATA_INPUTBAR3_Y1 + 11, user_temp.psw);  // 显示密码
     ltoa(user_temp.register_time, buffer2, 10); // 将注册时间转换为字符串
     sprintf(buffer1, "%.4s.%.2s.%.2s", buffer2, buffer2 + 4, buffer2 + 6);
-    outtextxy(ADMIN_LIST_DATA_INTERFACE_X1 + 80, ADMIN_LIST_DATA_INTERFACE_Y1 + 174, buffer1); // 显示注册时间
+    outtextxy(ADMIN_LIST_DATA_INTERFACE_X1 + 80, ADMIN_MODIFY_DATA_INPUTBAR4_Y1 + 11, buffer1); // 显示注册时间
 
     if (user_temp.state == ACTIVE)
     {
-        puthz(ADMIN_LIST_DATA_INTERFACE_X1 + 80, ADMIN_LIST_DATA_INTERFACE_Y1 + 210, "正常", 16, 16, MY_GREEN); // 显示状态
+        puthz(ADMIN_LIST_DATA_INTERFACE_X1 + 80, ADMIN_MODIFY_DATA_INPUTBAR5_Y1 + 4, "正常", 16, 16, MY_GREEN); // 显示状态
     }
     else if (user_temp.state == FROZEN)
     {
-        puthz(ADMIN_LIST_DATA_INTERFACE_X1 + 80, ADMIN_LIST_DATA_INTERFACE_Y1 + 210, "冻结", 16, 16, MY_LIGHTBLUE); // 显示状态
+        puthz(ADMIN_LIST_DATA_INTERFACE_X1 + 80, ADMIN_MODIFY_DATA_INPUTBAR5_Y1 + 4, "冻结", 16, 16, MY_LIGHTBLUE); // 显示状态
     }
     else if (user_temp.state == BANNED)
     {
-        puthz(ADMIN_LIST_DATA_INTERFACE_X1 + 80, ADMIN_LIST_DATA_INTERFACE_Y1 + 210, "封禁", 16, 16, MY_RED); // 显示状态
+        puthz(ADMIN_LIST_DATA_INTERFACE_X1 + 80, ADMIN_MODIFY_DATA_INPUTBAR5_Y1 + 4, "封禁", 16, 16, MY_RED); // 显示状态
     }
 
     fclose(fp);
+
+    // 绘制输入框
+    setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
+    bar(ADMIN_MODIFY_DATA_INPUTBAR3_X1, ADMIN_MODIFY_DATA_INPUTBAR3_Y1,
+        ADMIN_MODIFY_DATA_INPUTBAR3_X2, ADMIN_MODIFY_DATA_INPUTBAR3_Y2); // 密码输入框
+    setcolor(MY_BLACK);
+    setlinestyle(SOLID_LINE, 0, NORM_WIDTH);
+    rectangle(ADMIN_MODIFY_DATA_INPUTBAR3_X1, ADMIN_MODIFY_DATA_INPUTBAR3_Y1,
+              ADMIN_MODIFY_DATA_INPUTBAR3_X2, ADMIN_MODIFY_DATA_INPUTBAR3_Y2); // 绘制密码输入框边框
+
+    setfillstyle(SLASH_FILL, MY_LIGHTGRAY);
+    bar(ADMIN_MODIFY_DATA_INPUTBAR1_X1, ADMIN_MODIFY_DATA_INPUTBAR1_Y1,
+        ADMIN_MODIFY_DATA_INPUTBAR1_X2, ADMIN_MODIFY_DATA_INPUTBAR1_Y2); // 学号输入框
+    bar(ADMIN_MODIFY_DATA_INPUTBAR2_X1, ADMIN_MODIFY_DATA_INPUTBAR2_Y1,
+        ADMIN_MODIFY_DATA_INPUTBAR2_X2, ADMIN_MODIFY_DATA_INPUTBAR2_Y2); // 用户名输入框
+    bar(ADMIN_MODIFY_DATA_INPUTBAR4_X1, ADMIN_MODIFY_DATA_INPUTBAR4_Y1,
+        ADMIN_MODIFY_DATA_INPUTBAR4_X2, ADMIN_MODIFY_DATA_INPUTBAR4_Y2); // 注册时间输入框
+    puthz(ADMIN_MODIFY_DATA_INPUTBAR1_X1 + 10, ADMIN_MODIFY_DATA_INPUTBAR1_Y1 + 7, "不可修改", 16, 16, MY_WHITE);
+    puthz(ADMIN_MODIFY_DATA_INPUTBAR2_X1 + 10, ADMIN_MODIFY_DATA_INPUTBAR2_Y1 + 7, "不可修改", 16, 16, MY_WHITE);
+    puthz(ADMIN_MODIFY_DATA_INPUTBAR4_X1 + 10, ADMIN_MODIFY_DATA_INPUTBAR4_Y1 + 7, "不可修改", 16, 16, MY_WHITE);
 }
 
 void drawgraph_admin_info(unsigned long ID)
@@ -677,8 +745,8 @@ MODULE:该源文件全局可使用的函数模块
 *****************************************************************/
 
 // 查找文件中是否存在指定内容，并返回该数据块位置
-unsigned long find_file_info(FILE *fp, char *file_type,char *search_str,char *search_needed){
-    int counts = 0;
+long find_file_info(FILE *fp, char *file_type,char *search_str,char *search_needed){
+    long counts = 0;
     EBIKE_INFO ebike_temp;
     USER_LOGIN_DATA USER_TEMP;
 
@@ -715,10 +783,39 @@ unsigned long find_file_info(FILE *fp, char *file_type,char *search_str,char *se
             counts++;
         }
     }
-    
-
-    return 0; // 文件指针位置返回到原先位置
+    return -1; // 文件指针位置返回到原先位置
 }
+
+int modify_user_info(FILE *fp , unsigned long user_id, char *modify_str,char *modify_needed){
+    long pos = -1;
+    char buffer[20];
+    USER_LOGIN_DATA user_temp;
+
+    ltoa(user_id, buffer, 10); // 将用户ID转换为字符串
+
+    pos = find_file_info(fp, "user_info", buffer, "id");
+    if (pos == -1)
+    {
+        puthz(ADMIN_MODIFY_DATA_INTERFACE_X1 + 100, ADMIN_MODIFY_DATA_INTERFACE_Y1 + 10, 
+              "尝试修改用户数据时发生错误：未找到用户数据", 16, 16, MY_RED); // 显示状态
+        return 0;
+    }
+
+    fseek(fp, pos, SEEK_SET); // 获取文件长度
+    fread(&user_temp, sizeof(USER_LOGIN_DATA), 1, fp); // 读取用户信息
+
+    if (strcmp(modify_needed, "password") == 0 || strcmp(modify_str, "\0") != 0) // 修改密码
+    {
+        strcpy(user_temp.psw, modify_str); // 修改用户名
+        puthz(ADMIN_MODIFY_DATA_INPUTBAR3_X1 + 300, ADMIN_MODIFY_DATA_INPUTBAR3_Y1 + 7, "修改成功", 16, 16, MY_GREEN); // 显示状态
+    }
+
+    fseek(fp, pos, SEEK_SET); // 获取文件长度
+    fwrite(&user_temp, sizeof(USER_LOGIN_DATA), 1, fp); // 写入用户信息
+    return 1;
+}
+
+
 
 // 点击按钮后，若能成功操作，则执行该显示动画
 void admin_pass_failed_anime(int button_x1, int button_y1, int button_x2, int button_y2,int result)
@@ -841,10 +938,7 @@ void define_admin_buttons(ADMIN_BUTTONS AdminButtons[], int page) {
         {ADMIN_MODIFY_DATA_INPUTBAR7_X1, ADMIN_MODIFY_DATA_INPUTBAR7_X2,
          ADMIN_MODIFY_DATA_INPUTBAR7_Y1, ADMIN_MODIFY_DATA_INPUTBAR7_Y2,
          ACTIVE_ADMIN_MODIFY_INPUTBAR7, &draw_rectangle, &clear_rectangle},
-        {ADMIN_MODIFY_DATA_INPUTBAR8_X1, ADMIN_MODIFY_DATA_INPUTBAR8_X2,
-         ADMIN_MODIFY_DATA_INPUTBAR8_Y1, ADMIN_MODIFY_DATA_INPUTBAR8_Y2,
-         ACTIVE_ADMIN_MODIFY_INPUTBAR8, &draw_rectangle, &clear_rectangle},
-    }; // 最大数量29
+    }; // 最大数量28
     int i;
     int j;
 
@@ -893,13 +987,13 @@ void define_admin_buttons(ADMIN_BUTTONS AdminButtons[], int page) {
             AdminButtons[j].drawfunc = Examples[i].drawfunc;
             AdminButtons[j].clearfunc = Examples[i].clearfunc;
         }
-        AdminButtons[2].x1 = Examples[22].x1;
-        AdminButtons[2].x2 = Examples[22].x2;
-        AdminButtons[2].y1 = Examples[22].y1;
-        AdminButtons[2].y2 = Examples[22].y2;
-        AdminButtons[2].active_tag = Examples[22].active_tag;
-        AdminButtons[2].drawfunc = Examples[22].drawfunc;
-        AdminButtons[2].clearfunc = Examples[22].clearfunc;
+        AdminButtons[2].x1 = Examples[23].x1;
+        AdminButtons[2].x2 = Examples[23].x2;
+        AdminButtons[2].y1 = Examples[23].y1;
+        AdminButtons[2].y2 = Examples[23].y2;
+        AdminButtons[2].active_tag = Examples[23].active_tag;
+        AdminButtons[2].drawfunc = Examples[23].drawfunc;
+        AdminButtons[2].clearfunc = Examples[23].clearfunc;
     }
 
 }
@@ -1206,7 +1300,7 @@ void admin_handle_database_event(LINKLIST *LIST, int *flag, int *page, unsigned 
     if (mouse_press(ADMIN_FEATURE6_X1, ADMIN_FEATURE6_Y1, ADMIN_FEATURE6_X2, ADMIN_FEATURE6_Y2) == 1)
     {
         if (selected_id != 0){
-            admin_modify_data(selected_id);
+            admin_modify_data(NULL, fp, "user_data", selected_id);
             admin_list_info(LIST, LIST_LIMIT, LIST_INTERVAL, id_list, fp, file_type, NULL, NULL, LIST_STAY, LIST_NO_CLEAR, search_str, "ID");
         }
         return;
@@ -1222,6 +1316,7 @@ int admin_exitting(int *page)
         if (mouse_press(ADMIN_EXIT_MENU_X1 + 2, ADMIN_EXIT_MENU_Y1 + 5, ADMIN_EXIT_MENU_X1 + 60, ADMIN_EXIT_MENU_Y1 + 21) == 1)
         {
             *page = LOGIN_ADMIN;
+            clrmous(MouseX, MouseY);
             admin_list_info(NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, LIST_CLEAR, NULL, NULL);
             Input_Bar(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
             return 0;
@@ -1229,6 +1324,7 @@ int admin_exitting(int *page)
         else if (mouse_press(ADMIN_EXIT_MENU_X1 + 2, ADMIN_EXIT_MENU_Y1 + 30, ADMIN_EXIT_MENU_X1 + 60, ADMIN_EXIT_MENU_Y1 + 46) == 1)
         {
             *page = EXIT;
+            clrmous(MouseX, MouseY);
             admin_list_info(NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, LIST_CLEAR, NULL, NULL);
             Input_Bar(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
             return 0;

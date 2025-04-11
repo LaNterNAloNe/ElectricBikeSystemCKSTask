@@ -49,7 +49,7 @@ void linklist_add_data(LINKLIST *pList, LINKLIST_USER NEW_USER_DATA);
 int linklist_find_data(LINKLIST *pList, char *str, char *needed_finding);
 int linklist_delete_data(LINKLIST *pList, char *usrn);
 int linklist_get_length(LINKLIST *pList);
-void linklist_get_to_node(LINKLIST *pList, int index, LINKLIST_NODE *ptr);
+void linklist_get_to_node(LINKLIST *pList, int index, LINKLIST_NODE **ptr);
 void linklist_clear(LINKLIST *pList);
 void linklist_get_user_data(LINKLIST *LIST);
 int linklist_write_user_data(LINKLIST *pList);

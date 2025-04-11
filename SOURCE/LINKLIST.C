@@ -44,43 +44,43 @@ FUNCTION:利用传入的字符串，查找链表中相应内容
 int linklist_find_data(LINKLIST *pList, char *str, char *needed_finding)
 {
     LINKLIST_NODE *ptr;
-    int isFound = 0;
+    int chain_length = 0;
     char *buffer;
     for (ptr = pList->HEAD; ptr; ptr = ptr->NEXT)
     {
         if (!strcmp(needed_finding,"username")) {
             if (!strcmp(ptr->USER_DATA.usrn, str))
-                isFound = ptr->chain_lenth;
+                chain_length = ptr->chain_lenth;
         }
         if (!strcmp(needed_finding,"id")) {
             itoa(ptr->USER_DATA.ID,buffer,10);
             if(strcmp(buffer, str) == 0)
-                isFound = ptr->chain_lenth;
+                chain_length = ptr->chain_lenth;
         }
         if (!strcmp(needed_finding,"realname")) {
             if(!strcmp(ptr->USER_DATA.rln, str))
-                isFound = ptr->chain_lenth;
+                chain_length = ptr->chain_lenth;
         }
         if (!strcmp(needed_finding,"location")) {
             if(!strcmp(ptr->USER_DATA.location, str))
-                isFound = ptr->chain_lenth;
+                chain_length = ptr->chain_lenth;
         }
         if (!strcmp(needed_finding,"anual_check")) {
             itoa(ptr->USER_DATA.anual_check,buffer,10);
             if(!strcmp(buffer, str))
-                isFound = ptr->chain_lenth;
+                chain_length = ptr->chain_lenth;
         }
         if (strcmp(needed_finding,"account_state")) {
             itoa((int)ptr->USER_DATA.account_state-'0',buffer,10);
             if(!strcmp(buffer, str))
-                isFound = ptr->chain_lenth;
+                chain_length = ptr->chain_lenth;
         }
         if (strcmp(needed_finding,"violations")) {
             itoa(ptr->USER_DATA.violations,buffer,10);
             if(!strcmp(buffer, str))
-                isFound = ptr->chain_lenth; // 如果找到，则返回该节点的序号
+                chain_length = ptr->chain_lenth; // 如果找到，则返回该节点的序号
         }
-        if (isFound) return isFound; // 如果找到，则返回该节点的序号
+        if (chain_length) return chain_length; // 如果找到，则返回该节点的序号
     }
 
     return -1; // 如果没有找到，则返回-1
@@ -128,12 +128,12 @@ int linklist_get_length(LINKLIST *pList)
 
 /**********************************************************
 NAME:linklist_get_to_node
-VALUE:pList自定链表，index要查找的节点的序号，ptr要矫正的节点指针
+VALUE:pList自定链表，index要查找的节点的序号，ptr要矫正的节点指针，传入一个二级指针以修改需要移动的指针的地址
 FUNCTION:将传入的指针矫正到相应的节点
 **********************************************************/
-void linklist_get_to_node(LINKLIST *pList, int index, LINKLIST_NODE *ptr){
+void linklist_get_to_node(LINKLIST *pList, int index, LINKLIST_NODE **ptr){
     int i;
-    for(i = 1, ptr = pList->HEAD; i <= index; i++, ptr = ptr->NEXT);
+    for(i = 1, *ptr = pList->HEAD; i <= index; i++, *ptr = (*ptr)->NEXT);
     return;
 }
 
