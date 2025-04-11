@@ -145,7 +145,15 @@ void admin_modify_data(LINKLIST *LIST, FILE *fp, char *file_type, unsigned long 
     define_admin_buttons(AdminButtons, ADMIN_MODIFY_DATA_USER_INFO); // 定义按钮
 
     clrmous(MouseX, MouseY);
-    drawgraph_admin_modify_data(user_id); // 绘制界面
+    if(drawgraph_admin_modify_data(user_id) == 0) // 绘制界面
+    {
+        delay(1000);
+        clrmous(MouseX, MouseY);
+        drawgraph_admin_menu(); // 绘制界面
+        drawgraph_admin_database();
+        drawgraph_admin_database_user_info();
+        return;
+    }
     newmouse(&MouseX, &MouseY, &press);
 
     if(strcmp(file_type, "user_data") == 0){ // 修改用户信息
@@ -163,7 +171,7 @@ void admin_modify_data(LINKLIST *LIST, FILE *fp, char *file_type, unsigned long 
 
     while (!isReturn){
         if(flag = ADMIN_DATABASE_USER_INFO){ // 修改用户信息
-            admin_flush_buttons(&tag, 3, AdminButtons);
+            admin_flush_buttons(&tag, 6, AdminButtons);
             admin_handle_modify_user_data_event(fp, user_id, &isReturn); // 处理点击事件
         }
         newmouse(&MouseX, &MouseY, &press);
@@ -177,6 +185,8 @@ void admin_modify_data(LINKLIST *LIST, FILE *fp, char *file_type, unsigned long 
 
 void admin_handle_modify_user_data_event(FILE *fp, unsigned long user_id, int *isReturn){
     static char psw_buffer[15] = "\0"; // 输入框输入信息储存
+    static char state_buffer = '\0';
+    char buffer[5];
 
     // 处理点击事件
     if (mouse_press(ADMIN_MODIFY_DATA_SAVE_X1, ADMIN_MODIFY_DATA_SAVE_Y1,
@@ -188,15 +198,61 @@ void admin_handle_modify_user_data_event(FILE *fp, unsigned long user_id, int *i
             {
                 return;
             }
-            Input_Bar(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
-            memset(psw_buffer, '\0', sizeof(psw_buffer)); // 清空密码输入框
-            *isReturn = 1;                                 // 标记为返回
+            
         }
+        if(state_buffer != '\0'){ // 修改状态
+            itoa((int)state_buffer, buffer, 10);                            // 转换为字符串
+            if (modify_user_info(fp, user_id, buffer, "state") == 0) // 修改状态
+            {
+                return;
+            }
+        }
+
+        puthz(ADMIN_MODIFY_DATA_INTERFACE_X1 + 100, ADMIN_MODIFY_DATA_INTERFACE_Y1 + 10, "成功保存修改信息！", 16, 16, MY_GREEN); // 显示保存成功
+        Input_Bar(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
+        memset(psw_buffer, '\0', sizeof(psw_buffer)); // 清空密码输入框
+        state_buffer = '\0';
+
+        delay(500);                                   // 延时
+        *isReturn = 1;                                // 标记为返回
     }
     if (mouse_press(ADMIN_MODIFY_DATA_INPUTBAR3_X1, ADMIN_MODIFY_DATA_INPUTBAR3_Y1,
                     ADMIN_MODIFY_DATA_INPUTBAR3_X2, ADMIN_MODIFY_DATA_INPUTBAR3_Y2) == 1) // 点击密码框
     {
         Input_Bar(psw_buffer, ADMIN_MODIFY_DATA_INPUTBAR3_X1, ADMIN_MODIFY_DATA_INPUTBAR3_Y1, 13, MY_LIGHTGRAY, INPUTBAR_NO_CLEAR, 1);
+    }
+    if (mouse_press(ADMIN_MODIFY_DATA_FREEZE_X1, ADMIN_MODIFY_DATA_FREEZE_Y1,
+                    ADMIN_MODIFY_DATA_FREEZE_X2, ADMIN_MODIFY_DATA_FREEZE_Y2) == 1 &&
+        state_buffer != FROZEN) // 点击冻结
+    {
+        state_buffer = FROZEN;
+        setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
+        bar(ADMIN_MODIFY_DATA_INTERFACE_X1 + 10, ADMIN_MODIFY_DATA_INTERFACE_Y2 - 25, 
+            ADMIN_MODIFY_DATA_INTERFACE_X1 + 350, ADMIN_MODIFY_DATA_INTERFACE_Y2 - 5); // 显示冻结
+        puthz(ADMIN_MODIFY_DATA_INTERFACE_X1 + 10, ADMIN_MODIFY_DATA_INTERFACE_Y2 - 25,
+                "冻结账户：允许登陆，无法使用功能", 16, 16, MY_LIGHTBLUE); // 显示冻结
+    }
+    if (mouse_press(ADMIN_MODIFY_DATA_BAN_X1, ADMIN_MODIFY_DATA_BAN_Y1,
+                    ADMIN_MODIFY_DATA_BAN_X2, ADMIN_MODIFY_DATA_BAN_Y2) == 1 &&
+        state_buffer != BANNED) // 点击解冻
+    {
+        state_buffer = BANNED;
+        setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
+        bar(ADMIN_MODIFY_DATA_INTERFACE_X1 + 10, ADMIN_MODIFY_DATA_INTERFACE_Y2 - 25,
+            ADMIN_MODIFY_DATA_INTERFACE_X1 + 350, ADMIN_MODIFY_DATA_INTERFACE_Y2 - 5); // 显示封禁
+        puthz(ADMIN_MODIFY_DATA_INTERFACE_X1 + 10, ADMIN_MODIFY_DATA_INTERFACE_Y2 - 25,
+            "封禁账户：禁止登陆，无法使用功能", 16, 16, MY_RED); // 显示封禁
+    }
+    if (mouse_press(ADMIN_MODIFY_DATA_RESTORE_X1, ADMIN_MODIFY_DATA_RESTORE_Y1,
+                    ADMIN_MODIFY_DATA_RESTORE_X2, ADMIN_MODIFY_DATA_RESTORE_Y2) == 1 &&
+        state_buffer != ACTIVE) // 点击解冻
+    {
+        state_buffer = ACTIVE;
+        setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
+        bar(ADMIN_MODIFY_DATA_INTERFACE_X1 + 10, ADMIN_MODIFY_DATA_INTERFACE_Y2 - 25,
+            ADMIN_MODIFY_DATA_INTERFACE_X1 + 350, ADMIN_MODIFY_DATA_INTERFACE_Y2 - 5); // 显示解封
+        puthz(ADMIN_MODIFY_DATA_INTERFACE_X1 + 10, ADMIN_MODIFY_DATA_INTERFACE_Y2 - 25,
+            "恢复账户：允许登陆，正常使用功能", 16, 16, MY_WHITE); // 显示解封
     }
     if (mouse_press(ADMIN_MODIFY_DATA_EXIT_X1, ADMIN_MODIFY_DATA_EXIT_Y1,
                     ADMIN_MODIFY_DATA_EXIT_X2, ADMIN_MODIFY_DATA_EXIT_Y2) == 1) // 点击返回
@@ -433,7 +489,7 @@ void drawgraph_admin_database_ebike_info(void)
     puthz(ADMIN_INTERFACE_X1 + 460, ADMIN_INTERFACE_Y1 + 40, "状态", 16, 16, MY_WHITE);
 }
 
-void drawgraph_admin_modify_data(unsigned long user_id)
+int drawgraph_admin_modify_data(unsigned long user_id)
 {
     FILE *fp = fopen("DATA\\USER.DAT", "rb");
     USER_LOGIN_DATA user_temp;
@@ -489,7 +545,7 @@ void drawgraph_admin_modify_data(unsigned long user_id)
     if (pos == 0)
     {
         puthz(ADMIN_LIST_DATA_INTERFACE_X1 + 100, ADMIN_LIST_DATA_INTERFACE_Y1 + 50, "无此用户", 16, 16, MY_RED); // 显示错误提示
-        return;
+        return 0;
     } // 查找用户信息
     fseek(fp, pos, SEEK_SET);
     fread(&user_temp, sizeof(USER_LOGIN_DATA), 1, fp);
@@ -504,15 +560,15 @@ void drawgraph_admin_modify_data(unsigned long user_id)
 
     if (user_temp.state == ACTIVE)
     {
-        puthz(ADMIN_LIST_DATA_INTERFACE_X1 + 80, ADMIN_MODIFY_DATA_INPUTBAR5_Y1 + 4, "正常", 16, 16, MY_GREEN); // 显示状态
+        puthz(ADMIN_LIST_DATA_INTERFACE_X1 + 80, ADMIN_MODIFY_DATA_INPUTBAR5_Y1 + 8, "正常", 16, 16, MY_GREEN); // 显示状态
     }
     else if (user_temp.state == FROZEN)
     {
-        puthz(ADMIN_LIST_DATA_INTERFACE_X1 + 80, ADMIN_MODIFY_DATA_INPUTBAR5_Y1 + 4, "冻结", 16, 16, MY_LIGHTBLUE); // 显示状态
+        puthz(ADMIN_LIST_DATA_INTERFACE_X1 + 80, ADMIN_MODIFY_DATA_INPUTBAR5_Y1 + 8, "冻结", 16, 16, MY_LIGHTBLUE); // 显示状态
     }
     else if (user_temp.state == BANNED)
     {
-        puthz(ADMIN_LIST_DATA_INTERFACE_X1 + 80, ADMIN_MODIFY_DATA_INPUTBAR5_Y1 + 4, "封禁", 16, 16, MY_RED); // 显示状态
+        puthz(ADMIN_LIST_DATA_INTERFACE_X1 + 80, ADMIN_MODIFY_DATA_INPUTBAR5_Y1 + 8, "封禁", 16, 16, MY_RED); // 显示状态
     }
 
     fclose(fp);
@@ -536,6 +592,20 @@ void drawgraph_admin_modify_data(unsigned long user_id)
     puthz(ADMIN_MODIFY_DATA_INPUTBAR1_X1 + 10, ADMIN_MODIFY_DATA_INPUTBAR1_Y1 + 7, "不可修改", 16, 16, MY_WHITE);
     puthz(ADMIN_MODIFY_DATA_INPUTBAR2_X1 + 10, ADMIN_MODIFY_DATA_INPUTBAR2_Y1 + 7, "不可修改", 16, 16, MY_WHITE);
     puthz(ADMIN_MODIFY_DATA_INPUTBAR4_X1 + 10, ADMIN_MODIFY_DATA_INPUTBAR4_Y1 + 7, "不可修改", 16, 16, MY_WHITE);
+
+    setfillstyle(SOLID_FILL, MY_YELLOW); // 显示改变用户状态按钮
+    bar(ADMIN_MODIFY_DATA_INPUTBAR5_X1, ADMIN_MODIFY_DATA_INPUTBAR5_Y1,
+        ADMIN_MODIFY_DATA_INPUTBAR5_X1 + 80, ADMIN_MODIFY_DATA_INPUTBAR5_Y2);
+    bar(ADMIN_MODIFY_DATA_INPUTBAR5_X1 + 100, ADMIN_MODIFY_DATA_INPUTBAR5_Y1,
+        ADMIN_MODIFY_DATA_INPUTBAR5_X1 + 180, ADMIN_MODIFY_DATA_INPUTBAR5_Y2);
+    bar(ADMIN_MODIFY_DATA_INPUTBAR5_X1 + 200, ADMIN_MODIFY_DATA_INPUTBAR5_Y1,
+        ADMIN_MODIFY_DATA_INPUTBAR5_X1 + 280, ADMIN_MODIFY_DATA_INPUTBAR5_Y2);
+
+    puthz(ADMIN_MODIFY_DATA_INPUTBAR5_X1 + 10, ADMIN_MODIFY_DATA_INPUTBAR5_Y1 + 7, "冻结账号", 16, 16, MY_LIGHTBLUE);
+    puthz(ADMIN_MODIFY_DATA_INPUTBAR5_X1 + 110, ADMIN_MODIFY_DATA_INPUTBAR5_Y1 + 7, "封禁账号", 16, 16, MY_RED);
+    puthz(ADMIN_MODIFY_DATA_INPUTBAR5_X1 + 210, ADMIN_MODIFY_DATA_INPUTBAR5_Y1 + 7, "恢复账号", 16, 16, MY_WHITE);
+
+    return 1;
 }
 
 void drawgraph_admin_info(unsigned long ID)
@@ -804,10 +874,20 @@ int modify_user_info(FILE *fp , unsigned long user_id, char *modify_str,char *mo
     fseek(fp, pos, SEEK_SET); // 获取文件长度
     fread(&user_temp, sizeof(USER_LOGIN_DATA), 1, fp); // 读取用户信息
 
-    if (strcmp(modify_needed, "password") == 0 || strcmp(modify_str, "\0") != 0) // 修改密码
+    // 每一次调用函数都只修改一次数据，因此以下判断结构用if - else
+    if (strcmp(modify_needed, "password") == 0 && strcmp(modify_str, "\0") != 0) // 修改密码
     {
         strcpy(user_temp.psw, modify_str); // 修改用户名
-        puthz(ADMIN_MODIFY_DATA_INPUTBAR3_X1 + 300, ADMIN_MODIFY_DATA_INPUTBAR3_Y1 + 7, "修改成功", 16, 16, MY_GREEN); // 显示状态
+        puthz(ADMIN_MODIFY_DATA_INPUTBAR3_X2 + 10, ADMIN_MODIFY_DATA_INPUTBAR3_Y1 + 7, "修改成功", 16, 16, MY_GREEN); // 显示状态
+    }
+    else if (strcmp(modify_needed, "state") == 0 && strcmp(modify_str, "\0") != 0) // 修改状态
+    {
+        if (user_temp.state == (char)atoi(modify_str)) // 若状态未改变，则不进行修改
+        {
+            return 1; // 不算重大错误，只是没有修改账户状态，因此返回1
+        }
+        user_temp.state = (char)atoi(modify_str); // 修改状态
+        puthz(ADMIN_MODIFY_DATA_INPUTBAR5_X2 + 10, ADMIN_MODIFY_DATA_INPUTBAR5_Y1 + 7, "修改成功", 16, 16, MY_GREEN); // 显示状态
     }
 
     fseek(fp, pos, SEEK_SET); // 获取文件长度
@@ -938,7 +1018,17 @@ void define_admin_buttons(ADMIN_BUTTONS AdminButtons[], int page) {
         {ADMIN_MODIFY_DATA_INPUTBAR7_X1, ADMIN_MODIFY_DATA_INPUTBAR7_X2,
          ADMIN_MODIFY_DATA_INPUTBAR7_Y1, ADMIN_MODIFY_DATA_INPUTBAR7_Y2,
          ACTIVE_ADMIN_MODIFY_INPUTBAR7, &draw_rectangle, &clear_rectangle},
-    }; // 最大数量28
+        // 以下为用户信息修改按钮
+        {ADMIN_MODIFY_DATA_FREEZE_X1, ADMIN_MODIFY_DATA_FREEZE_X2,
+         ADMIN_MODIFY_DATA_FREEZE_Y1, ADMIN_MODIFY_DATA_FREEZE_Y2,
+         ACTIVE_ADMIN_MODIFY_FREEZE, &draw_rectangle, &clear_rectangle},
+        {ADMIN_MODIFY_DATA_BAN_X1, ADMIN_MODIFY_DATA_BAN_X2,
+         ADMIN_MODIFY_DATA_BAN_Y1, ADMIN_MODIFY_DATA_BAN_Y2,
+         ACTIVE_ADMIN_MODIFY_BAN, &draw_rectangle, &clear_rectangle},
+        {ADMIN_MODIFY_DATA_RESTORE_X1, ADMIN_MODIFY_DATA_RESTORE_X2,
+         ADMIN_MODIFY_DATA_RESTORE_Y1, ADMIN_MODIFY_DATA_RESTORE_Y2,
+         ACTIVE_ADMIN_MODIFY_RESTORE, &draw_rectangle, &clear_rectangle},
+    }; // 最大数量31
     int i;
     int j;
 
@@ -946,13 +1036,7 @@ void define_admin_buttons(ADMIN_BUTTONS AdminButtons[], int page) {
     {
         for (i = 0, j = 0; i < 9; i++, j++)
         {
-            AdminButtons[j].x1 = Examples[i].x1;
-            AdminButtons[j].x2 = Examples[i].x2;
-            AdminButtons[j].y1 = Examples[i].y1;
-            AdminButtons[j].y2 = Examples[i].y2;
-            AdminButtons[j].active_tag = Examples[i].active_tag;
-            AdminButtons[j].drawfunc = Examples[i].drawfunc;
-            AdminButtons[j].clearfunc = Examples[i].clearfunc;
+            admin_get_buttons(&AdminButtons[j], &Examples[i]);
         }
     }
     else if (
@@ -966,36 +1050,31 @@ void define_admin_buttons(ADMIN_BUTTONS AdminButtons[], int page) {
     {
         for (i = 0, j = 0; i < 19; i++, j++)
         {
-            AdminButtons[j].x1 = Examples[i].x1;
-            AdminButtons[j].x2 = Examples[i].x2;
-            AdminButtons[j].y1 = Examples[i].y1;
-            AdminButtons[j].y2 = Examples[i].y2;
-            AdminButtons[j].active_tag = Examples[i].active_tag;
-            AdminButtons[j].drawfunc = Examples[i].drawfunc;
-            AdminButtons[j].clearfunc = Examples[i].clearfunc;
+            admin_get_buttons(&AdminButtons[j], &Examples[i]);
         }
     }
     else if (page == ADMIN_MODIFY_DATA_USER_INFO)
     {
         for (i = 19, j = 0; i < 21; i++, j++)
         {
-            AdminButtons[j].x1 = Examples[i].x1;
-            AdminButtons[j].x2 = Examples[i].x2;
-            AdminButtons[j].y1 = Examples[i].y1;
-            AdminButtons[j].y2 = Examples[i].y2;
-            AdminButtons[j].active_tag = Examples[i].active_tag;
-            AdminButtons[j].drawfunc = Examples[i].drawfunc;
-            AdminButtons[j].clearfunc = Examples[i].clearfunc;
+            admin_get_buttons(&AdminButtons[j], &Examples[i]);
         }
-        AdminButtons[2].x1 = Examples[23].x1;
-        AdminButtons[2].x2 = Examples[23].x2;
-        AdminButtons[2].y1 = Examples[23].y1;
-        AdminButtons[2].y2 = Examples[23].y2;
-        AdminButtons[2].active_tag = Examples[23].active_tag;
-        AdminButtons[2].drawfunc = Examples[23].drawfunc;
-        AdminButtons[2].clearfunc = Examples[23].clearfunc;
+        admin_get_buttons(&AdminButtons[2], &Examples[23]);
+        admin_get_buttons(&AdminButtons[3], &Examples[28]);
+        admin_get_buttons(&AdminButtons[4], &Examples[29]);
+        admin_get_buttons(&AdminButtons[5], &Examples[30]);
     }
 
+}
+
+void admin_get_buttons(ADMIN_BUTTONS *AdminButtons, ADMIN_BUTTONS *Examples) {
+    AdminButtons->x1 = Examples->x1;
+    AdminButtons->x2 = Examples->x2;
+    AdminButtons->y1 = Examples->y1;
+    AdminButtons->y2 = Examples->y2;
+    AdminButtons->active_tag = Examples->active_tag;
+    AdminButtons->drawfunc = Examples->drawfunc;
+    AdminButtons->clearfunc = Examples->clearfunc;
 }
 
 void admin_handle_buttons_event(int *page)

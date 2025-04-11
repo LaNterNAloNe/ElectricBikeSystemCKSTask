@@ -288,7 +288,7 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
             }
             else if (flag == ADMIN_DATABASE_EBIKE_INFO)
             {
-                linklist_get_to_node(LIST, temp_end + 1, node); // 将指针指向对应节点
+                linklist_get_to_node(LIST, temp_end + 1, &node); // 将指针指向对应节点
                 if (node == NULL)
                 {
                     puthz(ADMIN_INTERFACE_X1 + 190, ADMIN_INTERFACE_Y1 + 70 + listed_item * interval, "没有更多数据了哦！", 16, 16, MY_RED);
@@ -412,7 +412,7 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
             }
             else if (flag == ADMIN_DATABASE_EBIKE_INFO)
             {
-                linklist_get_to_node(LIST, temp_start + 1, node); // 将指针指向对应节点
+                linklist_get_to_node(LIST, temp_start + 1, &node); // 将指针指向对应节点
                 if (node == NULL)                                 // 如果node指针为NULL，则说明已经到达链表头部，不能再向前移动
                 {
                     puthz(ADMIN_INTERFACE_X1 + 190, ADMIN_INTERFACE_Y1 + 70 + listed_item * interval, "没有更多数据了哦！", 16, 16, MY_RED);
@@ -502,7 +502,7 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
             }
             else if (flag == ADMIN_DATABASE_EBIKE_INFO)
             {
-                linklist_get_to_node(LIST, temp_end + 1, node); // 将指针指向对应节点
+                linklist_get_to_node(LIST, temp_end + 1, &node); // 将指针指向对应节点
                 if (node == NULL)                               // 如果node指针为NULL，则说明已经到达链表头部，不能再向前移动
                 {
                     puthz(ADMIN_INTERFACE_X1 + 190, ADMIN_INTERFACE_Y1 + 70 + listed_item * interval, "没有更多数据了哦！", 16, 16, MY_RED);
@@ -788,7 +788,7 @@ void handle_list_select_line_admin(unsigned long id_list[], unsigned long *selec
     for (i = 0; i < max; i++)
     {
         if (mouse_press(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70 + i * interval,
-                        ADMIN_INTERFACE_X1 + 400, ADMIN_INTERFACE_Y1 + 70 + (i + 1) * interval - 1) == 1 &&
+                        ADMIN_INTERFACE_X1 + 500, ADMIN_INTERFACE_Y1 + 70 + (i + 1) * interval - 1) == 1 &&
             id_list[i] != 0)
         {
             setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
@@ -806,7 +806,7 @@ void handle_list_select_line_admin(unsigned long id_list[], unsigned long *selec
     }
     if (previous_selected_id == *selected_id &&
         mouse_press(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70,
-                    ADMIN_INTERFACE_X1 + 400, ADMIN_INTERFACE_Y1 + 70 + max * interval) == -1)
+                    ADMIN_INTERFACE_X1 + 500, ADMIN_INTERFACE_Y1 + 70 + max * interval) == -1)
     {
         setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
         bar(ADMIN_INTERFACE_X1 + 10, ADMIN_INTERFACE_Y1 + 70, ADMIN_INTERFACE_X1 + 18, ADMIN_INTERFACE_Y1 + 310); // 清理所有高亮

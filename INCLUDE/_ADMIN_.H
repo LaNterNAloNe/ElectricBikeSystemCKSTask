@@ -181,6 +181,20 @@
 #define ADMIN_MODIFY_DATA_INPUTBAR7_X2 530
 #define ADMIN_MODIFY_DATA_INPUTBAR7_Y2 410
 
+#define ADMIN_MODIFY_DATA_FREEZE_X1 ADMIN_MODIFY_DATA_INPUTBAR5_X1
+#define ADMIN_MODIFY_DATA_FREEZE_Y1 ADMIN_MODIFY_DATA_INPUTBAR5_Y1
+#define ADMIN_MODIFY_DATA_FREEZE_X2 ADMIN_MODIFY_DATA_INPUTBAR5_X1 + 80
+#define ADMIN_MODIFY_DATA_FREEZE_Y2 ADMIN_MODIFY_DATA_INPUTBAR5_Y2
+
+#define ADMIN_MODIFY_DATA_BAN_X1 ADMIN_MODIFY_DATA_INPUTBAR5_X1 + 100
+#define ADMIN_MODIFY_DATA_BAN_Y1 ADMIN_MODIFY_DATA_INPUTBAR5_Y1
+#define ADMIN_MODIFY_DATA_BAN_X2 ADMIN_MODIFY_DATA_INPUTBAR5_X1 + 180
+#define ADMIN_MODIFY_DATA_BAN_Y2 ADMIN_MODIFY_DATA_INPUTBAR5_Y2
+
+#define ADMIN_MODIFY_DATA_RESTORE_X1 ADMIN_MODIFY_DATA_INPUTBAR5_X1 + 200
+#define ADMIN_MODIFY_DATA_RESTORE_Y1 ADMIN_MODIFY_DATA_INPUTBAR5_Y1
+#define ADMIN_MODIFY_DATA_RESTORE_X2 ADMIN_MODIFY_DATA_INPUTBAR5_X1 + 280
+#define ADMIN_MODIFY_DATA_RESTORE_Y2 ADMIN_MODIFY_DATA_INPUTBAR5_Y2
 
 //定义数据标志
 enum
@@ -224,9 +238,9 @@ enum
     ACTIVE_ADMIN_MODIFY_INPUTBAR5,
     ACTIVE_ADMIN_MODIFY_INPUTBAR6,
     ACTIVE_ADMIN_MODIFY_INPUTBAR7,
-    ACTIVE_ADMIN_MODIFY_INPUTBAR8,
-    ACTIVE_ADMIN_MODIFY_INPUTBAR9,
-    ACTIVE_ADMIN_MODIFY_INPUTBAR10,
+    ACTIVE_ADMIN_MODIFY_FREEZE,
+    ACTIVE_ADMIN_MODIFY_BAN,
+    ACTIVE_ADMIN_MODIFY_RESTORE,
 };
 
 typedef void (*DRAWFUNCTION)(int coord1, int coord2, int coord3, int coord4);
@@ -269,12 +283,13 @@ void drawgraph_admin_menu(void);
 void drawgraph_admin_feature(int page);
 void drawgraph_admin_database(void);
 void drawgraph_admin_database_user_info(void);
-void drawgraph_admin_modify_data(unsigned long user_id);
+int drawgraph_admin_modify_data(unsigned long user_id);
 void drawgraph_admin_info(unsigned long ID);
 
 // 画面刷新函数
 void define_admin_buttons(ADMIN_BUTTONS AdminButtons[], int page);
-void admin_flush_buttons(int *tag,int button_counts,ADMIN_BUTTONS AdminButtons[]);
+void admin_get_buttons(ADMIN_BUTTONS *AdminButtons, ADMIN_BUTTONS *Examples);
+void admin_flush_buttons(int *tag, int button_counts, ADMIN_BUTTONS AdminButtons[]);
 void admin_handle_manage_feature_event(LINKLIST *LIST, int *page, char *search_str, unsigned long *id_list,
                                        FILE *fp_EBIKE_INFO_read, int *mode, int selected_id);
 void admin_handle_buttons_event(int *page);
