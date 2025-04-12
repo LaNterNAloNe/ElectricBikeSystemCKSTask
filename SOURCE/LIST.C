@@ -37,6 +37,9 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
     USER_LOGIN_DATA user_temp;
     LINKLIST_NODE *node = NULL;
 
+    show_num(10, 10, start, MY_WHITE); // 显示start
+    show_num(10, 30, end, MY_WHITE);   // 显示end
+
     if (debug_mode == 1)
     {
         setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
@@ -445,13 +448,56 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
         if (debug_mode == 1)
             puthz(ADMIN_INTERFACE_X1 + 200, ADMIN_INTERFACE_Y1 + 70 + max * interval, "检查四", 16, 16, MY_RED);
 
+        /*条件判断*/
         end = start; // end不能赋为负数，因为end为无符号整形数
+        while (1)
+        {
+            if (flag == ADMIN_DATABASE_EBIKE_MANAGE)
+            {
+                fseek(fp, (temp_start) * sizeof(ebike_temp), SEEK_SET); // 读取下一个数据块，此时offset总不为负，返回值一定为0，不用担心越界
+                if (!fread(&ebike_temp, sizeof(ebike_temp), 1, fp))     // 读取下一个数据块
+                {
+                    return; // 到文件末尾都没有发现可列表的，则不执行下翻列表操作
+                }
+                if (list_ebike_manage_is_valid(ebike_temp, list_mode, search_str, search_needed, search_mode))
+                {
+                    break; // 下翻查找是一旦读到可以被列出的，则可以执行下翻列表操作
+                }
+            }
+            else if (flag == ADMIN_DATABASE_USER_INFO)
+            {
+                fseek(fp, (temp_start) * sizeof(user_temp), SEEK_SET); // 先判断接下来是否有可以列出的数据
+                if (!fread(&user_temp, sizeof(user_temp), 1, fp))      // 读取下一个数据块
+                {
+                    return; // 到文件末尾都没有发现可列表的，则不执行下翻列表操作
+                }
+                if (list_user_data_is_valid(user_temp, search_str, search_needed))
+                {
+                    break;
+                }
+            }
+            else if (flag == ADMIN_DATABASE_EBIKE_INFO)
+            {
+                if (node == NULL)
+                {
+                    return; // 到文件末尾都没有发现可列表的，则不执行下翻列表操作
+                }
+                if (list_ebike_info_is_valid(node->USER_DATA, search_str, search_needed))
+                {
+                    break; // 下翻查找是一旦读到可以被列出的，则可以执行下翻列表操作
+                }
+                node = node->NEXT; // 指针移至下一节点
+            }
+            temp_start++; // 如果下翻读取时读到的数据不符条件，则进行下一轮循环
+        }
+        start = temp_start; // 成功找到可列出的数据，处理变量后进行进一步操作
+        end = temp_start;
 
         if (debug_mode == 1)
             puthz(ADMIN_INTERFACE_X1 + 260, ADMIN_INTERFACE_Y1 + 70 + max * interval, "检查五", 16, 16, MY_RED);
 
-        temp_start = start;
-        temp_end = start; // 临时储存，先利用临时变量获取下一个可列出数据块的位置，如果没有则不会影响start和end的值
+        /*列表操作*/
+        temp_end = start; // 将temp_end赋值为start，后续操作使用temp_end来读取数据
         setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
         bar(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70,
             ADMIN_INTERFACE_X1 + 500, ADMIN_INTERFACE_Y1 + 70 + max * interval); // 清理列表
@@ -781,15 +827,19 @@ void list_show_page_index(unsigned int page_index, unsigned int page_count, cons
 }
 
 // 绘制选中的行的图形动画，同时返回选中行对应数据的id
-void handle_list_select_line_admin(unsigned long id_list[], unsigned long *selected_id, const int max, const int interval)
+void handle_list_select_line_admin(LINKLIST *LIST, unsigned long id_list[], unsigned long *selected_id, const int max, const int interval)
 {
     int i;
     unsigned long previous_selected_id = *selected_id;
+    LINKLIST_NODE *node = NULL;
+    long pos = 0;
+    char buffer[12];
+
     for (i = 0; i < max; i++)
     {
         if (mouse_press(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70 + i * interval,
                         ADMIN_INTERFACE_X1 + 500, ADMIN_INTERFACE_Y1 + 70 + (i + 1) * interval - 1) == 1 &&
-            id_list[i] != 0)
+            id_list[i] != 0 && id_list[i] != previous_selected_id)
         {
             setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
             bar(ADMIN_INTERFACE_X1 + 10, ADMIN_INTERFACE_Y1 + 70, ADMIN_INTERFACE_X1 + 18, ADMIN_INTERFACE_Y1 + 310); // 清理所有高亮
@@ -797,11 +847,56 @@ void handle_list_select_line_admin(unsigned long id_list[], unsigned long *selec
             bar(ADMIN_INTERFACE_X1 + 10, ADMIN_INTERFACE_Y1 + 70 + i * interval,
                 ADMIN_INTERFACE_X1 + 18, ADMIN_INTERFACE_Y1 + 70 + i * interval + interval / (interval / 15)); // 生成当前高亮
 
-            setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
-            bar(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 90 + 8 * interval,
-                ADMIN_INTERFACE_X1 + 400, ADMIN_INTERFACE_Y1 + 90 + 8 * interval + 20); // 清理选中行显示的具体信息
-
             *selected_id = id_list[i];
+
+            // 输出选中行的补充信息
+            setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
+            bar(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 90 + max * interval,
+                ADMIN_INTERFACE_X1 + 420, ADMIN_INTERFACE_Y1 + 130 + max * interval); // 清理选中行显示的具体信息
+
+            puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 90 + max * interval, "姓名", 16, 16, MY_WHITE); // 输出选中行的具体信息
+            puthz(ADMIN_INTERFACE_X1 + 120, ADMIN_INTERFACE_Y1 + 90 + max * interval, "电动车牌", 16, 16, MY_WHITE);
+            puthz(ADMIN_INTERFACE_X1 + 220, ADMIN_INTERFACE_Y1 + 90 + max * interval, "通行证", 16, 16, MY_WHITE);
+            puthz(ADMIN_INTERFACE_X1 + 340, ADMIN_INTERFACE_Y1 + 90 + max * interval, "违规次数", 16, 16, MY_WHITE);
+
+            ltoa (*selected_id, buffer, 10); // 将ID转换为字符串
+            pos = linklist_find_data(LIST, buffer, "ID"); // 查找ID对应的节点
+            if(pos == 0)
+            {
+                puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 110 + max * interval, "未找到对应数据", 16, 16, MY_RED);
+                return;
+            }
+            linklist_get_to_node(LIST, pos, &node); // 将指针指向对应节点
+
+            if (node->USER_DATA.rln != "0" && node->USER_DATA.rln != NULL) // 输出电动车状态
+            {
+                puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 110 + max * interval, node->USER_DATA.rln, 16, 16, MY_WHITE); // 输出姓名
+            }
+            else 
+            {
+                puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 110 + max * interval, "未登记姓名", 16, 16, MY_RED); // 输出姓名
+            }
+            if (node->USER_DATA.ebike_ID != "0" && node->USER_DATA.ebike_ID != NULL) // 输出电动车状态
+            {
+                settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);
+                outtextxy(ADMIN_INTERFACE_X1 + 120, ADMIN_INTERFACE_Y1 + 114 + max * interval, node->USER_DATA.ebike_ID); // 输出电动车车牌
+            }
+            else
+            {
+                puthz(ADMIN_INTERFACE_X1 + 120, ADMIN_INTERFACE_Y1 + 110 + max * interval, "未登记车牌", 16, 16, MY_RED); // 输出电动车车牌
+            }
+            if (node->USER_DATA.ebike_license != "0" && node->USER_DATA.ebike_license != NULL) // 输出电动车状态
+            {
+                settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);
+                outtextxy(ADMIN_INTERFACE_X1 + 220, ADMIN_INTERFACE_Y1 + 114 + max * interval, node->USER_DATA.ebike_ID); // 输出电动车车牌
+            }
+            else
+            {
+                puthz(ADMIN_INTERFACE_X1 + 220, ADMIN_INTERFACE_Y1 + 110 + max * interval, "未登记通行证", 16, 16, MY_RED); // 输出电动车车牌  
+            }
+            ltoa (node->USER_DATA.violations, buffer, 10); // 将ID转换为字符串
+            settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);
+            outtextxy(ADMIN_INTERFACE_X1 + 340, ADMIN_INTERFACE_Y1 + 110 + max * interval, buffer); // 违规次数
         }
     }
     if (previous_selected_id == *selected_id &&
@@ -810,6 +905,11 @@ void handle_list_select_line_admin(unsigned long id_list[], unsigned long *selec
     {
         setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
         bar(ADMIN_INTERFACE_X1 + 10, ADMIN_INTERFACE_Y1 + 70, ADMIN_INTERFACE_X1 + 18, ADMIN_INTERFACE_Y1 + 310); // 清理所有高亮
-        *selected_id = 0;                                                                                         // 如果点击时没有选中任何行，则将selected_id设置为0
+        *selected_id = 0; // 如果点击时没有选中任何行，则将selected_id设置为0
+
+        // 清理选中行显示的具体信息
+        setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
+        bar(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 90 + max * interval,
+            ADMIN_INTERFACE_X1 + 420, ADMIN_INTERFACE_Y1 + 130 + max * interval);
     }
 }

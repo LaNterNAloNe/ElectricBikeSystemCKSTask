@@ -25,7 +25,7 @@ int list_ebike_manage_is_valid(struct _EBIKE_INFO_ TEMP, char *list_mode, char *
 int list_user_data_is_valid(USER_LOGIN_DATA TEMP, char *search_str, char *search_needed);
 int list_ebike_info_is_valid(LINKLIST_USER usrdat, char *search_str, char *search_needed);
 void list_show_page_index(unsigned int page_index, unsigned int page_count, const int max, const int interval);
-void handle_list_select_line_admin(unsigned long id_list[], unsigned long *selected_id, const int max, const int interval);
+void handle_list_select_line_admin(LINKLIST *LIST, unsigned long id_list[], unsigned long *selected_id, const int max, const int interval);
 
 
 #endif

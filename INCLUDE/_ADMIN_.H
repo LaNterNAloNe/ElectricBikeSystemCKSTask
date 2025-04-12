@@ -266,6 +266,13 @@ typedef struct _EBIKE_INFO_{
     int result;
 } EBIKE_INFO;
 
+typedef struct _MODIFY_EBIKE_DATA_{
+    char ebike_id_buffer[7];     // 输入框输入信息储存
+    char ebike_license_buffer[9]; // 输入框输入信息储存
+    char anual_check_buffer[11];  // 输入框输入信息储存
+    char location_buffer[15];  // 输入框输入信息储存
+} MODIFY_EBIKE_DATA_BUFFER;
+
 
 // 主界面
 void main_admin(int *page,unsigned long *ID);
@@ -273,8 +280,8 @@ void main_admin(int *page,unsigned long *ID);
 void admin_manage_bike_module(int *page, unsigned long *ID, LINKLIST *LIST, char *file_path, char *list_mode);
 // 数据一览界面
 void admin_database(int *page, unsigned long *ID, LINKLIST *LIST);
-void admin_modify_data(LINKLIST *LIST, FILE *fp, char *file_type, unsigned long user_id);
-void admin_handle_modify_user_data_event(FILE *fp, unsigned long user_id, int *isReturn);
+void admin_modify_data(LINKLIST *LIST, FILE *fp, char *file_type, unsigned long *user_id);
+void admin_handle_modify_user_data_event(FILE *fp, unsigned long *user_id, int *isReturn);
 // 管理员信息界面
 void admin_info(int *page, unsigned long *ID);
 
@@ -283,24 +290,32 @@ void drawgraph_admin_menu(void);
 void drawgraph_admin_feature(int page);
 void drawgraph_admin_database(void);
 void drawgraph_admin_database_user_info(void);
-int drawgraph_admin_modify_data(unsigned long user_id);
+int drawgraph_admin_modify_data(FILE *fp, LINKLIST *LIST, int flag, unsigned long user_id);
 void drawgraph_admin_info(unsigned long ID);
 
-// 画面刷新函数
-void define_admin_buttons(ADMIN_BUTTONS AdminButtons[], int page);
-void admin_get_buttons(ADMIN_BUTTONS *AdminButtons, ADMIN_BUTTONS *Examples);
-void admin_flush_buttons(int *tag, int button_counts, ADMIN_BUTTONS AdminButtons[]);
+// 画面点击事件函数
 void admin_handle_manage_feature_event(LINKLIST *LIST, int *page, char *search_str, unsigned long *id_list,
-                                       FILE *fp_EBIKE_INFO_read, int *mode, int selected_id);
+                                       FILE *fp_EBIKE_INFO_read, int *mode, unsigned long *selected_id);
 void admin_handle_buttons_event(int *page);
 void admin_handle_database_event(LINKLIST *LIST, int *flag, int *page, unsigned long *id_list,
-                                 FILE *fp_EBIKE_INFO_read, char *search_str, unsigned long selected_id);
+                                 FILE *fp_EBIKE_INFO_read, char *search_str, unsigned long *selected_id);
 
 // 二进制文件数据操作函数
 long find_file_info(FILE *fp, char *file_type, char *search_str, char *search_needed);
 int modify_user_info(FILE *fp, unsigned long user_id, char *modify_str, char *modify_needed);
+void modify_ebike_info(LINKLIST *LIST, unsigned long user_id, char *modify_str, char *modify_needed);
+
+// 判断输入合理性函数
+int admin_check_ebike_info(LINKLIST *LIST, MODIFY_EBIKE_DATA_BUFFER temp, unsigned long user_id);
+int admin_check_ebike_id(char *ebike_id);
+int admin_check_ebike_license(char *ebike_license);
+int admin_check_anual_check(char *now, unsigned long prev);
 
 // 其他杂项
+void define_admin_buttons(ADMIN_BUTTONS AdminButtons[], int page);
+void admin_get_buttons(ADMIN_BUTTONS *AdminButtons, ADMIN_BUTTONS *Examples);
+void admin_flush_buttons(int *tag, int button_counts, ADMIN_BUTTONS AdminButtons[]);
+
 void draw_person(int x1, int y1, int x2, int y2);
 void clear_person(int x1,int y1,int x2,int y2);
 void draw_cues(int x, int y, int null1, int null2);
