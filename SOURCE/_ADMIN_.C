@@ -12,7 +12,7 @@ void main_admin(int *page,unsigned long *ID){
     drawgraph_admin_menu(); // 初始化界面
     mouseinit();
 
-    if(debug_mode == 1) display_memory_usage(400, 10); // 显示调试参数 
+    if(debug_mode == 1) display_memory_usage(400, 10); // 显示调试参数
 
     while(*page == MAIN_ADMIN){
         admin_flush_buttons(&tag,STRUCT_LENGTH(AdminButtons),AdminButtons);
@@ -1221,7 +1221,7 @@ void admin_handle_manage_feature_event(LINKLIST *LIST, int *page, char *search_s
 
         // 申请失败，不修改链表数据
 
-        admin_pass_failed_anime(ADMIN_FEATURE1_X1, ADMIN_FEATURE1_Y1, ADMIN_FEATURE1_X2, ADMIN_FEATURE1_Y2, FAILED); // 操作成功后的动画
+        admin_pass_failed_anime(ADMIN_FEATURE1_X1, ADMIN_FEATURE1_Y1, ADMIN_FEATURE1_X2, ADMIN_FEATURE1_Y2, FAILED); // 操作后的动画
 
         admin_list_info(LIST, LIST_LIMIT, LIST_INTERVAL, id_list, fp_EBIKE_INFO_read, "ebike_manage",
                         list_mode, *mode, LIST_PAGEDOWN, LIST_FLUSH, "\0", "\0"); // 操作结束后刷新列表

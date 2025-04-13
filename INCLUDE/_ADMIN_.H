@@ -14,6 +14,7 @@
 #include"debug.h"
 #include"LOGIN.H"
 #include"LIST.H"
+#include"MESSAGE.H"
 
 //定义界面坐标
 #define ADMIN_MENU_X1 0
