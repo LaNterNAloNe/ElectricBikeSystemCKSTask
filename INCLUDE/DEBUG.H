@@ -1,11 +1,14 @@
 #ifndef _DEBUG_H_
 #define _DEBUG_H_
 
+#include <dos.h>
+#include <time.h>
 #include <alloc.h>
 #include <graphics.h>
-#include "GROCERY.H"
 #include <stdio.h>
 #include <stdlib.h>
+#include "GROCERY.H"
+
 
 unsigned long get_used_memory();
 void display_memory_usage(int x, int y);

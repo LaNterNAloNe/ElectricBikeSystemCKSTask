@@ -37,8 +37,8 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
     USER_LOGIN_DATA user_temp;
     LINKLIST_NODE *node = NULL;
 
-    show_num(10, 10, start, MY_WHITE); // 显示start
-    show_num(10, 30, end, MY_WHITE);   // 显示end
+    // show_num(10, 10, start, MY_WHITE); // 显示start
+    // show_num(10, 30, end, MY_WHITE);   // 显示end
 
     if (debug_mode == 1)
     {
@@ -61,6 +61,7 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
         node = NULL;
         return;
     case 2:
+        setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
         bar(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70,
             ADMIN_INTERFACE_X1 + 500, ADMIN_INTERFACE_Y1 + 70 + max * interval); // 清理列表
         start = 0;
