@@ -71,18 +71,54 @@
 #define USER_BIKE_REGISTER_INPUT2_X2 600
 #define USER_BIKE_REGISTER_INPUT2_Y1 225
 #define USER_BIKE_REGISTER_INPUT2_Y2 260
-#define USER_BIKE_REGISTER_INPUT3_X1 250
-#define USER_BIKE_REGISTER_INPUT3_X2 600
-#define USER_BIKE_REGISTER_INPUT3_Y1 160
-#define USER_BIKE_REGISTER_INPUT3_Y2 195
-#define USER_BIKE_REGISTER_INPUT4_X1 250
-#define USER_BIKE_REGISTER_INPUT4_X2 600
-#define USER_BIKE_REGISTER_INPUT4_Y1 160
-#define USER_BIKE_REGISTER_INPUT4_Y2 195
-#define USER_BIKE_REGISTER_INPUT5_X1 250
-#define USER_BIKE_REGISTER_INPUT5_X2 600
-#define USER_BIKE_REGISTER_INPUT5_Y1 160
-#define USER_BIKE_REGISTER_INPUT5_Y2 195
+
+#define USER_BIKE_LICENSE_BUTTON1_X1 300
+#define USER_BIKE_LICENSE_BUTTON1_X2 380
+#define USER_BIKE_LICENSE_BUTTON1_Y1 420
+#define USER_BIKE_LICENSE_BUTTON1_Y2 455
+#define USER_BIKE_LICENSE_BUTTON2_X1 325
+#define USER_BIKE_LICENSE_BUTTON2_X2 405
+#define USER_BIKE_LICENSE_BUTTON2_Y1 125
+#define USER_BIKE_LICENSE_BUTTON2_Y2 155
+
+//选择时间地点的小方块
+#define USER_BIKE_LICENSE_BOX1_1_X1 280  
+#define USER_BIKE_LICENSE_BOX1_1_X2 295
+#define USER_BIKE_LICENSE_BOX1_1_Y1 165
+#define USER_BIKE_LICENSE_BOX1_1_Y2 180
+#define USER_BIKE_LICENSE_BOX1_2_X1 440
+#define USER_BIKE_LICENSE_BOX1_2_X2 455
+#define USER_BIKE_LICENSE_BOX1_2_Y1 165
+#define USER_BIKE_LICENSE_BOX1_2_Y2 180
+#define USER_BIKE_LICENSE_BOX1_3_X1 600
+#define USER_BIKE_LICENSE_BOX1_3_X2 615
+#define USER_BIKE_LICENSE_BOX1_3_Y1 165
+#define USER_BIKE_LICENSE_BOX1_3_Y2 180
+#define USER_BIKE_LICENSE_BOX2_1_X1 350
+#define USER_BIKE_LICENSE_BOX2_1_X2 365
+#define USER_BIKE_LICENSE_BOX2_1_Y1 295
+#define USER_BIKE_LICENSE_BOX2_1_Y2 310
+#define USER_BIKE_LICENSE_BOX2_2_X1 350
+#define USER_BIKE_LICENSE_BOX2_2_X2 365
+#define USER_BIKE_LICENSE_BOX2_2_Y1 330
+#define USER_BIKE_LICENSE_BOX2_2_Y2 345
+#define USER_BIKE_LICENSE_BOX2_3_X1 350
+#define USER_BIKE_LICENSE_BOX2_3_X2 365
+#define USER_BIKE_LICENSE_BOX2_3_Y1 365
+#define USER_BIKE_LICENSE_BOX2_3_Y2 380
+#define USER_BIKE_LICENSE_BOX3_1_X1 600
+#define USER_BIKE_LICENSE_BOX3_1_X2 615
+#define USER_BIKE_LICENSE_BOX3_1_Y1 310
+#define USER_BIKE_LICENSE_BOX3_1_Y2 325
+#define USER_BIKE_LICENSE_BOX3_2_X1 600
+#define USER_BIKE_LICENSE_BOX3_2_X2 615
+#define USER_BIKE_LICENSE_BOX3_2_Y1 350
+#define USER_BIKE_LICENSE_BOX3_2_Y2 365
+#define USER_BIKE_LICENSE_BOX3_3_X1 0
+#define USER_BIKE_LICENSE_BOX3_3_X2 0
+#define USER_BIKE_LICENSE_BOX3_3_Y1 0
+#define USER_BIKE_LICENSE_BOX3_3_Y2 0
+
 
 //激活状态
 #define ACTIVE_USER_NONE 0
@@ -102,6 +138,9 @@ typedef struct {
 	int page;
 }user_button;
 
+typedef struct {
+	int x1, x2, y1, y2;
+}user_box;
 // typedef struct {
 // 	char rln[16];
 // 	unsigned long ID;
@@ -122,11 +161,14 @@ void drawgraph_user_bike_register_info(unsigned long *id);
 void flushUserRegister(int *tag);
 int EBIKE_INFO_judge(char *usrn,char *e_bike_id,unsigned long *id);
 void anime_user_bike_register_fail(int flag);
-int ebike_user_judge(unsigned long* ID);
+int ebike_user_register_judge(unsigned long* ID);
 void user_bike_register_getinfo(EBIKE_INFO *user_info,unsigned long *id);
 
 void user_bike_license(int* page, unsigned long* id);
-void drawgraph_user_bike_license();
+void drawgraph_user_bike_license(unsigned long *id,user_box box[3][3] );
+void flushUserLicense(user_box box[3][3],int data[3]);
+void handle_click_user_license(user_box box[3][3], int data[3]);
+void add_days_to_date(char* date_string, int days_to_add);
 
 
 void user_bike_anual();
