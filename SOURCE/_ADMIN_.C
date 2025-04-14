@@ -142,6 +142,7 @@ void admin_modify_data(LINKLIST *LIST, FILE *fp, char *file_type, unsigned long 
     int flag = -1;
     int isReturn = 0; // 是否返回;
     ADMIN_BUTTONS AdminButtons[12];
+
     define_admin_buttons(AdminButtons, ADMIN_MODIFY_DATA_USER_INFO); // 定义按钮
 
     if(strcmp(file_type, "user_data") == 0){ // 修改用户信息
@@ -174,7 +175,7 @@ void admin_modify_data(LINKLIST *LIST, FILE *fp, char *file_type, unsigned long 
         }
         else if(flag = ADMIN_DATABASE_EBIKE_INFO){ // 修改车辆信息
             admin_flush_buttons(&tag, 6, AdminButtons);
-            // admin_handle_modify_ebike_data_event(LIST, fp, user_id, &isReturn); // 处理点击事件
+            admin_handle_modify_ebike_data_event(LIST, user_id, &isReturn); // 处理点击事件
         }
         newmouse(&MouseX, &MouseY, &press);
         delay(25);
@@ -185,161 +186,32 @@ void admin_modify_data(LINKLIST *LIST, FILE *fp, char *file_type, unsigned long 
     drawgraph_admin_database_user_info();
 }
 
-void admin_handle_modify_user_data_event(FILE *fp, unsigned long *user_id, int *isReturn)
-{ // 函数将在返回时清理user_id
-    static char psw_buffer[15] = "\0"; // 输入框输入信息储存
-    static char state_buffer = '\0';
-    char buffer[5];
 
-    // 处理点击事件
-    if (mouse_press(ADMIN_MODIFY_DATA_SAVE_X1, ADMIN_MODIFY_DATA_SAVE_Y1,
-                    ADMIN_MODIFY_DATA_SAVE_X2, ADMIN_MODIFY_DATA_SAVE_Y2) == 1) // 点击保存
-    {
-        // 保存修改后的用户信息到文件中 
-        if(strcmp(psw_buffer, "\0") != 0){ // 修改密码
-            if(modify_user_info(fp, *user_id, psw_buffer, "password") == 0) // 修改密码
-            {
-                *user_id = 0;
-                return;
-            }
-            
-        }
-        if(state_buffer != '\0'){ // 修改状态
-            itoa((int)state_buffer, buffer, 10);                            // 转换为字符串
-            if (modify_user_info(fp, *user_id, buffer, "state") == 0) // 修改状态
-            {
-                *user_id = 0;
-                return;
-            }
-        }
+/*****************************************************************
+MODULE:管理员消息中心
+*****************************************************************/
+void admin_message_center(int *page, unsigned long *ID){
 
-        puthz(ADMIN_MODIFY_DATA_INTERFACE_X1 + 100, ADMIN_MODIFY_DATA_INTERFACE_Y1 + 10, "成功保存修改信息！", 16, 16, MY_GREEN); // 显示保存成功
-        Input_Bar(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
-        memset(psw_buffer, '\0', sizeof(psw_buffer)); // 清空密码输入框
-        state_buffer = '\0';
+    int tag = ACTIVE_ADMIN_NULL;
+    ADMIN_BUTTONS AdminButtons[12];
+    define_admin_buttons(AdminButtons, *page); // 定义按钮
+    clrmous(MouseX, MouseY);
 
-        delay(500);                                   // 延时
-        *user_id = 0;
-        *isReturn = 1;                                // 标记为返回
-    }
-    if (mouse_press(ADMIN_MODIFY_DATA_INPUTBAR3_X1, ADMIN_MODIFY_DATA_INPUTBAR3_Y1,
-                    ADMIN_MODIFY_DATA_INPUTBAR3_X2, ADMIN_MODIFY_DATA_INPUTBAR3_Y2) == 1) // 点击密码框
-    {
-        Input_Bar(psw_buffer, ADMIN_MODIFY_DATA_INPUTBAR3_X1, ADMIN_MODIFY_DATA_INPUTBAR3_Y1, 13, MY_LIGHTGRAY, INPUTBAR_NO_CLEAR, 1);
-    }
-    if (mouse_press(ADMIN_MODIFY_DATA_FREEZE_X1, ADMIN_MODIFY_DATA_FREEZE_Y1,
-                    ADMIN_MODIFY_DATA_FREEZE_X2, ADMIN_MODIFY_DATA_FREEZE_Y2) == 1 &&
-        state_buffer != FROZEN) // 点击冻结
-    {
-        state_buffer = FROZEN;
-        setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
-        bar(ADMIN_MODIFY_DATA_INTERFACE_X1 + 10, ADMIN_MODIFY_DATA_INTERFACE_Y2 - 25, 
-            ADMIN_MODIFY_DATA_INTERFACE_X1 + 350, ADMIN_MODIFY_DATA_INTERFACE_Y2 - 5); // 显示冻结
-        puthz(ADMIN_MODIFY_DATA_INTERFACE_X1 + 10, ADMIN_MODIFY_DATA_INTERFACE_Y2 - 25,
-                "冻结账户：允许登陆，无法使用功能", 16, 16, MY_LIGHTBLUE); // 显示冻结
-    }
-    if (mouse_press(ADMIN_MODIFY_DATA_BAN_X1, ADMIN_MODIFY_DATA_BAN_Y1,
-                    ADMIN_MODIFY_DATA_BAN_X2, ADMIN_MODIFY_DATA_BAN_Y2) == 1 &&
-        state_buffer != BANNED) // 点击解冻
-    {
-        state_buffer = BANNED;
-        setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
-        bar(ADMIN_MODIFY_DATA_INTERFACE_X1 + 10, ADMIN_MODIFY_DATA_INTERFACE_Y2 - 25,
-            ADMIN_MODIFY_DATA_INTERFACE_X1 + 350, ADMIN_MODIFY_DATA_INTERFACE_Y2 - 5); // 显示封禁
-        puthz(ADMIN_MODIFY_DATA_INTERFACE_X1 + 10, ADMIN_MODIFY_DATA_INTERFACE_Y2 - 25,
-            "封禁账户：禁止登陆，无法使用功能", 16, 16, MY_RED); // 显示封禁
-    }
-    if (mouse_press(ADMIN_MODIFY_DATA_RESTORE_X1, ADMIN_MODIFY_DATA_RESTORE_Y1,
-                    ADMIN_MODIFY_DATA_RESTORE_X2, ADMIN_MODIFY_DATA_RESTORE_Y2) == 1 &&
-        state_buffer != ACTIVE) // 点击解冻
-    {
-        state_buffer = ACTIVE;
-        setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
-        bar(ADMIN_MODIFY_DATA_INTERFACE_X1 + 10, ADMIN_MODIFY_DATA_INTERFACE_Y2 - 25,
-            ADMIN_MODIFY_DATA_INTERFACE_X1 + 350, ADMIN_MODIFY_DATA_INTERFACE_Y2 - 5); // 显示解封
-        puthz(ADMIN_MODIFY_DATA_INTERFACE_X1 + 10, ADMIN_MODIFY_DATA_INTERFACE_Y2 - 25,
-            "恢复账户：允许登陆，正常使用功能", 16, 16, MY_WHITE); // 显示解封
-    }
-    if (mouse_press(ADMIN_MODIFY_DATA_EXIT_X1, ADMIN_MODIFY_DATA_EXIT_Y1,
-                    ADMIN_MODIFY_DATA_EXIT_X2, ADMIN_MODIFY_DATA_EXIT_Y2) == 1) // 点击返回
-    {
-        Input_Bar(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
-        memset(psw_buffer, '\0', sizeof(psw_buffer)); // 清空密码输入框
-        *user_id = 0;
-        *isReturn = 1; // 标记为返回
-    }
-}
+    drawgraph_admin_menu(); // 初始化界面
+    drawgraph_admin_message_center(); // 绘制界面
+    while(*page == ADMIN_MESSAGE){
+        admin_handle_buttons_event(page);
+        admin_flush_buttons(&tag, STRUCT_LENGTH(AdminButtons), AdminButtons);
 
-void admin_handle_modify_ebike_data_event(LINKLIST *LIST, unsigned long *user_id, int *isReturn)
-{ // 函数将在返回时清理user_id
-    MODIFY_EBIKE_DATA_BUFFER temp = {"\0","\0","\0","\0"};
-    char buffer1[15];
-    char buffer2[15];
+        newmouse(&MouseX, &MouseY, &press);
 
-    if (mouse_press(ADMIN_MODIFY_DATA_INPUTBAR3_X1, ADMIN_MODIFY_DATA_INPUTBAR3_Y1,
-                    ADMIN_MODIFY_DATA_INPUTBAR3_X2, ADMIN_MODIFY_DATA_INPUTBAR3_Y2) == 1) // 点击电动车牌框
-    {
-        Input_Bar(temp.ebike_id_buffer, ADMIN_MODIFY_DATA_INPUTBAR3_X1, ADMIN_MODIFY_DATA_INPUTBAR3_Y1, 6, MY_LIGHTGRAY, INPUTBAR_NO_CLEAR, 1);
-    }
-    if (mouse_press(ADMIN_MODIFY_DATA_INPUTBAR4_X1, ADMIN_MODIFY_DATA_INPUTBAR4_Y1,
-                    ADMIN_MODIFY_DATA_INPUTBAR4_X2, ADMIN_MODIFY_DATA_INPUTBAR4_Y2) == 1) // 点击牌证号码框
-    {
-        Input_Bar(temp.ebike_license_buffer, ADMIN_MODIFY_DATA_INPUTBAR4_X1, ADMIN_MODIFY_DATA_INPUTBAR4_Y1, 8, MY_LIGHTGRAY, INPUTBAR_NO_CLEAR, 1);
-    }
-    if (mouse_press(ADMIN_MODIFY_DATA_INPUTBAR5_X1, ADMIN_MODIFY_DATA_INPUTBAR5_Y1,
-                    ADMIN_MODIFY_DATA_INPUTBAR5_X2, ADMIN_MODIFY_DATA_INPUTBAR5_Y2) == 1) // 点击车辆年审框
-    {
-        Input_Bar(temp.anual_check_buffer, ADMIN_MODIFY_DATA_INPUTBAR5_X1, ADMIN_MODIFY_DATA_INPUTBAR5_Y1, 10, MY_LIGHTGRAY, INPUTBAR_NO_CLEAR, 1);
-    }
-    if (mouse_press(ADMIN_MODIFY_DATA_INPUTBAR5_X1, ADMIN_MODIFY_DATA_INPUTBAR5_Y1,
-                    ADMIN_MODIFY_DATA_INPUTBAR5_X2, ADMIN_MODIFY_DATA_INPUTBAR5_Y2) == 1) // 点击位置框
-    {
-        Input_Bar(temp.location_buffer, ADMIN_MODIFY_DATA_INPUTBAR5_X1, ADMIN_MODIFY_DATA_INPUTBAR5_Y1, 14, MY_LIGHTGRAY, INPUTBAR_NO_CLEAR, 1);
-    }
-
-    if (mouse_press(ADMIN_MODIFY_DATA_SAVE_X1, ADMIN_MODIFY_DATA_SAVE_Y1,
-                    ADMIN_MODIFY_DATA_SAVE_X2, ADMIN_MODIFY_DATA_SAVE_Y2) == 1) // 点击保存
-    {
-        if(admin_check_ebike_info(LIST, temp, *user_id) == 0) // 检查输入信息合理性，同时检查是否存在需要修改数据的目标
+        if (mouse_press(ADMIN_FEATURE_EXIT_X1, ADMIN_FEATURE_EXIT_Y1,
+                        ADMIN_FEATURE_EXIT_X2, ADMIN_FEATURE_EXIT_Y2) == 1) // 点击返回
         {
-            *user_id = 0;
-            return;
-        }
-        // 保存修改后的用户信息到文件中
-        if (strcmp(temp.ebike_id_buffer, "\0") != 0) // 修改电动车ID
-        {
-            modify_ebike_info(LIST, *user_id, temp.ebike_id_buffer, "ebike_id");
-        }
-        if (strcmp(temp.ebike_license_buffer, "\0")!= 0) // 修改电动车牌
-        {
-            modify_ebike_info(LIST, *user_id, temp.ebike_license_buffer, "ebike_license");
-        }
-        if (strcmp(temp.anual_check_buffer, "\0")!= 0) // 修改车辆年审
-        {
-            modify_ebike_info(LIST, *user_id, temp.anual_check_buffer, "anual_check");
-        }
-        if (strcmp(temp.location_buffer, "\0")!= 0) // 修改车辆位置
-        {
-            modify_ebike_info(LIST, *user_id, temp.location_buffer, "location");
+            *page = MAIN_ADMIN;
         }
 
-        puthz(ADMIN_MODIFY_DATA_INTERFACE_X1 + 100, ADMIN_MODIFY_DATA_INTERFACE_Y1 + 10, "成功保存修改信息！", 16, 16, MY_GREEN); // 显示保存成功
-        Input_Bar(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
-        memset(&temp, '\0', sizeof(temp));              // 清空缓冲区
-
-        delay(500);    // 延时
-        *user_id = 0;
-        *isReturn = 1; // 标记为返回
-    }
-
-    // 处理点击事件
-    if (mouse_press(ADMIN_MODIFY_DATA_EXIT_X1, ADMIN_MODIFY_DATA_EXIT_Y1,
-                    ADMIN_MODIFY_DATA_EXIT_X2, ADMIN_MODIFY_DATA_EXIT_Y2) == 1) // 点击返回
-    {
-        Input_Bar(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
-        memset(&temp, '\0', sizeof(temp));             // 清空缓冲区
-        *user_id = 0;
-        *isReturn = 1;                                // 标记为返回
+        delay(25);
     }
 }
 
@@ -771,6 +643,13 @@ void drawgraph_admin_info(unsigned long ID)
     outtextxy(ADMIN_INTERFACE_X1 + 110, ADMIN_INTERFACE_Y1 + 16, buffer); // 输出名称
 }
 
+void drawgraph_admin_message_center()
+{
+    puthz(ADMIN_INTERFACE_X1 + 15, ADMIN_INTERFACE_Y1 + 5, "消息中心", 24, 20, MY_WHITE); // 输出文本
+
+    draw_cues(ADMIN_BUTTON7_X2 + 10, ADMIN_BUTTON7_Y1, NULL, NULL); // 绘制箭头，标明当前打开页面为此
+    clear_exit(ADMIN_FEATURE_EXIT_X1, ADMIN_FEATURE_EXIT_Y1, ADMIN_FEATURE_EXIT_X2, ADMIN_FEATURE_EXIT_Y2);
+}
 
 /*****************************************************************
 MODULE: 读写数据函数
@@ -1009,6 +888,7 @@ int admin_check_anual_check(char *now, unsigned long prev){ // 传入的now是带有'.
     return 1;
 }
 
+
 /*****************************************************************
 MODULE: 处理鼠标点击事件的函数
 *****************************************************************/
@@ -1075,6 +955,14 @@ void admin_handle_buttons_event(int *page)
     {
         *page = ADMIN_DATABASE;
         return; 
+    }
+
+    /*信息中心*/
+    if (mouse_press(ADMIN_BUTTON7_X1, ADMIN_BUTTON7_Y1, ADMIN_BUTTON7_X2, ADMIN_BUTTON7_Y2) == 1 &&
+        *page!= ADMIN_MESSAGE)
+    {
+        *page = ADMIN_MESSAGE;
+        return;
     }
 }
 
@@ -1322,6 +1210,165 @@ void admin_handle_database_event(LINKLIST *LIST, int *flag, int *page, unsigned 
     }
 }
 
+void admin_handle_modify_user_data_event(FILE *fp, unsigned long *user_id, int *isReturn)
+{                                      // 函数将在返回时清理user_id
+    static char psw_buffer[15] = "\0"; // 输入框输入信息储存
+    static char state_buffer = '\0';
+    char buffer[5];
+
+    // 处理点击事件
+    if (mouse_press(ADMIN_MODIFY_DATA_SAVE_X1, ADMIN_MODIFY_DATA_SAVE_Y1,
+                    ADMIN_MODIFY_DATA_SAVE_X2, ADMIN_MODIFY_DATA_SAVE_Y2) == 1) // 点击保存
+    {
+        // 保存修改后的用户信息到文件中
+        if (strcmp(psw_buffer, "\0") != 0)
+        {                                                                    // 修改密码
+            if (modify_user_info(fp, *user_id, psw_buffer, "password") == 0) // 修改密码
+            {
+                *user_id = 0;
+                return;
+            }
+        }
+        if (state_buffer != '\0')
+        {                                                             // 修改状态
+            itoa((int)state_buffer, buffer, 10);                      // 转换为字符串
+            if (modify_user_info(fp, *user_id, buffer, "state") == 0) // 修改状态
+            {
+                *user_id = 0;
+                return;
+            }
+        }
+
+        puthz(ADMIN_MODIFY_DATA_INTERFACE_X1 + 100, ADMIN_MODIFY_DATA_INTERFACE_Y1 + 10, "成功保存修改信息！", 16, 16, MY_GREEN); // 显示保存成功
+        Input_Bar(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
+        memset(psw_buffer, '\0', sizeof(psw_buffer)); // 清空密码输入框
+        state_buffer = '\0';
+
+        delay(500); // 延时
+        *user_id = 0;
+        *isReturn = 1; // 标记为返回
+    }
+    if (mouse_press(ADMIN_MODIFY_DATA_INPUTBAR3_X1, ADMIN_MODIFY_DATA_INPUTBAR3_Y1,
+                    ADMIN_MODIFY_DATA_INPUTBAR3_X2, ADMIN_MODIFY_DATA_INPUTBAR3_Y2) == 1) // 点击密码框
+    {
+        Input_Bar(psw_buffer, ADMIN_MODIFY_DATA_INPUTBAR3_X1, ADMIN_MODIFY_DATA_INPUTBAR3_Y1, 13, MY_LIGHTGRAY, INPUTBAR_NO_CLEAR, 1);
+    }
+    if (mouse_press(ADMIN_MODIFY_DATA_FREEZE_X1, ADMIN_MODIFY_DATA_FREEZE_Y1,
+                    ADMIN_MODIFY_DATA_FREEZE_X2, ADMIN_MODIFY_DATA_FREEZE_Y2) == 1 &&
+        state_buffer != FROZEN) // 点击冻结
+    {
+        state_buffer = FROZEN;
+        setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
+        bar(ADMIN_MODIFY_DATA_INTERFACE_X1 + 10, ADMIN_MODIFY_DATA_INTERFACE_Y2 - 25,
+            ADMIN_MODIFY_DATA_INTERFACE_X1 + 350, ADMIN_MODIFY_DATA_INTERFACE_Y2 - 5); // 显示冻结
+        puthz(ADMIN_MODIFY_DATA_INTERFACE_X1 + 10, ADMIN_MODIFY_DATA_INTERFACE_Y2 - 25,
+              "冻结账户：允许登陆，无法使用功能", 16, 16, MY_LIGHTBLUE); // 显示冻结
+    }
+    if (mouse_press(ADMIN_MODIFY_DATA_BAN_X1, ADMIN_MODIFY_DATA_BAN_Y1,
+                    ADMIN_MODIFY_DATA_BAN_X2, ADMIN_MODIFY_DATA_BAN_Y2) == 1 &&
+        state_buffer != BANNED) // 点击解冻
+    {
+        state_buffer = BANNED;
+        setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
+        bar(ADMIN_MODIFY_DATA_INTERFACE_X1 + 10, ADMIN_MODIFY_DATA_INTERFACE_Y2 - 25,
+            ADMIN_MODIFY_DATA_INTERFACE_X1 + 350, ADMIN_MODIFY_DATA_INTERFACE_Y2 - 5); // 显示封禁
+        puthz(ADMIN_MODIFY_DATA_INTERFACE_X1 + 10, ADMIN_MODIFY_DATA_INTERFACE_Y2 - 25,
+              "封禁账户：禁止登陆，无法使用功能", 16, 16, MY_RED); // 显示封禁
+    }
+    if (mouse_press(ADMIN_MODIFY_DATA_RESTORE_X1, ADMIN_MODIFY_DATA_RESTORE_Y1,
+                    ADMIN_MODIFY_DATA_RESTORE_X2, ADMIN_MODIFY_DATA_RESTORE_Y2) == 1 &&
+        state_buffer != ACTIVE) // 点击解冻
+    {
+        state_buffer = ACTIVE;
+        setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
+        bar(ADMIN_MODIFY_DATA_INTERFACE_X1 + 10, ADMIN_MODIFY_DATA_INTERFACE_Y2 - 25,
+            ADMIN_MODIFY_DATA_INTERFACE_X1 + 350, ADMIN_MODIFY_DATA_INTERFACE_Y2 - 5); // 显示解封
+        puthz(ADMIN_MODIFY_DATA_INTERFACE_X1 + 10, ADMIN_MODIFY_DATA_INTERFACE_Y2 - 25,
+              "恢复账户：允许登陆，正常使用功能", 16, 16, MY_WHITE); // 显示解封
+    }
+    if (mouse_press(ADMIN_MODIFY_DATA_EXIT_X1, ADMIN_MODIFY_DATA_EXIT_Y1,
+                    ADMIN_MODIFY_DATA_EXIT_X2, ADMIN_MODIFY_DATA_EXIT_Y2) == 1) // 点击返回
+    {
+        Input_Bar(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
+        memset(psw_buffer, '\0', sizeof(psw_buffer)); // 清空密码输入框
+        *user_id = 0;
+        *isReturn = 1; // 标记为返回
+    }
+}
+
+void admin_handle_modify_ebike_data_event(LINKLIST *LIST, unsigned long *user_id, int *isReturn)
+{ // 函数将在返回时清理user_id
+    MODIFY_EBIKE_DATA_BUFFER temp = {"\0", "\0", "\0", "\0"};
+    char buffer1[15];
+    char buffer2[15];
+
+    if (mouse_press(ADMIN_MODIFY_DATA_INPUTBAR3_X1, ADMIN_MODIFY_DATA_INPUTBAR3_Y1,
+                    ADMIN_MODIFY_DATA_INPUTBAR3_X2, ADMIN_MODIFY_DATA_INPUTBAR3_Y2) == 1) // 点击电动车牌框
+    {
+        Input_Bar(temp.ebike_id_buffer, ADMIN_MODIFY_DATA_INPUTBAR3_X1, ADMIN_MODIFY_DATA_INPUTBAR3_Y1, 6, MY_LIGHTGRAY, INPUTBAR_NO_CLEAR, 1);
+    }
+    if (mouse_press(ADMIN_MODIFY_DATA_INPUTBAR4_X1, ADMIN_MODIFY_DATA_INPUTBAR4_Y1,
+                    ADMIN_MODIFY_DATA_INPUTBAR4_X2, ADMIN_MODIFY_DATA_INPUTBAR4_Y2) == 1) // 点击牌证号码框
+    {
+        Input_Bar(temp.ebike_license_buffer, ADMIN_MODIFY_DATA_INPUTBAR4_X1, ADMIN_MODIFY_DATA_INPUTBAR4_Y1, 8, MY_LIGHTGRAY, INPUTBAR_NO_CLEAR, 1);
+    }
+    if (mouse_press(ADMIN_MODIFY_DATA_INPUTBAR5_X1, ADMIN_MODIFY_DATA_INPUTBAR5_Y1,
+                    ADMIN_MODIFY_DATA_INPUTBAR5_X2, ADMIN_MODIFY_DATA_INPUTBAR5_Y2) == 1) // 点击车辆年审框
+    {
+        Input_Bar(temp.anual_check_buffer, ADMIN_MODIFY_DATA_INPUTBAR5_X1, ADMIN_MODIFY_DATA_INPUTBAR5_Y1, 10, MY_LIGHTGRAY, INPUTBAR_NO_CLEAR, 1);
+    }
+    if (mouse_press(ADMIN_MODIFY_DATA_INPUTBAR5_X1, ADMIN_MODIFY_DATA_INPUTBAR5_Y1,
+                    ADMIN_MODIFY_DATA_INPUTBAR5_X2, ADMIN_MODIFY_DATA_INPUTBAR5_Y2) == 1) // 点击位置框
+    {
+        Input_Bar(temp.location_buffer, ADMIN_MODIFY_DATA_INPUTBAR5_X1, ADMIN_MODIFY_DATA_INPUTBAR5_Y1, 14, MY_LIGHTGRAY, INPUTBAR_NO_CLEAR, 1);
+    }
+
+    if (mouse_press(ADMIN_MODIFY_DATA_SAVE_X1, ADMIN_MODIFY_DATA_SAVE_Y1,
+                    ADMIN_MODIFY_DATA_SAVE_X2, ADMIN_MODIFY_DATA_SAVE_Y2) == 1) // 点击保存
+    {
+        if (admin_check_ebike_info(LIST, temp, *user_id) == 0) // 检查输入信息合理性，同时检查是否存在需要修改数据的目标
+        {
+            *user_id = 0;
+            return;
+        }
+        // 保存修改后的用户信息到文件中
+        if (strcmp(temp.ebike_id_buffer, "\0") != 0) // 修改电动车ID
+        {
+            modify_ebike_info(LIST, *user_id, temp.ebike_id_buffer, "ebike_id");
+        }
+        if (strcmp(temp.ebike_license_buffer, "\0") != 0) // 修改电动车牌
+        {
+            modify_ebike_info(LIST, *user_id, temp.ebike_license_buffer, "ebike_license");
+        }
+        if (strcmp(temp.anual_check_buffer, "\0") != 0) // 修改车辆年审
+        {
+            modify_ebike_info(LIST, *user_id, temp.anual_check_buffer, "anual_check");
+        }
+        if (strcmp(temp.location_buffer, "\0") != 0) // 修改车辆位置
+        {
+            modify_ebike_info(LIST, *user_id, temp.location_buffer, "location");
+        }
+
+        puthz(ADMIN_MODIFY_DATA_INTERFACE_X1 + 100, ADMIN_MODIFY_DATA_INTERFACE_Y1 + 10, "成功保存修改信息！", 16, 16, MY_GREEN); // 显示保存成功
+        Input_Bar(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
+        memset(&temp, '\0', sizeof(temp)); // 清空缓冲区
+
+        delay(500); // 延时
+        *user_id = 0;
+        *isReturn = 1; // 标记为返回
+    }
+
+    // 处理点击事件
+    if (mouse_press(ADMIN_MODIFY_DATA_EXIT_X1, ADMIN_MODIFY_DATA_EXIT_Y1,
+                    ADMIN_MODIFY_DATA_EXIT_X2, ADMIN_MODIFY_DATA_EXIT_Y2) == 1) // 点击返回
+    {
+        Input_Bar(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
+        memset(&temp, '\0', sizeof(temp)); // 清空缓冲区
+        *user_id = 0;
+        *isReturn = 1; // 标记为返回
+    }
+}
+
 /**********************************************************
 MODULE:其他杂项函数
 ***********************************************************/
@@ -1563,6 +1610,14 @@ void define_admin_buttons(ADMIN_BUTTONS AdminButtons[], int page)
         admin_get_buttons(&AdminButtons[3], &Examples[28]);
         admin_get_buttons(&AdminButtons[4], &Examples[29]);
         admin_get_buttons(&AdminButtons[5], &Examples[30]);
+    }
+    else if (page == ADMIN_MESSAGE)
+    {
+        for (i = 0, j = 0; i < 9; i++, j++)
+        {
+            admin_get_buttons(&AdminButtons[j], &Examples[i]);
+        }
+        admin_get_buttons(&AdminButtons[9], &Examples[15]);
     }
 }
 

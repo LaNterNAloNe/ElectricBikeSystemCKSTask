@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#include <graphics.h>
+#include "MOUSE.H"
 
 /* Êý×Ö¼ü£¨È¡µÍ×Ö½ÚASCIIÂë£© */
 #define NUM0 0x30 // '0'
@@ -149,6 +151,8 @@
 unsigned long get_approx_time(char *time_buffer);
 unsigned long get_exact_time(char *time_buffer);
 
+void initcolorpalette();
+void drawExittingProgram(int err);
 
 #endif
 

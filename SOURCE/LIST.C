@@ -35,6 +35,7 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
     char buffer[10];
     EBIKE_INFO ebike_temp;
     USER_LOGIN_DATA user_temp;
+    // MESSAGE message_temp;
     LINKLIST_NODE *node = NULL;
 
     // show_num(10, 10, start, MY_WHITE); // 显示start
@@ -788,7 +789,7 @@ int list_user_data_is_valid(USER_LOGIN_DATA TEMP, char *search_str, char *search
 }
 int list_ebike_info_is_valid(LINKLIST_USER usrdat, char *search_str, char *search_needed)
 {
-    if (usrdat.ebike_ID != 0) // 要求一定要注册了车辆到数据库中，否则不予打印
+    if (usrdat.ebike_ID != 0 && usrdat.ID != 0) // 要求一定要注册了车辆到数据库中，否则不予打印
     {
         if (!strcmp(search_str, "\0") ||
             usrdat.ID == atol(search_str) && !strcmp(search_needed, "ID") ||

@@ -1,8 +1,6 @@
 #include "DEBUG.H"
 
 /* 获取当前程序内存使用量（单位：KB） */
-
-
 unsigned long get_used_memory()
 {
     struct heapinfo hi = {0};

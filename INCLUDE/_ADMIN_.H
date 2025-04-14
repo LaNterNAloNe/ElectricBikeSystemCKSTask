@@ -282,7 +282,8 @@ void admin_manage_bike_module(int *page, unsigned long *ID, LINKLIST *LIST, char
 // 数据一览界面
 void admin_database(int *page, unsigned long *ID, LINKLIST *LIST);
 void admin_modify_data(LINKLIST *LIST, FILE *fp, char *file_type, unsigned long *user_id);
-void admin_handle_modify_user_data_event(FILE *fp, unsigned long *user_id, int *isReturn);
+// 消息中心界面
+void admin_message_center(int *page, unsigned long *ID);
 // 管理员信息界面
 void admin_info(int *page, unsigned long *ID);
 
@@ -292,6 +293,7 @@ void drawgraph_admin_feature(int page);
 void drawgraph_admin_database(void);
 void drawgraph_admin_database_user_info(void);
 int drawgraph_admin_modify_data(FILE *fp, LINKLIST *LIST, int flag, unsigned long user_id);
+void drawgraph_admin_message_center(void);
 void drawgraph_admin_info(unsigned long ID);
 
 // 画面点击事件函数
@@ -300,6 +302,8 @@ void admin_handle_manage_feature_event(LINKLIST *LIST, int *page, char *search_s
 void admin_handle_buttons_event(int *page);
 void admin_handle_database_event(LINKLIST *LIST, int *flag, int *page, unsigned long *id_list,
                                  FILE *fp_EBIKE_INFO_read, char *search_str, unsigned long *selected_id);
+void admin_handle_modify_user_data_event(FILE *fp, unsigned long *user_id, int *isReturn);
+void admin_handle_modify_ebike_data_event(LINKLIST *LIST, unsigned long *user_id, int *isReturn);
 
 // 二进制文件数据操作函数
 long find_file_info(FILE *fp, char *file_type, char *search_str, char *search_needed);

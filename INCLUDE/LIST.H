@@ -13,6 +13,7 @@
 #include "LOGIN.H"
 #include "LINKLIST.H"
 #include "GROCERY.H"
+#include "MESSAGE.H" 
 
 
 // ÁÐ±íº¯Êý

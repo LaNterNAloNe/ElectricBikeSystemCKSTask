@@ -3,7 +3,26 @@
 #include <stdlib.h>
 #include <string.h>
 
-//链表用来将较多数据存储到内存中以方便进行频繁访问
+/**********************************************************
+NAME:linklist_init
+VALUE:pList自定链表
+FUNCTION:初始化链表
+**********************************************************/
+void linklist_init(LINKLIST **pList)
+{
+    *pList = (LINKLIST *)malloc(sizeof(LINKLIST)); // 分配内存
+
+    if (*pList == NULL) // 分配内存失败
+    {
+        printf("分配内存失败\n");
+        getch();
+        exit(1); // 终止程序
+    }
+    
+    (*pList)->HEAD = NULL; // 初始化头结点
+
+    return;
+}
 
 /**********************************************************
 NAME:linklist_add_data
@@ -18,14 +37,14 @@ void linklist_add_data(LINKLIST *pList, LINKLIST_USER NEW_USER_DATA)
     DATA_NODE->USER_DATA = NEW_USER_DATA;
     DATA_NODE->NEXT = NULL; // 对传入的要加入链表的结构体处理一下，先定义指向下一节点的指针为空（下一节点待后续添加）
 
-    if (LAST_NODE)  // 如果头节点不为空，则一直遍历到链表末尾
+    if (LAST_NODE) // 如果头结点不为空，则遍历到末尾节点，第一个判断条件是针对刚初始化的链表的头结点的
     {
         while (LAST_NODE->NEXT) LAST_NODE = LAST_NODE->NEXT;
 
         LAST_NODE->NEXT = DATA_NODE; // 查找到末尾节点后，将新加的结构体连接上去，并标明所在序号
         DATA_NODE->PREVIOUS = LAST_NODE;
         DATA_NODE->chain_lenth = LAST_NODE->chain_lenth + 1;
-    }else  // 如果头结点为空，则将新加的结构体定义为头结点，序号为1 --- --- 
+    }else  // 如果头结点为空，则将新加的结构体定义为头结点，序号为1
     {
         pList->HEAD = DATA_NODE;
         DATA_NODE->chain_lenth = 1;
@@ -185,10 +204,8 @@ void linklist_get_user_data(LINKLIST *LIST)
     while (fgets(buffer, sizeof(buffer), fp_USER_DATA_read))
     {
         if (!strcmp(buffer, "\0"))
-            break;
-        if (!strcmp(buffer, "\n"))
             continue;
-
+    
         token = strtok(buffer, ",");
         LIST_USER.ID = token ? atol(token) : 0;
 
@@ -287,7 +304,7 @@ int linklist_write_user_data(LINKLIST *pList)
     while (ptr != NULL) // 遍历链表并写入
     {
         // 按字段顺序格式化字符串
-        sprintf(buffer,"%d,%s,%s,%s,%s,%s,%d,%d,%c,%c\n",
+        sprintf(buffer,"%d,%s,%s,%s,%s,%s,%d,%d,%c,%c,\n",
                  ptr->USER_DATA.ID,
                  ptr->USER_DATA.usrn,
                  ptr->USER_DATA.rln,
