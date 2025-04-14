@@ -66,7 +66,7 @@ void admin_manage_bike_module(int *page, unsigned long *ID, LINKLIST *LIST, char
         delay(25);
     }
 
-    admin_list_info(NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, LIST_CLEAR, NULL, NULL);
+    admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, NULL, NULL, NULL, NULL, NULL, NULL, LIST_CLEAR, NULL, NULL);
     Input_Bar(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
     fclose(fp_EBIKE_INFO_read);
     return;
@@ -131,7 +131,7 @@ void admin_database(int *page, unsigned long *ID , LINKLIST *LIST){
         delay(25);
     }
 
-    admin_list_info(NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, LIST_CLEAR, NULL, NULL); // 清除列表
+    admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, NULL, NULL, NULL, NULL, NULL, NULL, LIST_CLEAR, NULL, NULL); // 清除列表
     Input_Bar(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
     fclose(fp_USER_LOGIN_DATA_read);
 }
@@ -1770,7 +1770,7 @@ int admin_exitting(int *page)
         {
             *page = LOGIN_ADMIN;
             clrmous(MouseX, MouseY);
-            admin_list_info(NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, LIST_CLEAR, NULL, NULL);
+            admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, NULL, NULL, NULL, NULL, NULL, NULL, LIST_CLEAR, NULL, NULL);
             Input_Bar(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
             return 0;
         }
@@ -1778,7 +1778,7 @@ int admin_exitting(int *page)
         {
             *page = EXIT;
             clrmous(MouseX, MouseY);
-            admin_list_info(NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, LIST_CLEAR, NULL, NULL);
+            admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, NULL, NULL, NULL, NULL, NULL, NULL, LIST_CLEAR, NULL, NULL);
             Input_Bar(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
             return 0;
         }
