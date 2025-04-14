@@ -36,6 +36,8 @@ int main(void){
                 user_main(&page);break;
             case USER_BIKE_REGISTER:
                 user_bike_register(&page, &ID); break;
+            case USER_BIKE_LICENSE:
+                user_bike_license(&page, &ID); break;
 
             //ADMIN.C
             case MAIN_ADMIN:
