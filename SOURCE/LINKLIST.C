@@ -3,26 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-/**********************************************************
-NAME:linklist_init
-VALUE:pList自定链表
-FUNCTION:初始化链表
-**********************************************************/
-void linklist_init(LINKLIST **pList)
-{
-    *pList = (LINKLIST *)malloc(sizeof(LINKLIST)); // 分配内存
-
-    if (*pList == NULL) // 分配内存失败
-    {
-        printf("分配内存失败\n");
-        getch();
-        exit(1); // 终止程序
-    }
-    
-    (*pList)->HEAD = NULL; // 初始化头结点
-
-    return;
-}
 
 /**********************************************************
 NAME:linklist_add_data

@@ -1,13 +1,16 @@
 #include"GLOBAL.H"
 
 int main(void){
-    int page = MAIN_ADMIN; // 主页面
+    int page = LOGIN; // 主页面
     // int page=NULL; // 副页面
     unsigned long ID=0;//记录登录用户的ID
     int driver=VGA,mode=VGAHI;
-    LINKLIST *LIST;
-
-    linklist_init(&LIST); // 初始化链表
+    LINKLIST *LIST = (LINKLIST *)malloc(sizeof(LINKLIST));
+    if (LIST == NULL){ // 分配内存失败
+        drawExittingProgram(2);
+        exit(1); // 终止程序
+    }
+    LIST->HEAD = NULL;
 
     initgraph(&driver, &mode, "C:\\BORLANDC\\BGI");
     cleardevice();
@@ -38,8 +41,6 @@ int main(void){
                 user_main(&page);break;
             case USER_BIKE_REGISTER:
                 user_bike_register(&page, &ID); break;
-            case USER_BIKE_LICENSE:
-                user_bike_license(&page, &ID); break;
 
             //ADMIN.C
             case MAIN_ADMIN:

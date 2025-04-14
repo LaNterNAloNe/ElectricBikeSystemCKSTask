@@ -33,7 +33,7 @@ void login(int *page, unsigned long *ID) {
             // 检查输入是否非空且正确
             if (usrn[0] != '\0' && psw[0] != '\0') {
 				userlogin_judge(usrn,psw,ID);
-				if(*ID != -1){
+				if(*ID != 0){
 					anime_login_success();
 					switchPage();
 					*page = MAIN_USER; // MAIN_USER : 10 跳转到用户主界面
@@ -594,7 +594,7 @@ void drawgraph_register() {
 void userlogin_judge(char *usrn,char *psw,unsigned long *ID){
 	int i=0;
 	int account_counts;
-	USER_LOGIN_DATA *TEMP;
+	USER_LOGIN_DATA TEMP;
 	FILE *fp_LOGIN_USER_read = fopen("C:\\EBS\\DATA\\USER.DAT","rb");
 
 	if (fp_LOGIN_USER_read == NULL) {
@@ -607,12 +607,12 @@ void userlogin_judge(char *usrn,char *psw,unsigned long *ID){
 
 	for(i=0;i<account_counts;i++){
 		fseek(fp_LOGIN_USER_read,i*sizeof(USER_LOGIN_DATA),SEEK_SET);
-		fread(TEMP,sizeof(USER_LOGIN_DATA),1,fp_LOGIN_USER_read); //逐个读取，每个用户信息，直到用户名与密码均匹配
+		fread(&TEMP,sizeof(USER_LOGIN_DATA),1,fp_LOGIN_USER_read); //逐个读取，每个用户信息，直到用户名与密码均匹配
 
-		if(strcmp(usrn,TEMP->usrn) == 0){
-			if(strcmp(psw,TEMP->psw) == 0){
+		if(strcmp(usrn,TEMP.usrn) == 0){
+			if(strcmp(psw,TEMP.psw) == 0){
 				//登陆成功
-				*ID = TEMP->ID;
+				*ID = TEMP.ID;
 				if(fclose(fp_LOGIN_USER_read)!=0) getch(),exit(0);
 				return;
 			}
@@ -628,7 +628,7 @@ void userlogin_judge(char *usrn,char *psw,unsigned long *ID){
 void adminlogin_judge(char *usrn,char *psw,unsigned long *id){
 	int i=0;
 	int account_counts;
-	ADMIN_LOGIN_DATA *TEMP;
+	ADMIN_LOGIN_DATA TEMP;
 	FILE *fp_LOGIN_ADMIN_read = fopen("C:\\EBS\\DATA\\ADMIN.DAT","rb");
 
 	if (fp_LOGIN_ADMIN_read == NULL) {
@@ -641,12 +641,12 @@ void adminlogin_judge(char *usrn,char *psw,unsigned long *id){
 
 	for(i=0;i<account_counts;i++){
 		fseek(fp_LOGIN_ADMIN_read,i*sizeof(ADMIN_LOGIN_DATA),SEEK_SET);
-		fread(TEMP,sizeof(ADMIN_LOGIN_DATA),1,fp_LOGIN_ADMIN_read); //逐个读取，每个用户信息，直到用户名与密码均匹配
+		fread(&TEMP,sizeof(ADMIN_LOGIN_DATA),1,fp_LOGIN_ADMIN_read); //逐个读取，每个用户信息，直到用户名与密码均匹配
 
-		if(strcmp(usrn,TEMP->usrn) == 0){
-			if(strcmp(psw,TEMP->psw) == 0){
+		if(strcmp(usrn,TEMP.usrn) == 0){
+			if(strcmp(psw,TEMP.psw) == 0){
 				//登陆成功
-				*id = TEMP->uid;
+				*id = TEMP.uid;
 				if(fclose(fp_LOGIN_ADMIN_read)!=0) getch(),exit(0);
 				return;
 			}
