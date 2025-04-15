@@ -15,6 +15,7 @@
 #include"LOGIN.H"
 #include"LIST.H"
 #include"MESSAGE.H"
+#include"INPUTHZ.H"
 
 //定义界面坐标
 #define ADMIN_MENU_X1 0

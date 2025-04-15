@@ -24,22 +24,24 @@ int hz_input(int x1,int y1,int x2,int y2,char *s,int len,int color,int color2, i
 	char str[3]={'\0','\0','\0'};//一个汉字装入
 	char py[12]={'\0','\0','\0','\0','\0','\0','\0','\0',
 	            '\0','\0','\0','\0'};//拼音字符串(西文字符串)
-	settextjustify(LEFT_TEXT,CENTER_TEXT);
+    settextjustify(LEFT_TEXT,CENTER_TEXT);
 	clrmous(MouseX, MouseY);
-	// setfillstyle(SOLID_FILL, color);
-	// bar(x1,y1,x2,y2);
+	// // setfillstyle(SOLID_FILL, color);
+	// // bar(x1,y1,x2,y2);
+    
 	while(bioskey(1))//清除键盘缓冲区  防止误输入
 	{
 		bioskey(0);
 	}
-	if((image=(char*)malloc(8241))==NULL)
+    
+    if((image=(char*)malloc(8241))==NULL)
 	{
 		closegraph();
 		printf("error!,hz_input");
 		getch();
 		exit(1);
 	}
-	while(1)
+    while(1)
 	{
 		if(kbhit())
 		{

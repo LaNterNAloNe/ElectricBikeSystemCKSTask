@@ -49,7 +49,7 @@ void admin_bike_register(int *page, unsigned long *ID, LINKLIST *LIST)
 
     fclose(fp_EBIKE_INFO_read);
     admin_list_info(LIST, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL);
-    Input_Bar(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
+    ch_input(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
     return;
 }
 
@@ -91,7 +91,7 @@ void admin_bike_license(int *page, unsigned long *id, LINKLIST *LIST)
     }
     fclose(fp_EBIKE_LICENSE_read);
     admin_list_info(LIST, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL);
-    Input_Bar(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
+    ch_input(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
     return;
 }
 
@@ -133,7 +133,7 @@ void admin_bike_broken(int *page, unsigned long *id, LINKLIST *LIST)
     }
     fclose(fp_EBIKE_INFO_read);
     admin_list_info(LIST, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL);
-    Input_Bar(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
+    ch_input(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
     return;
 }
 
@@ -175,7 +175,7 @@ void admin_bike_anual(int *page, unsigned long *id, LINKLIST *LIST)
     }
     fclose(fp_EBIKE_INFO_read);
     admin_list_info(LIST, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL);
-    Input_Bar(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
+    ch_input(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
     return;
 }
 
@@ -217,6 +217,6 @@ void admin_bike_violation(int *page, unsigned long *id, LINKLIST *LIST)
     }
     fclose(fp_EBIKE_INFO_read);
     admin_list_info(LIST, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL);
-    Input_Bar(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
+    ch_input(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
     return;
 }

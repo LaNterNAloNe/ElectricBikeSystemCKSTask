@@ -16,6 +16,6 @@ typedef struct {
     int cursor_pos;
 } InputMemory;
  
-int Input_Bar(char* ip,int x,int y,int lim,int color,int is_clear_memory,int is_visible);
+int ch_input(char* ip,int x,int y,int lim,int color,int is_clear_memory,int is_visible);
 
 #endif

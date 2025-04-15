@@ -67,7 +67,7 @@ void admin_manage_bike_module(int *page, unsigned long *ID, LINKLIST *LIST, char
     }
 
     admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, NULL, NULL, NULL, NULL, NULL, NULL, LIST_CLEAR, NULL, NULL);
-    Input_Bar(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
+    ch_input(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
     fclose(fp_EBIKE_INFO_read);
     return;
 }
@@ -132,7 +132,7 @@ void admin_database(int *page, unsigned long *ID , LINKLIST *LIST){
     }
 
     admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, NULL, NULL, NULL, NULL, NULL, NULL, LIST_CLEAR, NULL, NULL); // 清除列表
-    Input_Bar(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
+    ch_input(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
     fclose(fp_USER_LOGIN_DATA_read);
 }
 
@@ -1004,7 +1004,7 @@ void admin_handle_manage_feature_event(LINKLIST *LIST, int *page, char *search_s
 
     if (mouse_press(ADMIN_FEATURE_SEARCH_X1, ADMIN_FEATURE_SEARCH_Y1, ADMIN_FEATURE_SEARCH_X2, ADMIN_FEATURE_SEARCH_Y2) == 1)
     {
-        Input_Bar(search_str, ADMIN_FEATURE_SEARCH_X1 + 25, ADMIN_FEATURE_SEARCH_Y1 + 2, 9, MY_LIGHTGRAY, 0, 1);
+        ch_input(search_str, ADMIN_FEATURE_SEARCH_X1 + 25, ADMIN_FEATURE_SEARCH_Y1 + 2, 9, MY_LIGHTGRAY, 0, 1);
 
         *selected_id = 0; // 清除选中行
         setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
@@ -1193,7 +1193,7 @@ void admin_handle_database_event(LINKLIST *LIST, int *flag, int *page, unsigned 
     /*点击搜索框*/
     if (mouse_press(ADMIN_FEATURE_SEARCH_X1, ADMIN_FEATURE_SEARCH_Y1, ADMIN_FEATURE_SEARCH_X2, ADMIN_FEATURE_SEARCH_Y2) == 1)
     {
-        Input_Bar(search_str, ADMIN_FEATURE_SEARCH_X1 + 25, ADMIN_FEATURE_SEARCH_Y1 + 2, 9, MY_LIGHTGRAY, 0, 1);
+        ch_input(search_str, ADMIN_FEATURE_SEARCH_X1 + 25, ADMIN_FEATURE_SEARCH_Y1 + 2, 9, MY_LIGHTGRAY, 0, 1);
 
         admin_list_info(LIST, LIST_LIMIT, LIST_INTERVAL, id_list, fp, file_type, NULL, NULL, LIST_STAY, LIST_CLEAR_CONTINUE, search_str, "ID"); // 搜索后刷新列表
         return;
@@ -1240,7 +1240,7 @@ void admin_handle_modify_user_data_event(FILE *fp, unsigned long *user_id, int *
         }
 
         puthz(ADMIN_MODIFY_DATA_INTERFACE_X1 + 100, ADMIN_MODIFY_DATA_INTERFACE_Y1 + 10, "成功保存修改信息！", 16, 16, MY_GREEN); // 显示保存成功
-        Input_Bar(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
+        ch_input(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
         memset(psw_buffer, '\0', sizeof(psw_buffer)); // 清空密码输入框
         state_buffer = '\0';
 
@@ -1251,7 +1251,9 @@ void admin_handle_modify_user_data_event(FILE *fp, unsigned long *user_id, int *
     if (mouse_press(ADMIN_MODIFY_DATA_INPUTBAR3_X1, ADMIN_MODIFY_DATA_INPUTBAR3_Y1,
                     ADMIN_MODIFY_DATA_INPUTBAR3_X2, ADMIN_MODIFY_DATA_INPUTBAR3_Y2) == 1) // 点击密码框
     {
-        Input_Bar(psw_buffer, ADMIN_MODIFY_DATA_INPUTBAR3_X1, ADMIN_MODIFY_DATA_INPUTBAR3_Y1, 13, MY_LIGHTGRAY, INPUTBAR_NO_CLEAR, 1);
+        ch_input(psw_buffer, ADMIN_MODIFY_DATA_INPUTBAR3_X1, ADMIN_MODIFY_DATA_INPUTBAR3_Y1, 13, MY_LIGHTGRAY, INPUTBAR_NO_CLEAR, 1);
+        // hz_input(ADMIN_MODIFY_DATA_INPUTBAR3_X1, ADMIN_MODIFY_DATA_INPUTBAR3_Y2, 
+        //          ADMIN_MODIFY_DATA_INPUTBAR3_X1, ADMIN_MODIFY_DATA_INPUTBAR3_Y2, psw_buffer, 13, MY_LIGHTGRAY, MY_BLACK, 16);
     }
     if (mouse_press(ADMIN_MODIFY_DATA_FREEZE_X1, ADMIN_MODIFY_DATA_FREEZE_Y1,
                     ADMIN_MODIFY_DATA_FREEZE_X2, ADMIN_MODIFY_DATA_FREEZE_Y2) == 1 &&
@@ -1289,7 +1291,7 @@ void admin_handle_modify_user_data_event(FILE *fp, unsigned long *user_id, int *
     if (mouse_press(ADMIN_MODIFY_DATA_EXIT_X1, ADMIN_MODIFY_DATA_EXIT_Y1,
                     ADMIN_MODIFY_DATA_EXIT_X2, ADMIN_MODIFY_DATA_EXIT_Y2) == 1) // 点击返回
     {
-        Input_Bar(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
+        ch_input(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
         memset(psw_buffer, '\0', sizeof(psw_buffer)); // 清空密码输入框
         *user_id = 0;
         *isReturn = 1; // 标记为返回
@@ -1305,22 +1307,22 @@ void admin_handle_modify_ebike_data_event(LINKLIST *LIST, unsigned long *user_id
     if (mouse_press(ADMIN_MODIFY_DATA_INPUTBAR3_X1, ADMIN_MODIFY_DATA_INPUTBAR3_Y1,
                     ADMIN_MODIFY_DATA_INPUTBAR3_X2, ADMIN_MODIFY_DATA_INPUTBAR3_Y2) == 1) // 点击电动车牌框
     {
-        Input_Bar(temp.ebike_id_buffer, ADMIN_MODIFY_DATA_INPUTBAR3_X1, ADMIN_MODIFY_DATA_INPUTBAR3_Y1, 6, MY_LIGHTGRAY, INPUTBAR_NO_CLEAR, 1);
+        ch_input(temp.ebike_id_buffer, ADMIN_MODIFY_DATA_INPUTBAR3_X1, ADMIN_MODIFY_DATA_INPUTBAR3_Y1, 6, MY_LIGHTGRAY, INPUTBAR_NO_CLEAR, 1);
     }
     if (mouse_press(ADMIN_MODIFY_DATA_INPUTBAR4_X1, ADMIN_MODIFY_DATA_INPUTBAR4_Y1,
                     ADMIN_MODIFY_DATA_INPUTBAR4_X2, ADMIN_MODIFY_DATA_INPUTBAR4_Y2) == 1) // 点击牌证号码框
     {
-        Input_Bar(temp.ebike_license_buffer, ADMIN_MODIFY_DATA_INPUTBAR4_X1, ADMIN_MODIFY_DATA_INPUTBAR4_Y1, 8, MY_LIGHTGRAY, INPUTBAR_NO_CLEAR, 1);
+        ch_input(temp.ebike_license_buffer, ADMIN_MODIFY_DATA_INPUTBAR4_X1, ADMIN_MODIFY_DATA_INPUTBAR4_Y1, 8, MY_LIGHTGRAY, INPUTBAR_NO_CLEAR, 1);
     }
     if (mouse_press(ADMIN_MODIFY_DATA_INPUTBAR5_X1, ADMIN_MODIFY_DATA_INPUTBAR5_Y1,
                     ADMIN_MODIFY_DATA_INPUTBAR5_X2, ADMIN_MODIFY_DATA_INPUTBAR5_Y2) == 1) // 点击车辆年审框
     {
-        Input_Bar(temp.anual_check_buffer, ADMIN_MODIFY_DATA_INPUTBAR5_X1, ADMIN_MODIFY_DATA_INPUTBAR5_Y1, 10, MY_LIGHTGRAY, INPUTBAR_NO_CLEAR, 1);
+        ch_input(temp.anual_check_buffer, ADMIN_MODIFY_DATA_INPUTBAR5_X1, ADMIN_MODIFY_DATA_INPUTBAR5_Y1, 10, MY_LIGHTGRAY, INPUTBAR_NO_CLEAR, 1);
     }
     if (mouse_press(ADMIN_MODIFY_DATA_INPUTBAR5_X1, ADMIN_MODIFY_DATA_INPUTBAR5_Y1,
                     ADMIN_MODIFY_DATA_INPUTBAR5_X2, ADMIN_MODIFY_DATA_INPUTBAR5_Y2) == 1) // 点击位置框
     {
-        Input_Bar(temp.location_buffer, ADMIN_MODIFY_DATA_INPUTBAR5_X1, ADMIN_MODIFY_DATA_INPUTBAR5_Y1, 14, MY_LIGHTGRAY, INPUTBAR_NO_CLEAR, 1);
+        ch_input(temp.location_buffer, ADMIN_MODIFY_DATA_INPUTBAR5_X1, ADMIN_MODIFY_DATA_INPUTBAR5_Y1, 14, MY_LIGHTGRAY, INPUTBAR_NO_CLEAR, 1);
     }
 
     if (mouse_press(ADMIN_MODIFY_DATA_SAVE_X1, ADMIN_MODIFY_DATA_SAVE_Y1,
@@ -1350,7 +1352,7 @@ void admin_handle_modify_ebike_data_event(LINKLIST *LIST, unsigned long *user_id
         }
 
         puthz(ADMIN_MODIFY_DATA_INTERFACE_X1 + 100, ADMIN_MODIFY_DATA_INTERFACE_Y1 + 10, "成功保存修改信息！", 16, 16, MY_GREEN); // 显示保存成功
-        Input_Bar(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
+        ch_input(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
         memset(&temp, '\0', sizeof(temp)); // 清空缓冲区
 
         delay(500); // 延时
@@ -1362,7 +1364,7 @@ void admin_handle_modify_ebike_data_event(LINKLIST *LIST, unsigned long *user_id
     if (mouse_press(ADMIN_MODIFY_DATA_EXIT_X1, ADMIN_MODIFY_DATA_EXIT_Y1,
                     ADMIN_MODIFY_DATA_EXIT_X2, ADMIN_MODIFY_DATA_EXIT_Y2) == 1) // 点击返回
     {
-        Input_Bar(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
+        ch_input(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
         memset(&temp, '\0', sizeof(temp)); // 清空缓冲区
         *user_id = 0;
         *isReturn = 1; // 标记为返回
@@ -1771,7 +1773,7 @@ int admin_exitting(int *page)
             *page = LOGIN_ADMIN;
             clrmous(MouseX, MouseY);
             admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, NULL, NULL, NULL, NULL, NULL, NULL, LIST_CLEAR, NULL, NULL);
-            Input_Bar(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
+            ch_input(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
             return 0;
         }
         else if (mouse_press(ADMIN_EXIT_MENU_X1 + 2, ADMIN_EXIT_MENU_Y1 + 30, ADMIN_EXIT_MENU_X1 + 60, ADMIN_EXIT_MENU_Y1 + 46) == 1)
@@ -1779,7 +1781,7 @@ int admin_exitting(int *page)
             *page = EXIT;
             clrmous(MouseX, MouseY);
             admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, NULL, NULL, NULL, NULL, NULL, NULL, LIST_CLEAR, NULL, NULL);
-            Input_Bar(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
+            ch_input(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
             return 0;
         }
         else if (mouse_press(0, 0, 640, 480) == 1 && mouse_press(ADMIN_EXIT_X1, ADMIN_EXIT_Y1, ADMIN_EXIT_X2, ADMIN_EXIT_Y2) == -1)

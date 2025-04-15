@@ -22,11 +22,11 @@ void login(int *page, unsigned long *ID) {
 
         // 处理鼠标点击事件
         if (mouse_press(USERNAME_X1, USERNAME_Y1, USERNAME_X2, USERNAME_Y2)==1) {
-            Input_Bar(usrn, USERNAME_X1, USERNAME_Y1+5, 13, MY_WHITE,0,1);
+            ch_input(usrn, USERNAME_X1, USERNAME_Y1+5, 13, MY_WHITE,0,1);
         }
 
         if (mouse_press(PASSWORD_X1, PASSWORD_Y1, PASSWORD_X2, PASSWORD_Y2)==1) {
-            Input_Bar(psw, PASSWORD_X1, PASSWORD_Y1+5, 13, MY_WHITE,0,0);
+            ch_input(psw, PASSWORD_X1, PASSWORD_Y1+5, 13, MY_WHITE,0,0);
         }
 
         if (mouse_press(LOGIN_X1, LOGIN_Y1, LOGIN_X2, LOGIN_Y2)==1) {
@@ -37,7 +37,7 @@ void login(int *page, unsigned long *ID) {
 					anime_login_success();
 					switchPage();
 					*page = MAIN_USER; // MAIN_USER : 10 跳转到用户主界面
-					Input_Bar(NULL, NULL, NULL, NULL, NULL,1,NULL);  // 清除输入框记忆
+					ch_input(NULL, NULL, NULL, NULL, NULL,1,NULL);  // 清除输入框记忆
                 	return; // 退出循环
 				}
 				else{
@@ -50,14 +50,14 @@ void login(int *page, unsigned long *ID) {
 			clrmous(MouseX, MouseY);
 			switchPage();
 			*page = LOGIN_ADMIN; // LOGIN_ADMIN : 2 跳转到管理员登录界面
-			Input_Bar(NULL, NULL, NULL, NULL, NULL,1,NULL);
+			ch_input(NULL, NULL, NULL, NULL, NULL,1,NULL);
 			return;
 		}
 		else if (mouse_press(REGISTER_X1,REGISTER_Y1,REGISTER_X2,REGISTER_Y2)==1) {
 			clrmous(MouseX, MouseY);
 			switchPage();
             *page = REGISTER_ID_INPUT; // REGISTER_ID_INPUT : 4 跳转到注册界面，先输入ID
-            Input_Bar(NULL, NULL, NULL, NULL, NULL,1,NULL);
+            ch_input(NULL, NULL, NULL, NULL, NULL,1,NULL);
 			return;
         }
 		else if (mouse_press(EXITPROGRAM_X1,EXITPROGRAM_Y1,EXITPROGRAM_X2,EXITPROGRAM_Y2)==1) {
@@ -146,11 +146,11 @@ void login_admin(int* page,unsigned long *ID) {
 
 		// 处理鼠标点击事件
 		if (mouse_press(USERNAME_X1, USERNAME_Y1, USERNAME_X2, USERNAME_Y2) == 1) {
-			Input_Bar(usrn, USERNAME_X1, USERNAME_Y1 + 5, 13, MY_WHITE,0,1);
+			ch_input(usrn, USERNAME_X1, USERNAME_Y1 + 5, 13, MY_WHITE,0,1);
 		}
 
 		if (mouse_press(PASSWORD_X1, PASSWORD_Y1, PASSWORD_X2, PASSWORD_Y2) == 1) {
-			Input_Bar(psw, PASSWORD_X1, PASSWORD_Y1 + 5, 13, MY_WHITE,0,0);
+			ch_input(psw, PASSWORD_X1, PASSWORD_Y1 + 5, 13, MY_WHITE,0,0);
 		}
 
 		if (mouse_press(ADMIN_LOGIN_X1, ADMIN_LOGIN_Y1, ADMIN_LOGIN_X2, ADMIN_LOGIN_Y2) == 1) {
@@ -162,7 +162,7 @@ void login_admin(int* page,unsigned long *ID) {
                     anime_admin_login_success();
 					switchPage();
 					*page = MAIN_ADMIN; // MAIN_USER : 10 跳转到用户主界面
-					Input_Bar(NULL, NULL, NULL, NULL, NULL,1,NULL);  // 清除输入框记忆
+					ch_input(NULL, NULL, NULL, NULL, NULL,1,NULL);  // 清除输入框记忆
                 	return; // 退出循环
                 }
                 else{
@@ -175,7 +175,7 @@ void login_admin(int* page,unsigned long *ID) {
 			clrmous(MouseX, MouseY);
 			switchPage();
 			*page = LOGIN; // LOGIN_ADMIN : 2 跳转到用户登录界面
-			Input_Bar(NULL, NULL, NULL, NULL, NULL,1,NULL);
+			ch_input(NULL, NULL, NULL, NULL, NULL,1,NULL);
 			//fclose(fp_LOGIN_ADMIN_read);
 			return;
 		}
@@ -265,7 +265,7 @@ void register_id_input(int* page, unsigned long* ID) {
 		newmouse(&MouseX, &MouseY, &press); // 刷新鼠标
 
 		if (mouse_press(PASSWORD_X1, PASSWORD_Y1, PASSWORD_X2, PASSWORD_Y2) == 1) {
-			Input_Bar(id_input, PASSWORD_X1, PASSWORD_Y1 + 5, 9, MY_WHITE, 0, 1);
+			ch_input(id_input, PASSWORD_X1, PASSWORD_Y1 + 5, 9, MY_WHITE, 0, 1);
 		}
 		if (mouse_press(LOGIN_X1, LOGIN_Y1, LOGIN_X2, LOGIN_Y2) == 1) {
 			id = atol(id_input);
@@ -277,7 +277,7 @@ void register_id_input(int* page, unsigned long* ID) {
                     clrmous(MouseX, MouseY);
                     *page = REGISTER; // REGISTER : 3，进入正常注册功能
 					anime_id_input_success();
-					Input_Bar(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
+					ch_input(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
 					switchPage();
                     return;
                 case 1: // 转换失败，学号格式错误
@@ -304,7 +304,7 @@ void register_id_input(int* page, unsigned long* ID) {
 			clrmous(MouseX, MouseY);
 			switchPage();
 			*page = LOGIN; 
-			Input_Bar(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
+			ch_input(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
 			return;
 		}
 		else if (mouse_press(EXITPROGRAM_X1, EXITPROGRAM_Y1, EXITPROGRAM_X2, EXITPROGRAM_Y2) == 1) {
@@ -492,11 +492,11 @@ void _register(int* page,unsigned long *ID) {
 
 		// 处理鼠标点击事件
 		if (mouse_press(USERNAME_X1, USERNAME_Y1, USERNAME_X2, USERNAME_Y2) == 1) {
-			Input_Bar(usrn, USERNAME_X1, USERNAME_Y1 + 5, 13, MY_WHITE,0,1);
+			ch_input(usrn, USERNAME_X1, USERNAME_Y1 + 5, 13, MY_WHITE,0,1);
 		}
 
 		if (mouse_press(PASSWORD_X1, PASSWORD_Y1, PASSWORD_X2, PASSWORD_Y2) == 1) {
-			Input_Bar(psw, PASSWORD_X1, PASSWORD_Y1 + 5, 13, MY_WHITE,0,0);
+			ch_input(psw, PASSWORD_X1, PASSWORD_Y1 + 5, 13, MY_WHITE,0,0);
 		}
 
 		if (mouse_press(LOGIN_X1, LOGIN_Y1, LOGIN_X2, LOGIN_Y2) == 1) {
@@ -508,7 +508,7 @@ void _register(int* page,unsigned long *ID) {
 					anime_register_success();
 					*page = LOGIN;
 					*ID = -1;
-					Input_Bar(NULL, NULL, NULL, NULL, NULL,1,NULL);  // 清除输入框记忆
+					ch_input(NULL, NULL, NULL, NULL, NULL,1,NULL);  // 清除输入框记忆
 					return;
 				}
 				if(is_register_invalid){
@@ -527,7 +527,7 @@ void _register(int* page,unsigned long *ID) {
 			switchPage();
 			*page = LOGIN; //此时这个键是“返回登录”，跳转到登录界面
 			*ID = -1;
-			Input_Bar(NULL, NULL, NULL, NULL, NULL,1,NULL);
+			ch_input(NULL, NULL, NULL, NULL, NULL,1,NULL);
 			return;
 		}
 		else if (mouse_press(EXITPROGRAM_X1, EXITPROGRAM_Y1, EXITPROGRAM_X2, EXITPROGRAM_Y2) == 1) {

@@ -1,7 +1,7 @@
 #include "LIST.H"
 
 // 列表函数，用于列出相应
-void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned long id_list[], FILE *fp, char *file_type,
+void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned long item_id[], FILE *fp, char *file_type,
                      char *list_mode, int search_mode, int page_change, int is_clear, char *search_str, char *search_needed)
 {
     /* 0.函数介绍 */
@@ -9,7 +9,7 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
     // LIST是传入的链表
     // max是一个常量，代表最大显示数量，若超出则不显示
     // interval是一个常量，代表列表间隔，即列表的间距
-    // id_list是一个数组，用于储存id
+    // item_id是一个数组，用于储存id
     // fp是 某一种 文件指针，你可以在指明file_type的同时，选择不同的文件指针
     // file_type指明文件类型
     // page_change为1，向下列表，为-1，向上列表，为0，不翻页
@@ -31,11 +31,11 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
     int valid_counts = 0;               // 有效数据量
     int flag = -1;                      // 文件类型
     unsigned int page_count = 0;        // 记录页面数量，值>=0
-    static unsigned int page_index = 0; // 记录搜索开始的位置
+    static unsigned int page_index = 0; // 记录页码
     char buffer[10];
     EBIKE_INFO ebike_temp;
     USER_LOGIN_DATA user_temp;
-    // MESSAGE message_temp;
+    MESSAGE message_temp;
     LINKLIST_NODE *node = NULL;
 
     // show_num(10, 10, start, MY_WHITE); // 显示start
@@ -93,6 +93,10 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
     {
         flag = ADMIN_DATABASE_EBIKE_PASS_IN_OUT;
     }
+    else if (strcmp(file_type, "message") == 0)
+    {
+        flag = ADMIN_MESSAGE;
+    }
     else
     {
         return; // 若指明文件类型错误，则不做任何操作
@@ -105,17 +109,23 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
     fseek(fp, 0, SEEK_END);
     switch (flag)
     {
-    case ADMIN_DATABASE_EBIKE_MANAGE:
-        counts = ftell(fp) / sizeof(EBIKE_INFO);
-        break;
-    case ADMIN_DATABASE_USER_INFO:
-        counts = ftell(fp) / sizeof(USER_LOGIN_DATA);
-        break;
-    case ADMIN_DATABASE_EBIKE_INFO:
-        node = LIST->HEAD;
-        // 注意start和end的赋值，两个指数都标记一块数据的头部，一般来说start和end的数即指向对应节点序号 - 1
-        counts = linklist_get_length(LIST);
-        break;
+        case ADMIN_DATABASE_EBIKE_MANAGE:
+            counts = ftell(fp) / sizeof(EBIKE_INFO);
+            break;
+        case ADMIN_DATABASE_USER_INFO:
+            counts = ftell(fp) / sizeof(USER_LOGIN_DATA);
+            break;
+        case ADMIN_DATABASE_EBIKE_INFO:
+            node = LIST->HEAD;
+            // 注意start和end的赋值，两个指数都标记一块数据的头部，一般来说start和end的数即指向对应节点序号 - 1
+            counts = linklist_get_length(LIST);
+            break;
+        case ADMIN_DATABASE_EBIKE_PASS_IN_OUT:
+
+            break;
+        case ADMIN_MESSAGE:
+            counts = ftell(fp) / sizeof(MESSAGE);
+            break;
     }
 
     // 计算有效数据量 valid_counts
@@ -128,28 +138,39 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
             fseek(fp, 0, SEEK_SET);
             switch (flag)
             {
-            case ADMIN_DATABASE_EBIKE_MANAGE:
-            {
-                for (i = 0; i < counts; i++)
+                case ADMIN_DATABASE_EBIKE_MANAGE:
                 {
-                    fread(&ebike_temp, sizeof(EBIKE_INFO), 1, fp);
-                    if (list_ebike_manage_is_valid(ebike_temp, list_mode, search_str, search_needed, search_mode))
+                    for (i = 0; i < counts; i++)
                     {
-                        valid_counts++;
+                        fread(&ebike_temp, sizeof(EBIKE_INFO), 1, fp);
+                        if (list_ebike_manage_is_valid(ebike_temp, list_mode, search_str, search_needed, search_mode))
+                        {
+                            valid_counts++;
+                        }
                     }
                 }
-            }
-            case ADMIN_DATABASE_USER_INFO:
-            {
-                for (i = 0; i < counts; i++)
+                case ADMIN_DATABASE_USER_INFO:
                 {
-                    fread(&user_temp, sizeof(USER_LOGIN_DATA), 1, fp);
-                    if (list_user_data_is_valid(user_temp, search_str, search_needed))
+                    for (i = 0; i < counts; i++)
                     {
-                        valid_counts++;
+                        fread(&user_temp, sizeof(USER_LOGIN_DATA), 1, fp);
+                        if (list_user_data_is_valid(user_temp, search_str, search_needed))
+                        {
+                            valid_counts++;
+                        }
                     }
                 }
-            }
+                case ADMIN_MESSAGE:
+                {
+                    for (i = counts - 1; i > 0; i--)
+                    {
+                        fread(&message_temp, sizeof(MESSAGE), 1, fp);
+                        if (message_is_valid(message_temp, search_str, search_needed))
+                        {
+                            valid_counts++;
+                        }
+                    }
+                }
             }
         }
     }
@@ -177,7 +198,7 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
     /* 5.初始化列表记录 */
     for (i = 0; i < max; i++)
     {
-        id_list[i] = 0;
+        item_id[i] = 0;
     }
 
     if (debug_mode == 1)
@@ -237,6 +258,19 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
                 }
                 node = node->NEXT; // 指针移至下一节点
             }
+            else if (flag == ADMIN_MESSAGE)
+            {
+                /* 信息的读取较为特殊，需要从后往前读取，且认为最后面的是第一个。为不造成冲突，要读取文件时采取即时计算读取位置的方式 */
+                fseek(fp, (counts - temp_start - 1) * sizeof(user_temp), SEEK_SET); // 先判断接下来是否有可以列出的数据
+                if (!fread(&message_temp, sizeof(message_temp), 1, fp))             // 读取下一个数据块
+                {
+                    return; // 到文件末尾都没有发现可列表的，则不执行下翻列表操作
+                }
+                if (message_is_valid(message_temp, search_str, search_needed))
+                {
+                    break;
+                }
+            }
             temp_start++; // 如果下翻读取时读到的数据不符条件，则进行下一轮循环
         }
 
@@ -271,7 +305,7 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
                 }
 
                 admin_show_ebike_manage_info(ebike_temp, max, interval, listed_item, list_mode, ASCENDING); // 输出数据
-                id_list[listed_item] = ebike_temp.ID;
+                item_id[listed_item] = ebike_temp.ID;
             }
             else if (flag == ADMIN_DATABASE_USER_INFO)
             {
@@ -289,7 +323,7 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
                 }
 
                 admin_show_user_info(user_temp, max, interval, listed_item, ASCENDING); // 输出数据
-                id_list[listed_item] = user_temp.ID;
+                item_id[listed_item] = user_temp.ID;
             }
             else if (flag == ADMIN_DATABASE_EBIKE_INFO)
             {
@@ -306,8 +340,25 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
                 }
 
                 admin_show_ebike_info(node->USER_DATA, interval, max, listed_item, ASCENDING); // 输出数据
-                id_list[listed_item] = node->USER_DATA.ID;                                     // 记录ID
+                item_id[listed_item] = node->USER_DATA.ID;                                     // 记录ID
                 node = node->NEXT;                                                             // 指针移至下一节点
+            }
+            else if (flag == ADMIN_MESSAGE)
+            {
+                fseek(fp, (counts - temp_end - 1) * sizeof(message_temp), SEEK_SET); // 先判断接下来是否有可以列出的数据
+                if (!fread(&message_temp, sizeof(message_temp), 1, fp))             // 读取下一个数据块
+                {
+                    puthz(ADMIN_INTERFACE_X1 + 190, ADMIN_INTERFACE_Y1 + 70 + listed_item * interval, "没有更多数据了哦！", 16, 16, MY_RED);
+                    break; // 到文件末尾都没有发现可列表的，则不执行下翻列表操作
+                }
+                if (!message_is_valid(message_temp, search_str, search_needed))
+                {
+                    temp_end++;
+                    continue; // 如果下翻读取时读到的数据不符条件，则进行下一轮循环
+                }
+
+                message_display(message_temp, ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70, max, interval, listed_item, ASCENDING); // 输出数据
+                item_id[listed_item] = message_temp.message_id; // 记录ID
             }
 
             end = temp_end; // 成功列出一个数据，更新end
@@ -372,6 +423,20 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
                 }
                 node = node->PREVIOUS; // 指针移至上一节点
             }
+            else if (flag == ADMIN_MESSAGE)
+            {
+                if (fseek(fp, (counts - temp_start - 1) * sizeof(message_temp), SEEK_SET)) // 读取上一个数据块，当文件指针尝试移动到负数时，fseek会返回非零数
+                {
+                    return; // 到文件开头都没有发现可列表的，则不执行上翻列表操作 
+                }
+                fread(&message_temp, sizeof(message_temp), 1, fp); // 读取上一个数据块
+
+                if (message_is_valid(message_temp, search_str, search_needed))
+                {
+                    break; // 上翻查找到一个可列出数据，则可以上翻
+                }
+
+            }
             temp_end = --temp_start;
         }
         start = temp_start; // 查找到首个可以读取的数据，将实际的标记指向该数据
@@ -400,7 +465,7 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
                 }
 
                 admin_show_ebike_manage_info(ebike_temp, max, interval, listed_item, list_mode, DESCENDING); // 输出数据
-                id_list[7 - listed_item] = ebike_temp.ID;                                                    // 记录ID
+                item_id[7 - listed_item] = ebike_temp.ID;                                                    // 记录ID
             }
             else if (flag == ADMIN_DATABASE_USER_INFO)
             {
@@ -413,7 +478,7 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
                 }
 
                 admin_show_user_info(user_temp, max, interval, listed_item, DESCENDING); // 输出数据
-                id_list[max - 1 - listed_item] = user_temp.ID;                           // 记录ID
+                item_id[max - 1 - listed_item] = user_temp.ID;                           // 记录ID
             }
             else if (flag == ADMIN_DATABASE_EBIKE_INFO)
             {
@@ -430,8 +495,21 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
                 }
 
                 admin_show_ebike_info(node->USER_DATA, max, interval, listed_item, DESCENDING); // 输出数据
-                id_list[7 - listed_item] = node->USER_DATA.ID;                                  // 记录ID
+                item_id[7 - listed_item] = node->USER_DATA.ID;                                  // 记录ID
                 node = node->PREVIOUS;                                                          // 指针移至上一节点
+            }
+            else if (flag == ADMIN_MESSAGE)
+            {
+                fseek(fp, (counts - temp_start - 1) * sizeof(message_temp), SEEK_SET); // 读取上一个数据块，当文件指针尝试移动到负数时，fseek会返回非零数
+                fread(&message_temp, sizeof(message_temp), 1, fp);                     // 读取上一个数据块
+                if (!message_is_valid(message_temp, search_str, search_needed))
+                {
+                    temp_start--;
+                    continue; // 如果下翻读取时读到的数据不符条件，则进行下一轮循环
+                }
+
+                message_display(message_temp, ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70, max, interval, listed_item, DESCENDING); // 输出数据
+                item_id[7 - listed_item] = message_temp.message_id;                                                                   // 记录ID
             }
 
             start = temp_start;
@@ -490,6 +568,19 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
                 }
                 node = node->NEXT; // 指针移至下一节点
             }
+            else if (flag == ADMIN_MESSAGE)
+            {
+                /* 信息的读取较为特殊，需要从后往前读取，且认为最后面的是第一个。为不造成冲突，要读取文件时采取即时计算读取位置的方式 */
+                fseek(fp, (counts - temp_start - 1) * sizeof(user_temp), SEEK_SET); // 先判断接下来是否有可以列出的数据
+                if (!fread(&message_temp, sizeof(message_temp), 1, fp))             // 读取下一个数据块
+                {
+                    return; // 到文件末尾都没有发现可列表的，则不执行下翻列表操作
+                }
+                if (message_is_valid(message_temp, search_str, search_needed))
+                {
+                    break;
+                }
+            }
             temp_start++; // 如果下翻读取时读到的数据不符条件，则进行下一轮循环
         }
         start = temp_start; // 成功找到可列出的数据，处理变量后进行进一步操作
@@ -525,7 +616,7 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
 
                 admin_show_ebike_manage_info(ebike_temp, max, interval, listed_item, list_mode, ASCENDING); // 输出数据
 
-                id_list[listed_item] = ebike_temp.ID;
+                item_id[listed_item] = ebike_temp.ID;
             }
             else if (flag == ADMIN_DATABASE_USER_INFO)
             {
@@ -546,7 +637,7 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
 
                 admin_show_user_info(user_temp, max, interval, listed_item, ASCENDING); // 输出数据
 
-                id_list[listed_item] = user_temp.ID;
+                item_id[listed_item] = user_temp.ID;
             }
             else if (flag == ADMIN_DATABASE_EBIKE_INFO)
             {
@@ -564,8 +655,23 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
 
                 admin_show_ebike_info(node->USER_DATA, max, interval, listed_item, ASCENDING); // 输出数据
 
-                id_list[listed_item] = node->USER_DATA.ID; // 记录ID
+                item_id[listed_item] = node->USER_DATA.ID; // 记录ID
                 node = node->NEXT;                         // 指针移至下一节点
+            }
+            else if (flag == ADMIN_MESSAGE)
+            {
+                fseek(fp, (counts - temp_end - 1) * sizeof(message_temp), SEEK_SET); // 读取上一个数据块，当文件指针尝试移动到负数时，fseek会返回非零数
+                if (!fread(&message_temp, sizeof(message_temp), 1, fp))             // 读取上一个数据块
+                {
+                    temp_end--; // 若读取到文件末尾，则将end指向文件末尾的前一个数据块，防止越界
+                }
+                if (!message_is_valid(message_temp, search_str, search_needed))
+                {
+                    temp_end++; // end指数+1
+                    continue;   // 如果下翻读取时读到的数据不符条件，则进行下一轮循环
+                }
+                message_display(message_temp, ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70, max, interval, listed_item, ASCENDING); // 输出数据
+                item_id[listed_item] = message_temp.message_id;                                                                   // 记录ID
             }
 
             end = temp_end;
@@ -829,7 +935,7 @@ void list_show_page_index(unsigned int page_index, unsigned int page_count, cons
 }
 
 // 绘制选中的行的图形动画，同时返回选中行对应数据的id
-void handle_list_select_line_admin(LINKLIST *LIST, unsigned long id_list[], unsigned long *selected_id, const int max, const int interval)
+void handle_list_select_line_admin(LINKLIST *LIST, unsigned long item_id[], unsigned long *selected_id, const int max, const int interval)
 {
     int i;
     unsigned long previous_selected_id = *selected_id;
@@ -841,7 +947,7 @@ void handle_list_select_line_admin(LINKLIST *LIST, unsigned long id_list[], unsi
     {
         if (mouse_press(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70 + i * interval,
                         ADMIN_INTERFACE_X1 + 500, ADMIN_INTERFACE_Y1 + 70 + (i + 1) * interval - 1) == 1 &&
-            id_list[i] != 0 && id_list[i] != previous_selected_id)
+            item_id[i] != 0 && item_id[i] != previous_selected_id)
         {
             setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
             bar(ADMIN_INTERFACE_X1 + 10, ADMIN_INTERFACE_Y1 + 70, ADMIN_INTERFACE_X1 + 18, ADMIN_INTERFACE_Y1 + 310); // 清理所有高亮
@@ -849,7 +955,7 @@ void handle_list_select_line_admin(LINKLIST *LIST, unsigned long id_list[], unsi
             bar(ADMIN_INTERFACE_X1 + 10, ADMIN_INTERFACE_Y1 + 70 + i * interval,
                 ADMIN_INTERFACE_X1 + 18, ADMIN_INTERFACE_Y1 + 70 + i * interval + interval / (interval / 15)); // 生成当前高亮
 
-            *selected_id = id_list[i];
+            *selected_id = item_id[i];
 
             // 输出选中行的补充信息
             setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
