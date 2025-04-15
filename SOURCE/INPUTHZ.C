@@ -229,7 +229,7 @@ int input_method(int x,int y,char *str,int value,char *py)
 	int HzStartx=x+8,HzStarty=y+22;
 	char *ABpath="PINYIN\\";//汉语拼音检索标准路径
 	char pypath[45];					//汉语拼音检索相对路径
-	settextjustify(LEFT_TEXT,CENTER_TEXT);
+    settextjustify(LEFT_TEXT,CENTER_TEXT);
 	strcpy(pypath,"PINYIN\\");
 	while(1)
 	{
@@ -366,9 +366,10 @@ int input_method(int x,int y,char *str,int value,char *py)
 				}
 				for(i=0;i<hznum;i++)
 				{
+                    itoa(i+1, temp, 10);
 					setcolor(BLUE);
                     settextstyle(1,0,2);
-		   		    xouttextxy(HzStartx+i*50,HzStarty+5,itostr(i+1,temp),DARKGRAY);
+		   		    xouttextxy(HzStartx+i*50,HzStarty+5,temp,DARKGRAY);
     				puthz(HzStartx+i*50+16,HzStarty,temphz[i],16,16,DARKGRAY);
 				}
 				puthz(HzStartx+hznow*50+16,HzStarty,temphz[hznow],16,16,CYAN);//显示选中汉字

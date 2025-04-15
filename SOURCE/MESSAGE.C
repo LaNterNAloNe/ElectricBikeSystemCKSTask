@@ -156,4 +156,12 @@ int message_if_found(int __is_read)
     }
 
     fclose(fp);
+    
+    return found; // 返回found的值
+}
+
+void message_list() { // 显示消息列表
+    FILE *fp = fopen("DATA\\MESSAGE.DAT", "rb"); // 打开消息文件，以二进制读取模式打开
+    MESSAGE msg; // 用于存储读取的消息
+    long i = 1; // 用于记录当前读取的消息序号
 }
