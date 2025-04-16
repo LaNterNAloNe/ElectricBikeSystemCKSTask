@@ -30,7 +30,7 @@ int main(void){
                 login_admin(&page,&ID);
                 break;
             case REGISTER:
-                _register(&page,&ID);
+                _register(&page,&ID,LIST);
                 break;
             case REGISTER_ID_INPUT:
                 register_id_input(&page, &ID);
@@ -41,6 +41,12 @@ int main(void){
                 user_main(&page);break;
             case USER_BIKE_REGISTER:
                 user_bike_register(&page, &ID); break;
+            case USER_BIKE_LICENSE:
+                user_bike_license(&page, &ID); break;
+            case USER_BIKE_WROTEOUT:
+                user_bike_wroteout(&page, &ID); break;
+            case USER_QUIZ:
+                user_quiz(&page, &ID); break;
 
             //ADMIN.C
             case MAIN_ADMIN:
