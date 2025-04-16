@@ -5,7 +5,21 @@ MESSAGE:用户与管理员产生交互的功能模块
 RETURNL:返回值统一为：（1）执行成功返回1；（2）执行失败（含各种原因）返回0
 *************************************************************/
 
-void message_display(MESSAGE msg,int _x, int _y, int _listed_item, int _max, int _interval, int list_sequence)
+void message_display(MESSAGE *msg, int _x, int _y)
+{
+    int is_return = 0;
+    // 显示消息界面的标题
+    message_display_draw_bg();
+    message_topic_display(_x, _y, 200, msg->title, MY_BLACK, 26, 2, 0); // 显示消息的主题
+    message_text_display(_x, _y + 30, 200, msg->message, MY_BLACK);   // 显示消息的内容
+
+    while (is_return == 0)
+    {
+
+    }
+}
+
+void message_list(MESSAGE msg,int _x, int _y, int _listed_item, int _max, int _interval, int list_sequence)
 {
     // 显示消息的主题
     char buffer[30]; // 定义缓冲区
@@ -14,7 +28,7 @@ void message_display(MESSAGE msg,int _x, int _y, int _listed_item, int _max, int
     if (list_sequence == ASCENDING)
     {
         settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);                                                                    // 设置字体样式和方向
-        message_topic_display(_x, _y + _interval * _listed_item, 200, msg.title); // 显示消息的主题
+        message_topic_display(_x, _y + _interval * _listed_item, 200, msg.title, MY_WHITE, 16, 1, 1); // 显示消息的主题
         outtextxy(_x + 300, _y + _interval * _listed_item, msg.sender_username); // 显示空格
         if (msg.is_read == 1) { // 如果消息已读，则显示已读
             outtextxy(_x + 420, _y + _interval * _listed_item, "已读"); // 显示已读
@@ -25,7 +39,7 @@ void message_display(MESSAGE msg,int _x, int _y, int _listed_item, int _max, int
     else if (list_sequence == DESCENDING)
     {
         settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);                                                                    // 设置字体样式和方向
-        message_topic_display(_x, _y + _interval * (_max - _listed_item - 1), 200, msg.title); // 显示消息的主题
+        message_topic_display(_x, _y + _interval * (_max - _listed_item - 1), 200, msg.title, MY_WHITE, 16, 1, 1);   // 显示消息的主题
         outtextxy(_x + 300, _y + _interval * (_max - _listed_item - 1), msg.sender_username); // 显示空格
         if (msg.is_read == 1) { // 如果消息已读，则显示已读
             outtextxy(_x + 420, _y + _interval * (_max - _listed_item - 1), "已读"); // 显示已读
@@ -41,7 +55,7 @@ void message_display(MESSAGE msg,int _x, int _y, int _listed_item, int _max, int
     delay(25); // 延时25ms，使列表的动画更有动感
 }
 
-void message_topic_display(int _x, int _y, int _width, char *_text)
+void message_topic_display(int _x, int _y, int _width, char *_text, int _text_color, int _hz_font_size, int _asc_font_size, int _is_light)
 {
     int pos_x = _x;
     int pos_y = _y;
@@ -63,34 +77,41 @@ void message_topic_display(int _x, int _y, int _width, char *_text)
     {
         if (pos_x >= _x + _width)
         {                // 达到最大宽度，换行
-            settextstyle(COMPLEX_FONT, HORIZ_DIR, 1);
-            setcolor(MY_WHITE);                      // 设置字体颜色为白色
-            outtextxy(pos_x, pos_y - 7, "..."); // 显示ASCII字符
+            if (_is_light == 1) {
+                settextstyle(COMPLEX_FONT, HORIZ_DIR, _asc_font_size);
+                setcolor(_text_color);              // 设置字体颜色为白色
+                outtextxy(pos_x, pos_y - 7, "..."); // 显示省略号
+                break;
+            }
+            else {
+                pos_x = _x; // 重置x坐标
+                pos_y += _hz_font_size + 4; // 增加y坐标，换行
+            }
         }
 
         if (*_text >= (char)0x81 && *_text <= (char)0xFE)
         { // 汉字
             hz_buffer[0] = *_text;
             hz_buffer[1] = *(_text + 1);
-            puthz(pos_x, pos_y, hz_buffer, 16, 16, MY_WHITE); // 显示汉字
-            pos_x += 16;                                      // 汉字宽度为16像素
+            puthz(pos_x, pos_y, hz_buffer, _hz_font_size, 16, _text_color); // 显示汉字
+            pos_x += _hz_font_size;                                      // 汉字宽度为16像素
             _text += 2;                                       // 跳过已输出汉字的两个字节
         }
         else
         { // ASCII字符
             asc_buffer[0] = *_text;
             pos_x += 3; // 适当分隔字符
-            settextstyle(COMPLEX_FONT, HORIZ_DIR, 1);
-            setcolor(MY_WHITE);                      // 设置字体颜色为白色
+            settextstyle(COMPLEX_FONT, HORIZ_DIR, _asc_font_size);
+            setcolor(_text_color);                   // 设置字体颜色为白色
             outtextxy(pos_x, pos_y - 7, asc_buffer); // 显示ASCII字符
-            pos_x += 9;                              // 设置字符宽度
+            pos_x += (8 + _asc_font_size);                              // 设置字符宽度
             _text += 1;                              // 移动到下一个字符
         }
     }
 }
 
 // 显示消息
-void message_text_display(int _x, int _y, int _width, char *_text)
+void message_text_display(int _x, int _y, int _width, char *_text, int _text_color)
 {
     int pos_x = _x;
     int pos_y = _y;
@@ -124,14 +145,14 @@ void message_text_display(int _x, int _y, int _width, char *_text)
         if (*_text >= (char)0x81 && *_text <= (char)0xFE) { // 汉字
             hz_buffer[0] = *_text;
             hz_buffer[1] = *(_text + 1);
-            puthz(pos_x, pos_y, hz_buffer, 16, 16, MY_WHITE); // 显示汉字
+            puthz(pos_x, pos_y, hz_buffer, 16, 16, _text_color); // 显示汉字
             pos_x += 16; // 汉字宽度为16像素
             _text += 2; // 跳过已输出汉字的两个字节
         } else { // ASCII字符
             asc_buffer[0] = *_text;
             pos_x += 3; // 适当分隔字符
             settextstyle(COMPLEX_FONT, HORIZ_DIR, 1);
-            setcolor(MY_WHITE); // 设置字体颜色为白色
+            setcolor(_text_color);                 // 设置字体颜色为白色
             outtextxy(pos_x, pos_y-7, asc_buffer); // 显示ASCII字符
             pos_x += 9; // 设置字符宽度
             _text += 1; // 移动到下一个字符
@@ -176,6 +197,47 @@ int message_get(FILE *fp, MESSAGE *msg, char *search_str, char *search_needed)
     }
 }
 
+// 覆盖消息
+int message_overwrite(FILE *fp, MESSAGE *msg, char *search_str, char *search_needed)
+{
+    long i = 1;
+    long counts;
+    MESSAGE msg_buffer; // 用于存储读取的消息
+
+    if (fp == NULL || msg == NULL) // 检查文件指针和消息指针是否为空
+    { // 如果为空，返回0
+        return 0;
+    }
+
+    fseek(fp, 0, SEEK_END); // 将文件指针移动到文件末尾
+
+    counts = ftell(fp) / sizeof(MESSAGE); // 计算文件中的消息数量
+
+    if (counts == 0) // 检查文件中是否有消息
+    { // 如果没有消息，返回0
+        return 0;
+    }
+
+    while (i > counts)
+    { // 逐行读取文件内容
+        if (fseek(fp, -i * sizeof(MESSAGE), SEEK_CUR) == -1)
+            ; // 将文件指针回退到上一行的开头
+        {
+            return 0; // 如果回退失败，返回0
+        }
+        fread(&msg_buffer, sizeof(MESSAGE), 1, fp);
+
+        if (message_is_valid(msg_buffer, search_str, search_needed) == 1) // 检查消息是否为目标信息
+        {
+            fseek (fp, -i * sizeof(MESSAGE), SEEK_CUR); // 将文件指针回退到上一行的开头
+            fwrite (msg, sizeof(MESSAGE), 1, fp); // 将消息写入文件
+            return 1;
+        }
+
+        i++;
+    }
+}
+
 // 检查消息是否有效
 int message_is_valid(MESSAGE msg, char *search_str, char *search_needed) 
 {
@@ -188,8 +250,10 @@ int message_is_valid(MESSAGE msg, char *search_str, char *search_needed)
         msg.receiver_id == atol(search_str) && strcmp(search_needed, "receiver_id") == 0 ||
         strcmp(msg.sender_username, search_str) && strcmp(search_needed, "sender_username") == 0 ||
         strcmp(msg.receiver_username, search_str) && strcmp(search_needed, "receiver_username") == 0 ||
+        strcmp("all_user", search_str) && strcmp(search_needed, "receiver_username") == 0 || // 枚举两种特殊情况
+        strcmp("all_admin", search_str) && strcmp(search_needed, "receiver_username") == 0 ||
         strcmp(msg.sender_username, search_str) && strcmp(search_needed, "sender_username") == 0 ||
-        msg.is_read == atoi(search_str) && strcmp(search_needed, "is_read") == 0) // 比较ID是否匹配
+        msg.is_read == atoi(search_str) && strcmp(search_needed, "is_read") == 0)
     { 
         return 1; // 如果匹配，返回1
     }
@@ -242,4 +306,66 @@ int message_if_found(int __is_read)
     fclose(fp);
     
     return found; // 返回found的值
+}
+
+// 处理信息列表点击
+void message_list_click(int _x, int _y, int _listed_item, int _max, int _interval, int _item_id[], long *_selected_id) 
+{
+    MESSAGE msg; // 用于存储读取的消息
+    FILE *fp = NULL;
+    int i = 0; // 用于循环计数
+    unsigned int previous_selected_id = *_selected_id; // 用于存储上一次选中的消息ID，非静态变量
+
+    for (i = 0; i < _max; i++)
+    {
+        if (mouse_press(_x + 20, _y + 70 + i * _interval, _x + 500, _y + 70 + (i + 1) * _interval - 1) == 1 &&
+            _item_id[i] != 0 && _item_id[i] != previous_selected_id)
+        {
+            *_selected_id = _item_id[i]; // 更新选中的消息ID
+
+            if (previous_selected_id == *_selected_id && *_selected_id != 0)
+            // 如果选中的消息ID与上一次选中的消息ID相同，并且不为0
+            // 则执行信息显示操作
+            {
+                fp = fopen("DATA\\MESSAGE.DAT", "rb+"); // 打开消息文件，以二进制读取模式打开
+                message_get(fp, &msg, (char *)_selected_id, "message_id"); // 读取选中的消息
+                message_display(&msg, _x + 20, _y + 50); // 显示选中的消息
+
+                msg.is_read = 1; // 将消息标记为已读
+                message_overwrite(fp, &msg, (char *)_selected_id, "message_id"); // 将选中的消息标记为已读
+                previous_selected_id = 0;
+                *_selected_id = 0;
+            }
+            break;
+        }
+    }
+
+
+    if (previous_selected_id == *_selected_id &&
+        mouse_press(_x + 20, _y + 70 + _listed_item * _interval, _x + 500, _y + 70 + (_listed_item + 1) * _interval - 1) == -1)
+    {
+        // 经过上面循环发现没有选中正确的行，_selected_id不会发生改变，因此和previous相同
+        *_selected_id = 0; // 重置选中的消息ID
+    }
+}
+
+void message_display_draw_bg()
+{
+    setwritemode(XOR_PUT);
+    setfillstyle(LTBKSLASH_FILL, MY_GREEN); // 设置填充样式为实心
+    bar(0, 0, 640, 480);                    // 清除整个屏幕
+
+    setwritemode(COPY_PUT);
+    setfillstyle(SOLID_FILL, MY_CREAM); // 设置填充样式为实心
+    bar(100, 0, 540, 480);            // 绘制矩形框
+
+    setcolor(MY_GREEN);
+    setlinestyle(SOLID_LINE, 0, NORM_WIDTH); // 设置线条样式为实线，宽度为1
+    line(120, 70, 450, 70); // 绘制直线
+
+    setcolor(MY_BLACK);
+    settextstyle(DEFAULT_FONT, HORIZ_DIR, 1); // 设置字体样式和方向
+    outtextxy(120, 10, "TOPIC");
+    outtextxy(120, 80, "FROM");
+
 }

@@ -17,6 +17,7 @@
 #include "LOGIN.H"
 #include "GROCERY.H"
 #include "LINKLIST.H"
+#include "MESSAGE.H"
 
 
 #endif

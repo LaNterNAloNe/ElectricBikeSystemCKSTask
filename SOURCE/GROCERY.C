@@ -38,6 +38,7 @@ void initcolorpalette()
     setrgbpalette(MY_RED, 255, 0, 0);           // 红色
     setrgbpalette(MY_WHITE, 255, 255, 255);     // 白色
     setrgbpalette(MY_GREEN, 0, 255, 0);         // 绿色
+    setrgbpalette(MY_CREAM, 61, 62, 55);        // 米色
 }
 
 void drawExittingProgram(int err)

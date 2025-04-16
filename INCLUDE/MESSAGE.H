@@ -21,11 +21,18 @@ typedef struct _MESSAGE_ {
     long message_id;
 } MESSAGE;
 
-void message_display(MESSAGE msg, int _x, int _y, int _listed_item, int _max, int _interval, int list_sequence);
-void message_topic_display(int _x, int _y, int _width, char *_text);
-void message_text_display(int _x, int _y, int _width, char *_text);
+void message_display(MESSAGE *msg, int _x, int _y);
+
+void message_list(MESSAGE msg, int _x, int _y, int _listed_item, int _max, int _interval, int list_sequence);
+void message_topic_display(int _x, int _y, int _width, char *_text, int _text_color, int _hz_font_size, int _asc_font_size, int _is_light);
+void message_text_display(int _x, int _y, int _width, char *_text, int _text_color);
 int message_get(FILE *fp, MESSAGE *msg, char *search_str, char *search_needed);
+int message_overwrite(FILE *fp, MESSAGE *msg, char *search_str, char *search_needed);
 int message_is_valid(MESSAGE msg, char *search_str, char *search_needed);
 int message_if_found(int __is_read);
+
+void message_list_click(int _x, int _y, int _listed_item, int _max, int _interval, int _item_id[], long *_selected_id);
+
+void message_display_draw_bg();
 
 #endif

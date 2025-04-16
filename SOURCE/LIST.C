@@ -357,7 +357,7 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
                     continue; // 如果下翻读取时读到的数据不符条件，则进行下一轮循环
                 }
 
-                message_display(message_temp, ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70, max, interval, listed_item, ASCENDING); // 输出数据
+                message_list(message_temp, ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70, max, interval, listed_item, ASCENDING); // 输出数据
                 item_id[listed_item] = message_temp.message_id; // 记录ID
             }
 
@@ -508,7 +508,7 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
                     continue; // 如果下翻读取时读到的数据不符条件，则进行下一轮循环
                 }
 
-                message_display(message_temp, ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70, max, interval, listed_item, DESCENDING); // 输出数据
+                message_list(message_temp, ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70, max, interval, listed_item, DESCENDING); // 输出数据
                 item_id[7 - listed_item] = message_temp.message_id;                                                                   // 记录ID
             }
 
@@ -670,7 +670,7 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
                     temp_end++; // end指数+1
                     continue;   // 如果下翻读取时读到的数据不符条件，则进行下一轮循环
                 }
-                message_display(message_temp, ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70, max, interval, listed_item, ASCENDING); // 输出数据
+                message_list(message_temp, ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70, max, interval, listed_item, ASCENDING); // 输出数据
                 item_id[listed_item] = message_temp.message_id;                                                                   // 记录ID
             }
 
@@ -1014,6 +1014,7 @@ void handle_list_select_line_admin(LINKLIST *LIST, unsigned long item_id[], unsi
         setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
         bar(ADMIN_INTERFACE_X1 + 10, ADMIN_INTERFACE_Y1 + 70, ADMIN_INTERFACE_X1 + 18, ADMIN_INTERFACE_Y1 + 310); // 清理所有高亮
         *selected_id = 0; // 如果点击时没有选中任何行，则将selected_id设置为0
+        previous_selected_id = 0;
 
         // 清理选中行显示的具体信息
         setfillstyle(SOLID_FILL, MY_LIGHTGRAY);

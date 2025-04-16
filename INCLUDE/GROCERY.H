@@ -106,6 +106,7 @@
 #define MY_RED 4
 #define MY_WHITE 5
 #define MY_GREEN 6
+#define MY_CREAM 7
 #define USER_DEFINED_COLOR 15
 
 //定义用户状态
