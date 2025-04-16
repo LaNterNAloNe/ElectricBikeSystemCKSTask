@@ -8,6 +8,7 @@
 #include <DOS.H>
 #include <ctype.h>
 #include <stdlib.H>
+#include "LINKLIST.H"
 #include"GROCERY.H"
 #include"MOUSE.H"
 #include"INPUTCH.H"
@@ -58,7 +59,7 @@
 //ÉùÃ÷º¯Êý
 void login(int *page,unsigned long *ID);
 void login_admin(int *page,unsigned long *ID);
-void _register(int *page,unsigned long *ID);
+void _register(int *page,unsigned long *ID,LINKLIST *LIST);
 void register_id_input(int* page, unsigned long *ID);
 void flushRegisterIdGraph(int* tag);
 int register_id_judge(unsigned long id);

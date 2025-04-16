@@ -84,6 +84,7 @@
 #define USER_INFO 15
 #define USER_MESSAGE 16
 #define USER_DATAGRAPH 17
+#define USER_QUIZ 18
 
 #define MAIN_ADMIN 20
 #define ADMIN_BIKE_REGISTER 21
