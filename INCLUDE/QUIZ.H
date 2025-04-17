@@ -27,6 +27,9 @@
 #define box_c_y box_a_y+LINE_HEIGHT
 #define box_d_x box_b_x
 #define box_d_y box_b_y+LINE_HEIGHT
+#define QUIZ_PAGE_COUNT 4  //题目页数
+#define QUESTION_PER_PAGE 3 //每页3题
+#define PASSING_GRADE 0.75 //75分合格
 
 typedef struct {
     char main_text[60];
@@ -40,5 +43,11 @@ typedef struct {
 void generate_quiz(question* quiz, int question_count, int(*question_position_xy)[2]);//生成题目（包含位置）
 void handle_click_quiz(question* quiz, char* answer, int question_count);//处理点击答题
 void draw_quiz(question quiz[], int question_count);//画出题目
+int judge_answer(question quiz[][QUESTION_PER_PAGE], char anwser[][QUESTION_PER_PAGE], int result[][QUESTION_PER_PAGE], int page_count);
+void printbox(question quiz[], char answer[]);//根据选择答案涂黑选项框（换页时绘制当前页面所选择的选项框）
+int FlushQuiz(question quiz[],int question_count,int *box_tag);//检测鼠标是否在选项框内并刷新选项框状态
+void init_box_xy(question quiz, int box_xy[4][4]);//根据question的x,y坐标确定四个选项框坐标box_xy[A,B,C,D][x1,y1,x2,y2]
+void draw_countdown(int remain_sec, int x, int y);//计时器
+
 //void print_question_answer(question * quiz,int* answer,int question_count);
 #endif
