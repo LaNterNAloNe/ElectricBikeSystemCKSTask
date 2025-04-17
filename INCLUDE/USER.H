@@ -145,20 +145,29 @@
 #define USER_BIKE_WROTEOUT_INPUT4_Y1 375
 #define USER_BIKE_WROTEOUT_INPUT4_Y2 420
 
-#define USER_QUIZ_BUTTON1_X1 180
-#define USER_QUIZ_BUTTON1_X2 250
+#define USER_QUIZ_BUTTON1_X1 130
+#define USER_QUIZ_BUTTON1_X2 200
 #define USER_QUIZ_BUTTON1_Y1 435
-#define USER_QUIZ_BUTTON1_Y2 465
-#define USER_QUIZ_BUTTON2_X1 410
-#define USER_QUIZ_BUTTON2_X2 480
+#define USER_QUIZ_BUTTON1_Y2 470
+#define USER_QUIZ_BUTTON2_X1 360
+#define USER_QUIZ_BUTTON2_X2 430
 #define USER_QUIZ_BUTTON2_Y1 435
-#define USER_QUIZ_BUTTON2_Y2 465
+#define USER_QUIZ_BUTTON2_Y2 470
+#define USER_QUIZ_BUTTON3_X1 550
+#define USER_QUIZ_BUTTON3_X2 620
+#define USER_QUIZ_BUTTON3_Y1 435
+#define USER_QUIZ_BUTTON3_Y2 470
 #define USER_QUIZ_EXIT_X1 10
 #define USER_QUIZ_EXIT_X2 40
 #define USER_QUIZ_EXIT_Y1 10
 #define USER_QUIZ_EXIT_Y2 40
-
-
+#define USER_QUIZ_BACK_X1 560
+#define USER_QUIZ_BACK_X2 620
+#define USER_QUIZ_BACK_Y1 10
+#define USER_QUIZ_BACK_Y2 40
+#define QUIZ_PAGE_COUNT 4  //题目页数
+#define QUESTION_PER_PAGE 3 //每页3题
+#define LASTING_TIME 600 //测试时间十分钟
 
 //激活状态
 #define ACTIVE_USER_NONE 0
@@ -212,7 +221,9 @@ void add_days_to_date(char* date_string, int days_to_add);
 void user_license_data_judge(int* data);
 
 void user_quiz(int* page, unsigned long* id);
-void drawgraph_user_quiz();
+void drawgraph_user_quiz(int *quiz_page, int page_count);
+void flushUserQuiz(int* tag, int *box_tag,user_button UserButtons[],question quiz[],char *answer);
+void drawgraph_user_quiz_pass(int result[][QUESTION_PER_PAGE], int page_count);
 
 void user_bike_anual();
 
@@ -222,11 +233,15 @@ void drawgraph_user_wroteout();
 void flushUserWroteoutWarning();
 void flushUserWroteout(int *tag,user_button UserButtons[]);
 
+
 void user_info();
 void user_message();
 void user_datagraph();
 int handle_click_main(int button_num, user_button WroteoutButtons[]);
 void anime_login_success_user();
 
+
+void user_newmouse_data(int* nx, int* ny, int* nbuttons,int *flag);
+void user_drawmouse(int* nx, int* ny, int* nbuttons,int *flag);
 #define STRUCT_LENGTH(Struct) (sizeof(Struct)/sizeof(Struct[0]))
 #endif

@@ -4,6 +4,7 @@ void user_main(int *page) {
 	int tag = 0;
 	int click = -1;
 	int i;
+	int mouse_flag;
 	user_button UserButtons[] = {
 {USER_BIKE_REGISTER_X1, USER_BIKE_REGISTER_X2,USER_BIKE_REGISTER_Y1, USER_BIKE_REGISTER_Y2,ACTIVE_USER_BIKE_REGISTER,USER_BIKE_REGISTER},
 {USER_BIKE_LICENSE_X1, USER_BIKE_LICENSE_X2,USER_BIKE_LICENSE_Y1, USER_BIKE_LICENSE_Y2,ACTIVE_USER_BIKE_LICENSE,USER_BIKE_LICENSE},
@@ -23,13 +24,14 @@ void user_main(int *page) {
 	
 
 	while (1) {
+			user_newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
 			flushUserMain(&tag, STRUCT_LENGTH(UserButtons), UserButtons); // 刷新界面
-			newmouse(&MouseX, &MouseY, &press); // 刷新鼠标
 			click = handle_click_main(STRUCT_LENGTH(UserButtons), UserButtons);
 			if (click == LOGIN || click == EXIT||click==USER_BIKE_REGISTER||click==USER_BIKE_LICENSE||click==USER_BIKE_WROTEOUT) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_REGISTER
 				*page = click;
 				return;
 			}
+			user_drawmouse(&MouseX, &MouseY, &press, &mouse_flag);
 			delay(25);//
 	}
 }
@@ -158,6 +160,27 @@ for (i = 0; i < button_count; i++) {
 }
 
 if (*tag != new_tag) {
+	if (*tag != ACTIVE_USER_NONE) {
+		if (*tag <= ACTIVE_USER_DATAGRAPH) {
+			setcolor(MY_LIGHTGRAY);
+			setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+			rectangle(UserButtons[*tag-1].x1, UserButtons[*tag-1].y1, UserButtons[*tag-1].x2, UserButtons[*tag-1].y2);
+			MouseS = 1;
+		}
+		else if (*tag == ACTIVE_USER_EXIT) {
+			setcolor(MY_RED);
+			setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+			rectangle(USER_EXIT_X1, USER_EXIT_Y1, USER_EXIT_X2, USER_EXIT_Y2);
+			MouseS = 1;
+		}
+		else if (*tag == ACTIVE_USER_BACK) {
+			setfillstyle(1, MY_YELLOW);//恢复“返回登录”
+			setcolor(MY_YELLOW);
+			bar(USER_BACK_X1, USER_BACK_Y1, USER_BACK_X2, USER_BACK_Y2);
+			puthz(USER_BACK_X1 + 5, (USER_BACK_Y1 + USER_BACK_Y2) / 2 - 10, "返回", 24, 25, MY_WHITE);
+			MouseS = 1;
+		}
+	}
 	*tag = new_tag;
 	if (new_tag != ACTIVE_USER_NONE && new_tag<=ACTIVE_USER_DATAGRAPH) {
 		setfillstyle(1,MY_WHITE);
@@ -182,7 +205,7 @@ if (*tag != new_tag) {
 		MouseS = 1;
 	}
 	else {
-		// 清除提示
+		/*清除提示
 		setcolor(MY_LIGHTGRAY);
 		setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
 		for (i = 0; i < button_count-2; i++) {
@@ -197,7 +220,7 @@ if (*tag != new_tag) {
 		setcolor(MY_RED);
 		setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
 		rectangle(USER_EXIT_X1,USER_EXIT_Y1,USER_EXIT_X2,USER_EXIT_Y2);
-
+        */
 		MouseS = 0;
 	}
 }
@@ -224,6 +247,7 @@ void user_bike_register(int* page, unsigned long* id)
 	int tag = 0;
 	int click = -1;
 	int register_flag = 0;
+	int mouse_flag;
 	char usrn[16] = {'\0'}; // 初始化为空
 	char e_bike_id[10] = {'\0'};
 	user_button UserButtons[] = {
@@ -249,13 +273,14 @@ void user_bike_register(int* page, unsigned long* id)
 		clrmous(MouseX, MouseY);
 		save_bk_mou(MouseX, MouseY);
 		while (1) {
+			user_newmouse_data(&MouseX, &MouseY, &press,&mouse_flag);
 			flushUserMain(&tag, STRUCT_LENGTH(UserButtons), UserButtons); // 刷新界面
-			newmouse(&MouseX, &MouseY, &press); // 刷新鼠标
 			click = handle_click_main(STRUCT_LENGTH(UserButtons), UserButtons);
 			if (click == LOGIN || click == EXIT || click == USER_BIKE_LICENSE) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_REGISTER
 				*page = click;
 				return;
 			}
+			user_drawmouse(&MouseX, &MouseY, &press, &mouse_flag);
 			delay(25);
 		}
 	}
@@ -574,8 +599,9 @@ void user_bike_license(int *page,unsigned long *id)
 {
 	int license_data[3] = {-1,-1,-1};
 	int click = -1;
-	int tag = -1;
+	int tag = 0;
 	int register_flag = 0;
+	int mouse_flag;
 	user_button UserButtons[] = {
 {USER_BIKE_REGISTER_X1, USER_BIKE_REGISTER_X2,USER_BIKE_REGISTER_Y1, USER_BIKE_REGISTER_Y2,ACTIVE_USER_BIKE_REGISTER,USER_BIKE_REGISTER},
 {USER_BIKE_LICENSE_X1, USER_BIKE_LICENSE_X2,USER_BIKE_LICENSE_Y1, USER_BIKE_LICENSE_Y2,ACTIVE_USER_BIKE_LICENSE,USER_BIKE_LICENSE},
@@ -603,7 +629,7 @@ void user_bike_license(int *page,unsigned long *id)
 	drawgraph_user_main(page);
 	drawgraph_user_bike_license(id,UserLicenseBox);
 	while (1) {
-		newmouse(&MouseX, &MouseY, &press);
+		user_newmouse_data(&MouseX, &MouseY, &press,&mouse_flag);
 		flushUserMain(&tag, STRUCT_LENGTH(UserButtons), UserButtons); // 刷新界面
 		flushUserLicense(UserLicenseBox,license_data);
 		handle_click_user_license(UserLicenseBox,license_data);//处理选项框
@@ -615,6 +641,7 @@ void user_bike_license(int *page,unsigned long *id)
 		if (mouse_press(USER_BIKE_LICENSE_BUTTON1_X1, USER_BIKE_LICENSE_BUTTON1_Y1, USER_BIKE_LICENSE_BUTTON1_X2, USER_BIKE_LICENSE_BUTTON1_Y2) == 1) {
 			user_license_data_judge(license_data);
 		}
+		user_drawmouse(&MouseX, &MouseY, &press, &mouse_flag);
 		delay(25);
 	}
 }
@@ -760,9 +787,10 @@ void user_bike_anual()
 void user_bike_wroteout(int *page,unsigned long *id)
 {
 	int click = -1;
-	int tag_main = -1;
+	int tag_main = 0;
 	int tag_wroteout = -1;
 	int flush_count = 0;
+	int mouse_flag;
 	char count[8];
 	user_button UserButtons[] = {
 {USER_BIKE_REGISTER_X1, USER_BIKE_REGISTER_X2,USER_BIKE_REGISTER_Y1, USER_BIKE_REGISTER_Y2,ACTIVE_USER_BIKE_REGISTER,USER_BIKE_REGISTER},
@@ -788,7 +816,7 @@ void user_bike_wroteout(int *page,unsigned long *id)
 	drawgraph_user_bike_wroteout_warning();
 	//进入电动车报废功能界面前的警告页面
 	while (1) {
-		newmouse(&MouseX, &MouseY, &press);
+		user_newmouse_data(&MouseX, &MouseY, &press,&mouse_flag);//刷新鼠标数据
 		flushUserMain(&tag_main, STRUCT_LENGTH(UserButtons), UserButtons); // 刷新界面
 		flushUserWroteoutWarning();
 		click = handle_click_main(STRUCT_LENGTH(UserButtons), UserButtons);
@@ -822,20 +850,22 @@ void user_bike_wroteout(int *page,unsigned long *id)
 		}
 		if (flush_count <= 201)
 			flush_count++;
+		user_drawmouse(&MouseX, &MouseY, &press, &mouse_flag);//在可能改变背景的操作后绘制鼠标
 		delay(25);
 	}
 	drawgraph_user_wroteout();
 	//电动车报废功能界面
 	while (1) {
-		newmouse(&MouseX, &MouseY, &press);
+		user_newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
 		flushUserMain(&tag_main, STRUCT_LENGTH(UserButtons), UserButtons); // 刷新界面
 		flushUserWroteout(&tag_wroteout,WroteoutButtons);
 		click = handle_click_main(STRUCT_LENGTH(UserButtons), UserButtons);
 		if (click == LOGIN || click == USER_BIKE_REGISTER || click == USER_BIKE_LICENSE || click == EXIT) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_LICENSE
 			*page = click;
 			return;
-			delay(25);
 		}
+		user_drawmouse(&MouseX, &MouseY, &press, &mouse_flag);
+		delay(25);
 	}
 }
 
@@ -948,47 +978,126 @@ void flushUserWroteout(int* tag, user_button WroteoutButtons[]) {
 }
 
 void user_quiz(int* page, unsigned long* id) {
-	int i, j;
-	question test[3];
-	char answer[3];
-	for (j = 0; j < 3; j++) {
-		strcpy(test[j].main_text, "题干一二三四五六七八九十共十六字");
-		for (i = 0; i < 4; i++) {
-			strcpy(test[j].options[i], "选项一共七个字");
+	int i, j, k;
+	int tag = -1;
+	int box_tag = -1;
+	int quiz_page = 1;
+	char start_time[8];
+	int remain_sec = LASTING_TIME;
+	int tick=0;
+
+	question test[QUIZ_PAGE_COUNT][QUESTION_PER_PAGE];
+	char answer[QUIZ_PAGE_COUNT][QUESTION_PER_PAGE] = { '\0' };
+	int result[QUIZ_PAGE_COUNT][QUESTION_PER_PAGE] = {'\0'};
+
+	user_button quiz_buttons[] = {
+		{USER_QUIZ_BUTTON1_X1, USER_QUIZ_BUTTON1_X2, USER_QUIZ_BUTTON1_Y1, USER_QUIZ_BUTTON1_Y2,1},
+		{USER_QUIZ_BUTTON2_X1, USER_QUIZ_BUTTON2_X2, USER_QUIZ_BUTTON2_Y1, USER_QUIZ_BUTTON2_Y2,2},
+		{USER_QUIZ_BUTTON3_X1, USER_QUIZ_BUTTON3_X2, USER_QUIZ_BUTTON3_Y1, USER_QUIZ_BUTTON3_Y2,3},
+		{USER_QUIZ_EXIT_X1, USER_QUIZ_EXIT_X2, USER_QUIZ_EXIT_Y1, USER_QUIZ_EXIT_Y2,4},
+		{USER_QUIZ_BACK_X1,USER_QUIZ_BACK_X2,USER_QUIZ_BACK_Y1,USER_QUIZ_BACK_Y2,5}
+	};
+	int mouse_flag = 1;
+
+	for (i = 0; i < QUIZ_PAGE_COUNT; i++) {
+		for (j = 0; j < 3; j++) {
+			strcpy(test[i][j].main_text, "题干一二三四五六七八九十共十六字");
+			for (k = 0; k < 4; k++) {
+				strcpy(test[i][j].options[k], "选项一共七个字");
+			}
+			test[i][j].correctAnswer = 'A';
+			test[i][j].id = 0;
+			test[i][j].x = 60;
+			test[i][j].y = 70 + 120 * j;
 		}
-		test[j].correctAnswer = 'a';
-		test[j].id = 0;
-		test[j].x = 30;
-		test[j].y = 75+120*j;
 	}
+
+	//考试界面
+	get_exact_time(start_time);
 	clrmous(MouseX, MouseY);
 	save_bk_mou(MouseX, MouseY);
-	drawgraph_user_quiz();
-	draw_quiz(test, 3);
+	drawgraph_user_quiz(&quiz_page, QUIZ_PAGE_COUNT);
+	draw_quiz(test[quiz_page-1], QUESTION_PER_PAGE);
 	while (1) {
-		newmouse(&MouseX, &MouseY, &press);
-		handle_click_quiz(test, answer, 3);
-		if (mouse_press(USER_BIKE_WROTEOUT_BUTTON2_X1, USER_BIKE_WROTEOUT_BUTTON2_Y1, USER_BIKE_WROTEOUT_BUTTON2_X2, USER_BIKE_WROTEOUT_BUTTON2_Y2) == 1) {
+		user_newmouse_data(&MouseX, &MouseY, &press,&mouse_flag);
+		flushUserQuiz(&tag,&box_tag,quiz_buttons,test[quiz_page-1],answer[quiz_page-1]);
+		handle_click_quiz(test[quiz_page - 1], answer[quiz_page - 1], QUESTION_PER_PAGE);
+		if (mouse_press(USER_QUIZ_BACK_X1, USER_QUIZ_BACK_Y1, USER_QUIZ_BACK_X2, USER_QUIZ_BACK_Y2) == 1) {
+			delay(1000);
 			*page = MAIN_USER;
 			return;
 		}
-		if (mouse_press(USER_EXIT_X1, USER_EXIT_Y1, USER_EXIT_X2, USER_EXIT_Y2) == 1) {
+		if (mouse_press(USER_QUIZ_EXIT_X1, USER_QUIZ_EXIT_Y1, USER_QUIZ_EXIT_X2, USER_QUIZ_EXIT_Y2) == 1) {
 			*page = EXIT;
 			return;
 		}
+		//上一页
+		if (mouse_press(USER_QUIZ_BUTTON1_X1, USER_QUIZ_BUTTON1_Y1, USER_QUIZ_BUTTON1_X2, USER_QUIZ_BUTTON1_Y2) == 1 && quiz_page != 1) {
+			quiz_page -= 1;
+			drawgraph_user_quiz(&quiz_page, QUIZ_PAGE_COUNT);
+			draw_quiz(test[quiz_page-1], QUESTION_PER_PAGE);
+			printbox(test[quiz_page - 1], answer[quiz_page - 1]);
+		}
+		//下一页
+		if (mouse_press(USER_QUIZ_BUTTON2_X1, USER_QUIZ_BUTTON2_Y1, USER_QUIZ_BUTTON2_X2, USER_QUIZ_BUTTON2_Y2) == 1 && quiz_page != QUIZ_PAGE_COUNT) {
+			quiz_page += 1;
+			drawgraph_user_quiz(&quiz_page, QUIZ_PAGE_COUNT);
+			draw_quiz(test[quiz_page-1], QUESTION_PER_PAGE);
+			printbox(test[quiz_page - 1], answer[quiz_page - 1]);
+		}
+		//交卷
+		if (mouse_press(USER_QUIZ_BUTTON3_X1, USER_QUIZ_BUTTON3_Y1, USER_QUIZ_BUTTON3_X2, USER_QUIZ_BUTTON3_Y2) == 1 || remain_sec == 0) {
+			break;
+		}
+		//计时器
+		if (tick % 20 == 0 && remain_sec!=0) 
+			draw_countdown(remain_sec, 20, 450);
+		if (tick % 40 == 0 && remain_sec!= 0) {
+			tick = 0;
+			remain_sec--;
+		}
+		tick++;
+		user_drawmouse(&MouseX, &MouseY, &press, &mouse_flag);
 		delay(25);
 	}
-}
+	//结果界面
+	if (judge_answer(test, answer, result, QUIZ_PAGE_COUNT)) {
+		drawgraph_user_quiz_pass(result, QUIZ_PAGE_COUNT);
+		//printf("%d%d%d%d%d%d", result[0][0], result[0][1], result[0][2], result[1][0], result[1][1], result[1][2]);
+		while (1) {
+			user_newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
 
-void drawgraph_user_quiz() {
+			user_drawmouse(&MouseX, &MouseY, &press, &mouse_flag);
+			delay(25);
+		}
+	}
+	else
+		return;
+}
+	
+
+void drawgraph_user_quiz(int *quiz_page,int page_count) {
+	char question_serial[8][8];//按页码储存题目序号，最多8页，不想在这malloc
+	char quiz_page_string[10];//页码字符串
+	int i;
+
 	setfillstyle(SOLID_FILL,MY_LIGHTGRAY);
 	bar(0, 0, 640, 480);
 	setcolor(MY_WHITE);
 	setfillstyle(1, MY_WHITE);
 	bar(10,50,630,420);
-	puthz(160, 15, "电动车法规测试", 32, 30, MY_WHITE);
+	puthz(200, 12, "电动车法规测试", 32, 30, MY_WHITE);//边框
 
-	setfillstyle(1, MY_RED);//退出
+	for (i = 0; i < 3; i++) {                 //为题目序号赋值
+		sprintf(question_serial[i], "%d", i + 1 + 3*(*quiz_page-1));
+	}
+	settextstyle(DEFAULT_FONT, HORIZ_DIR, 2); //输出题目序号
+	setcolor(MY_BLACK);
+	outtextxy(20, 70, question_serial[0]);
+	outtextxy(20, 190,question_serial[1]);
+	outtextxy(20, 310,question_serial[2]);
+
+	setfillstyle(1, MY_RED);//退出红叉
 	setcolor(MY_RED);
 	bar(USER_QUIZ_EXIT_X1, USER_QUIZ_EXIT_Y1, USER_QUIZ_EXIT_X2, USER_QUIZ_EXIT_Y2);
 	setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
@@ -996,12 +1105,163 @@ void drawgraph_user_quiz() {
 	line(USER_QUIZ_EXIT_X1, USER_QUIZ_EXIT_Y1, USER_QUIZ_EXIT_X2 - 1, USER_QUIZ_EXIT_Y2 - 1);
 	line(USER_QUIZ_EXIT_X2 - 1, USER_QUIZ_EXIT_Y1, USER_QUIZ_EXIT_X1, USER_QUIZ_EXIT_Y2 - 1);
 
-	setfillstyle(SOLID_FILL, MY_RED);
-	bar(USER_QUIZ_BUTTON2_X1, USER_QUIZ_BUTTON2_Y1, USER_QUIZ_BUTTON2_X2, USER_QUIZ_BUTTON2_Y2);
-	puthz(USER_QUIZ_BUTTON2_X1 + 10, USER_QUIZ_BUTTON2_Y1 + 8, "返回", 24, 20, MY_WHITE);
+	setfillstyle(SOLID_FILL, MY_YELLOW);//离场
+	bar(USER_QUIZ_BACK_X1, USER_QUIZ_BACK_Y1, USER_QUIZ_BACK_X2, USER_QUIZ_BACK_Y2);
+	puthz(USER_QUIZ_BACK_X1 + 7, USER_QUIZ_BACK_Y1+5, "离场", 24, 25, MY_WHITE);
+
+	setfillstyle(SOLID_FILL, MY_CREAM);//翻页
+	if (*quiz_page != 1) {
+		bar(USER_QUIZ_BUTTON1_X1, USER_QUIZ_BUTTON1_Y1, USER_QUIZ_BUTTON1_X2, USER_QUIZ_BUTTON1_Y2);
+		puthz(USER_QUIZ_BUTTON1_X1 + 5, USER_QUIZ_BUTTON1_Y1 + 8, "上一页", 24, 20, MY_BLACK);
+	}
+	if (*quiz_page != page_count) {
+		bar(USER_QUIZ_BUTTON2_X1, USER_QUIZ_BUTTON2_Y1, USER_QUIZ_BUTTON2_X2, USER_QUIZ_BUTTON2_Y2);
+		puthz(USER_QUIZ_BUTTON2_X1 + 5, USER_QUIZ_BUTTON2_Y1 + 8, "下一页", 24, 20, MY_BLACK);
+	}
+	
+	setcolor(MY_WHITE);//页码
+	sprintf(quiz_page_string, "%d/%d", *quiz_page, page_count);
+	outtextxy(260, 450, quiz_page_string);
+	puthz(235, 443, "第", 24, 20, MY_WHITE);
+	puthz(310, 443, "页", 24, 20, MY_WHITE);
+
+	setfillstyle(SOLID_FILL, MY_RED);//交卷
+	bar(USER_QUIZ_BUTTON3_X1, USER_QUIZ_BUTTON3_Y1, USER_QUIZ_BUTTON3_X2, USER_QUIZ_BUTTON3_Y2);
+	puthz(USER_QUIZ_BUTTON3_X1 + 13, USER_QUIZ_BUTTON3_Y1 + 8, "交卷", 24, 20, MY_WHITE);
+	
 }
 
 
+
+void flushUserQuiz(int* tag,int *box_tag, user_button UserButtons[], question quiz[], char* answer) {
+	int i = 0;
+	int temp = 0;
+	int new_tag = ACTIVE_USER_NONE;
+	int box_flag = FlushQuiz(quiz, 3,box_tag);//鼠标是否在选项框位置
+
+	if (box_flag)
+		new_tag = 6;//选项框活跃标签
+	for (i = 0; i < 5; i++) {
+		if (MouseX >= UserButtons[i].x1 && MouseX <= UserButtons[i].x2 &&
+			MouseY >= UserButtons[i].y1 && MouseY <= UserButtons[i].y2) {
+			new_tag = UserButtons[i].active_tag;
+			temp = i;
+			break;
+		}
+	}
+	
+	if (*tag != new_tag) {
+		*tag = new_tag;
+		if (new_tag != ACTIVE_USER_NONE && new_tag <= 3) {//上一页，下一页，交卷按钮
+			setfillstyle(1, MY_WHITE);
+			setcolor(MY_BLACK);
+			setlinestyle(SOLID_LINE, 0, NORM_WIDTH);
+			rectangle(UserButtons[temp].x1+1, UserButtons[temp].y1+1, UserButtons[temp].x2+1, UserButtons[temp].y2+1);
+			MouseS = 1;
+		}
+		else if (new_tag == 4) {//退出程序
+			setfillstyle(1, MY_WHITE);
+			setcolor(MY_WHITE);
+			setlinestyle(SOLID_LINE, 0,THICK_WIDTH);
+			rectangle(UserButtons[temp].x1, UserButtons[temp].y1, UserButtons[temp].x2, UserButtons[temp].y2);
+			MouseS = 1;
+		}
+		else if (new_tag == 5) {//返回主界面（离场）
+			setcolor(MY_RED);
+			setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+			setfillstyle(1, MY_RED);
+			bar(USER_QUIZ_BACK_X1, USER_QUIZ_BACK_Y1, USER_QUIZ_BACK_X2, USER_QUIZ_BACK_Y2);
+			puthz(USER_QUIZ_BACK_X1 + 7, USER_QUIZ_BACK_Y1 + 6, "离场", 24, 25, MY_WHITE);
+			MouseS = 1;
+		}
+		else if (new_tag==6||new_tag==0) {//鼠标不在按钮上（在选项框或空白）
+			// 清除提示
+			setcolor(MY_LIGHTGRAY);
+			setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+			for (i = 0; i < 3; i++) {
+				rectangle(UserButtons[i].x1+1, UserButtons[i].y1+1, UserButtons[i].x2+1, UserButtons[i].y2+1);
+			}
+
+			setfillstyle(1, MY_YELLOW);//恢复“返回登录”
+			setcolor(MY_YELLOW);
+			bar(USER_QUIZ_BACK_X1, USER_QUIZ_BACK_Y1, USER_QUIZ_BACK_X2, USER_QUIZ_BACK_Y2);
+			puthz(USER_QUIZ_BACK_X1 + 7, USER_QUIZ_BACK_Y1 + 6, "离场", 24, 25, MY_WHITE);
+
+			setcolor(MY_RED);
+			setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+			rectangle(USER_QUIZ_EXIT_X1, USER_QUIZ_EXIT_Y1, USER_QUIZ_EXIT_X2, USER_QUIZ_EXIT_Y2);
+			if(new_tag==0)
+				MouseS = 0;//空白处鼠标为箭头；选项框处鼠标形式在FlushQuiz中已处理，此处无须赋值
+		}
+	}
+	
+}
+
+void drawgraph_user_quiz_pass(int result[][QUESTION_PER_PAGE],int page_count) {
+	int i,j;
+	int correct_num=0;
+	float correct_rate;
+	char correct_num_string[16];
+	char correct_rate_string[16];
+
+	for (i = 0; i < page_count; i++) {
+		for (j = 0; j < QUESTION_PER_PAGE; j++) {
+			if (result[i][j] == 1)
+				correct_num++;
+		}
+	}
+	correct_rate = (float)correct_num / (page_count * QUESTION_PER_PAGE);
+	sprintf(correct_num_string, "%d/%d", correct_num, page_count * QUESTION_PER_PAGE);
+	sprintf(correct_rate_string, "%.2f%%", correct_rate);
+
+	setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
+	bar(0, 0, 640, 480);
+	setcolor(MY_WHITE);
+	setfillstyle(1, MY_WHITE);
+	bar(10, 50, 630, 470);
+	puthz(200, 12, "电动车法规测试", 32, 30, MY_WHITE);//边框
+
+	settextstyle(DEFAULT_FONT, HORIZ_DIR, 2); //输出题目序号
+	setcolor(MY_BLACK);
+	puthz(100, 100, "答对了：", 24, 20, MY_BLACK);
+	outtextxy(200, 100, correct_num_string);
+	outtextxy(300, 100, correct_rate_string);
+}
+
+
+/*
+之前的newmouse函数中更新鼠标数据与保存鼠标目前位置的背景同时进行，因此在flush函数们改变背景时，鼠标保存的背景没有改变，导致按钮边框缺失一小块或有一小块颜色不对
+现在先使用user_newmouse_data更新鼠标数据，在运行flush函数改变背景后，用user_drawmouse保存背景并绘制鼠标，保证在user_drawmouse时*buffer中保存的背景正确。
+*/
+
+
+void user_newmouse_data(int* nx, int* ny, int* nbuttons,int *flag)//更新鼠标数据并判断鼠标位置是否改变
+{
+	int xn, yn, buttonsn;
+	int x0 = *nx, y0 = *ny, buttons0 = *nbuttons;
+	mread(&xn, &yn, &buttonsn);
+	*nx = xn;
+	*ny = yn;
+	*nbuttons = buttonsn;
+	if (buttons0 == *nbuttons)
+		*nbuttons = 0;    //使得能连续按键
+	if (xn == x0 && yn == y0 && buttonsn == buttons0) {
+		*flag = 0;//不变
+		return;
+	}
+	clrmous(x0, y0);
+	*flag = 1;//改变
+	return ;
+}
+
+
+void user_drawmouse(int* nx, int* ny, int* nbuttons,int* flag) //若鼠标位置改变，保存背景，绘制鼠标
+{
+	if (*flag) {
+		save_bk_mou(*nx, *ny);
+		drawmous(*nx, *ny);
+	}	
+}
 
 void user_info()
 {

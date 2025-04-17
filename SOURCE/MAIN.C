@@ -1,7 +1,11 @@
 #include"GLOBAL.H"
 
 int main(void){
+<<<<<<< HEAD
     int page = TEST; // 主页面
+=======
+    int page = USER_QUIZ; // 主页面
+>>>>>>> 9f000e3e18f676773f503fdc8b752aed54faa5f8
     // int page=NULL; // 副页面
     unsigned long ID=0;//记录登录用户的ID
     int driver=VGA,mode=VGAHI;
