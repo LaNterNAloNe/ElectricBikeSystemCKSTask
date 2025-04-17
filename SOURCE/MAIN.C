@@ -1,7 +1,7 @@
 #include"GLOBAL.H"
 
 int main(void){
-    int page = TEST; // 主页面
+    int page = MAIN_ADMIN; // 主页面
     // int page=NULL; // 副页面
     unsigned long ID=0;//记录登录用户的ID
     int driver=VGA,mode=VGAHI;
@@ -13,6 +13,11 @@ int main(void){
     LIST->HEAD = NULL;
 
     initgraph(&driver, &mode, "C:\\BORLANDC\\BGI");
+    if (graphresult() != grOk)
+    {
+        printf("Graphics error: %s\n", grapherrormsg(graphresult()));
+        exit(1);
+    }
     cleardevice();
     mouseinit();
     initcolorpalette();

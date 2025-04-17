@@ -1,4 +1,4 @@
-#include "INPUTHZ.h"
+#include "INPUTHZ.H"
 
 /************************************************************************
 FUNCTION:hz_input
@@ -24,23 +24,23 @@ int hz_input(int x1,int y1,int x2,int y2,char *s,int len,int color,int color2, i
 	char str[3]={'\0','\0','\0'};//一个汉字装入
 	char py[12]={'\0','\0','\0','\0','\0','\0','\0','\0',
 	            '\0','\0','\0','\0'};//拼音字符串(西文字符串)
-    delay(5000);
     settextjustify(LEFT_TEXT,CENTER_TEXT);
 	clrmous(MouseX, MouseY);
-	// setfillstyle(SOLID_FILL, color);
-	// bar(x1,y1,x2,y2);
+	// // setfillstyle(SOLID_FILL, color);
+	// // bar(x1,y1,x2,y2);
+    
 	while(bioskey(1))//清除键盘缓冲区  防止误输入
 	{
 		bioskey(0);
 	}
-    if((image=malloc(8241))==NULL)
+    
+    if((image=(char*)malloc(8241))==NULL)
 	{
 		closegraph();
 		printf("error!,hz_input");
 		getch();
 		exit(1);
 	}
-    
     while(1)
 	{
 		if(kbhit())
@@ -49,13 +49,20 @@ int hz_input(int x1,int y1,int x2,int y2,char *s,int len,int color,int color2, i
 			/*特殊键处理*/
 		    switch(value)
 			{
-				case BACK:
+				case BACKSPACE:
 					if((L_len==0)&&(Line>1))//换行处理
 					{
 						L_len=L_maxwords;
 						Line--;
 					}
 					else if(L_len<=0&&Line==1) break;//删除结束 无法删除
+					// if(*(p-1)>31&&*(p-1)<127)
+					// if((L_len==0)&&(Line>1))//换行处理
+					// {
+					// 	L_len=L_maxwords;
+					// 	Line--;
+					// }
+					// else if(L_len<=0&&Line==1) break;//删除结束 无法删除
 					if(*(p-1)>31&&*(p-1)<127)
 					{
 						setfillstyle(1,color);
@@ -211,7 +218,7 @@ RETURN:1:输出汉字；2：输出字母；3：输出空格
 int input_method(int x,int y,char *str,int value,char *py)
 {
 	FILE *fp=NULL,*oldfp=NULL;
-	int fJudge=FAIL;
+	int fJudge=INPUTHZ_FAIL;
 	char *p=py;
 	int trigger=1;//进入时触发输入标志
 	char temphz[5][3]={{'\0','\0','\0'},{'\0','\0','\0'},
@@ -222,10 +229,10 @@ int input_method(int x,int y,char *str,int value,char *py)
 	int asc,i;
 	int PyStartx=x+8,PyStarty=y+4;
 	int HzStartx=x+8,HzStarty=y+22;
-	char *ABpath="pinyin\\";//汉语拼音检索标准路径
+	char *ABpath="PINYIN\\";//汉语拼音检索标准路径
 	char pypath[45];					//汉语拼音检索相对路径
-	settextjustify(LEFT_TEXT,CENTER_TEXT);
-	strcpy(pypath,"pinyin\\");
+    settextjustify(LEFT_TEXT,CENTER_TEXT);
+	strcpy(pypath,"PINYIN\\");
 	while(1)
 	{
 		if(trigger||kbhit())//第一次进入自动触发 以后均需键盘
@@ -237,7 +244,7 @@ int input_method(int x,int y,char *str,int value,char *py)
 			/*特殊按键处理*/
 			switch(value)
 			{
-				case BACK:
+				case BACKSPACE:
 					p--;
 					*p='\0';
 					if(py[0]=='\0')
@@ -256,13 +263,13 @@ int input_method(int x,int y,char *str,int value,char *py)
 					if(oldfp) fclose(oldfp);
 					if(fp) fclose(fp);
 					return 2;
-				case LASTLINE:
+				case UP:
 					if(fposition>=8)//接下来重定位文件指针前八个字节（四个汉字）
 					{
 						fposition-=8;
 					}
 					break;
-				case NEXTLINE:
+				case DOWN:
 					if(!feof(fp))//接下来重定位文件指针后八个字节（四个汉字）
 					{
 						fposition+=8;
@@ -291,22 +298,22 @@ int input_method(int x,int y,char *str,int value,char *py)
 					}
 					break;
 					/*按数字键选中输入汉字*/
-				case FIRST:
+				case ONE:
 					strcpy(str,temphz[0]);
 					if(oldfp) fclose(oldfp);
 					if(fp) fclose(fp);
 					return 1;
-				case SECOND:
+				case TWO:
 					strcpy(str,temphz[1]);
 					if(oldfp) fclose(oldfp);
 					if(fp) fclose(fp);
 					return 1;
-				case THIRD:
+				case THREE:
 					strcpy(str,temphz[2]);
 					if(oldfp) fclose(oldfp);
 					if(fp) fclose(fp);
 					return 1;
-				case FOURTH:
+				case FOUR:
 					strcpy(str,temphz[3]);
 					if(oldfp) fclose(oldfp);
 					if(fp) fclose(fp);
@@ -336,12 +343,12 @@ int input_method(int x,int y,char *str,int value,char *py)
 			}
 		    if((fp=fopen(pypath,"r"))==NULL)//特殊字符存在  保留上一个文件检索结果
 		    {
-		    	fJudge=FAIL;
+		    	fJudge=INPUTHZ_FAIL;
 		    	fp=oldfp;
 			}
 			else
 			{
-				fJudge=SUCCESS;
+				fJudge=INPUTHZ_SUCCESS;
 			}
 			if(fp)
 			{
@@ -361,9 +368,10 @@ int input_method(int x,int y,char *str,int value,char *py)
 				}
 				for(i=0;i<hznum;i++)
 				{
+                    itoa(i+1, temp, 10);
 					setcolor(BLUE);
                     settextstyle(1,0,2);
-		   		    xouttextxy(HzStartx+i*50,HzStarty+5,itostr(i+1,temp),DARKGRAY);
+		   		    xouttextxy(HzStartx+i*50,HzStarty+5,temp,DARKGRAY);
     				puthz(HzStartx+i*50+16,HzStarty,temphz[i],16,16,DARKGRAY);
 				}
 				puthz(HzStartx+hznow*50+16,HzStarty,temphz[hznow],16,16,CYAN);//显示选中汉字
@@ -381,24 +389,19 @@ INPUT:a,s
 RETURN:数字s
 ************************************************************************/
 
-char *itostr(int a,char *s)
+void itostr(int a,char *s)
 {
 	switch(a)
 	{
 		case 1:
 			strcpy(s,"1.");
-			return s;
 		case 2:
 			strcpy(s,"2.");
-			return s;
 		case 3:
 			strcpy(s,"3.");
-			return s;
 		case 4:
 			strcpy(s,"4.");
-			return s;
 	}
-	return s;
 }
 
 /************************************************************************

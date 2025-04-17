@@ -409,6 +409,7 @@ void drawgraph_admin_database_user_info(void)
     puthz(ADMIN_INTERFACE_X1 + 115, ADMIN_INTERFACE_Y1 + 10, "用户信息", 16, 16, MY_WHITE);
 
     setfillstyle(SOLID_FILL, MY_YELLOW);
+    bar(ADMIN_FEATURE5_X1, ADMIN_FEATURE5_Y1, ADMIN_FEATURE5_X2, ADMIN_FEATURE5_Y2);
     bar(ADMIN_FEATURE6_X1, ADMIN_FEATURE6_Y1, ADMIN_FEATURE6_X2, ADMIN_FEATURE6_Y2);
     puthz(ADMIN_FEATURE6_X1 + 4, ADMIN_FEATURE6_Y1 + 8, "修改信息", 16, 16, MY_WHITE); // 显示新按钮
 
@@ -431,6 +432,7 @@ void drawgraph_admin_database_ebike_info(void)
     puthz(ADMIN_INTERFACE_X1 + 115, ADMIN_INTERFACE_Y1 + 10, "车辆信息", 16, 16, MY_WHITE);
 
     setfillstyle(SOLID_FILL, MY_YELLOW);
+    bar(ADMIN_FEATURE5_X1, ADMIN_FEATURE5_Y1, ADMIN_FEATURE5_X2, ADMIN_FEATURE5_Y2);
     bar(ADMIN_FEATURE6_X1, ADMIN_FEATURE6_Y1, ADMIN_FEATURE6_X2, ADMIN_FEATURE6_Y2);
     puthz(ADMIN_FEATURE6_X1 + 4, ADMIN_FEATURE6_Y1 + 8, "修改信息", 16, 16, MY_WHITE); // 显示新按钮
 
@@ -453,8 +455,10 @@ void drawgraph_admin_database_ebike_pass_in_out(void)
     puthz(ADMIN_INTERFACE_X1 + 115, ADMIN_INTERFACE_Y1 + 10, "车辆进出", 16, 16, MY_WHITE);
 
     setfillstyle(SOLID_FILL, MY_YELLOW);
+    bar(ADMIN_FEATURE5_X1, ADMIN_FEATURE5_Y1, ADMIN_FEATURE5_X2, ADMIN_FEATURE5_Y2);
     bar(ADMIN_FEATURE6_X1, ADMIN_FEATURE6_Y1, ADMIN_FEATURE6_X2, ADMIN_FEATURE6_Y2);
-    puthz(ADMIN_FEATURE6_X1 + 4, ADMIN_FEATURE6_Y1 + 8, "通过审核", 16, 16, MY_WHITE); // 显示新按钮
+    puthz(ADMIN_FEATURE5_X1 + 4, ADMIN_FEATURE5_Y1 + 8, "通过审核", 16, 16, MY_WHITE); // 显示新按钮
+    puthz(ADMIN_FEATURE6_X1 + 4, ADMIN_FEATURE6_Y1 + 8, "拒绝申请", 16, 16, MY_WHITE); // 显示新按钮
 
     puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 40, "车牌号", 16, 16, MY_WHITE);
     puthz(ADMIN_INTERFACE_X1 + 100, ADMIN_INTERFACE_Y1 + 40, "时间", 16, 16, MY_WHITE);
@@ -1238,7 +1242,7 @@ void admin_handle_database_event(LINKLIST *LIST, int *flag, int *page, unsigned 
         return;
     }
     /*点击修改信息*/
-    if (mouse_press(ADMIN_FEATURE6_X1, ADMIN_FEATURE6_Y1, ADMIN_FEATURE6_X2, ADMIN_FEATURE6_Y2) == 1 || 
+    if (mouse_press(ADMIN_FEATURE6_X1, ADMIN_FEATURE6_Y1, ADMIN_FEATURE6_X2, ADMIN_FEATURE6_Y2) == 1 &&
         *flag != ADMIN_DATABASE_EBIKE_PASS_IN_OUT)
     {
         if (*selected_id != 0){
@@ -1249,7 +1253,7 @@ void admin_handle_database_event(LINKLIST *LIST, int *flag, int *page, unsigned 
         return;
     }
     /* 在车辆出入界面，点击拒绝申请 */
-    if (mouse_press(ADMIN_FEATURE6_X1, ADMIN_FEATURE6_Y1, ADMIN_FEATURE6_X2, ADMIN_FEATURE6_Y2) == 1 ||
+    if (mouse_press(ADMIN_FEATURE6_X1, ADMIN_FEATURE6_Y1, ADMIN_FEATURE6_X2, ADMIN_FEATURE6_Y2) == 1 &&
         *flag == ADMIN_DATABASE_EBIKE_PASS_IN_OUT)
     {
         if (*selected_id!= 0){
@@ -1266,7 +1270,7 @@ void admin_handle_database_event(LINKLIST *LIST, int *flag, int *page, unsigned 
         }
     }
     /* 在车辆出入界面，点击同意申请 */
-    if (mouse_press(ADMIN_FEATURE5_X1, ADMIN_FEATURE5_Y1, ADMIN_FEATURE5_X2, ADMIN_FEATURE5_Y2) == 1 ||
+    if (mouse_press(ADMIN_FEATURE5_X1, ADMIN_FEATURE5_Y1, ADMIN_FEATURE5_X2, ADMIN_FEATURE5_Y2) == 1 &&
         *flag == ADMIN_DATABASE_EBIKE_PASS_IN_OUT)
     {
         if (*selected_id!= 0){
@@ -1325,9 +1329,9 @@ void admin_handle_modify_user_data_event(FILE *fp, unsigned long *user_id, int *
     if (mouse_press(ADMIN_MODIFY_DATA_INPUTBAR3_X1, ADMIN_MODIFY_DATA_INPUTBAR3_Y1,
                     ADMIN_MODIFY_DATA_INPUTBAR3_X2, ADMIN_MODIFY_DATA_INPUTBAR3_Y2) == 1) // 点击密码框
     {
-        ch_input(psw_buffer, ADMIN_MODIFY_DATA_INPUTBAR3_X1, ADMIN_MODIFY_DATA_INPUTBAR3_Y1, 13, MY_LIGHTGRAY, INPUTBAR_NO_CLEAR, 1);
-        // hz_input(ADMIN_MODIFY_DATA_INPUTBAR3_X1, ADMIN_MODIFY_DATA_INPUTBAR3_Y2, 
-        //          ADMIN_MODIFY_DATA_INPUTBAR3_X1, ADMIN_MODIFY_DATA_INPUTBAR3_Y2, psw_buffer, 13, MY_LIGHTGRAY, MY_BLACK, 16);
+        // ch_input(psw_buffer, ADMIN_MODIFY_DATA_INPUTBAR3_X1, ADMIN_MODIFY_DATA_INPUTBAR3_Y1, 13, MY_LIGHTGRAY, INPUTBAR_NO_CLEAR, 1);
+        hz_input(ADMIN_MODIFY_DATA_INPUTBAR3_X1, ADMIN_MODIFY_DATA_INPUTBAR3_Y2, 
+                 ADMIN_MODIFY_DATA_INPUTBAR3_X1, ADMIN_MODIFY_DATA_INPUTBAR3_Y2, psw_buffer, 13, MY_LIGHTGRAY, MY_BLACK, 16);
     }
     if (mouse_press(ADMIN_MODIFY_DATA_FREEZE_X1, ADMIN_MODIFY_DATA_FREEZE_Y1,
                     ADMIN_MODIFY_DATA_FREEZE_X2, ADMIN_MODIFY_DATA_FREEZE_Y2) == 1 &&
