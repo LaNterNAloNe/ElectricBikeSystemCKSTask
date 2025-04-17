@@ -1568,6 +1568,7 @@ void define_admin_buttons(ADMIN_BUTTONS AdminButtons[], int page)
         {ADMIN_MODIFY_DATA_INPUTBAR7_X1, ADMIN_MODIFY_DATA_INPUTBAR7_X2,
          ADMIN_MODIFY_DATA_INPUTBAR7_Y1, ADMIN_MODIFY_DATA_INPUTBAR7_Y2,
          ACTIVE_ADMIN_MODIFY_INPUTBAR7, &draw_rectangle, &clear_rectangle},
+        // 28
         // 以下为用户信息修改按钮
         {ADMIN_MODIFY_DATA_FREEZE_X1, ADMIN_MODIFY_DATA_FREEZE_X2,
          ADMIN_MODIFY_DATA_FREEZE_Y1, ADMIN_MODIFY_DATA_FREEZE_Y2,
@@ -1578,7 +1579,15 @@ void define_admin_buttons(ADMIN_BUTTONS AdminButtons[], int page)
         {ADMIN_MODIFY_DATA_RESTORE_X1, ADMIN_MODIFY_DATA_RESTORE_X2,
          ADMIN_MODIFY_DATA_RESTORE_Y1, ADMIN_MODIFY_DATA_RESTORE_Y2,
          ACTIVE_ADMIN_MODIFY_RESTORE, &draw_rectangle, &clear_rectangle},
-    }; // 最大数量31
+        // 31
+        // 以下为消息按钮
+        {ADMIN_MESSAGE_REPLY_X1, ADMIN_MESSAGE_REPLY_X2,
+         ADMIN_MESSAGE_REPLY_Y1, ADMIN_MESSAGE_REPLY_Y2,
+         ACTIVE_ADMIN_MESSAGE_REPLY, &draw_rectangle, &clear_rectangle},
+        {ADMIN_MESSAGE_EXIT_X1, ADMIN_MESSAGE_EXIT_X2,
+         ADMIN_MESSAGE_EXIT_Y1, ADMIN_MESSAGE_EXIT_Y2,
+         ACTIVE_ADMIN_MESSAGE_EXIT, &draw_exit, &clear_exit},
+    };
     int i;
     int j;
 
@@ -1615,11 +1624,15 @@ void define_admin_buttons(ADMIN_BUTTONS AdminButtons[], int page)
     }
     else if (page == ADMIN_MESSAGE)
     {
-        for (i = 0, j = 0; i < 9; i++, j++)
-        {
-            admin_get_buttons(&AdminButtons[j], &Examples[i]);
-        }
-        admin_get_buttons(&AdminButtons[9], &Examples[15]);
+        admin_get_buttons(&AdminButtons[0], &Examples[19]);
+        admin_get_buttons(&AdminButtons[1], &Examples[31]);
+        admin_get_buttons(&AdminButtons[2], &Examples[32]);
+    }
+    else if (page == ADMIN_MESSAGE_REPLY)
+    {
+        admin_get_buttons(&AdminButtons[0], &Examples[19]);
+        admin_get_buttons(&AdminButtons[1], &Examples[31]);
+        admin_get_buttons(&AdminButtons[2], &Examples[32]);
     }
 }
 

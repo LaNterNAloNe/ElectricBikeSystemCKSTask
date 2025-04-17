@@ -36,6 +36,7 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
     EBIKE_INFO ebike_temp;
     USER_LOGIN_DATA user_temp;
     MESSAGE message_temp;
+    EBIKE_IN_OUT ebike_in_out_temp;
     LINKLIST_NODE *node = NULL;
 
     // show_num(10, 10, start, MY_WHITE); // ÏÔÊ¾start
@@ -121,7 +122,7 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
             counts = linklist_get_length(LIST);
             break;
         case ADMIN_DATABASE_EBIKE_PASS_IN_OUT:
-
+            counts = ftell(fp) / sizeof(EBIKE_IN_OUT);
             break;
         case ADMIN_MESSAGE:
             counts = ftell(fp) / sizeof(MESSAGE);
@@ -166,6 +167,17 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
                     {
                         fread(&message_temp, sizeof(MESSAGE), 1, fp);
                         if (message_is_valid(message_temp, search_str, search_needed))
+                        {
+                            valid_counts++;
+                        }
+                    }
+                }
+                case ADMIN_DATABASE_EBIKE_PASS_IN_OUT:
+                {
+                    for (i = counts - 1; i > 0; i--)
+                    {
+                        fread(&ebike_in_out_temp, sizeof(EBIKE_IN_OUT), 1, fp);
+                        if (list_ebike_in_out_is_valid(ebike_in_out_temp, search_str, search_needed))
                         {
                             valid_counts++;
                         }
@@ -918,6 +930,29 @@ int list_ebike_info_is_valid(LINKLIST_USER usrdat, char *search_str, char *searc
     {
         return 0;
     }
+}
+
+int list_ebike_in_out_is_valid(struct _EBIKE_IN_OUT_ TEMP, char *search_str, char *search_needed)
+{
+    if (!strcmp(search_str, "\0") ||
+        strcmp(TEMP.ebike_id, search_str) &&!strcmp(search_needed, "ebike_ID") ||
+        strcmp(TEMP.ebike_license, search_str) &&!strcmp(search_needed, "ebike_license") ||
+        strcmp(TEMP.in_loc, search_str) &&!strcmp(search_needed, "in_loc") ||
+        strcmp(TEMP.out_loc, search_str) &&!strcmp(search_needed, "out_loc") ||
+        TEMP.in_time == atol(search_str) &&!strcmp(search_needed, "in_time") ||
+        TEMP.out_time == atol(search_str) &&!strcmp(search_needed, "out_time") ||
+        TEMP.result == atoi(search_str) &&!strcmp(search_needed, "result") ||
+        TEMP.comment == atoi(search_str) &&!strcmp(search_needed, "comment")
+    )
+    {
+        return 1;
+    }
+    else 
+    {
+        return 0;
+    }
+
+
 }
 
 // »æÖÆÒ³Âë

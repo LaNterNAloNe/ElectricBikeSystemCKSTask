@@ -3,8 +3,6 @@
 
 // 登录界面
 void login(int *page, unsigned long *ID) {
-
-    
     char usrn[13] = {'\0'}; // 初始化为空
     char psw[13] = {'\0'};
     int tag = 0;
@@ -322,7 +320,7 @@ int register_id_judge(unsigned long id) {
 	int i = 0;
 	int account_counts;
 	USER_LOGIN_DATA TEMP;
-	FILE* fp_LOGIN_USER_readndwrite = fopen("C:\\EBS\\DATA\\USER.DAT", "rb");
+	FILE* fp_LOGIN_USER_readndwrite = fopen("DATA\\USER.DAT", "rb");
 
     if (fp_LOGIN_USER_readndwrite == NULL) {
 		fclose(fp_LOGIN_USER_readndwrite);
@@ -665,7 +663,7 @@ int userregister_judge(char *usrn,char *psw,unsigned long *ID,unsigned long time
 	int i=0;
 	int account_counts;
 	USER_LOGIN_DATA TEMP;
-	FILE *fp_LOGIN_USER_readndwrite = fopen("C:\\EBS\\DATA\\USER.DAT","rb+");
+	FILE *fp_LOGIN_USER_readndwrite = fopen("DATA\\USER.DAT","rb+");
 	
 	if (fp_LOGIN_USER_readndwrite == NULL) {
         // fclose(fp_LOGIN_USER_readndwrite);

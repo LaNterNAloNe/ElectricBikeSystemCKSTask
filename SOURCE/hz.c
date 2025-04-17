@@ -83,7 +83,7 @@ void puthz(int x, int y,char *s,int flag,int part,int color)
 					char mat[72];   //24*24矩阵要72个字节来存储
 					 int y0=y;
 					 int x0=x;
-					hzk_p = fopen("HZK\\Hzk24k","rb");
+					hzk_p = fopen("HZK\\Hzk24d","rb");
 					if (hzk_p==NULL)
 					{
 						settextjustify(LEFT_TEXT,TOP_TEXT);          //左部对齐，顶部对齐

@@ -198,6 +198,16 @@
 #define ADMIN_MODIFY_DATA_RESTORE_X2 ADMIN_MODIFY_DATA_INPUTBAR5_X1 + 280
 #define ADMIN_MODIFY_DATA_RESTORE_Y2 ADMIN_MODIFY_DATA_INPUTBAR5_Y2
 
+#define ADMIN_MESSAGE_REPLY_X1 10
+#define ADMIN_MESSAGE_REPLY_Y1 100
+#define ADMIN_MESSAGE_REPLY_X2 80
+#define ADMIN_MESSAGE_REPLY_Y2 130
+
+#define ADMIN_MESSAGE_EXIT_X1 ADMIN_MODIFY_DATA_EXIT_X1
+#define ADMIN_MESSAGE_EXIT_Y1 ADMIN_MODIFY_DATA_EXIT_Y1
+#define ADMIN_MESSAGE_EXIT_X2 ADMIN_MODIFY_DATA_EXIT_X2
+#define ADMIN_MESSAGE_EXIT_Y2 ADMIN_MODIFY_DATA_EXIT_Y2
+
 //定义数据标志
 enum
 {
@@ -243,6 +253,16 @@ enum
     ACTIVE_ADMIN_MODIFY_FREEZE,
     ACTIVE_ADMIN_MODIFY_BAN,
     ACTIVE_ADMIN_MODIFY_RESTORE,
+    ACTIVE_ADMIN_MESSAGE_REPLY,
+    ACTIVE_ADMIN_MESSAGE_EXIT,
+};
+
+// 定义车辆进入理由
+enum
+{
+    EBIKE_IN_OUT_NULL = 0,
+    EBIKE_IN_OUT_TAKE_OUT,
+    EBIKE_IN_OUT_REGISTERED_UNIT,
 };
 
 typedef void (*DRAWFUNCTION)(int coord1, int coord2, int coord3, int coord4);
@@ -267,6 +287,17 @@ typedef struct _EBIKE_INFO_{
 	int conduct_time;
     int result;
 } EBIKE_INFO;
+
+typedef struct _EBIKE_IN_OUT_{
+    char ebike_id[8];
+    char ebike_license[10];
+    char in_loc[15];
+    char out_loc[15];
+    int in_time;
+    int out_time;
+    int comment;
+    int result;
+} EBIKE_IN_OUT;
 
 typedef struct _MODIFY_EBIKE_DATA_{
     char ebike_id_buffer[7];     // 输入框输入信息储存

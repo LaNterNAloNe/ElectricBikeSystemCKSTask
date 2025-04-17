@@ -5,17 +5,34 @@ MESSAGE:用户与管理员产生交互的功能模块
 RETURNL:返回值统一为：（1）执行成功返回1；（2）执行失败（含各种原因）返回0
 *************************************************************/
 
-void message_display(MESSAGE *msg, int _x, int _y)
+void message_display(MESSAGE *msg)
 {
+    ADMIN_BUTTONS btn[3]; // 定义按钮变量
+    int tag = ACTIVE_ADMIN_NULL; // 定义标签变量
     int is_return = 0;
-    // 显示消息界面的标题
-    message_display_draw_bg();
-    message_topic_display(_x, _y, 200, msg->title, MY_BLACK, 26, 2, 0); // 显示消息的主题
-    message_text_display(_x, _y + 30, 200, msg->message, MY_BLACK);   // 显示消息的内容
+    define_admin_buttons(btn, ADMIN_MESSAGE); // 定义按钮
+    if (msg->message_type != PRIVATE_MESSAGE)
+    {
+        memset(&btn[2], '\0', sizeof(btn[2])); // 清空按钮变量
+    }
 
+    message_display_draw_bg();
+    if (msg == NULL)
+    {
+        message_topic_display(120, 35, 400, "信息错误", MY_RED, 26, 3, 0); // 显示消息的主题
+    }
+    else
+    {
+        message_topic_display(120, 35, 400, msg->title, MY_BLACK, 26, 3, 0); // 显示消息的主题
+        message_text_display(120, 80, 400, msg->sender_username, MY_BLACK);  // 显示消息的内容
+        message_text_display(120, 110, 400, msg->message, MY_BLACK);         // 显示消息的发送者
+    }
+    
     while (is_return == 0)
     {
-
+        newmouse(&MouseX, &MouseY, &press); // 获取鼠标位置
+        admin_flush_buttons(&tag, 3, btn); // 刷新按钮
+        message_handle_click_event(&is_return, msg); // 处理点击事件
     }
 }
 
@@ -283,6 +300,7 @@ int message_if_found(int __is_read)
 
     if (counts == 0) // 检查文件中是否有消息
     { // 如果没有消息，输出错误信息并返回
+        fclose(fp);
         return 0; // 返回
     }
 
@@ -290,6 +308,7 @@ int message_if_found(int __is_read)
     { // 逐行读取文件内容
         if (fseek(fp, - i * sizeof(MESSAGE), SEEK_CUR) == -1); // 将文件指针回退到上一行的开头
         { // 如果回退失败，输出错误信息并返回
+            fclose(fp);
             return 0; // 返回
         }
         fread(&msg, sizeof(MESSAGE), 1, fp); // 读取消息到msg变量中
@@ -328,13 +347,19 @@ void message_list_click(int _x, int _y, int _listed_item, int _max, int _interva
             // 则执行信息显示操作
             {
                 fp = fopen("DATA\\MESSAGE.DAT", "rb+"); // 打开消息文件，以二进制读取模式打开
+                if (fp == NULL) // 检查文件指针是否为空
+                { // 如果为空，输出错误信息并返回
+                    return; // 返回
+                }
+
                 message_get(fp, &msg, (char *)_selected_id, "message_id"); // 读取选中的消息
-                message_display(&msg, _x + 20, _y + 50); // 显示选中的消息
+                message_display(&msg); // 显示选中的消息
 
                 msg.is_read = 1; // 将消息标记为已读
                 message_overwrite(fp, &msg, (char *)_selected_id, "message_id"); // 将选中的消息标记为已读
                 previous_selected_id = 0;
                 *_selected_id = 0;
+                fclose(fp);
             }
             break;
         }
@@ -349,7 +374,22 @@ void message_list_click(int _x, int _y, int _listed_item, int _max, int _interva
     }
 }
 
-void message_display_draw_bg()
+void message_handle_click_event(int *is_return, MESSAGE *msg)
+{
+    // 处理鼠标点击事件
+    if (mouse_press(ADMIN_MESSAGE_REPLY_X1, ADMIN_MESSAGE_REPLY_Y1, ADMIN_MESSAGE_REPLY_X2, ADMIN_MESSAGE_REPLY_Y2) == 1) // 如果鼠标点击了回复信息
+    {
+        
+
+    }
+    if (mouse_press(ADMIN_MESSAGE_EXIT_X1, ADMIN_MESSAGE_EXIT_Y1, ADMIN_MESSAGE_EXIT_X2, ADMIN_MESSAGE_EXIT_Y2) == 1) // 如果鼠标点击了退出按钮
+    {
+        *is_return = 1;
+    }
+}
+
+// 绘制消息背景
+void message_display_draw_bg(int is_announcement)
 {
     setwritemode(XOR_PUT);
     setfillstyle(LTBKSLASH_FILL, MY_GREEN); // 设置填充样式为实心
@@ -368,4 +408,10 @@ void message_display_draw_bg()
     outtextxy(120, 10, "TOPIC");
     outtextxy(120, 80, "FROM");
 
+    clear_exit(ADMIN_MESSAGE_EXIT_X1, ADMIN_MESSAGE_EXIT_Y1, ADMIN_MESSAGE_EXIT_X2, ADMIN_MESSAGE_EXIT_Y2); // 绘制退出按钮
+
+    if (is_announcement == 0) { // 如果是公告
+        bar(ADMIN_MESSAGE_REPLY_X1, ADMIN_MESSAGE_REPLY_Y1, ADMIN_MESSAGE_REPLY_X2, ADMIN_MESSAGE_REPLY_Y2);        // 绘制回复按钮
+        puthz(ADMIN_MESSAGE_REPLY_X1 + 10, ADMIN_MESSAGE_REPLY_Y1 + 7, "回复信息", 20, 20, MY_WHITE); // 绘制回复按钮文字
+    }
 }
