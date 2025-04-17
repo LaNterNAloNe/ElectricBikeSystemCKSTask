@@ -125,30 +125,6 @@
 #define FAILED 0
 #define PENDING -1
 
-//定义列表顺序
-#define ASCENDING 1
-#define DESCENDING 0
-//定义列表模式
-#define LIST_PENDING 0
-#define LIST_FINISHED 1
-//定义清理列表参数
-#define LIST_CLEAR 1
-#define LIST_CLEAR_CONTINUE 2
-#define LIST_FLUSH 3
-#define LIST_NO_CLEAR 0
-//定义列表翻页参数
-#define LIST_PAGEDOWN 1
-#define LIST_PAGEUP -1
-#define LIST_STAY 0
-// 列表参数
-#define LIST_INTERVAL 30
-#define LIST_LIMIT 8
-
-//输入框
-#define INPUTBAR_NO_CLEAR 0
-#define INPUTBAR_CLEAR 1
-#define INPUTBAR_CLEAR_CONTINUE 2
-
 //定义调试模式
 #define debug_mode 1
 

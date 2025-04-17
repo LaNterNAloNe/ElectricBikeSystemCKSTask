@@ -261,12 +261,18 @@ enum
 enum
 {
     EBIKE_IN_OUT_NULL = 0,
-    EBIKE_IN_OUT_TAKE_OUT,
-    EBIKE_IN_OUT_REGISTERED_UNIT,
+    EBIKE_IN_TAKE_OUT,
+    EBIKE_OUT_TAKE_OUT,
+    EBIKE_IN_OUT_REGISTERED_UNIT_IN,
+    EBIKE_IN_OUT_REGISTERED_UNIT_OUT,
+    EBIKE_IN_VISIT,
+    EBIKE_OUT_VISIT,
+    EBIKE_IN_OTHER,
+    EBIKE_OUT_OTHER,
 };
 
-typedef void (*DRAWFUNCTION)(int coord1, int coord2, int coord3, int coord4);
-typedef void (*CLEARFUNCTION) (int coord1,int coord2,int coord3,int coord4);
+typedef void (*DRAWFUNCTION) (int coord1, int coord2, int coord3, int coord4);
+typedef void (*CLEARFUNCTION) (int coord1, int coord2, int coord3, int coord4);
 
 typedef struct {
     int x1, x2, y1, y2;
@@ -289,10 +295,10 @@ typedef struct _EBIKE_INFO_{
 } EBIKE_INFO;
 
 typedef struct _EBIKE_IN_OUT_{
+    unsigned long apply_id;
     char ebike_id[8];
     char ebike_license[10];
-    char in_loc[15];
-    char out_loc[15];
+    char location[15];
     int in_time;
     int out_time;
     int comment;
@@ -324,6 +330,8 @@ void drawgraph_admin_menu(void);
 void drawgraph_admin_feature(int page);
 void drawgraph_admin_database(void);
 void drawgraph_admin_database_user_info(void);
+void drawgraph_admin_database_ebike_info(void);
+void drawgraph_admin_database_ebike_pass_in_out(void);
 int drawgraph_admin_modify_data(FILE *fp, LINKLIST *LIST, int flag, unsigned long user_id);
 void drawgraph_admin_message_center(void);
 void drawgraph_admin_info(unsigned long ID);

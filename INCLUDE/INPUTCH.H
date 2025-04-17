@@ -8,6 +8,12 @@
 #include"GROCERY.H"
 #include"MOUSE.H"
 
+//  ‰»ÎøÚ
+#define INPUTBAR_NO_CLEAR 0
+#define INPUTBAR_CLEAR 1
+#define INPUTBAR_CLEAR_CONTINUE 2
+
+
 #define MAX_MEM 10
 
 typedef struct {

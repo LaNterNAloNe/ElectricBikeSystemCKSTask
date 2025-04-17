@@ -283,6 +283,18 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
                     break;
                 }
             }
+            else if (flag == ADMIN_DATABASE_EBIKE_PASS_IN_OUT)
+            {
+                fseek(fp, (temp_start) * sizeof(ebike_in_out_temp), SEEK_SET); // 先判断接下来是否有可以列出的数据
+                if (!fread(&ebike_in_out_temp, sizeof(ebike_in_out_temp), 1, fp))      // 读取下一个数据块
+                {
+                    return; // 到文件末尾都没有发现可列表的，则不执行下翻列表操作
+                }
+                if (list_ebike_in_out_is_valid(ebike_in_out_temp, search_str, search_needed))
+                {
+                    break; // 下翻查找是一旦读到可以被列出的，则可以执行下翻列表操作
+                }
+            }
             temp_start++; // 如果下翻读取时读到的数据不符条件，则进行下一轮循环
         }
 
@@ -372,6 +384,23 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
                 message_list(message_temp, ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70, max, interval, listed_item, ASCENDING); // 输出数据
                 item_id[listed_item] = message_temp.message_id; // 记录ID
             }
+            else if (flag == ADMIN_DATABASE_EBIKE_PASS_IN_OUT)
+            {
+                fseek(fp, (temp_end) * sizeof(ebike_in_out_temp), SEEK_SET); // 先判断接下来是否有可以列出的数据
+                if (!fread(&ebike_in_out_temp, sizeof(ebike_in_out_temp), 1, fp))      // 读取下一个数据块
+                {
+                    puthz(ADMIN_INTERFACE_X1 + 190, ADMIN_INTERFACE_Y1 + 70 + listed_item * interval, "没有更多数据了哦！", 16, 16, MY_RED);
+                    break; // 到文件末尾都没有发现可列表的，则不执行下翻列表操作  
+                }
+                if (!list_ebike_in_out_is_valid(ebike_in_out_temp, search_str, search_needed))
+                {
+                    temp_end++;
+                    continue; // 如果下翻读取时读到的数据不符条件，则进行下一轮循环
+                }
+
+                admin_show_ebike_in_out(ebike_in_out_temp, max, interval, listed_item, ASCENDING); // 输出数据
+                item_id[listed_item] = ebike_in_out_temp.apply_id; // 记录ID
+            }
 
             end = temp_end; // 成功列出一个数据，更新end
             listed_item++;
@@ -447,7 +476,19 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
                 {
                     break; // 上翻查找到一个可列出数据，则可以上翻
                 }
+            }
+            else if (flag == ADMIN_DATABASE_EBIKE_PASS_IN_OUT)
+            {
+                if (fseek(fp, (counts - temp_start - 1) * sizeof(ebike_in_out_temp), SEEK_SET)) // 读取上一个数据块，当文件指针尝试移动到负数时，fseek会返回非零数
+                {
+                    return; // 到文件开头都没有发现可列表的，则不执行上翻列表操作
+                }
+                fread(&ebike_in_out_temp, sizeof(ebike_in_out_temp), 1, fp); // 读取上一个数据块
 
+                if (list_ebike_in_out_is_valid(ebike_in_out_temp, search_str, search_needed))
+                {
+                    break; // 上翻查找到一个可列出数据，则可以上翻
+                }
             }
             temp_end = --temp_start;
         }
@@ -523,6 +564,19 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
                 message_list(message_temp, ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70, max, interval, listed_item, DESCENDING); // 输出数据
                 item_id[7 - listed_item] = message_temp.message_id;                                                                   // 记录ID
             }
+            else if (flag == ADMIN_DATABASE_EBIKE_PASS_IN_OUT)
+            {
+                fseek(fp, (counts - temp_start - 1) * sizeof(ebike_in_out_temp), SEEK_SET); // 读取上一个数据块，当文件指针尝试移动到负数时，fseek会返回非零数
+                fread(&ebike_in_out_temp, sizeof(ebike_in_out_temp), 1, fp);                     // 读取上一个数据块
+                if (!list_ebike_in_out_is_valid(ebike_in_out_temp, search_str, search_needed))
+                {
+                    temp_start--;
+                    continue; // 如果下
+                }
+
+                admin_show_ebike_in_out(ebike_in_out_temp,  max, interval, listed_item, DESCENDING); // 输出数据
+                item_id[7 - listed_item] = ebike_in_out_temp.apply_id;
+            }
 
             start = temp_start;
             listed_item++;
@@ -591,6 +645,18 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
                 if (message_is_valid(message_temp, search_str, search_needed))
                 {
                     break;
+                }
+            }
+            else if (flag == ADMIN_DATABASE_EBIKE_PASS_IN_OUT)
+            {
+                fseek(fp, (counts - temp_start - 1) * sizeof(ebike_in_out_temp), SEEK_SET); // 先判断接下来是否有可以列出的数据
+                if (!fread(&ebike_in_out_temp, sizeof(ebike_in_out_temp), 1, fp))             // 读取下一个数据块
+                {
+                    return; // 到文件末尾都没有发现可列表的，则不执行下翻列表操作
+                }
+                if (list_ebike_in_out_is_valid(ebike_in_out_temp, search_str, search_needed))
+                {
+                    break; // 下翻查找是一旦读到可以被列出的，则可以执行下翻列表操作
                 }
             }
             temp_start++; // 如果下翻读取时读到的数据不符条件，则进行下一轮循环
@@ -684,6 +750,22 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
                 }
                 message_list(message_temp, ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70, max, interval, listed_item, ASCENDING); // 输出数据
                 item_id[listed_item] = message_temp.message_id;                                                                   // 记录ID
+            }
+            else if (flag == ADMIN_DATABASE_EBIKE_PASS_IN_OUT)
+            {
+                fseek(fp, (counts - temp_end - 1) * sizeof(ebike_in_out_temp), SEEK_SET); // 读取上一个数据块，当文件指针尝试移动到负数时，fseek会返回非零数
+                if (!fread(&ebike_in_out_temp, sizeof(ebike_in_out_temp), 1, fp))             // 读取上一个数据块
+                {
+                    temp_end--; // 若读取到文件末尾，则将end指向文件末尾的前一个数据块，防止越界
+                }
+                if (!list_ebike_in_out_is_valid(ebike_in_out_temp, search_str, search_needed))
+                {
+                    temp_end++; // end指数+1
+                    continue;   // 如果下翻读取时读到的数据不符条件，则进行下一轮循环
+                }
+
+                admin_show_ebike_in_out(ebike_in_out_temp, max, interval, listed_item, ASCENDING); // 输出数据
+                item_id[listed_item] = ebike_in_out_temp.apply_id; // 记录ID
             }
 
             end = temp_end;
@@ -882,6 +964,91 @@ void admin_show_ebike_info(LINKLIST_USER usrdat, const int max, const int interv
     delay(25); // 延时25ms，使列表的动画更有动感
 }
 
+void admin_show_ebike_in_out(struct _EBIKE_IN_OUT_ TEMP, const int max, const int interval, int listed_item, int list_sequence)
+{
+    char buffer[30]; // 定义缓冲区
+
+    setcolor(MY_WHITE); // 设置字体颜色为白色
+    if (list_sequence == ASCENDING)
+    {
+        settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);                                                                     // 设置字体样式和方向
+        outtextxy(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 74 + listed_item * interval, TEMP.ebike_id);            // 输出电动车车牌
+        if(TEMP.in_time != 0){
+            sprintf(buffer, "%.4s.%.2s.%.2s", TEMP.in_time, TEMP.in_time + 4, TEMP.in_time + 6, 10); // 将时间转换为字符串
+            outtextxy(ADMIN_INTERFACE_X1 + 100, ADMIN_INTERFACE_Y1 + 74 + listed_item * interval, buffer);            // 输出时间
+            puthz(ADMIN_INTERFACE_X1 + 200, ADMIN_INTERFACE_Y1 + 70 + listed_item * interval, "入", 16, 16, MY_GREEN);
+            puthz(ADMIN_INTERFACE_X1 + 220, ADMIN_INTERFACE_Y1 + 70 + listed_item * interval, TEMP.location, 16, 16, MY_WHITE);
+        }
+        else{
+            sprintf(buffer, "%.4s.%.2s.%.2s", TEMP.out_time, TEMP.out_time + 4, TEMP.out_time + 6, 10); // 将时间转换为字符串
+            outtextxy(ADMIN_INTERFACE_X1 + 100, ADMIN_INTERFACE_Y1 + 74 + listed_item * interval, buffer);            // 输出时间
+            puthz(ADMIN_INTERFACE_X1 + 200, ADMIN_INTERFACE_Y1 + 70 + listed_item * interval, "出", 16, 16, MY_LIGHTBLUE);
+            puthz(ADMIN_INTERFACE_X1 + 220, ADMIN_INTERFACE_Y1 + 70 + listed_item * interval, TEMP.location, 16, 16, MY_WHITE);
+        }
+        admin_show_ebike_in_out_comment(TEMP.comment, listed_item, interval, max); // 输出备注
+
+        if (TEMP.result == PENDING)
+        {
+            puthz(ADMIN_INTERFACE_X1 + 340, ADMIN_INTERFACE_Y1 + 70 + listed_item * interval, "待处理", 16, 16, MY_WHITE);
+        }
+        else if (TEMP.result == PASSED)
+        {
+            puthz(ADMIN_INTERFACE_X1 + 340, ADMIN_INTERFACE_Y1 + 70 + listed_item * interval, "已通过", 16, 16, MY_GREEN);
+        }
+        else if (TEMP.result == FAILED)
+        {
+            puthz(ADMIN_INTERFACE_X1 + 340, ADMIN_INTERFACE_Y1 + 70 + listed_item * interval, "未通过", 16, 16, MY_RED);
+        }
+    }
+    else if (list_sequence == DESCENDING)
+    {
+        settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);                                                                     // 设置字体样式和方向
+        outtextxy(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 284 - listed_item * interval, TEMP.ebike_id);            // 输出电动车车牌
+
+        if(TEMP.in_time!= 0){
+            sprintf(buffer, "%.4s.%.2s.%.2s", TEMP.in_time, TEMP.in_time + 4, TEMP.in_time + 6, 10); // 将时间转换为字符串
+            outtextxy(ADMIN_INTERFACE_X1 + 100, ADMIN_INTERFACE_Y1 + 284 - listed_item * interval, buffer);            // 输出时间
+            puthz(ADMIN_INTERFACE_X1 + 200, ADMIN_INTERFACE_Y1 + 280 - listed_item * interval, "入", 16, 16, MY_GREEN);
+            puthz(ADMIN_INTERFACE_X1 + 220, ADMIN_INTERFACE_Y1 + 280 - listed_item * interval, TEMP.location, 16, 16, MY_WHITE);
+        }
+        else{
+            sprintf(buffer, "%.4s.%.2s.%.2s", TEMP.out_time, TEMP.out_time + 4, TEMP.out_time + 6, 10); // 将时间转换为字符串
+            outtextxy(ADMIN_INTERFACE_X1 + 100, ADMIN_INTERFACE_Y1 + 284 - listed_item * interval, buffer);            // 输出时间
+            puthz(ADMIN_INTERFACE_X1 + 200, ADMIN_INTERFACE_Y1 + 280 - listed_item * interval, "出", 16, 16, MY_LIGHTBLUE);
+            puthz(ADMIN_INTERFACE_X1 + 220, ADMIN_INTERFACE_Y1 + 280 - listed_item * interval, TEMP.location, 16, 16, MY_WHITE);
+        }
+        admin_show_ebike_in_out_comment(TEMP.comment, listed_item, interval, max); // 输出备注
+
+        if (TEMP.result == PENDING)
+        {
+            puthz(ADMIN_INTERFACE_X1 + 340, ADMIN_INTERFACE_Y1 + 280 - listed_item * interval, "待处理", 16, 16, MY_WHITE);
+        }
+        else if (TEMP.result == PASSED)
+        {
+            puthz(ADMIN_INTERFACE_X1 + 340, ADMIN_INTERFACE_Y1 + 280 - listed_item * interval, "已通过", 16, 16, MY_GREEN);
+        }
+        else if (TEMP.result == FAILED)
+        {
+            puthz(ADMIN_INTERFACE_X1 + 340, ADMIN_INTERFACE_Y1 + 280 - listed_item * interval, "未通过", 16, 16, MY_RED);
+        }
+    }
+}
+void admin_show_ebike_in_out_comment(int comment, int listed_item, int interval, int max)
+{
+    char buffer[20];
+
+    if (comment == EBIKE_IN_OUT_NULL)
+        strcpy(buffer, "无");
+    else if (comment == EBIKE_IN_OUT_REGISTERED_UNIT_IN || comment == EBIKE_IN_OUT_REGISTERED_UNIT_OUT)
+        strcpy(buffer, "在校人员");
+    else if (comment == EBIKE_IN_TAKE_OUT || comment == EBIKE_OUT_TAKE_OUT)
+        strcpy(buffer, "外卖快递");
+    else if (comment == EBIKE_IN_OTHER)
+        strcpy(buffer, "其他");
+
+    puthz(ADMIN_INTERFACE_X1 + 340, ADMIN_INTERFACE_Y1 + 70 + listed_item * interval, buffer, 16, 16, MY_WHITE);
+}
+
 // 判断一个数据块是否应该列出
 int list_ebike_manage_is_valid(struct _EBIKE_INFO_ TEMP, char *list_mode, char *search_str, char *search_needed, int search_mode)
 {
@@ -937,8 +1104,7 @@ int list_ebike_in_out_is_valid(struct _EBIKE_IN_OUT_ TEMP, char *search_str, cha
     if (!strcmp(search_str, "\0") ||
         strcmp(TEMP.ebike_id, search_str) &&!strcmp(search_needed, "ebike_ID") ||
         strcmp(TEMP.ebike_license, search_str) &&!strcmp(search_needed, "ebike_license") ||
-        strcmp(TEMP.in_loc, search_str) &&!strcmp(search_needed, "in_loc") ||
-        strcmp(TEMP.out_loc, search_str) &&!strcmp(search_needed, "out_loc") ||
+        strcmp(TEMP.location, search_str) &&!strcmp(search_needed, "location") ||
         TEMP.in_time == atol(search_str) &&!strcmp(search_needed, "in_time") ||
         TEMP.out_time == atol(search_str) &&!strcmp(search_needed, "out_time") ||
         TEMP.result == atoi(search_str) &&!strcmp(search_needed, "result") ||
