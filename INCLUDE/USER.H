@@ -165,8 +165,8 @@
 #define USER_QUIZ_BACK_X2 620
 #define USER_QUIZ_BACK_Y1 10
 #define USER_QUIZ_BACK_Y2 40
-#define QUIZ_PAGE_COUNT 4  //题目页数
-#define QUESTION_PER_PAGE 3 //每页3题
+#define QUIZ_PAGE_COUNT 2  //题目页数
+#define QUESTION_PER_PAGE 3 //每页3题，最好别改
 #define LASTING_TIME 600 //测试时间十分钟
 
 //激活状态
@@ -222,7 +222,7 @@ void user_license_data_judge(int* data);
 
 void user_quiz(int* page, unsigned long* id);
 void drawgraph_user_quiz(int *quiz_page, int page_count);
-void flushUserQuiz(int* tag, int *box_tag,user_button UserButtons[],question quiz[],char *answer);
+void flushUserQuiz(int* tag, int *box_tag,user_button UserButtons[],question quiz[],char *answer,int quiz_page);
 void drawgraph_user_quiz_pass(int result[][QUESTION_PER_PAGE], int page_count);
 
 void user_bike_anual();

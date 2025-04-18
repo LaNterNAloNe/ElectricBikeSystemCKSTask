@@ -29,6 +29,7 @@ void user_main(int *page) {
 			click = handle_click_main(STRUCT_LENGTH(UserButtons), UserButtons);
 			if (click == LOGIN || click == EXIT||click==USER_BIKE_REGISTER||click==USER_BIKE_LICENSE||click==USER_BIKE_WROTEOUT) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_REGISTER
 				*page = click;
+				newmouse(&MouseX, &MouseY, &press, &mouse_flag);
 				return;
 			}
 			newmouse(&MouseX, &MouseY, &press, &mouse_flag);
@@ -266,7 +267,7 @@ void user_bike_register(int* page, unsigned long* id)
 	drawgraph_user_main(page);
 
 
-	if (!ebike_user_register_judge(id)) {
+	if (1) {//此处应该为!ebike_user_register_judge(id)，但文件操作目前尚未完善
 		setfillstyle(SOLID_FILL, MY_WHITE);
 		bar(150, 60, 640, 480);
 		drawgraph_user_bike_register_info(id);
@@ -278,6 +279,7 @@ void user_bike_register(int* page, unsigned long* id)
 			click = handle_click_main(STRUCT_LENGTH(UserButtons), UserButtons);
 			if (click == LOGIN || click == EXIT || click == USER_BIKE_LICENSE) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_REGISTER
 				*page = click;
+				newmouse(&MouseX, &MouseY, &press, &mouse_flag);
 				return;
 			}
 			newmouse(&MouseX, &MouseY, &press, &mouse_flag);
@@ -986,7 +988,7 @@ void user_quiz(int* page, unsigned long* id) {
 	int remain_sec = LASTING_TIME;
 	int tick=0;
 
-	question test[QUIZ_PAGE_COUNT][QUESTION_PER_PAGE];
+	question quiz[QUIZ_PAGE_COUNT][QUESTION_PER_PAGE];
 	char answer[QUIZ_PAGE_COUNT][QUESTION_PER_PAGE] = { '\0' };
 	int result[QUIZ_PAGE_COUNT][QUESTION_PER_PAGE] = {'\0'};
 
@@ -999,29 +1001,23 @@ void user_quiz(int* page, unsigned long* id) {
 	};
 	int mouse_flag = 1;
 
-	for (i = 0; i < QUIZ_PAGE_COUNT; i++) {
-		for (j = 0; j < 3; j++) {
-			strcpy(test[i][j].main_text, "题干一二三四五六七八九十共十六字");
-			for (k = 0; k < 4; k++) {
-				strcpy(test[i][j].options[k], "选项一共七个字");
-			}
-			test[i][j].correctAnswer = 'A';
-			test[i][j].id = 0;
-			test[i][j].x = 60;
-			test[i][j].y = 70 + 120 * j;
-		}
-	}
-
+	int position_xy[QUESTION_PER_PAGE][2] = {
+		{60,70},{60,190},{60,310}
+	};
+	
+	//store_data();
+    generate_quiz(quiz, QUIZ_PAGE_COUNT, position_xy);//根据题库生成测试题
+	
 	//考试界面
-	get_exact_time(start_time);
 	clrmous(MouseX, MouseY);
 	save_bk_mou(MouseX, MouseY);
 	drawgraph_user_quiz(&quiz_page, QUIZ_PAGE_COUNT);
-	draw_quiz(test[quiz_page-1], QUESTION_PER_PAGE);
+	draw_quiz(quiz[quiz_page - 1], QUESTION_PER_PAGE);
+
 	while (1) {
 		newmouse_data(&MouseX, &MouseY, &press,&mouse_flag);
-		flushUserQuiz(&tag,&box_tag,quiz_buttons,test[quiz_page-1],answer[quiz_page-1]);
-		handle_click_quiz(test[quiz_page - 1], answer[quiz_page - 1], QUESTION_PER_PAGE);
+		flushUserQuiz(&tag,&box_tag,quiz_buttons,quiz[quiz_page-1],answer[quiz_page-1],quiz_page);
+		handle_click_quiz(quiz[quiz_page - 1], answer[quiz_page - 1], QUESTION_PER_PAGE);
 		if (mouse_press(USER_QUIZ_BACK_X1, USER_QUIZ_BACK_Y1, USER_QUIZ_BACK_X2, USER_QUIZ_BACK_Y2) == 1) {
 			delay(1000);
 			*page = MAIN_USER;
@@ -1035,15 +1031,15 @@ void user_quiz(int* page, unsigned long* id) {
 		if (mouse_press(USER_QUIZ_BUTTON1_X1, USER_QUIZ_BUTTON1_Y1, USER_QUIZ_BUTTON1_X2, USER_QUIZ_BUTTON1_Y2) == 1 && quiz_page != 1) {
 			quiz_page -= 1;
 			drawgraph_user_quiz(&quiz_page, QUIZ_PAGE_COUNT);
-			draw_quiz(test[quiz_page-1], QUESTION_PER_PAGE);
-			printbox(test[quiz_page - 1], answer[quiz_page - 1]);
+			draw_quiz(quiz[quiz_page-1], QUESTION_PER_PAGE);
+			printbox(quiz[quiz_page - 1], answer[quiz_page - 1]);
 		}
 		//下一页
 		if (mouse_press(USER_QUIZ_BUTTON2_X1, USER_QUIZ_BUTTON2_Y1, USER_QUIZ_BUTTON2_X2, USER_QUIZ_BUTTON2_Y2) == 1 && quiz_page != QUIZ_PAGE_COUNT) {
 			quiz_page += 1;
 			drawgraph_user_quiz(&quiz_page, QUIZ_PAGE_COUNT);
-			draw_quiz(test[quiz_page-1], QUESTION_PER_PAGE);
-			printbox(test[quiz_page - 1], answer[quiz_page - 1]);
+			draw_quiz(quiz[quiz_page-1], QUESTION_PER_PAGE);
+			printbox(quiz[quiz_page - 1], answer[quiz_page - 1]);
 		}
 		//交卷
 		if (mouse_press(USER_QUIZ_BUTTON3_X1, USER_QUIZ_BUTTON3_Y1, USER_QUIZ_BUTTON3_X2, USER_QUIZ_BUTTON3_Y2) == 1 || remain_sec == 0) {
@@ -1061,9 +1057,8 @@ void user_quiz(int* page, unsigned long* id) {
 		delay(25);
 	}
 	//结果界面
-	if (judge_answer(test, answer, result, QUIZ_PAGE_COUNT)) {
+	if (judge_answer(quiz, answer, result, QUIZ_PAGE_COUNT)) {
 		drawgraph_user_quiz_pass(result, QUIZ_PAGE_COUNT);
-		//printf("%d%d%d%d%d%d", result[0][0], result[0][1], result[0][2], result[1][0], result[1][1], result[1][2]);
 		while (1) {
 			newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
 
@@ -1072,6 +1067,7 @@ void user_quiz(int* page, unsigned long* id) {
 		}
 	}
 	else
+		*page = MAIN_USER;
 		return;
 }
 	
@@ -1079,6 +1075,7 @@ void user_quiz(int* page, unsigned long* id) {
 void drawgraph_user_quiz(int *quiz_page,int page_count) {
 	char question_serial[8][8];//按页码储存题目序号，最多8页，不想在这malloc
 	char quiz_page_string[10];//页码字符串
+	char id[8];
 	int i;
 
 	setfillstyle(SOLID_FILL,MY_LIGHTGRAY);
@@ -1128,12 +1125,11 @@ void drawgraph_user_quiz(int *quiz_page,int page_count) {
 	setfillstyle(SOLID_FILL, MY_RED);//交卷
 	bar(USER_QUIZ_BUTTON3_X1, USER_QUIZ_BUTTON3_Y1, USER_QUIZ_BUTTON3_X2, USER_QUIZ_BUTTON3_Y2);
 	puthz(USER_QUIZ_BUTTON3_X1 + 13, USER_QUIZ_BUTTON3_Y1 + 8, "交卷", 24, 20, MY_WHITE);
-	
 }
 
 
 
-void flushUserQuiz(int* tag,int *box_tag, user_button UserButtons[], question quiz[], char* answer) {
+void flushUserQuiz(int* tag,int *box_tag, user_button UserButtons[], question quiz[], char* answer,int quiz_page) {
 	int i = 0;
 	int temp = 0;
 	int new_tag = ACTIVE_USER_NONE;
@@ -1152,11 +1148,10 @@ void flushUserQuiz(int* tag,int *box_tag, user_button UserButtons[], question qu
 	
 	if (*tag != new_tag) {
 		*tag = new_tag;
-		if (new_tag != ACTIVE_USER_NONE && new_tag <= 3) {//上一页，下一页，交卷按钮
-			setfillstyle(1, MY_WHITE);
+		if (new_tag != ACTIVE_USER_NONE && new_tag <= 3 &&!(new_tag == 1 && quiz_page == 1)&&!(new_tag == 2 && quiz_page == QUIZ_PAGE_COUNT)) {//上一页，下一页，交卷按钮
 			setcolor(MY_BLACK);
 			setlinestyle(SOLID_LINE, 0, NORM_WIDTH);
-			rectangle(UserButtons[temp].x1+1, UserButtons[temp].y1+1, UserButtons[temp].x2+1, UserButtons[temp].y2+1);
+			rectangle(UserButtons[temp].x1-1, UserButtons[temp].y1-1, UserButtons[temp].x2+1, UserButtons[temp].y2+1);
 			MouseS = 1;
 		}
 		else if (new_tag == 4) {//退出程序
@@ -1179,7 +1174,7 @@ void flushUserQuiz(int* tag,int *box_tag, user_button UserButtons[], question qu
 			setcolor(MY_LIGHTGRAY);
 			setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
 			for (i = 0; i < 3; i++) {
-				rectangle(UserButtons[i].x1+1, UserButtons[i].y1+1, UserButtons[i].x2+1, UserButtons[i].y2+1);
+				rectangle(UserButtons[i].x1-1, UserButtons[i].y1-1, UserButtons[i].x2+1, UserButtons[i].y2+1);
 			}
 
 			setfillstyle(1, MY_YELLOW);//恢复“返回登录”
@@ -1210,29 +1205,37 @@ void drawgraph_user_quiz_pass(int result[][QUESTION_PER_PAGE],int page_count) {
 				correct_num++;
 		}
 	}
-	correct_rate = (float)correct_num / (page_count * QUESTION_PER_PAGE);
-	sprintf(correct_num_string, "%d/%d", correct_num, page_count * QUESTION_PER_PAGE);
+	correct_rate = 100*(float)correct_num / (page_count * QUESTION_PER_PAGE);
+	sprintf(correct_num_string, "%d", correct_num);
 	sprintf(correct_rate_string, "%.2f%%", correct_rate);
 
 	setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
 	bar(0, 0, 640, 480);
-	setcolor(MY_WHITE);
-	setfillstyle(1, MY_WHITE);
+	
+	setfillstyle(1, MY_CREAM);
 	bar(10, 50, 630, 470);
+	setfillstyle(1, MY_WHITE);
+	bar(120, 160, 520, 430);
 	puthz(200, 12, "电动车法规测试", 32, 30, MY_WHITE);//边框
+	setcolor(MY_GREEN);
+	setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+	rectangle(117, 157, 523, 433);
 
-	settextstyle(DEFAULT_FONT, HORIZ_DIR, 2); //输出题目序号
+	puthz(210, 90, "恭喜通过！", 48,45, MY_GREEN);
+	puthz(180, 200, "您在本次测试中答对", 24, 22, MY_BLACK);
+	puthz(415, 200, "题", 24, 22, MY_BLACK);
+	puthz(220, 250, "正确率为", 24, 22, MY_BLACK);
+
+	settextstyle(DEFAULT_FONT, HORIZ_DIR, 2);
+	setcolor(MY_GREEN);
+	outtextxy(390, 205, correct_num_string);
+	outtextxy(330, 255, correct_rate_string);
+
+	 //输出题目序号
 	setcolor(MY_BLACK);
-	puthz(100, 100, "答对了：", 24, 20, MY_BLACK);
-	outtextxy(200, 100, correct_num_string);
-	outtextxy(300, 100, correct_rate_string);
+	
+	
 }
-
-
-/*
-之前的newmouse函数中更新鼠标数据与保存鼠标目前位置的背景同时进行，因此在flush函数们改变背景时，鼠标保存的背景没有改变，导致按钮边框缺失一小块或有一小块颜色不对
-现在先使用newmouse_data更新鼠标数据，在运行flush函数改变背景后，用newmouse保存背景并绘制鼠标，保证在newmouse时*buffer中保存的背景正确。
-*/
 
 
 
@@ -1246,9 +1249,3 @@ void user_message()
 {
 	
 }
-
-void user_datagraph()
-{
-
-}
-
