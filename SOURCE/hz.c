@@ -1,8 +1,3 @@
-#include <graphics.h>
-#include<conio.h>
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
 #include"HZ.H"
 
 void puthz(int x, int y,char *s,int flag,int part,int color)
@@ -12,9 +7,26 @@ void puthz(int x, int y,char *s,int flag,int part,int color)
 	unsigned long offset;                          //定义汉字在字库中的偏移量
 	unsigned char mask[] = {0x80,0x40,0x20,0x10,0x08,0x04,0x02,0x01};  //功能数组，用于显示汉字点阵中的亮点
 	int i,j,pos;
+    char buffer[20];
 
+    if ((flag / 10) == 24) {
+        if (flag % 10 == 0)
+            sprintf(buffer, "%s", "HZK\\Hzk24d");
+        else if (flag % 10 == 1)
+            sprintf(buffer, "%s", "HZK\\Hzk24f");
+        else if (flag % 10 == 2)
+            sprintf(buffer, "%s", "HZK\\Hzk24h");
+        else if (flag % 10 == 3)
+            sprintf(buffer, "%s", "HZK\\Hzk24k");
+        else if (flag % 10 == 4)
+            sprintf(buffer, "%s", "HZK\\Hzk24s");
+        flag /= 10;
+    }
+    else if (flag == 24) {
+        sprintf(buffer, "%s", "HZK\\Hzk24d");
+    }
 
-	switch(flag)    //不同的flag对应不同的汉字库，实现了汉字的大小可根据需要改变
+    switch(flag)    //不同的flag对应不同的汉字库，实现了汉字的大小可根据需要改变
 	{
 		case 16 :
 				  {
@@ -77,13 +89,12 @@ void puthz(int x, int y,char *s,int flag,int part,int color)
 
 				 }
 
-
 		case 24 :
 				  {
 					char mat[72];   //24*24矩阵要72个字节来存储
 					 int y0=y;
 					 int x0=x;
-					hzk_p = fopen("HZK\\Hzk24d","rb");
+					hzk_p = fopen(buffer,"rb");
 					if (hzk_p==NULL)
 					{
 						settextjustify(LEFT_TEXT,TOP_TEXT);          //左部对齐，顶部对齐

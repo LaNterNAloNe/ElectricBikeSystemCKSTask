@@ -103,6 +103,11 @@ void message_topic_display(int _x, int _y, int _width, char *_text, int _text_co
     int pos_y = _y;
     char hz_buffer[3] = {'\0', '\0', '\0'}; // 用于存储汉字的缓冲区
     char asc_buffer[2] = {'\0', '\0'};      // 用于存储ASCII字符的缓冲区
+    int real_size = _hz_font_size;
+
+    if (_hz_font_size / 10  == 24){
+        real_size = _hz_font_size / 10;
+    }
 
     if (_text == NULL)
     { // 检查传入的文本是否为空
@@ -135,8 +140,8 @@ void message_topic_display(int _x, int _y, int _width, char *_text, int _text_co
         { // 汉字
             hz_buffer[0] = *_text;
             hz_buffer[1] = *(_text + 1);
-            puthz(pos_x, pos_y, hz_buffer, _hz_font_size, 16, _text_color); // 显示汉字
-            pos_x += _hz_font_size;                                      // 汉字宽度为16像素
+            puthz(pos_x, pos_y, hz_buffer, _hz_font_size, NULL, _text_color); // 显示汉字
+            pos_x += real_size;                                               // 汉字宽度为16像素
             _text += 2;                                       // 跳过已输出汉字的两个字节
         }
         else

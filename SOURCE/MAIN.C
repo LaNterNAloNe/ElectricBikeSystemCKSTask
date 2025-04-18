@@ -1,7 +1,7 @@
 #include"GLOBAL.H"
 
 int main(void){
-    int page = MAIN_ADMIN; // 主页面
+    int page = TEST; // 主页面
     // int page=NULL; // 副页面
     unsigned long ID=0;//记录登录用户的ID
     int driver=VGA,mode=VGAHI;
@@ -85,7 +85,7 @@ int main(void){
             // test
             case TEST:
                 message_display_draw_bg();
-                message_topic_display(120, 30, 400, "中科院研制出量子计算机“550W”", MY_BLACK, 24, 3, 0); // 标题
+                message_topic_display(120, 30, 400, "中科院研制出量子计算机“550W”", MY_BLACK, Hzk24s, 3, 0); // 标题
                 message_text_display(160, 80, 200, "央视网", MY_BLACK);                                  // 文本
                 message_text_display(390, 80, 200, "2058.7.10", MY_BLACK);                              // 文本
                 message_text_display(120, 110, 400, "今年七月上旬，中国科学院数字生命研究所自主研发的550系列智能量子计算机第三代550W问世，并预计于今年年末正式投入使用。\n据悉，该智能量子计算机是目前最先进的自感知、自适应、自组织可重塑编译计算核心，拥有极为强大的算力。\n在前两代该系列智能量子计算机的帮助下，人类的空间技术得到飞速发展，进而拥有了星际航行和宇宙殖民的能力。该项目负责人表示，在新一代智能量子计算机的帮助下，人类建设外星家园的效率将极大幅度提高，甚至拥有殖民外星系的潜力。", MY_BLACK); // 文本
