@@ -9,6 +9,7 @@
 #include <time.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <io.h>
 #include"GROCERY.H"
 #include"MOUSE.H"
 #include"HZ.H"
@@ -32,15 +33,16 @@
 #define PASSING_GRADE 0.75 //75分合格
 
 typedef struct {
-    char main_text[60];
-    char options[4][30];
-    char correctAnswer;
+    char main_text[50];//题干，最多30字（均为汉字）
+    char options[4][30];//四个选项，每个最多15字（均为汉字）
+    char correctAnswer;//A,B,C,D之一
     int id;
     int x,y;
 }question;
 
-//void add_question_to_file(question* questions_to_add, int question_count);
-void generate_quiz(question* quiz, int question_count, int(*question_position_xy)[2]);//生成题目（包含位置）
+void add_question_to_file(question* questions_to_add, int add_question_count);//向题库添加题目
+void delete_data_file();//删除题库
+void generate_quiz(question quiz[][QUESTION_PER_PAGE], int page_count, int question_position_xy[][2]);//生成题目（包含位置）
 void handle_click_quiz(question* quiz, char* answer, int question_count);//处理点击答题
 void draw_quiz(question quiz[], int question_count);//画出题目
 int judge_answer(question quiz[][QUESTION_PER_PAGE], char anwser[][QUESTION_PER_PAGE], int result[][QUESTION_PER_PAGE], int page_count);
@@ -48,6 +50,7 @@ void printbox(question quiz[], char answer[]);//根据选择答案涂黑选项框（换页时绘
 int FlushQuiz(question quiz[],int question_count,int *box_tag);//检测鼠标是否在选项框内并刷新选项框状态
 void init_box_xy(question quiz, int box_xy[4][4]);//根据question的x,y坐标确定四个选项框坐标box_xy[A,B,C,D][x1,y1,x2,y2]
 void draw_countdown(int remain_sec, int x, int y);//计时器
+void store_data();
 
 //void print_question_answer(question * quiz,int* answer,int question_count);
 #endif
