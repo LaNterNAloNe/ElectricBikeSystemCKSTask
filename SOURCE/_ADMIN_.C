@@ -1876,7 +1876,8 @@ int admin_exitting(int *page)
     draw_exit_menu(ADMIN_EXIT_MENU_X1, ADMIN_EXIT_MENU_Y1, ADMIN_EXIT_MENU_X2, ADMIN_EXIT_MENU_Y2);
     while (1)
     {
-        newmouse(&MouseX, &MouseY, &press, &mouse_flag);
+        newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
+
         if (mouse_press(ADMIN_EXIT_MENU_X1 + 2, ADMIN_EXIT_MENU_Y1 + 5, ADMIN_EXIT_MENU_X1 + 60, ADMIN_EXIT_MENU_Y1 + 21) == 1)
         {
             *page = LOGIN_ADMIN;
@@ -1898,6 +1899,8 @@ int admin_exitting(int *page)
             clear_exit_menu(ADMIN_EXIT_MENU_X1, ADMIN_EXIT_MENU_Y1, ADMIN_EXIT_MENU_X2, ADMIN_EXIT_MENU_Y2);
             return 1;
         }
+
+        newmouse(&MouseX, &MouseY, &press, &mouse_flag);
     }
 }
 

@@ -13,6 +13,15 @@
 #include "hz.h"
 #include "mouse.h"
 
+// /* ·ûºÅÓë¿ØÖÆ¼ü */
+// #define TILDE 0x60     // '`'
+// #define TAB 0x09       // '\t'
+// #define SPACE 0x20     // ' '
+// #define ENTER 0x0D     // '\r'
+// #define ESCAPE 0x1B    // ESC
+// #define BACKSPACE 0x08 // '\b'
+// #define BACKSLASH 0x5C // '\'
+
 #define NUM0 0x5230
 #define NUM1 0x4f31
 #define NUM2 0x5032

@@ -10,7 +10,8 @@ IMPROVE:只能输入小写字母,可输出汉字或英文
 
 int hz_input(int x1,int y1,int x2,int y2,char *s,int len,int color,int color2, int size)
 {
-	int i;
+    int mouse_flag = 0;
+    int i = 0;
 	int flag=0;
 	int ST=-1;//输入法返回方式：1.安SPACE键返回输入汉字 2.按ENTER键返回输入英文 3.退格键返回不输入
 	char *image;
@@ -24,7 +25,7 @@ int hz_input(int x1,int y1,int x2,int y2,char *s,int len,int color,int color2, i
 	char str[3]={'\0','\0','\0'};//一个汉字装入
 	char py[12]={'\0','\0','\0','\0','\0','\0','\0','\0',
 	            '\0','\0','\0','\0'};//拼音字符串(西文字符串)
-    delay(5000);
+
     settextjustify(LEFT_TEXT,CENTER_TEXT);
 	clrmous(MouseX, MouseY);
 	// setfillstyle(SOLID_FILL, color);
@@ -40,42 +41,44 @@ int hz_input(int x1,int y1,int x2,int y2,char *s,int len,int color,int color2, i
 		getch();
 		exit(1);
 	}
-    
     while(1)
 	{
-		if(kbhit())
+        newmouse_data(&MouseX, &MouseY, &MouseS, &mouse_flag);
+        i++;
+        show_num(10,10,i,MY_WHITE);
+        if(kbhit())
 		{
 			value=bioskey(0);
 			/*特殊键处理*/
 		    switch(value)
 			{
-				case BACK:
-					if((L_len==0)&&(Line>1))//换行处理
-					{
-						L_len=L_maxwords;
-						Line--;
-					}
-					else if(L_len<=0&&Line==1) break;//删除结束 无法删除
-					if(*(p-1)>31&&*(p-1)<127)
-					{
-						setfillstyle(1,color);
-						bar(xx1+L_len*8-8,y1+Line*30-30,xx1+L_len*8,y1+Line*30);
-						p--;
-						*p='\0';
-						len--;
-						L_len--;
-					}
-					else
-					{
-						setfillstyle(1,color);
-						bar(xx1+L_len*(size/2+1)-size-2,y1+Line*30-30,xx1+L_len*(size/2+1)-1,y1+Line*30);
-						p-=2;
-						p[0]='\0';
-						p[1]='\0';
-						len-=2;
-						L_len-=2;
-					}
-					break;
+				// case BACK:
+				// 	if((L_len==0)&&(Line>1))//换行处理
+				// 	{
+				// 		L_len=L_maxwords;
+				// 		Line--;
+				// 	}
+				// 	else if(L_len<=0&&Line==1) break;//删除结束 无法删除
+				// 	if(*(p-1)>31&&*(p-1)<127)
+				// 	{
+				// 		setfillstyle(SOLID_FILL,color);
+				// 		bar(xx1+L_len*8-8,y1+Line*30-30,xx1+L_len*8,y1+Line*30);
+				// 		p--;
+				// 		*p='\0';
+				// 		len--;
+				// 		L_len--;
+				// 	}
+				// 	else
+				// 	{
+                //         setfillstyle(SOLID_FILL, color);
+                //         bar(xx1+L_len*(size/2+1)-size-2,y1+Line*30-30,xx1+L_len*(size/2+1)-1,y1+Line*30);
+				// 		p-=2;
+				// 		p[0]='\0';
+				// 		p[1]='\0';
+				// 		len-=2;
+				// 		L_len-=2;
+				// 	}
+				// 	break;
 				case ENTER:
 					*p='\0';
 					free(image);
@@ -90,115 +93,118 @@ int hz_input(int x1,int y1,int x2,int y2,char *s,int len,int color,int color2, i
 			asc=value&0xff;
 			if(asc>=97&&asc<=122)
 			{
-				barx1=(x1+L_len*8-50>0)?(x1+L_len*8-50):0;       //计算输入法位置  离所输入距离较近且不溢出屏幕
-	    		barx2=(barx1+200<630)?(barx1+200):(barx1=430,630);
-				bary1=y1+Line*30+10;
-				bary2=(bary1+40<480)?(bary1+40):(bary1=y1+Line*30-80,bary1+40);
+                barx1 = 0;
+                barx1=(x1+L_len*8-50>0)?(x1+L_len*8-50):0;       //计算输入法位置  离所输入距离较近且不溢出屏幕
+	    		// barx2=(barx1+200<630)?(barx1+200):(barx1=430,630);
+				// bary1=y1+Line*30+10;
+				// bary2=(bary1+40<480)?(bary1+40):(bary1=y1+Line*30-80,bary1+40);
 				getimage(barx1,bary1,barx2,bary2,image);
 				pyFrm(barx1,bary1,barx2,bary2);
 				setfillstyle(1,color);
 				ST=input_method(barx1,bary1,str,value,py);
-				switch(ST)
-				{
-					case 1://由数字键或空格键退出输入法  输入汉字
-					    if(strlen(str))//返回字符串可能为空
-						{
-							if((L_len+5)>=L_maxwords&&Line<maxline)//换行输入
-							{
-								/*用空格来填补不足位，跳转到下一行*/
-								if(L_len+1==L_maxwords)
-								{
-									*p=' ';
-									p++;
-									len++;
-								}
-								Line++;
-								L_len=0;
-							}
-							else if((L_len+1>=L_maxwords&&Line==maxline)||Line>maxline)//无法输入
-							{
-								putimage(barx1,bary1,image,0);
-								break;
-							}
-							strcpy(p,str);
-							if (flag == 0)
-							{
-								flag = 1;
-							}
-							puthz(xx1+L_len*(size/2+1),y1+Line*30-30,str,size,size+2,color2);
-							p+=2;
-					    	len+=2;
-							L_len+=2;
-						}
-						putimage(barx1,bary1,image,0);
-					    break;
-					case 2://由回车键退出输入法 （键入西文）
-						pylen=strlen(py);
-					    if((L_len+pylen>L_maxwords&&Line==maxline)||(Line>maxline))//位置已满
-						{
-							putimage(barx1,bary1,image,0);
-							break;
-						}
-						else if(L_len+pylen>L_maxwords&&Line<maxline)//该行已满 换行
-						{
-							for(i=0;i<L_maxwords-L_len;i++)
-							{
-								p[i]=' ';
-							}
-							p+=L_maxwords-L_len;
-							len+=L_maxwords-L_len;
-							Line++;
-							L_len=0;
-						}
-						putimage(barx1,bary1,image,0);
-						setcolor(DARKGRAY);
-						xouttextxy(xx1+L_len*8,y1+Line*30-28,py,DARKGRAY);
-						strcpy(p,py);
-						len+=pylen;
-						p+=pylen;
-						L_len+=pylen;
-					    break;
-					case 3://西文删除为0自动退出输入法  不输入
-						putimage(barx1,bary1,image,0);
-					    break;
-				}
-				value=0;
-				ST=-1;
-			}
-			else if(asc>31&&asc<127)//字符输入
-			{
-				continue;
-				/*py[0]=asc;
-				if(L_len+1<=L_maxwords&&Line<=maxline)//正常输入
-				{
-					*p=asc;
-				}
-				else if(Line+1<=maxline)//换行输入
-				{
-					*p=' ';
-					Line++;
-					L_len=0;
-				}
-				else
-				{
-					continue;
-				}
-				p++;
-				len++;
+			// 	switch(ST)
+			// 	{
+			// 		case 1://由数字键或空格键退出输入法  输入汉字
+			// 		    if(strlen(str))//返回字符串可能为空
+			// 			{
+			// 				if((L_len+5)>=L_maxwords&&Line<maxline)//换行输入
+			// 				{
+			// 					/*用空格来填补不足位，跳转到下一行*/
+			// 					if(L_len+1==L_maxwords)
+			// 					{
+			// 						*p=' ';
+			// 						p++;
+			// 						len++;
+			// 					}
+			// 					Line++;
+			// 					L_len=0;
+			// 				}
+			// 				else if((L_len+1>=L_maxwords&&Line==maxline)||Line>maxline)//无法输入
+			// 				{
+			// 					putimage(barx1,bary1,image,0);
+			// 					break;
+			// 				}
+			// 				strcpy(p,str);
+			// 				if (flag == 0)
+			// 				{
+			// 					flag = 1;
+			// 				}
+			// 				puthz(xx1+L_len*(size/2+1),y1+Line*30-30,str,size,size+2,color2);
+			// 				p+=2;
+			// 		    	len+=2;
+			// 				L_len+=2;
+			// 			}
+			// 			putimage(barx1,bary1,image,0);
+			// 		    break;
+			// 		case 2://由回车键退出输入法 （键入西文）
+			// 			pylen=strlen(py);
+			// 		    if((L_len+pylen>L_maxwords&&Line==maxline)||(Line>maxline))//位置已满
+			// 			{
+			// 				putimage(barx1,bary1,image,0);
+			// 				break;
+			// 			}
+			// 			else if(L_len+pylen>L_maxwords&&Line<maxline)//该行已满 换行
+			// 			{
+			// 				for(i=0;i<L_maxwords-L_len;i++)
+			// 				{
+			// 					p[i]=' ';
+			// 				}
+			// 				p+=L_maxwords-L_len;
+			// 				len+=L_maxwords-L_len;
+			// 				Line++;
+			// 				L_len=0;
+			// 			}
+			// 			putimage(barx1,bary1,image,0);
+			// 			setcolor(DARKGRAY);
+			// 			xouttextxy(xx1+L_len*8,y1+Line*30-28,py,DARKGRAY);
+			// 			strcpy(p,py);
+			// 			len+=pylen;
+			// 			p+=pylen;
+			// 			L_len+=pylen;
+			// 		    break;
+			// 		case 3://西文删除为0自动退出输入法  不输入
+			// 			putimage(barx1,bary1,image,0);
+			// 		    break;
+			// 	}
+			// 	value=0;
+			// 	ST=-1;
+			// }
+			// else if(asc>31&&asc<127)//字符输入
+			// {
+			// 	continue;
+			// 	/*py[0]=asc;
+			// 	if(L_len+1<=L_maxwords&&Line<=maxline)//正常输入
+			// 	{
+			// 		*p=asc;
+			// 	}
+			// 	else if(Line+1<=maxline)//换行输入
+			// 	{
+			// 		*p=' ';
+			// 		Line++;
+			// 		L_len=0;
+			// 	}
+			// 	else
+			// 	{
+			// 		continue;
+			// 	}
+				// p++;
+				// len++;
 				setcolor(DARKGRAY);
-				xouttextxy(xx1+L_len*8,y1+Line*30-21,py,DARKGRAY);
-				L_len++;*/
+				// xouttextxy(xx1+L_len*8,y1+Line*30-21,py,DARKGRAY);
+				// L_len++;
 			}
 			memset(py,'\0',12);
 			memset(str,'\0',3);
 		}
-		if((MouseX<x1||MouseX>x2||MouseY<y1||MouseY>y2)&&press)
+		if((MouseX<x1||MouseX>x2||MouseY<y1||MouseY>y2)&&!press)
 		{
 			*p='\0';
 			free(image);
 			return len;
 		}
-	}
+
+        newmouse(&MouseX, &MouseY, &MouseS, &mouse_flag);
+    }
 }
 
 /************************************************************************

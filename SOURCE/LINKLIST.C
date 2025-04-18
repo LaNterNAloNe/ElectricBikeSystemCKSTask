@@ -155,7 +155,8 @@ void linklist_clear(LINKLIST *pList)
         free(p);
         p = q;
     }
-    pList->HEAD = NULL; // 关键修复：重置头指针
+    free(pList); // 释放链表结构体
+    pList->HEAD = NULL; // 重置头指针
     return;
 }
 

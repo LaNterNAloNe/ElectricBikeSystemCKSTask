@@ -41,6 +41,12 @@ int hz_input(int x1,int y1,int x2,int y2,char *s,int len,int color,int color2, i
 		getch();
 		exit(1);
 	}
+    getch();
+    getch();
+    getch();
+    getch();
+    getch();
+    getch();
     while(1)
 	{
 		if(kbhit())

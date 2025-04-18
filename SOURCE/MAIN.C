@@ -1,7 +1,7 @@
 #include"GLOBAL.H"
 
 int main(void){
-    int page = MAIN_USER; // 主页面
+    int page = MAIN_ADMIN; // 主页面
     // int page=NULL; // 副页面
     unsigned long ID=0;//记录登录用户的ID
     int driver=VGA,mode=VGAHI;

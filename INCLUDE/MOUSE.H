@@ -22,7 +22,7 @@ extern int MouseS;
 extern int press;
 
 // 因为bc抽风，必须要补充定义，所以这里的extern变量直接不用了
-// extern int mouse_flag;
+extern int mouse_flag;
 
 extern union REGS regs;
 #endif

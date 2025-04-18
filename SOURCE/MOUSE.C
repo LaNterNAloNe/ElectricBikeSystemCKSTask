@@ -272,7 +272,7 @@ void newmouse_data(int *nx, int *ny, int *nbuttons, int *flag) // 更新鼠标数据并
 
 void newmouse(int *nx, int *ny, int *nbuttons, int *flag) // 若鼠标位置改变，保存背景，绘制鼠标
 {
-    if (*flag)
+    if (*flag == 1)
     {
         save_bk_mou(*nx, *ny);
         drawmous(*nx, *ny);
