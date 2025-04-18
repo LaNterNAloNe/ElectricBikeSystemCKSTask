@@ -16,7 +16,7 @@ void login(int *page, int *ID) {
 
     while (1) {
 		flushLoginGraph(&tag,page); // 刷新界面
-		newmouse(&MouseX, &MouseY, &press); // 刷新鼠标
+		newmouse(&MouseX, &MouseY, &press, &mouse_flag); // 刷新鼠标
 
         // 处理鼠标点击事件
         if (mouse_press(USERNAME_X1, USERNAME_Y1, USERNAME_X2, USERNAME_Y2)==1) {
@@ -139,7 +139,7 @@ void login_admin(int* page,int *uid) {
 
 	while (1) {
 		flushLoginGraph(&tag,page); // 刷新界面
-		newmouse(&MouseX, &MouseY, &press); // 刷新鼠标
+		newmouse(&MouseX, &MouseY, &press, &mouse_flag); // 刷新鼠标
 
 		// 处理鼠标点击事件
 		if (mouse_press(USERNAME_X1, USERNAME_Y1, USERNAME_X2, USERNAME_Y2) == 1) {
@@ -262,7 +262,7 @@ void _register(int* page) {
 	
 	while (1) {
 		flushLoginGraph(&tag,page); // 刷新界面
-		newmouse(&MouseX, &MouseY, &press); // 刷新鼠标
+		newmouse(&MouseX, &MouseY, &press, &mouse_flag); // 刷新鼠标
 
 		// 处理鼠标点击事件
 		if (mouse_press(USERNAME_X1, USERNAME_Y1, USERNAME_X2, USERNAME_Y2) == 1) {

@@ -1,23 +1,28 @@
 #ifndef _mouse_h_
 #define _mouse_h_
 
-#define	SCR_WIDTH	640	 //灞忓箷瀹藉害鍍忕礌 
-#define	SCR_HEIGHT	480		 //灞忓箷楂樺害鍍忕礌 
+#define	SCR_WIDTH	640
+#define	SCR_HEIGHT	480
 
-int mouse_press(int x1, int y1, int x2, int y2);//婵″倹鐏夐崷銊??鍡曡厬閻愮懓鍤?閿涘苯鍨?鏉╂柨娲?1閿涙稑婀?濡楀棔鑵戦張?閻愮懓鍤?閿涘苯鍨?鏉╂柨娲?2閿涙稐绗夐崷銊??鍡曡厬閸掓瑨绻戦崶?0
-void mouse(int,int);//鐠佹崘?锟犵炊閺??
-void mouseinit(void);//閸掓繂?瀣?瀵?
-//void mou_pos(int*,int*,int*);//閺囧瓨鏁兼Η鐘崇垼娴ｅ秶鐤?
-void mread(int *,int *,int*);//閺�鐟版綏閺嶅洣绗夐悽?
-void save_bk_mou(int x,int y);//鐎涙﹢绱堕弽鍥?鍎楅弲?
-void clrmous(int x,int y);//濞撳懘娅庢Η鐘崇垼
-void drawmous(int x,int y);//閻㈠?氱炊閺??
-void newmouse(int *nx,int *ny,int *nbuttons);   //閺囧瓨鏌婃Η鐘崇垼
-
+int mouse_press(int x1, int y1, int x2, int y2);
+void mouse(int,int);
+void mouseinit(void);
+//void mou_pos(int*,int*,int*);
+void mread(int *,int *,int*);
+void save_bk_mou(int x,int y);
+void clrmous(int x,int y);
+void drawmous(int x,int y);
+// 以下为改进函数
+void newmouse_data(int *nx, int *ny, int *nbuttons, int *mouse_flag);
+void newmouse(int *nx, int *ny, int *nbuttons, int *mouse_flag);
 
 extern int MouseX;
 extern int MouseY;
 extern int MouseS;
 extern int press;
+
+// 因为bc抽风，必须要补充定义，所以这里的extern变量直接不用了
+// extern int mouse_flag;
+
 extern union REGS regs;
 #endif

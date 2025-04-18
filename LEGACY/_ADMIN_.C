@@ -40,7 +40,7 @@ void admin_bike_register(int *page, unsigned long *ID, LINKLIST *LIST)
         admin_flush_buttons(&tag, STRUCT_LENGTH(AdminButtons), AdminButtons);
         admin_handle_buttons_event(page);
         selected_id = handle_list_select_line_admin(LIST, id_list);
-        newmouse(&MouseX, &MouseY, &press);
+        newmouse(&MouseX, &MouseY, &press, &mouse_flag);
 
         admin_handle_manage_feature_event(LIST, page, search_str, id_list, fp_EBIKE_INFO_read, &mode, selected_id); // 处理点击事件
 
@@ -85,7 +85,7 @@ void admin_bike_license(int *page, unsigned long *id, LINKLIST *LIST)
         admin_flush_buttons(&tag, STRUCT_LENGTH(AdminButtons), AdminButtons);
         admin_handle_buttons_event(page);
         selected_id = handle_list_select_line_admin(LIST, id_list);
-        newmouse(&MouseX, &MouseY, &press);
+        newmouse(&MouseX, &MouseY, &press, &mouse_flag);
 
         admin_handle_manage_feature_event(LIST, page, search_str, id_list, fp_EBIKE_LICENSE_read, &mode, selected_id); // 处理点击事件
     }
@@ -127,7 +127,7 @@ void admin_bike_broken(int *page, unsigned long *id, LINKLIST *LIST)
         admin_flush_buttons(&tag, STRUCT_LENGTH(AdminButtons), AdminButtons);
         admin_handle_buttons_event(page);
         selected_id = handle_list_select_line_admin(LIST, id_list);
-        newmouse(&MouseX, &MouseY, &press);
+        newmouse(&MouseX, &MouseY, &press, &mouse_flag);
 
         admin_handle_manage_feature_event(LIST, page, search_str, id_list, fp_EBIKE_INFO_read, &mode, selected_id); // 处理点击事件
     }
@@ -169,7 +169,7 @@ void admin_bike_anual(int *page, unsigned long *id, LINKLIST *LIST)
         admin_flush_buttons(&tag, STRUCT_LENGTH(AdminButtons), AdminButtons);
         admin_handle_buttons_event(page);
         selected_id = handle_list_select_line_admin(LIST, id_list);
-        newmouse(&MouseX, &MouseY, &press);
+        newmouse(&MouseX, &MouseY, &press, &mouse_flag);
 
         admin_handle_manage_feature_event(LIST, page, search_str, id_list, fp_EBIKE_INFO_read, &mode, selected_id); // 处理点击事件
     }
@@ -211,7 +211,7 @@ void admin_bike_violation(int *page, unsigned long *id, LINKLIST *LIST)
         admin_flush_buttons(&tag, STRUCT_LENGTH(AdminButtons), AdminButtons);
         admin_handle_buttons_event(page);
         selected_id = handle_list_select_line_admin(LIST, id_list);
-        newmouse(&MouseX, &MouseY, &press);
+        newmouse(&MouseX, &MouseY, &press, &mouse_flag);
 
         admin_handle_manage_feature_event(LIST, page, search_str, id_list, fp_EBIKE_INFO_read, &mode, selected_id); // 处理点击事件
     }

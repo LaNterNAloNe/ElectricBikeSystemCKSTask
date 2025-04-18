@@ -24,14 +24,14 @@ void user_main(int *page) {
 	
 
 	while (1) {
-			user_newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
+			newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
 			flushUserMain(&tag, STRUCT_LENGTH(UserButtons), UserButtons); // 刷新界面
 			click = handle_click_main(STRUCT_LENGTH(UserButtons), UserButtons);
 			if (click == LOGIN || click == EXIT||click==USER_BIKE_REGISTER||click==USER_BIKE_LICENSE||click==USER_BIKE_WROTEOUT) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_REGISTER
 				*page = click;
 				return;
 			}
-			user_drawmouse(&MouseX, &MouseY, &press, &mouse_flag);
+			newmouse(&MouseX, &MouseY, &press, &mouse_flag);
 			delay(25);//
 	}
 }
@@ -273,14 +273,14 @@ void user_bike_register(int* page, unsigned long* id)
 		clrmous(MouseX, MouseY);
 		save_bk_mou(MouseX, MouseY);
 		while (1) {
-			user_newmouse_data(&MouseX, &MouseY, &press,&mouse_flag);
+			newmouse_data(&MouseX, &MouseY, &press,&mouse_flag);
 			flushUserMain(&tag, STRUCT_LENGTH(UserButtons), UserButtons); // 刷新界面
 			click = handle_click_main(STRUCT_LENGTH(UserButtons), UserButtons);
 			if (click == LOGIN || click == EXIT || click == USER_BIKE_LICENSE) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_REGISTER
 				*page = click;
 				return;
 			}
-			user_drawmouse(&MouseX, &MouseY, &press, &mouse_flag);
+			newmouse(&MouseX, &MouseY, &press, &mouse_flag);
 			delay(25);
 		}
 	}
@@ -288,7 +288,7 @@ void user_bike_register(int* page, unsigned long* id)
 	while (1) {
 		flushUserMain(&tag, STRUCT_LENGTH(UserButtons), UserButtons); // 刷新界面
 		flushUserRegister(&tag);
-		newmouse(&MouseX, &MouseY, &press);
+		newmouse(&MouseX, &MouseY, &press, &mouse_flag);
 		click = handle_click_main(STRUCT_LENGTH(UserButtons), UserButtons);
 		if (click == LOGIN || click==USER_BIKE_LICENSE ||click == USER_BIKE_WROTEOUT||click==EXIT) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_REGISTER
 			*page = click;
@@ -629,7 +629,7 @@ void user_bike_license(int *page,unsigned long *id)
 	drawgraph_user_main(page);
 	drawgraph_user_bike_license(id,UserLicenseBox);
 	while (1) {
-		user_newmouse_data(&MouseX, &MouseY, &press,&mouse_flag);
+		newmouse_data(&MouseX, &MouseY, &press,&mouse_flag);
 		flushUserMain(&tag, STRUCT_LENGTH(UserButtons), UserButtons); // 刷新界面
 		flushUserLicense(UserLicenseBox,license_data);
 		handle_click_user_license(UserLicenseBox,license_data);//处理选项框
@@ -641,7 +641,7 @@ void user_bike_license(int *page,unsigned long *id)
 		if (mouse_press(USER_BIKE_LICENSE_BUTTON1_X1, USER_BIKE_LICENSE_BUTTON1_Y1, USER_BIKE_LICENSE_BUTTON1_X2, USER_BIKE_LICENSE_BUTTON1_Y2) == 1) {
 			user_license_data_judge(license_data);
 		}
-		user_drawmouse(&MouseX, &MouseY, &press, &mouse_flag);
+		newmouse(&MouseX, &MouseY, &press, &mouse_flag);
 		delay(25);
 	}
 }
@@ -816,7 +816,7 @@ void user_bike_wroteout(int *page,unsigned long *id)
 	drawgraph_user_bike_wroteout_warning();
 	//进入电动车报废功能界面前的警告页面
 	while (1) {
-		user_newmouse_data(&MouseX, &MouseY, &press,&mouse_flag);//刷新鼠标数据
+		newmouse_data(&MouseX, &MouseY, &press,&mouse_flag);//刷新鼠标数据
 		flushUserMain(&tag_main, STRUCT_LENGTH(UserButtons), UserButtons); // 刷新界面
 		flushUserWroteoutWarning();
 		click = handle_click_main(STRUCT_LENGTH(UserButtons), UserButtons);
@@ -850,13 +850,13 @@ void user_bike_wroteout(int *page,unsigned long *id)
 		}
 		if (flush_count <= 201)
 			flush_count++;
-		user_drawmouse(&MouseX, &MouseY, &press, &mouse_flag);//在可能改变背景的操作后绘制鼠标
+		newmouse(&MouseX, &MouseY, &press, &mouse_flag);//在可能改变背景的操作后绘制鼠标
 		delay(25);
 	}
 	drawgraph_user_wroteout();
 	//电动车报废功能界面
 	while (1) {
-		user_newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
+		newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
 		flushUserMain(&tag_main, STRUCT_LENGTH(UserButtons), UserButtons); // 刷新界面
 		flushUserWroteout(&tag_wroteout,WroteoutButtons);
 		click = handle_click_main(STRUCT_LENGTH(UserButtons), UserButtons);
@@ -864,7 +864,7 @@ void user_bike_wroteout(int *page,unsigned long *id)
 			*page = click;
 			return;
 		}
-		user_drawmouse(&MouseX, &MouseY, &press, &mouse_flag);
+		newmouse(&MouseX, &MouseY, &press, &mouse_flag);
 		delay(25);
 	}
 }
@@ -1019,7 +1019,7 @@ void user_quiz(int* page, unsigned long* id) {
 	drawgraph_user_quiz(&quiz_page, QUIZ_PAGE_COUNT);
 	draw_quiz(test[quiz_page-1], QUESTION_PER_PAGE);
 	while (1) {
-		user_newmouse_data(&MouseX, &MouseY, &press,&mouse_flag);
+		newmouse_data(&MouseX, &MouseY, &press,&mouse_flag);
 		flushUserQuiz(&tag,&box_tag,quiz_buttons,test[quiz_page-1],answer[quiz_page-1]);
 		handle_click_quiz(test[quiz_page - 1], answer[quiz_page - 1], QUESTION_PER_PAGE);
 		if (mouse_press(USER_QUIZ_BACK_X1, USER_QUIZ_BACK_Y1, USER_QUIZ_BACK_X2, USER_QUIZ_BACK_Y2) == 1) {
@@ -1057,7 +1057,7 @@ void user_quiz(int* page, unsigned long* id) {
 			remain_sec--;
 		}
 		tick++;
-		user_drawmouse(&MouseX, &MouseY, &press, &mouse_flag);
+		newmouse(&MouseX, &MouseY, &press, &mouse_flag);
 		delay(25);
 	}
 	//结果界面
@@ -1065,9 +1065,9 @@ void user_quiz(int* page, unsigned long* id) {
 		drawgraph_user_quiz_pass(result, QUIZ_PAGE_COUNT);
 		//printf("%d%d%d%d%d%d", result[0][0], result[0][1], result[0][2], result[1][0], result[1][1], result[1][2]);
 		while (1) {
-			user_newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
+			newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
 
-			user_drawmouse(&MouseX, &MouseY, &press, &mouse_flag);
+			newmouse(&MouseX, &MouseY, &press, &mouse_flag);
 			delay(25);
 		}
 	}
@@ -1231,37 +1231,11 @@ void drawgraph_user_quiz_pass(int result[][QUESTION_PER_PAGE],int page_count) {
 
 /*
 之前的newmouse函数中更新鼠标数据与保存鼠标目前位置的背景同时进行，因此在flush函数们改变背景时，鼠标保存的背景没有改变，导致按钮边框缺失一小块或有一小块颜色不对
-现在先使用user_newmouse_data更新鼠标数据，在运行flush函数改变背景后，用user_drawmouse保存背景并绘制鼠标，保证在user_drawmouse时*buffer中保存的背景正确。
+现在先使用newmouse_data更新鼠标数据，在运行flush函数改变背景后，用newmouse保存背景并绘制鼠标，保证在newmouse时*buffer中保存的背景正确。
 */
 
 
-void user_newmouse_data(int* nx, int* ny, int* nbuttons,int *flag)//更新鼠标数据并判断鼠标位置是否改变
-{
-	int xn, yn, buttonsn;
-	int x0 = *nx, y0 = *ny, buttons0 = *nbuttons;
-	mread(&xn, &yn, &buttonsn);
-	*nx = xn;
-	*ny = yn;
-	*nbuttons = buttonsn;
-	if (buttons0 == *nbuttons)
-		*nbuttons = 0;    //使得能连续按键
-	if (xn == x0 && yn == y0 && buttonsn == buttons0) {
-		*flag = 0;//不变
-		return;
-	}
-	clrmous(x0, y0);
-	*flag = 1;//改变
-	return ;
-}
 
-
-void user_drawmouse(int* nx, int* ny, int* nbuttons,int* flag) //若鼠标位置改变，保存背景，绘制鼠标
-{
-	if (*flag) {
-		save_bk_mou(*nx, *ny);
-		drawmous(*nx, *ny);
-	}	
-}
 
 void user_info()
 {

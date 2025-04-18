@@ -4,6 +4,7 @@
 MODULE:管理员主菜单
 *****************************************************************/
 void main_admin(int *page,unsigned long *ID){
+    int mouse_flag;
     int tag=ACTIVE_ADMIN_NULL;
     ADMIN_BUTTONS AdminButtons[9];
     define_admin_buttons(AdminButtons, MAIN_ADMIN); // 定义按钮
@@ -15,10 +16,13 @@ void main_admin(int *page,unsigned long *ID){
     if(debug_mode == 1) display_memory_usage(400, 10); // 显示调试参数
 
     while(*page == MAIN_ADMIN){
+        newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
+
         admin_flush_buttons(&tag,STRUCT_LENGTH(AdminButtons),AdminButtons);
         admin_handle_buttons_event(page);
         //应该在传入AdminButtons前计算其长度，传入函数后，使用sizeof计算其长度则会退化为指针长度，导致功能失效
-        newmouse(&MouseX, &MouseY, &press);
+
+        newmouse(&MouseX, &MouseY, &press, &mouse_flag);
 
         delay(25);
     }
@@ -29,6 +33,7 @@ void main_admin(int *page,unsigned long *ID){
 MODULE:管理员车辆管理模块
 *****************************************************************/
 void admin_manage_bike_module(int *page, unsigned long *ID, LINKLIST *LIST, char *file_path, char *list_mode){
+    int mouse_flag;
     int mode = 0; // 搜索模式，列出已处理清单或待处理清单，主动清除该页面时重设为0（默认列出待处理清单）
     // static int visited=0; // 是否进入乐该页面，主动清除该页面时重设为0
     char search_str[20]; // 搜索框输入信息储存
@@ -56,12 +61,14 @@ void admin_manage_bike_module(int *page, unsigned long *ID, LINKLIST *LIST, char
 
     while (*page == temp_page)
     {
+        newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
+
         admin_flush_buttons(&tag, STRUCT_LENGTH(AdminButtons), AdminButtons);
         admin_handle_buttons_event(page);
         handle_list_select_line_admin(LIST, id_list, &selected_id, LIST_LIMIT, LIST_INTERVAL);
-        newmouse(&MouseX, &MouseY, &press);
-
         admin_handle_manage_feature_event(LIST, page, search_str, id_list, fp_EBIKE_INFO_read, &mode, &selected_id); // 处理点击事件
+
+        newmouse(&MouseX, &MouseY, &press, &mouse_flag);
 
         delay(25);
     }
@@ -76,6 +83,7 @@ void admin_manage_bike_module(int *page, unsigned long *ID, LINKLIST *LIST, char
 MODULE:查看管理员信息
 *****************************************************************/
 void admin_info(int *page, unsigned long *ID){
+    int mouse_flag;
     int tag = ACTIVE_ADMIN_NULL;
     ADMIN_BUTTONS AdminButtons[9];
     define_admin_buttons(AdminButtons, *page); // 定义按钮
@@ -86,9 +94,11 @@ void admin_info(int *page, unsigned long *ID){
         display_memory_usage(400, 10); // 显示调试参数
 
     while(*page == ADMIN_INFO){
+        newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
+
         admin_flush_buttons(&tag,STRUCT_LENGTH(AdminButtons),AdminButtons);
         admin_handle_buttons_event(page);
-        newmouse(&MouseX, &MouseY, &press);
+        newmouse(&MouseX, &MouseY, &press, &mouse_flag);
 
         drawgraph_admin_info(*ID); // 显示管理员信息
 
@@ -100,6 +110,7 @@ void admin_info(int *page, unsigned long *ID){
 MODULE:数据一览界面
 *****************************************************************/
 void admin_database(int *page, unsigned long *ID , LINKLIST *LIST){
+    int mouse_flag;
     int tag = ACTIVE_ADMIN_NULL;
     int flag = ADMIN_DATABASE_NULL; // 数据一览视图代号
     unsigned long selected_id = 0;
@@ -121,12 +132,14 @@ void admin_database(int *page, unsigned long *ID , LINKLIST *LIST){
         display_memory_usage(400, 10); // 显示调试参数
 
     while (*page == ADMIN_DATABASE){
+        newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
+
         admin_flush_buttons(&tag, STRUCT_LENGTH(AdminButtons), AdminButtons);
         admin_handle_buttons_event(page);
         admin_handle_database_event(LIST, &flag, page, id_list, fp_USER_LOGIN_DATA_read,search_str, &selected_id); // 处理点击事件
         handle_list_select_line_admin(LIST, id_list, &selected_id, LIST_LIMIT, LIST_INTERVAL);
 
-        newmouse(&MouseX, &MouseY, &press);
+        newmouse(&MouseX, &MouseY, &press, &mouse_flag);
 
         delay(25);
     }
@@ -138,6 +151,7 @@ void admin_database(int *page, unsigned long *ID , LINKLIST *LIST){
 
 void admin_modify_data(LINKLIST *LIST, FILE *fp, char *file_type, unsigned long *user_id)
 {
+    int mouse_flag;
     int tag = ACTIVE_ADMIN_NULL;
     int flag = -1;
     int isReturn = 0; // 是否返回;
@@ -163,12 +177,14 @@ void admin_modify_data(LINKLIST *LIST, FILE *fp, char *file_type, unsigned long 
         drawgraph_admin_database_user_info();
         return;
     }
-    newmouse(&MouseX, &MouseY, &press);
+    newmouse(&MouseX, &MouseY, &press, &mouse_flag);
 
     if (debug_mode == 1)
         display_memory_usage(400, 10); // 显示调试参数
 
     while (!isReturn){
+        newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
+
         if(flag = ADMIN_DATABASE_USER_INFO){ // 修改用户信息
             admin_flush_buttons(&tag, 6, AdminButtons);
             admin_handle_modify_user_data_event(fp, user_id, &isReturn); // 处理点击事件
@@ -177,7 +193,8 @@ void admin_modify_data(LINKLIST *LIST, FILE *fp, char *file_type, unsigned long 
             admin_flush_buttons(&tag, 6, AdminButtons);
             admin_handle_modify_ebike_data_event(LIST, user_id, &isReturn); // 处理点击事件
         }
-        newmouse(&MouseX, &MouseY, &press);
+
+        newmouse(&MouseX, &MouseY, &press, &mouse_flag);
         delay(25);
     }
     clrmous(MouseX, MouseY);
@@ -191,7 +208,7 @@ void admin_modify_data(LINKLIST *LIST, FILE *fp, char *file_type, unsigned long 
 MODULE:管理员消息中心
 *****************************************************************/
 void admin_message_center(int *page, unsigned long *ID){
-
+    int mouse_flag;
     int tag = ACTIVE_ADMIN_NULL;
     ADMIN_BUTTONS AdminButtons[12];
     define_admin_buttons(AdminButtons, *page); // 定义按钮
@@ -200,17 +217,17 @@ void admin_message_center(int *page, unsigned long *ID){
     drawgraph_admin_menu(); // 初始化界面
     drawgraph_admin_message_center(); // 绘制界面
     while(*page == ADMIN_MESSAGE){
+        newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
+
         admin_handle_buttons_event(page);
         admin_flush_buttons(&tag, STRUCT_LENGTH(AdminButtons), AdminButtons);
-
-        newmouse(&MouseX, &MouseY, &press);
 
         if (mouse_press(ADMIN_FEATURE_EXIT_X1, ADMIN_FEATURE_EXIT_Y1,
                         ADMIN_FEATURE_EXIT_X2, ADMIN_FEATURE_EXIT_Y2) == 1) // 点击返回
         {
             *page = MAIN_ADMIN;
         }
-
+        newmouse(&MouseX, &MouseY, &press, &mouse_flag);
         delay(25);
     }
 }
@@ -1455,6 +1472,7 @@ MODULE:其他杂项函数
 // 点击按钮后，若能成功操作，则执行该显示动画
 void admin_pass_failed_anime(int button_x1, int button_y1, int button_x2, int button_y2, int result)
 {
+    int mouse_flag;
     int tick = 0;
     clrmous(MouseX, MouseY); // 清除鼠标
 
@@ -1484,7 +1502,7 @@ void admin_pass_failed_anime(int button_x1, int button_y1, int button_x2, int bu
     bar(button_x1, button_y1, button_x2, button_y2);                   // 重绘按钮
     puthz(button_x1 + 4, button_y1 + 8, "同意申请", 16, 16, MY_WHITE); // 重新绘制按钮
 
-    newmouse(&MouseX, &MouseY, &press); // 重新绘制
+    newmouse(&MouseX, &MouseY, &press, &mouse_flag); // 重新绘制
 }
 
 // 这个函数可能还需要进一步优化，若之后出现画面抽搐的问题尚不能解决，就干这个函数
@@ -1709,8 +1727,7 @@ void define_admin_buttons(ADMIN_BUTTONS AdminButtons[], int page)
     else if (page == ADMIN_MESSAGE_REPLY)
     {
         admin_get_buttons(&AdminButtons[0], &Examples[19]);
-        admin_get_buttons(&AdminButtons[1], &Examples[31]);
-        admin_get_buttons(&AdminButtons[2], &Examples[32]);
+        admin_get_buttons(&AdminButtons[1], &Examples[20]);
     }
 }
 
@@ -1855,10 +1872,11 @@ void clear_flip_down(int x1, int y1, int x2, int y2)
 
 int admin_exitting(int *page)
 {
+    int mouse_flag;
     draw_exit_menu(ADMIN_EXIT_MENU_X1, ADMIN_EXIT_MENU_Y1, ADMIN_EXIT_MENU_X2, ADMIN_EXIT_MENU_Y2);
     while (1)
     {
-        newmouse(&MouseX, &MouseY, &press);
+        newmouse(&MouseX, &MouseY, &press, &mouse_flag);
         if (mouse_press(ADMIN_EXIT_MENU_X1 + 2, ADMIN_EXIT_MENU_Y1 + 5, ADMIN_EXIT_MENU_X1 + 60, ADMIN_EXIT_MENU_Y1 + 21) == 1)
         {
             *page = LOGIN_ADMIN;

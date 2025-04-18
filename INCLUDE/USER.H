@@ -240,8 +240,5 @@ void user_datagraph();
 int handle_click_main(int button_num, user_button WroteoutButtons[]);
 void anime_login_success_user();
 
-
-void user_newmouse_data(int* nx, int* ny, int* nbuttons,int *flag);
-void user_drawmouse(int* nx, int* ny, int* nbuttons,int *flag);
 #define STRUCT_LENGTH(Struct) (sizeof(Struct)/sizeof(Struct[0]))
 #endif

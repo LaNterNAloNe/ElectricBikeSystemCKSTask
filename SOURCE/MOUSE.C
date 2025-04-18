@@ -228,27 +228,58 @@ void mread(int *nx,int *ny,int *nbuttons)
 }
 
 /*******************************************
-FUNCTION: newmouse
+FUNCTION: newmouse_data & newmouse
 DESCRIPTION: 鼠标状态发生变化则更新鼠标
-INPUT: nx,ny,nbuttons
+INPUT: nx,ny,nbuttons,flag
 RETURN: 无
 ********************************************/
-void newmouse(int *nx,int *ny,int *nbuttons)
+// void newmouse(int *nx,int *ny,int *nbuttons)
+// {
+// 	int xn,yn,buttonsn;
+// 	int x0=*nx,y0=*ny,buttons0=*nbuttons;
+// 	mread(&xn,&yn,&buttonsn);
+// 	*nx = xn;
+// 	*ny = yn;
+// 	*nbuttons = buttonsn;
+// 	if(buttons0 == *nbuttons)
+// 		*nbuttons = 0;    //使得能连续按键
+// 	if(xn == x0 && yn == y0 && buttonsn == buttons0)
+// 		return;            //鼠标状态不变则直接返回S
+// 	clrmous(x0,y0);        //说明鼠标状态发生了改变
+// 	save_bk_mou(*nx,*ny);
+// 	drawmous(*nx,*ny);
+// }
+/*****************************/
+void newmouse_data(int *nx, int *ny, int *nbuttons, int *flag) // 更新鼠标数据并判断鼠标位置是否改变
 {
-	int xn,yn,buttonsn;
-	int x0=*nx,y0=*ny,buttons0=*nbuttons;
-	mread(&xn,&yn,&buttonsn);
-	*nx = xn;
-	*ny = yn;
-	*nbuttons = buttonsn;
-	if(buttons0 == *nbuttons)
-		*nbuttons = 0;    //使得能连续按键
-	if(xn == x0 && yn == y0 && buttonsn == buttons0)
-		return;            //鼠标状态不变则直接返回S
-	clrmous(x0,y0);        //说明鼠标状态发生了改变
-	save_bk_mou(*nx,*ny);
-	drawmous(*nx,*ny);
+    int xn, yn, buttonsn;
+    int x0 = *nx, y0 = *ny, buttons0 = *nbuttons;
+    mread(&xn, &yn, &buttonsn);
+    *nx = xn;
+    *ny = yn;
+    *nbuttons = buttonsn;
+    if (buttons0 == *nbuttons)
+        *nbuttons = 0; // 使得能连续按键
+    if (xn == x0 && yn == y0 && buttonsn == buttons0)
+    {
+        *flag = 0; // 不变
+        return;
+    }
+    clrmous(x0, y0);
+    *flag = 1; // 改变
+    return;
 }
+
+void newmouse(int *nx, int *ny, int *nbuttons, int *flag) // 若鼠标位置改变，保存背景，绘制鼠标
+{
+    if (*flag)
+    {
+        save_bk_mou(*nx, *ny);
+        drawmous(*nx, *ny);
+    }
+}
+
+/*****************************/
 
 void save_bk_mou(int nx,int ny)//存鼠标背景
 {

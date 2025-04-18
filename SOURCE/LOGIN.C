@@ -3,6 +3,7 @@
 
 // 登录界面
 void login(int *page, unsigned long *ID) {
+    int mouse_flag;
     char usrn[13] = {'\0'}; // 初始化为空
     char psw[13] = {'\0'};
     int tag = 0;
@@ -15,8 +16,9 @@ void login(int *page, unsigned long *ID) {
 
 	if(debug_mode == 1) display_memory_usage(400, 10); // 显示调试参数 
     while (1) {
+        newmouse_data(&MouseX, &MouseY, &press, &mouse_flag); // 刷新鼠标
+
 		flushLoginGraph(&tag,page); // 刷新界面
-		newmouse(&MouseX, &MouseY, &press); // 刷新鼠标
 
         // 处理鼠标点击事件
         if (mouse_press(USERNAME_X1, USERNAME_Y1, USERNAME_X2, USERNAME_Y2)==1) {
@@ -65,6 +67,7 @@ void login(int *page, unsigned long *ID) {
 			return;
 		}
 
+        newmouse(&MouseX, &MouseY, &press, &mouse_flag); // 刷新鼠标
         delay(25); // 50hz刷新率
 	
     } 
@@ -126,6 +129,7 @@ void drawgraph_login(void){
 
 //管理员登录界面
 void login_admin(int* page,unsigned long *ID) {
+    int mouse_flag;
     char usrn[10] = {'\0'}; // 初始化为空
     char psw[10] = {'\0'};
     int tag = 0;
@@ -139,8 +143,9 @@ void login_admin(int* page,unsigned long *ID) {
 	if(debug_mode == 1) display_memory_usage(400, 10); // 显示调试参数 
 
 	while (1) {
-		flushLoginGraph(&tag,page); // 刷新界面
-        newmouse(&MouseX, &MouseY, &press); // 刷新鼠标
+        newmouse_data(&MouseX, &MouseY, &press, &mouse_flag); // 刷新鼠标
+
+        flushLoginGraph(&tag,page); // 刷新界面
 
 		// 处理鼠标点击事件
 		if (mouse_press(USERNAME_X1, USERNAME_Y1, USERNAME_X2, USERNAME_Y2) == 1) {
@@ -185,7 +190,8 @@ void login_admin(int* page,unsigned long *ID) {
 			return;
 		}
 
-		delay(25); // 50hz刷新率
+        newmouse(&MouseX, &MouseY, &press, &mouse_flag); // 刷新鼠标
+        delay(25); // 50hz刷新率
 
 	}
 }
@@ -248,7 +254,8 @@ void drawgraph_admin_login(){
 }
 
 void register_id_input(int* page, unsigned long* ID) {
-	char id_input[10]; // 用于存储输入的ID
+    int mouse_flag;
+    char id_input[10]; // 用于存储输入的ID
 	unsigned long id=0; // 用于存储检测通过的ID
 	int id_flag = -1; // 标明输入的ID是否合法
 	int tag=ACTIVE_NONE; // 用于记录鼠标点击状态;
@@ -259,8 +266,8 @@ void register_id_input(int* page, unsigned long* ID) {
 	save_bk_mou(MouseX, MouseY);
 	drawgraph_register_id_input();
 	while (1) {
+		newmouse_data(&MouseX, &MouseY, &press, &mouse_flag); // 刷新鼠标
 		flushRegisterIdGraph(&tag);
-		newmouse(&MouseX, &MouseY, &press); // 刷新鼠标
 
 		if (mouse_press(PASSWORD_X1, PASSWORD_Y1, PASSWORD_X2, PASSWORD_Y2) == 1) {
 			ch_input(id_input, PASSWORD_X1, PASSWORD_Y1 + 5, 9, MY_WHITE, 0, 1);
@@ -312,7 +319,8 @@ void register_id_input(int* page, unsigned long* ID) {
 			return;
 		}
 
-		delay(25); // 50hz刷新率
+        newmouse(&MouseX, &MouseY, &press, &mouse_flag); // 刷新鼠标
+        delay(25); // 50hz刷新率
 	}
 }
 
@@ -469,6 +477,7 @@ void flushRegisterIdGraph(int* tag) {
 
 // 注册界面
 void _register(int* page,unsigned long *ID,LINKLIST *LIST) {
+    int mouse_flag;
     char usrn[10] = {'\0'}; // 初始化为空
     char psw[10] = {'\0'};
 	char time_string[10] = { '\0' };
@@ -486,8 +495,8 @@ void _register(int* page,unsigned long *ID,LINKLIST *LIST) {
 	if(debug_mode == 1) display_memory_usage(400, 10); // 显示调试参数 
 	
 	while (1) {
+		newmouse_data(&MouseX, &MouseY, &press, &mouse_flag); // 刷新鼠标
 		flushLoginGraph(&tag,page); // 刷新界面
-		newmouse(&MouseX, &MouseY, &press); // 刷新鼠标
 
 		// 处理鼠标点击事件
 		if (mouse_press(USERNAME_X1, USERNAME_Y1, USERNAME_X2, USERNAME_Y2) == 1) {
@@ -537,7 +546,8 @@ void _register(int* page,unsigned long *ID,LINKLIST *LIST) {
 			return;
 		}
 
-		delay(25); // 50hz刷新率
+        newmouse(&MouseX, &MouseY, &press, &mouse_flag); // 刷新鼠标
+        delay(25); // 50hz刷新率
 
 	}
 }

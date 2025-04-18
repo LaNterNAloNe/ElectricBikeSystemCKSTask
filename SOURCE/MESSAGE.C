@@ -1,4 +1,5 @@
 #include "MESSAGE.H"
+#include "MOUSE.H"
 
 /*************************************************************
 MESSAGE:用户与管理员产生交互的功能模块
@@ -10,6 +11,7 @@ void message_display(MESSAGE *msg)
     ADMIN_BUTTONS btn[3]; // 定义按钮变量
     int tag = ACTIVE_ADMIN_NULL; // 定义标签变量
     int is_return = 0;
+    int mouse_flag;
     define_admin_buttons(btn, ADMIN_MESSAGE); // 定义按钮
     if (msg->message_type != PRIVATE_MESSAGE)
     {
@@ -30,9 +32,33 @@ void message_display(MESSAGE *msg)
     
     while (is_return == 0)
     {
-        newmouse(&MouseX, &MouseY, &press); // 获取鼠标位置
+        newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
+
         admin_flush_buttons(&tag, 3, btn); // 刷新按钮
         message_handle_click_event(&is_return, msg); // 处理点击事件
+
+        newmouse(&MouseX, &MouseY, &press, &mouse_flag);
+    }
+}
+
+void message_reply(int *is_return, MESSAGE *msg)
+{
+    int tag = ACTIVE_ADMIN_NULL; // 定义标签变量
+    ADMIN_BUTTONS btn[2]; // 定义按钮变量
+    char message[512]; // 定义消息变量
+    int mouse_flag;
+    define_admin_buttons(btn, ADMIN_MESSAGE_REPLY); // 定义按钮
+
+    message_reply_draw_bg(msg); // 绘制背景
+
+    while (*is_return == 0)
+    {
+        newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
+
+        admin_flush_buttons(&tag, 2, btn); // 刷新按钮
+        message_handle_click_event(is_return, msg); // 处理点击事件
+
+        newmouse(&MouseX, &MouseY, &press, &mouse_flag);
     }
 }
 
@@ -377,10 +403,10 @@ void message_list_click(int _x, int _y, int _listed_item, int _max, int _interva
 void message_handle_click_event(int *is_return, MESSAGE *msg)
 {
     // 处理鼠标点击事件
-    if (mouse_press(ADMIN_MESSAGE_REPLY_X1, ADMIN_MESSAGE_REPLY_Y1, ADMIN_MESSAGE_REPLY_X2, ADMIN_MESSAGE_REPLY_Y2) == 1) // 如果鼠标点击了回复信息
+    if (mouse_press(ADMIN_MESSAGE_REPLY_X1, ADMIN_MESSAGE_REPLY_Y1, ADMIN_MESSAGE_REPLY_X2, ADMIN_MESSAGE_REPLY_Y2) == 1 &&
+        msg->message_type != ANNOUNCEMENT && msg->is_replied == 0) // 如果鼠标点击了回复信息
     {
-        
-
+        message_reply(is_return, msg);
     }
     if (mouse_press(ADMIN_MESSAGE_EXIT_X1, ADMIN_MESSAGE_EXIT_Y1, ADMIN_MESSAGE_EXIT_X2, ADMIN_MESSAGE_EXIT_Y2) == 1) // 如果鼠标点击了退出按钮
     {
@@ -407,6 +433,7 @@ void message_display_draw_bg(int is_announcement)
     settextstyle(DEFAULT_FONT, HORIZ_DIR, 1); // 设置字体样式和方向
     outtextxy(120, 10, "TOPIC");
     outtextxy(120, 80, "FROM");
+    outtextxy(350, 80, "TIME");
 
     clear_exit(ADMIN_MESSAGE_EXIT_X1, ADMIN_MESSAGE_EXIT_Y1, ADMIN_MESSAGE_EXIT_X2, ADMIN_MESSAGE_EXIT_Y2); // 绘制退出按钮
 
@@ -414,4 +441,35 @@ void message_display_draw_bg(int is_announcement)
         bar(ADMIN_MESSAGE_REPLY_X1, ADMIN_MESSAGE_REPLY_Y1, ADMIN_MESSAGE_REPLY_X2, ADMIN_MESSAGE_REPLY_Y2);        // 绘制回复按钮
         puthz(ADMIN_MESSAGE_REPLY_X1 + 10, ADMIN_MESSAGE_REPLY_Y1 + 7, "回复信息", 20, 20, MY_WHITE); // 绘制回复按钮文字
     }
+}
+
+void message_reply_draw_bg(MESSAGE *prev_msg)
+{
+    char buffer[70];
+    
+    setwritemode(XOR_PUT);
+    setfillstyle(LTBKSLASH_FILL, MY_GREEN); // 设置填充样式为实心
+    bar(0, 0, 640, 480);                    // 清除整个屏幕
+
+    setwritemode(COPY_PUT);
+    setfillstyle(SOLID_FILL, MY_CREAM); // 设置填充样式为实心
+    bar(100, 0, 540, 480);              // 绘制矩形框
+
+    setcolor(MY_GREEN);
+    setlinestyle(SOLID_LINE, 0, NORM_WIDTH); // 设置线条样式为实线，宽度为1
+    line(120, 70, 450, 70);                  // 绘制直线
+
+    setcolor(MY_BLACK);
+    settextstyle(DEFAULT_FONT, HORIZ_DIR, 1); // 设置字体样式和方向
+    outtextxy(120, 10, "TOPIC");
+    sprintf(buffer, "回复: %s", prev_msg->sender_username);          // 将消息ID转换为字符串
+    message_topic_display(120, 30, 400, buffer, MY_WHITE, 24, 3, 0); // 显示消息的主题
+    outtextxy(120, 80, "FROM");
+    sprintf(buffer, "来自: %s", prev_msg->receiver_username);        // 将消息ID转换为字符串
+    message_text_display(160, 80, 400, buffer, MY_WHITE); // 显示消息的主题
+    outtextxy(350, 80, "TIME");
+    get_approx_time(buffer); // 将消息ID转换为字符串
+    message_text_display(390, 80, 400, buffer, MY_WHITE); // 显示消息的主题
+
+    clear_exit(ADMIN_MESSAGE_EXIT_X1, ADMIN_MESSAGE_EXIT_Y1, ADMIN_MESSAGE_EXIT_X2, ADMIN_MESSAGE_EXIT_Y2); // 绘制退出按钮
 }
