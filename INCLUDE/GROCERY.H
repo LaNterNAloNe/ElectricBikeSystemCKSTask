@@ -134,6 +134,8 @@ unsigned long get_exact_time(char *time_buffer);
 void initcolorpalette();
 void drawExittingProgram(int err);
 
+long constrain_int(long input, long min, long max);
+
 #endif
 
 

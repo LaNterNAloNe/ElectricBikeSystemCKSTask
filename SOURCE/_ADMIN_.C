@@ -494,7 +494,7 @@ int drawgraph_admin_modify_data(FILE *fp, LINKLIST *LIST, int flag, unsigned lon
 {
     USER_LOGIN_DATA user_temp;
     LINKLIST_NODE *node = NULL;
-    unsigned long pos;
+    long pos = -1;
     char buffer1[20]; // 用于存储格式化后的字符串
     char buffer2[20]; // 用于存储格式化后的字符串
     
@@ -543,7 +543,7 @@ int drawgraph_admin_modify_data(FILE *fp, LINKLIST *LIST, int flag, unsigned lon
         /* 操作信息展示处理 */
         ltoa(user_id, buffer1, 10); // 将 ID 转换为字符串
         pos = find_file_info(fp, "user_info", buffer1, "id");
-        if (pos == 0)
+        if (pos == -1)
         {
             puthz(ADMIN_LIST_DATA_INTERFACE_X1 + 100, ADMIN_LIST_DATA_INTERFACE_Y1 + 50, "无此用户", 16, 16, MY_RED); // 显示错误提示
             return 0;
@@ -618,7 +618,7 @@ int drawgraph_admin_modify_data(FILE *fp, LINKLIST *LIST, int flag, unsigned lon
         /* 操作信息展示处理 */
         ltoa(user_id, buffer1, 10);
         pos = linklist_find_data(LIST, buffer1, "id"); // 查找车辆信息
-        if (pos == 0){
+        if (pos == -1){
             puthz(ADMIN_LIST_DATA_INTERFACE_X1 + 100, ADMIN_LIST_DATA_INTERFACE_Y1 + 50, "无此车辆", 16, 16, MY_RED); // 显示错误提示
             return 0;
         }
@@ -1357,9 +1357,7 @@ void admin_handle_modify_user_data_event(FILE *fp, unsigned long *user_id, int *
     if (mouse_press(ADMIN_MODIFY_DATA_INPUTBAR3_X1, ADMIN_MODIFY_DATA_INPUTBAR3_Y1,
                     ADMIN_MODIFY_DATA_INPUTBAR3_X2, ADMIN_MODIFY_DATA_INPUTBAR3_Y2) == 1) // 点击密码框
     {
-        // ch_input(psw_buffer, ADMIN_MODIFY_DATA_INPUTBAR3_X1, ADMIN_MODIFY_DATA_INPUTBAR3_Y1, 13, MY_LIGHTGRAY, INPUTBAR_NO_CLEAR, 1);
-        hz_input(ADMIN_MODIFY_DATA_INPUTBAR3_X1, ADMIN_MODIFY_DATA_INPUTBAR3_Y2, 
-                 ADMIN_MODIFY_DATA_INPUTBAR3_X1, ADMIN_MODIFY_DATA_INPUTBAR3_Y2, psw_buffer, 13, MY_LIGHTGRAY, MY_BLACK, 16);
+        ch_input(psw_buffer, ADMIN_MODIFY_DATA_INPUTBAR3_X1, ADMIN_MODIFY_DATA_INPUTBAR3_Y1, 13, MY_LIGHTGRAY, INPUTBAR_NO_CLEAR, 1);
     }
     if (mouse_press(ADMIN_MODIFY_DATA_FREEZE_X1, ADMIN_MODIFY_DATA_FREEZE_Y1,
                     ADMIN_MODIFY_DATA_FREEZE_X2, ADMIN_MODIFY_DATA_FREEZE_Y2) == 1 &&

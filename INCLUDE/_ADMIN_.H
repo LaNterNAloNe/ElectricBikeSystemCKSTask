@@ -299,8 +299,8 @@ typedef struct _EBIKE_IN_OUT_{
     char ebike_id[8];
     char ebike_license[10];
     char location[15];
-    int in_time;
-    int out_time;
+    long in_time;
+    long out_time;
     int comment;
     int result;
 } EBIKE_IN_OUT;

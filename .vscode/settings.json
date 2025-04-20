@@ -95,7 +95,8 @@
     "LOGIN copy.C": "cpp",
     "GROCERY.C": "cpp",
     "MESSAGE.C": "cpp",
-    "LIST.C": "cpp"
+    "LIST.C": "cpp",
+    "RANDOM.C": "cpp"
 },
 "marscode.chatLanguage": "cn"
 }

@@ -82,7 +82,7 @@ int linklist_find_data(LINKLIST *pList, char *str, char *needed_finding)
         if (chain_length) return chain_length; // 如果找到，则返回该节点的序号
     }
 
-    return 0; // 如果没有找到，则返回0
+    return -1; // 如果没有找到，则返回0
 }
 
 

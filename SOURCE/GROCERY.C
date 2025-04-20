@@ -53,3 +53,12 @@ void drawExittingProgram(int err)
     if (err == 2)
         puthz(180, 200, "无法为链表分配空间", 24, 20, MY_RED);
 }
+
+
+long constrain_int(long input, long min, long max)
+{
+    if (input < min)
+        return min;
+    if (input > max)
+        return max;
+}
