@@ -484,7 +484,7 @@ void _register(int* page,unsigned long *ID,LINKLIST *LIST) {
 	unsigned long time=0;//系统时间
     int tag = 0;
 	int is_register_invalid=0;
-	LINKLIST_USER new_user_data={1, "-1", "-1", "-1", "-1", "-1", 999, -1, '-1', '-1' };//annul check是unsigned long类型，这里暂且赋值999
+	LINKLIST_USER new_user_data={0, "0", "0", "0", "0", "0", 0, 0, '0', '0' };//annul check是unsigned long类型，这里暂且赋值999
 	new_user_data.ID = *ID;
     // 成功进入注册界面后，以记录第一层界面的ID，此时无需清理ID
 
@@ -515,6 +515,7 @@ void _register(int* page,unsigned long *ID,LINKLIST *LIST) {
 				if(!is_register_invalid){
 					anime_register_success();
 					linklist_add_data(LIST, new_user_data);//向链表中添加数据
+                    linklist_write_user_data(LIST); // 写入用户数据
 					*page = LOGIN;
 					*ID = -1;
 					ch_input(NULL, NULL, NULL, NULL, NULL,1,NULL);  // 清除输入框记忆

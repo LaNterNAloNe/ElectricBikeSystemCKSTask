@@ -13,6 +13,7 @@
 
 #define ANNOUNCEMENT 1
 #define PRIVATE_MESSAGE 2
+#define REPLY 3
 
 typedef struct _MESSAGE_ {
     long sender_id;
@@ -43,6 +44,6 @@ void message_handle_click_event(int *is_return, MESSAGE *msg);
 void message_list_click(int _x, int _y, int _listed_item, int _max, int _interval, int _item_id[], long *_selected_id);
 
 void message_display_draw_bg();
-void message_reply_draw_bg(MESSAGE *prev_msg);
+void message_draw_reply_bg(MESSAGE *prev_msg);
 
 #endif

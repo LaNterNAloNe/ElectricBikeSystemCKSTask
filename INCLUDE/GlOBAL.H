@@ -13,6 +13,7 @@
 #include<time.h>
 
 #include "HZ.H"
+#include "INPUTHZ.H"
 #include "MOUSE.H"
 #include "LOGIN.H"
 #include "GROCERY.H"

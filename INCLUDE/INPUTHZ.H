@@ -1,7 +1,7 @@
 #ifndef _HZINPUT_H_
 #define _HZINPUT_H_
 
-//以下头文件如总头文件中已包含则不用，在input.c中包括头文件即可
+// 以下头文件如总头文件中已包含则不用，在input.c中包括头文件即可
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,15 +12,6 @@
 #include <dos.h>
 #include "hz.h"
 #include "mouse.h"
-
-// /* 符号与控制键 */
-// #define TILDE 0x60     // '`'
-// #define TAB 0x09       // '\t'
-// #define SPACE 0x20     // ' '
-// #define ENTER 0x0D     // '\r'
-// #define ESCAPE 0x1B    // ESC
-// #define BACKSPACE 0x08 // '\b'
-// #define BACKSLASH 0x5C // '\'
 
 #define NUM0 0x5230
 #define NUM1 0x4f31
@@ -71,23 +62,24 @@
 #define FOURTH 0x0534
 
 #define MAXPY 12
+
 #define FAIL 0
 #define SUCCESS 1
+#define ter 15
+int hz_input(int x1, int y1, int x2, int y2, char *s, int len, int color, int color2, int size);
+// 汉字输入法
 
+int input_method(int x, int y, char *str, int value, char *py);
+// 汉字输入法调入
 
-int hz_input(int x1,int y1,int x2,int y2,char *s,int len,int color,int color2, int size);
-//汉字输入法,第二个颜色为字体颜色
+char *itostr(int a, char *s);
+// 数字标号
 
-int input_method(int x,int y,char *str,int value,char *py) ;
-//汉字输入法调入
+void pyFrm(int x1, int y1, int x2, int y2);
+// 输入法小框
 
-char *itostr(int a,char *s);
-//数字标号
+int xouttextxy(int x, int y, char *s, int color);
+// 字符输入法
 
-void pyFrm(int x1,int y1,int x2,int y2);
-//输入法小框
-
-int xouttextxy(int x,int y,char *s,int color);
-//字符输入法
-
+int hzinput(int x1, int y1, int x2, int y2, char *s, int len, int color, int color2, int size);
 #endif

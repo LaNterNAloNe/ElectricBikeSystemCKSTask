@@ -2,7 +2,7 @@
 
 /*************************************************************
 MESSAGE:用户与管理员产生交互的功能模块
-RETURNL:返回值统一为：（1）执行成功返回1；（2）执行失败（含各种原因）返回0
+RETURN:返回值统一为：（1）执行成功返回1；（2）执行失败（含各种原因）返回0
 *************************************************************/
 
 void message_display(MESSAGE *msg)
@@ -48,7 +48,7 @@ void message_reply(int *is_return, MESSAGE *msg)
     int mouse_flag;
     define_admin_buttons(btn, ADMIN_MESSAGE_REPLY); // 定义按钮
 
-    message_reply_draw_bg(msg); // 绘制背景
+    message_draw_reply_bg(msg); // 绘制背景
 
     while (*is_return == 0)
     {
@@ -71,7 +71,7 @@ void message_list(MESSAGE msg,int _x, int _y, int _listed_item, int _max, int _i
     {
         settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);                                                                    // 设置字体样式和方向
         message_topic_display(_x, _y + _interval * _listed_item, 200, msg.title, MY_WHITE, 16, 1, 1); // 显示消息的主题
-        outtextxy(_x + 300, _y + _interval * _listed_item, msg.sender_username); // 显示空格
+        outtextxy(_x + 300, _y + _interval * _listed_item, msg.sender_username);                      // 显示用户名
         if (msg.is_read == 1) { // 如果消息已读，则显示已读
             outtextxy(_x + 420, _y + _interval * _listed_item, "已读"); // 显示已读
         } else { // 如果消息未读，则显示未读
@@ -82,7 +82,7 @@ void message_list(MESSAGE msg,int _x, int _y, int _listed_item, int _max, int _i
     {
         settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);                                                                    // 设置字体样式和方向
         message_topic_display(_x, _y + _interval * (_max - _listed_item - 1), 200, msg.title, MY_WHITE, 16, 1, 1);   // 显示消息的主题
-        outtextxy(_x + 300, _y + _interval * (_max - _listed_item - 1), msg.sender_username); // 显示空格
+        outtextxy(_x + 300, _y + _interval * (_max - _listed_item - 1), msg.sender_username);                        // 显示用户名
         if (msg.is_read == 1) { // 如果消息已读，则显示已读
             outtextxy(_x + 420, _y + _interval * (_max - _listed_item - 1), "已读"); // 显示已读
         } else { // 如果消息未读，则显示未读
@@ -447,7 +447,7 @@ void message_display_draw_bg(int is_announcement)
     }
 }
 
-void message_reply_draw_bg(MESSAGE *prev_msg)
+void message_draw_reply_bg(MESSAGE *prev_msg)
 {
     char buffer[70];
     

@@ -93,7 +93,9 @@
     "text_encoding": "cpp",
     "typeinfo": "cpp",
     "LOGIN copy.C": "cpp",
-    "GROCERY.C": "cpp"
+    "GROCERY.C": "cpp",
+    "MESSAGE.C": "cpp",
+    "LIST.C": "cpp"
 },
 "marscode.chatLanguage": "cn"
 }

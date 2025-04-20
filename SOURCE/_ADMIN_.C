@@ -174,7 +174,10 @@ void admin_modify_data(LINKLIST *LIST, FILE *fp, char *file_type, unsigned long 
         clrmous(MouseX, MouseY);
         drawgraph_admin_menu(); // 绘制界面
         drawgraph_admin_database();
-        drawgraph_admin_database_user_info();
+        if (flag == ADMIN_DATABASE_USER_INFO)
+            drawgraph_admin_database_user_info();
+        else if (flag == ADMIN_DATABASE_EBIKE_INFO)
+            drawgraph_admin_database_ebike_info();
         return;
     }
     newmouse(&MouseX, &MouseY, &press, &mouse_flag);
@@ -200,7 +203,10 @@ void admin_modify_data(LINKLIST *LIST, FILE *fp, char *file_type, unsigned long 
     clrmous(MouseX, MouseY);
     drawgraph_admin_menu(); // 绘制界面
     drawgraph_admin_database();
-    drawgraph_admin_database_user_info();
+    if(flag == ADMIN_DATABASE_USER_INFO)
+        drawgraph_admin_database_user_info();
+    else if (flag == ADMIN_DATABASE_EBIKE_INFO)
+        drawgraph_admin_database_ebike_info();
 }
 
 
@@ -455,9 +461,9 @@ void drawgraph_admin_database_ebike_info(void)
 
     puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 40, "学号", 16, 16, MY_WHITE);
     puthz(ADMIN_INTERFACE_X1 + 120, ADMIN_INTERFACE_Y1 + 40, "车辆车牌号", 16, 16, MY_WHITE);
-    puthz(ADMIN_INTERFACE_X1 + 240, ADMIN_INTERFACE_Y1 + 40, "车辆证号", 16, 16, MY_WHITE);
-    puthz(ADMIN_INTERFACE_X1 + 360, ADMIN_INTERFACE_Y1 + 40, "车辆地址", 16, 16, MY_WHITE);
-    puthz(ADMIN_INTERFACE_X1 + 460, ADMIN_INTERFACE_Y1 + 40, "状态", 16, 16, MY_WHITE);
+    puthz(ADMIN_INTERFACE_X1 + 220, ADMIN_INTERFACE_Y1 + 40, "车辆证号", 16, 16, MY_WHITE);
+    puthz(ADMIN_INTERFACE_X1 + 340, ADMIN_INTERFACE_Y1 + 40, "车辆地址", 16, 16, MY_WHITE);
+    puthz(ADMIN_INTERFACE_X1 + 440, ADMIN_INTERFACE_Y1 + 40, "状态", 16, 16, MY_WHITE);
 }
 
 void drawgraph_admin_database_ebike_pass_in_out(void)
@@ -1263,7 +1269,12 @@ void admin_handle_database_event(LINKLIST *LIST, int *flag, int *page, unsigned 
         *flag != ADMIN_DATABASE_EBIKE_PASS_IN_OUT)
     {
         if (*selected_id != 0){
-            admin_modify_data(LIST, fp, "user_data", selected_id); 
+            if (*flag == ADMIN_DATABASE_USER_INFO){ // 若在用户信息界面点击修改信息，则进入用户信息修改界面
+                admin_modify_data(LIST, fp, "user_data", selected_id);
+            }
+            else if (*flag == ADMIN_DATABASE_EBIKE_INFO){ // 若在车辆信息界面点击修改信息，则进入车辆信息修改界面
+                admin_modify_data(LIST, fp, "ebike_data", selected_id);
+            }
             strcpy(search_str, "\0"); // 清除过滤依据以恢复正常列表，这一句很重要！
             admin_list_info(LIST, LIST_LIMIT, LIST_INTERVAL, id_list, fp, file_type, NULL, NULL, LIST_STAY, LIST_CLEAR_CONTINUE, search_str, "ID");
         }
@@ -1882,16 +1893,12 @@ int admin_exitting(int *page)
         {
             *page = LOGIN_ADMIN;
             clrmous(MouseX, MouseY);
-            admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, NULL, NULL, NULL, NULL, NULL, NULL, LIST_CLEAR, NULL, NULL);
-            ch_input(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
             return 0;
         }
         else if (mouse_press(ADMIN_EXIT_MENU_X1 + 2, ADMIN_EXIT_MENU_Y1 + 30, ADMIN_EXIT_MENU_X1 + 60, ADMIN_EXIT_MENU_Y1 + 46) == 1)
         {
             *page = EXIT;
             clrmous(MouseX, MouseY);
-            admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, NULL, NULL, NULL, NULL, NULL, NULL, LIST_CLEAR, NULL, NULL);
-            ch_input(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
             return 0;
         }
         else if (mouse_press(0, 0, 640, 480) == 1 && mouse_press(ADMIN_EXIT_X1, ADMIN_EXIT_Y1, ADMIN_EXIT_X2, ADMIN_EXIT_Y2) == -1)

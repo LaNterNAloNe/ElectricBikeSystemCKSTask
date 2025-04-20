@@ -866,7 +866,8 @@ void user_bike_wroteout(int *page,unsigned long *id)
 			*page = click;
 			return;
 		}
-		newmouse(&MouseX, &MouseY, &press, &mouse_flag);
+        // hz_input(120, 420, 300, 460, count, sizeof(count), MY_WHITE, MY_BLACK, 16); // 测试用的，你可以放心使用这个函数了:)
+        newmouse(&MouseX, &MouseY, &press, &mouse_flag);
 		delay(25);
 	}
 }
