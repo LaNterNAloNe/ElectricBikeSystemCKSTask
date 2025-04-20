@@ -8,219 +8,273 @@ RETURN:汉字个数len
 IMPROVE:只能输入小写字母,可输出汉字或英文
 ************************************************************************/
 
-int hz_input(int x1, int y1, int x2, int y2, char *s, int len, int color, int color2, int size)
+int hz_input(int x1, int y1, int x2, int y2, char* s, int len, int color, int color2, int size)
 {
     int i;
     int flag = 0;
-    int ST = -1; // 输入法返回方式：1.安SPACE键返回输入汉字 2.按ENTER键返回输入英文 3.退格键返回不输入
-    char *image;
-    char *p = s + len;
+    int ST = -1; // 输入法返回方式：1.按SPACE键返回输入汉字 2.按ENTER键返回输入英文 3.退格键返回不输入
+    char* image;
+    char* p = s + len;
     int value = 0;
     int asc;
-    int Line = 0, L_len = 0;
+    int Line = 0, L_len = 0; // 当前行数和该行字符数
     int pylen = 0;
     int xx1 = x1 + 2, xx2 = x2 - 2; // 防止输入溢出
-    int L_maxwords = (xx2 - xx1) / (size / 2), maxline = (y2 - y1) / 30;
+    int L_maxwords = (xx2 - xx1) / (size / 2); // 每行最大字符数（按汉字计算）
+    int maxline = (y2 - y1) / 30; // 最大行数
     int barx1, barx2, bary1, bary2;
-    char str[3] = {'\0', '\0', '\0'}; // 一个汉字装入
-    char py[12] = {'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',
-                   '\0', '\0', '\0', '\0'}; // 拼音字符串(西文字符串)
+    char str[3] = { '\0', '\0', '\0' }; // 存储一个汉字
+    char py[12] = { '\0' }; // 拼音字符串
+
+    int current_x = xx1;
+    int current_line = 0;
+    int current_columns = 0;
+    char* current = s;
+    char asc_str[2];
+
+    int cursor_visible = 1; // 光标是否可见
+    int cursor_x = xx1 + L_len * (size / 2); // 光标初始位置
+    int cursor_y = y1 + Line * 30 - 30;
 
     struct textsettingstype old_text_settings;
     gettextsettings(&old_text_settings);
 
     settextjustify(LEFT_TEXT, CENTER_TEXT);
     settextstyle(GOTHIC_FONT, HORIZ_DIR, 3);
-    Line = len / L_maxwords + 1;
-    L_len = len % L_maxwords; // 当前所在行数Line（按0行开始计数） 该行长度 L_len  pylen拼音长度 //行宽30像素
+
     clrmous(MouseX, MouseY);
     setfillstyle(SOLID_FILL, WHITE);
     bar(x1 - 1, y1 + 1, x2 - 1, y2 - 1);
-    while (bioskey(1)) // 清除键盘缓冲区  防止误输入
-    {
-        bioskey(0);
+
+    // 绘制已存在的字符串内容
+   
+    while (current < s + len) {
+        if ((unsigned char)*current >= 0xA1 && current + 1 < s + len) { // 处理汉字
+            if (current_columns + 2 > L_maxwords) { // 换行
+                current_line++;
+                current_columns = 0;
+                current_x = xx1;
+                if (current_line >= maxline) break;
+            }
+            str[0] = *current;
+            str[1] = *(current + 1);
+            puthz(current_x, y1 + current_line * 30, str, size, size + 4, color2);
+            current_x += size + 4;
+            current_columns += 2;
+            current += 2;
+        }
+        else { // 处理ASCII字符
+            if (current_columns + 1 > L_maxwords) { // 换行
+                current_line++;
+                current_columns = 0;
+                current_x = xx1;
+                if (current_line >= maxline) 
+                    break;
+            }
+            asc_str[0] = *current;
+            asc_str[1] = '\0';
+            xouttextxy(current_x, y1 + current_line * 30-28, asc_str, color2);//
+            current_x += size + 4; // 假设ASCII字符宽8像素
+            current_columns++;
+            current++;
+        }
     }
-    if ((image = malloc(8241)) == NULL)
-    {
+    Line = current_line + 1; // 初始行数
+    L_len = current_columns; // 当前行字符数
+
+    
+    while (bioskey(1)) bioskey(0); // 清空键盘缓冲区
+
+    if ((image = malloc(8241)) == NULL) {
         closegraph();
         printf("error!,hz_input");
         getch();
         exit(1);
     }
-    while (1)
-    {
-        if (kbhit())
-        {
+    
+    
+    cursor_x = xx1 + L_len * (size / 2 + 2) - 2; // 更新光标X位置
+    cursor_y = y1 + (Line - 1) * 30;      // 更新Y位置
+    setcolor(BLACK); // 光标颜色
+    setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+    line(cursor_x, cursor_y, cursor_x, cursor_y + size); // 绘制竖线作为光标// 初始化光标为可见状态
+    while (1) {
+        
+        if (kbhit()) {
             value = bioskey(0);
-            /*特殊键处理*/
-            switch (value)
-            {
+            switch (value) {
             case BACK:
-                if ((L_len == 0) && (Line > 1)) // 换行处理
-                {
-                    L_len = L_maxwords;
-                    Line--;
-                }
-                else if (L_len <= 0 && Line == 1)
-                    break; // 删除结束 无法删除
-                if (*(p - 1) > 31 && *(p - 1) < 127)
-                {
-                    setfillstyle(1, color);
-                    bar(xx1 + L_len * 8 - 8, y1 + Line * 30 - 30, xx1 + L_len * 8, y1 + Line * 30);
+                if (len <= 0) break;
+                if (*(p - 1) > 31 && *(p - 1) < 127) { // ASCII字符
+                    setfillstyle(1, WHITE);
+                    bar(xx1 + (L_len - 1) * 8, y1 + (Line - 1) * 30, xx1 + L_len * 8, y1 + Line * 30);
                     p--;
-                    *p = '\0';
                     len--;
                     L_len--;
+
+                    //删除光标
+                    setcolor(WHITE); // 光标颜色
+                    setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+                    line(cursor_x, cursor_y, cursor_x, cursor_y + size); // 绘制竖线作为光标// 初始化光标为可见状态
+                    //新位置绘制光标
+                    cursor_x = xx1 + L_len * (size / 2 + 2) - 2; // 更新光标X位置
+                    cursor_y = y1 + (Line - 1) * 30;      // 更新Y位置
+                    setcolor(BLACK); // 光标颜色
+                    setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+                    line(cursor_x, cursor_y, cursor_x, cursor_y + size); // 绘制竖线作为光标// 初始化光标为可见状态
+
                 }
-                else
-                {
-                    setfillstyle(1, color);
-                    bar(xx1 + L_len * (size / 2 + 1) - size - 2, y1 + Line * 30 - 30, xx1 + L_len * (size / 2 + 1) - 1, y1 + Line * 30);
+                else { // 汉字
+                    setfillstyle(1, WHITE);
+                    bar(xx1 + (L_len - 2) * (size / 2 + 2), y1 + (Line - 1) * 30, xx1 + L_len * (size / 2 + 2), y1 + Line * 30);
                     p -= 2;
-                    p[0] = '\0';
-                    p[1] = '\0';
                     len -= 2;
                     L_len -= 2;
+
+                    //删除光标
+                    setcolor(WHITE); // 光标颜色
+                    setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+                    line(cursor_x, cursor_y, cursor_x, cursor_y + size); // 绘制竖线作为光标// 初始化光标为可见状态
+                    //新位置绘制光标
+                    cursor_x = xx1 + L_len * (size / 2 + 2) - 2; // 更新光标X位置
+                    cursor_y = y1 + (Line - 1) * 30;      // 更新Y位置
+                    setcolor(BLACK); // 光标颜色
+                    setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+                    line(cursor_x, cursor_y, cursor_x, cursor_y + size); // 绘制竖线作为光标// 初始化光标为可见状态
                 }
+                *p = '\0'; // 更新终止符
                 break;
             case ENTER:
                 *p = '\0';
                 free(image);
                 settextjustify(old_text_settings.horiz, old_text_settings.vert);
                 settextstyle(old_text_settings.font, old_text_settings.direction, old_text_settings.charsize);
-                if (len == 0)
-                {
-                    setfillstyle(SOLID_FILL, color);
-                    bar(x1 - 1, y1, x2, y2);
-                }
-                return len; // 结束输入
+                //删除光标
+                setcolor(WHITE); // 光标颜色
+                setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+                line(cursor_x , cursor_y, cursor_x , cursor_y + size); // 绘制竖线作为光标// 初始化光标为可见状态
+                return len;
             }
-            /*进入汉字输入法*/
+
             asc = value & 0xff;
-            if (asc >= 97 && asc <= 122)
-            {
-                barx1 = (x1 + L_len * 8 - 50 > 0) ? (x1 + L_len * 8 - 50) : 0; // 计算输入法位置  离所输入距离较近且不溢出屏幕
-                barx2 = (barx1 + 200 < 630) ? (barx1 + 200) : (barx1 = 430, 630);
+            if (asc >= 97 && asc <= 122) { // 输入法处理
+                barx1 = (xx1 + L_len * 8 - 50 > 0) ? xx1 + L_len * 8 - 50 : 0;
+                barx2 = (barx1 + 200 < 630) ? barx1 + 200 : 430;
                 bary1 = y1 + Line * 30 + 10;
-                bary2 = (bary1 + 40 < 480) ? (bary1 + 40) : (bary1 = y1 + Line * 30 - 80, bary1 + 40);
+                bary2 = (bary1 + 40 < 480) ? bary1 + 40 : bary1 - 40;
                 getimage(barx1, bary1, barx2, bary2, image);
                 pyFrm(barx1, bary1, barx2, bary2);
                 setfillstyle(1, color);
                 ST = input_method(barx1, bary1, str, value, py);
-                switch (ST)
-                {
-                case 1:              // 由数字键或空格键退出输入法  输入汉字
-                    if (strlen(str)) // 返回字符串可能为空
-                    {
 
-                        if ((L_len + 5) >= L_maxwords && Line < maxline) // 换行输入
-                        {
-                            /*用空格来填补不足位，跳转到下一行*/
-                            if (L_len + 1 == L_maxwords)
-                            {
-                                *p = ' ';
-                                p++;
-                                len++;
-                            }
+                switch (ST) {
+                case 1: // 输入汉字
+                    if (strlen(str)) {
+                        if ((L_len + 2) > L_maxwords && Line <= maxline) {
                             Line++;
                             L_len = 0;
                         }
-                        else if ((L_len + 1 >= L_maxwords && Line == maxline) || Line > maxline) // 无法输入
-                        {
-                            putimage(barx1, bary1, image, 0);
-                            settextjustify(old_text_settings.horiz, old_text_settings.vert);
-                            settextstyle(old_text_settings.font, old_text_settings.direction, old_text_settings.charsize);
-                            break;
-                        }
                         strcpy(p, str);
-                        if (flag == 0)
-                        {
-                            flag = 1;
-                        }
-                        puthz(xx1 + L_len * (size / 2 + 1), y1 + Line * 30 - 30, str, size, size + 2, color2);
+                        puthz(xx1 + L_len * (size / 2 + 2), y1 + (Line - 1) * 30, str, size, size + 4, color2);
                         p += 2;
                         len += 2;
                         L_len += 2;
                     }
+                    
+
+                    //删除光标
+                    setcolor(WHITE); // 光标颜色
+                    setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+                    line(cursor_x, cursor_y, cursor_x, cursor_y + size); // 绘制竖线作为光标// 初始化光标为可见状态
+                    //新位置绘制光标
+                    cursor_x = xx1 + L_len * (size / 2 + 2) - 2; // 更新光标X位置
+                    cursor_y = y1 + (Line - 1) * 30;      // 更新Y位置
+                    setcolor(BLACK); // 光标颜色
+                    setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+                    line(cursor_x, cursor_y, cursor_x, cursor_y + size); // 绘制竖线作为光标// 初始化光标为可见状态
+
                     putimage(barx1, bary1, image, 0);
+                    memset(py, 0, sizeof(py));//重置拼音
                     break;
-                case 2: // 由回车键退出输入法 （键入西文）
+                case 2: // 输入英文
                     pylen = strlen(py);
-                    if ((L_len + pylen > L_maxwords && Line == maxline) || (Line > maxline)) // 位置已满
-                    {
-                        putimage(barx1, bary1, image, 0);
-                        settextjustify(old_text_settings.horiz, old_text_settings.vert);
-                        settextstyle(old_text_settings.font, old_text_settings.direction, old_text_settings.charsize);
-                        break;
-                    }
-                    else if (L_len + pylen > L_maxwords && Line < maxline) // 该行已满 换行
-                    {
-                        for (i = 0; i < L_maxwords - L_len; i++)
-                        {
-                            p[i] = ' ';
-                        }
-                        p += L_maxwords - L_len;
-                        len += L_maxwords - L_len;
+                    if (L_len + pylen > L_maxwords && Line <= maxline) {
                         Line++;
                         L_len = 0;
                     }
-                    putimage(barx1, bary1, image, 0);
-                    setcolor(DARKGRAY);
-                    xouttextxy(xx1 + L_len * 8, y1 + Line * 30 - 28, py, DARKGRAY);
+                    xouttextxy(xx1 + L_len * 8, y1 + (Line - 1) * 30 - 28, py, color2);
                     strcpy(p, py);
                     len += pylen;
                     p += pylen;
                     L_len += pylen;
-                    settextjustify(old_text_settings.horiz, old_text_settings.vert);
-                    settextstyle(old_text_settings.font, old_text_settings.direction, old_text_settings.charsize);
-                    break;
-                case 3: // 西文删除为0自动退出输入法  不输入
+
+                    //删除光标
+                    setcolor(WHITE); // 光标颜色
+                    setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+                    line(cursor_x, cursor_y, cursor_x, cursor_y + size); // 绘制竖线作为光标// 初始化光标为可见状态
+                    //新位置绘制光标
+                    cursor_x = xx1 + L_len * (size / 2 + 2) - 2; // 更新光标X位置
+                    cursor_y = y1 + (Line - 1) * 30;      // 更新Y位置
+                    setcolor(BLACK); // 光标颜色
+                    setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+                    line(cursor_x, cursor_y, cursor_x, cursor_y + size); // 绘制竖线作为光标// 初始化光标为可见状态
+
                     putimage(barx1, bary1, image, 0);
-                    settextjustify(old_text_settings.horiz, old_text_settings.vert);
-                    settextstyle(old_text_settings.font, old_text_settings.direction, old_text_settings.charsize);
+                    break;
+                case 3: // 取消输入
+                      //删除光标
+                    setcolor(WHITE); // 光标颜色
+                    setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+                    line(cursor_x, cursor_y, cursor_x, cursor_y + size); // 绘制竖线作为光标// 初始化光标为可见状态
+                    //新位置绘制光标
+                    cursor_x = xx1 + L_len * (size / 2 + 2) - 2; // 更新光标X位置
+                    cursor_y = y1 + (Line - 1) * 30;      // 更新Y位置
+                    setcolor(BLACK); // 光标颜色
+                    setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+                    line(cursor_x, cursor_y, cursor_x, cursor_y + size); // 绘制竖线作为光标// 初始化光标为可见状态
+
+                    putimage(barx1, bary1, image, 0);
+                    memset(py, 0, sizeof(py));
                     break;
                 }
-                value = 0;
-                ST = -1;
             }
-            else if (asc > 31 && asc < 127) // 字符输入
-            {
-                continue;
-                /*py[0]=asc;
-                if(L_len+1<=L_maxwords&&Line<=maxline)//正常输入
-                {
-                    *p=asc;
-                }
-                else if(Line+1<=maxline)//换行输入
-                {
-                    *p=' ';
+            else if (asc > 31 && asc < 127) { // 直接输入ASCII
+                if (L_len >= L_maxwords && Line < maxline) {
                     Line++;
-                    L_len=0;
+                    L_len = 0;
                 }
-                else
-                {
-                    continue;
-                }
+                *p = asc;
+                xouttextxy(xx1 + L_len * 8, y1 + (Line - 1) * 30 - 28, &asc, color2);
                 p++;
                 len++;
-                setcolor(DARKGRAY);
-                xouttextxy(xx1+L_len*8,y1+Line*30-21,py,DARKGRAY);
-                L_len++;*/
+                L_len++;
+                *p = '\0'; // 确保终止符
+
+                   //删除光标
+                setcolor(WHITE); // 光标颜色
+                setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+                line(cursor_x, cursor_y, cursor_x, cursor_y + size); // 绘制竖线作为光标// 初始化光标为可见状态
+                //新位置绘制光标
+                cursor_x = xx1 + L_len * (size / 2 + 2) - 2; // 更新光标X位置
+                cursor_y = y1 + (Line - 1) * 30;      // 更新Y位置
+                setcolor(BLACK); // 光标颜色
+                setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+                line(cursor_x, cursor_y, cursor_x, cursor_y + size); // 绘制竖线作为光标// 初始化光标为可见状态
             }
-            memset(py, '\0', 12);
-            memset(str, '\0', 3);
         }
-        if ((MouseX < x1 || MouseX > x2 || MouseY < y1 || MouseY > y2) && press)
-        {
+
+        if ((MouseX < x1 || MouseX > x2 || MouseY < y1 || MouseY > y2) && press) {
             *p = '\0';
             settextjustify(old_text_settings.horiz, old_text_settings.vert);
             settextstyle(old_text_settings.font, old_text_settings.direction, old_text_settings.charsize);
             free(image);
-
             return len;
         }
+        
     }
 }
+
+
 
 /************************************************************************
 FUNCTION:input_method

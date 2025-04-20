@@ -119,6 +119,14 @@
 #define USER_BIKE_LICENSE_BOX3_3_X2 0
 #define USER_BIKE_LICENSE_BOX3_3_Y1 0
 #define USER_BIKE_LICENSE_BOX3_3_Y2 0
+#define USER_LICENSE_NOTICE_BUTTON1_X1 220
+#define USER_LICENSE_NOTICE_BUTTON1_X2 320
+#define USER_LICENSE_NOTICE_BUTTON1_Y1 380
+#define USER_LICENSE_NOTICE_BUTTON1_Y2 420
+#define USER_LICENSE_NOTICE_BUTTON2_X1 440
+#define USER_LICENSE_NOTICE_BUTTON2_X2 540
+#define USER_LICENSE_NOTICE_BUTTON2_Y1 380
+#define USER_LICENSE_NOTICE_BUTTON2_Y2 420
 
 #define USER_BIKE_WROTEOUT_BUTTON1_X1 260
 #define USER_BIKE_WROTEOUT_BUTTON1_X2 340
@@ -153,7 +161,7 @@
 #define USER_QUIZ_BUTTON2_X2 430
 #define USER_QUIZ_BUTTON2_Y1 435
 #define USER_QUIZ_BUTTON2_Y2 470
-#define USER_QUIZ_BUTTON3_X1 550
+#define USER_QUIZ_BUTTON3_X1 530
 #define USER_QUIZ_BUTTON3_X2 620
 #define USER_QUIZ_BUTTON3_Y1 435
 #define USER_QUIZ_BUTTON3_Y2 470
@@ -165,9 +173,30 @@
 #define USER_QUIZ_BACK_X2 620
 #define USER_QUIZ_BACK_Y1 10
 #define USER_QUIZ_BACK_Y2 40
-#define QUIZ_PAGE_COUNT 2  //题目页数
+#define USER_QUIZ_RESULT_BUTTON1_X1 220
+#define USER_QUIZ_RESULT_BUTTON1_X2 280
+#define USER_QUIZ_RESULT_BUTTON1_Y1 390
+#define USER_QUIZ_RESULT_BUTTON1_Y2 425
+#define USER_QUIZ_RESULT_BUTTON2_X1 380
+#define USER_QUIZ_RESULT_BUTTON2_X2 440
+#define USER_QUIZ_RESULT_BUTTON2_Y1 390
+#define USER_QUIZ_RESULT_BUTTON2_Y2 425
+
+#define QUIZ_PAGE_COUNT 4  //题目页数
 #define QUESTION_PER_PAGE 3 //每页3题，最好别改
 #define LASTING_TIME 600 //测试时间十分钟
+
+#define INPUT_X1      100    // 输入框左上角X
+#define INPUT_Y1      100    // 输入框左上角Y
+#define INPUT_X2      400    // 输入框右下角X
+#define INPUT_Y2      140    // 输入框右下角Y
+#define INPUT_INNER_X (INPUT_X1+1) // 输入区域X起点
+#define INPUT_INNER_Y (INPUT_Y1+1) // 输入区域Y起点
+#define INPUT_INNER_W (INPUT_X2-INPUT_X1-2) // 输入区域宽度
+#define INPUT_INNER_H (INPUT_Y2-INPUT_Y1-2) // 输入区域高度
+#define TEXT_OFFSET_X 10     // 文字X偏移量
+#define TEXT_OFFSET_Y 20     // 文字Y偏移量
+
 
 //激活状态
 #define ACTIVE_USER_NONE 0
@@ -213,6 +242,10 @@ void anime_user_bike_register_fail(int flag);
 int ebike_user_register_judge(unsigned long* ID);
 void user_bike_register_getinfo(EBIKE_INFO *user_info,unsigned long *id);
 
+void user_bike_license_notice(int* page, unsigned long* id);
+void drawgraph_user_license_notice(unsigned long* id);
+void flushUserLicenseNotice(int* tag);
+
 void user_bike_license(int* page, unsigned long* id);
 void drawgraph_user_bike_license(unsigned long *id,user_box box[3][3] );
 void flushUserLicense(user_box box[3][3],int data[3]);
@@ -221,9 +254,13 @@ void add_days_to_date(char* date_string, int days_to_add);
 void user_license_data_judge(int* data);
 
 void user_quiz(int* page, unsigned long* id);
+void drawgraph_quiz_notice();
 void drawgraph_user_quiz(int *quiz_page, int page_count);
-void flushUserQuiz(int* tag, int *box_tag,user_button UserButtons[],question quiz[],char *answer,int quiz_page);
+void flushUserQuiz(int* tag, int *box_tag,user_button UserButtons[],question quiz[],char *answer,int quiz_page,int review_flag);
+void drawgraph_quiz_review(int* quiz_page, int page_count,int pass_flag);
 void drawgraph_user_quiz_pass(int result[][QUESTION_PER_PAGE], int page_count);
+void drawgraph_user_quiz_fail(int result[][QUESTION_PER_PAGE], int page_count);
+void FlushQuizResult(int* tag, user_button UserButtons[]);
 
 void user_bike_anual();
 
@@ -237,6 +274,7 @@ void flushUserWroteout(int *tag,user_button UserButtons[]);
 void user_info();
 void user_message();
 void user_datagraph();
+
 int handle_click_main(int button_num, user_button WroteoutButtons[]);
 void anime_login_success_user();
 

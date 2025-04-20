@@ -48,10 +48,14 @@ int main(void){
                 user_bike_register(&page, &ID); break;
             case USER_BIKE_LICENSE:
                 user_bike_license(&page, &ID); break;
+            case USER_BIKE_LICENSE_NOTICE:
+                user_bike_license_notice(&page, &ID); break;
             case USER_BIKE_WROTEOUT:
                 user_bike_wroteout(&page, &ID); break;
             case USER_QUIZ:
                 user_quiz(&page, &ID); break;
+            case USER_INFO:
+                user_info(&page, &ID); break;
 
             //ADMIN.C
             case MAIN_ADMIN:

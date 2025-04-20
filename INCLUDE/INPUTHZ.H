@@ -66,6 +66,7 @@
 #define FAIL 0
 #define SUCCESS 1
 #define ter 15
+
 int hz_input(int x1, int y1, int x2, int y2, char *s, int len, int color, int color2, int size);
 // 汉字输入法
 
@@ -81,5 +82,7 @@ void pyFrm(int x1, int y1, int x2, int y2);
 int xouttextxy(int x, int y, char *s, int color);
 // 字符输入法
 
-int hzinput(int x1, int y1, int x2, int y2, char *s, int len, int color, int color2, int size);
+//int hzinput(int x1, int y1, int x2, int y2, char *s, int len, int color, int color2, int size);
+
+
 #endif

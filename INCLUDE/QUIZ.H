@@ -50,7 +50,7 @@ void printbox(question quiz[], char answer[]);//根据选择答案涂黑选项框（换页时绘
 int FlushQuiz(question quiz[],int question_count,int *box_tag);//检测鼠标是否在选项框内并刷新选项框状态
 void init_box_xy(question quiz, int box_xy[4][4]);//根据question的x,y坐标确定四个选项框坐标box_xy[A,B,C,D][x1,y1,x2,y2]
 void draw_countdown(int remain_sec, int x, int y);//计时器
-void store_data();
+void store_data();//题库录入
+void draw_quiz_answer(question quiz[], char answer[], int question_count);
 
-//void print_question_answer(question * quiz,int* answer,int question_count);
 #endif

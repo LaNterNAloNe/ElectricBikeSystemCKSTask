@@ -7,7 +7,7 @@ void user_main(int *page) {
 	int mouse_flag;
 	user_button UserButtons[] = {
 {USER_BIKE_REGISTER_X1, USER_BIKE_REGISTER_X2,USER_BIKE_REGISTER_Y1, USER_BIKE_REGISTER_Y2,ACTIVE_USER_BIKE_REGISTER,USER_BIKE_REGISTER},
-{USER_BIKE_LICENSE_X1, USER_BIKE_LICENSE_X2,USER_BIKE_LICENSE_Y1, USER_BIKE_LICENSE_Y2,ACTIVE_USER_BIKE_LICENSE,USER_BIKE_LICENSE},
+{USER_BIKE_LICENSE_X1, USER_BIKE_LICENSE_X2,USER_BIKE_LICENSE_Y1, USER_BIKE_LICENSE_Y2,ACTIVE_USER_BIKE_LICENSE,USER_BIKE_LICENSE_NOTICE},
 {USER_BIKE_ANUAL_X1, USER_BIKE_ANUAL_X2,USER_BIKE_ANUAL_Y1, USER_BIKE_ANUAL_Y2,ACTIVE_USER_BIKE_ANUAL,USER_BIKE_ANUAL},
 {USER_BIKE_WROTEOUT_X1, USER_BIKE_WROTEOUT_X2,USER_BIKE_WROTEOUT_Y1, USER_BIKE_WROTEOUT_Y2,ACTIVE_USER_BIKE_WROTEOUT,USER_BIKE_WROTEOUT},
 {USER_INFO_X1, USER_INFO_X2,USER_INFO_Y1, USER_INFO_Y2,ACTIVE_USER_INFO,USER_INFO},
@@ -27,7 +27,7 @@ void user_main(int *page) {
 			newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
 			flushUserMain(&tag, STRUCT_LENGTH(UserButtons), UserButtons); // 刷新界面
 			click = handle_click_main(STRUCT_LENGTH(UserButtons), UserButtons);
-			if (click == LOGIN || click == EXIT||click==USER_BIKE_REGISTER||click==USER_BIKE_LICENSE||click==USER_BIKE_WROTEOUT) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_REGISTER
+			if (click == LOGIN || click == EXIT||click==USER_BIKE_REGISTER||click==USER_BIKE_LICENSE_NOTICE||click==USER_BIKE_WROTEOUT) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_REGISTER
 				*page = click;
 				newmouse(&MouseX, &MouseY, &press, &mouse_flag);
 				return;
@@ -253,7 +253,7 @@ void user_bike_register(int* page, unsigned long* id)
 	char e_bike_id[10] = {'\0'};
 	user_button UserButtons[] = {
 {USER_BIKE_REGISTER_X1, USER_BIKE_REGISTER_X2,USER_BIKE_REGISTER_Y1, USER_BIKE_REGISTER_Y2,ACTIVE_USER_BIKE_REGISTER,USER_BIKE_REGISTER},
-{USER_BIKE_LICENSE_X1, USER_BIKE_LICENSE_X2,USER_BIKE_LICENSE_Y1, USER_BIKE_LICENSE_Y2,ACTIVE_USER_BIKE_LICENSE,USER_BIKE_LICENSE},
+{USER_BIKE_LICENSE_X1, USER_BIKE_LICENSE_X2,USER_BIKE_LICENSE_Y1, USER_BIKE_LICENSE_Y2,ACTIVE_USER_BIKE_LICENSE,USER_BIKE_LICENSE_NOTICE},
 {USER_BIKE_ANUAL_X1, USER_BIKE_ANUAL_X2,USER_BIKE_ANUAL_Y1, USER_BIKE_ANUAL_Y2,ACTIVE_USER_BIKE_ANUAL,USER_BIKE_ANUAL},
 {USER_BIKE_WROTEOUT_X1, USER_BIKE_WROTEOUT_X2,USER_BIKE_WROTEOUT_Y1, USER_BIKE_WROTEOUT_Y2,ACTIVE_USER_BIKE_WROTEOUT,USER_BIKE_WROTEOUT},
 {USER_INFO_X1, USER_INFO_X2,USER_INFO_Y1, USER_INFO_Y2,ACTIVE_USER_INFO,USER_INFO},
@@ -277,7 +277,7 @@ void user_bike_register(int* page, unsigned long* id)
 			newmouse_data(&MouseX, &MouseY, &press,&mouse_flag);
 			flushUserMain(&tag, STRUCT_LENGTH(UserButtons), UserButtons); // 刷新界面
 			click = handle_click_main(STRUCT_LENGTH(UserButtons), UserButtons);
-			if (click == LOGIN || click == EXIT || click == USER_BIKE_LICENSE) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_REGISTER
+			if (click == LOGIN || click == EXIT || click == USER_BIKE_LICENSE_NOTICE) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_REGISTER
 				*page = click;
 				newmouse(&MouseX, &MouseY, &press, &mouse_flag);
 				return;
@@ -597,6 +597,110 @@ void user_bike_register_getinfo(EBIKE_INFO* user_info,unsigned long *id) {
 		return ;
 }
 
+
+
+
+// 绘制通行证办理通知页面
+
+void user_bike_license_notice(int* page, unsigned long* id)
+{
+	int click = -1;
+	int tag = 0;
+	int mouse_flag;
+
+	user_button UserButtons[] = {
+{USER_BIKE_REGISTER_X1, USER_BIKE_REGISTER_X2,USER_BIKE_REGISTER_Y1, USER_BIKE_REGISTER_Y2,ACTIVE_USER_BIKE_REGISTER,USER_BIKE_REGISTER},
+{USER_BIKE_LICENSE_X1, USER_BIKE_LICENSE_X2,USER_BIKE_LICENSE_Y1, USER_BIKE_LICENSE_Y2,ACTIVE_USER_BIKE_LICENSE,USER_BIKE_LICENSE_NOTICE},
+{USER_BIKE_ANUAL_X1, USER_BIKE_ANUAL_X2,USER_BIKE_ANUAL_Y1, USER_BIKE_ANUAL_Y2,ACTIVE_USER_BIKE_ANUAL,USER_BIKE_ANUAL},
+{USER_BIKE_WROTEOUT_X1, USER_BIKE_WROTEOUT_X2,USER_BIKE_WROTEOUT_Y1, USER_BIKE_WROTEOUT_Y2,ACTIVE_USER_BIKE_WROTEOUT,USER_BIKE_WROTEOUT},
+{USER_INFO_X1, USER_INFO_X2,USER_INFO_Y1, USER_INFO_Y2,ACTIVE_USER_INFO,USER_INFO},
+{USER_MESSAGE_X1, USER_MESSAGE_X2,USER_MESSAGE_Y1, USER_MESSAGE_Y2,ACTIVE_USER_MESSAGE,USER_MESSAGE},
+{USER_DATAGRAPH_X1, USER_DATAGRAPH_X2,USER_DATAGRAPH_Y1, USER_DATAGRAPH_Y2,ACTIVE_USER_DATAGRAPH,USER_DATAGRAPH},
+{USER_BACK_X1,USER_BACK_X2,USER_BACK_Y1,USER_BACK_Y2,ACTIVE_USER_BACK,LOGIN},
+{USER_EXIT_X1,USER_EXIT_X2,USER_EXIT_Y1,USER_EXIT_Y2,ACTIVE_USER_EXIT,EXIT},
+	};
+
+	clrmous(MouseX, MouseY);
+	save_bk_mou(MouseX, MouseY);
+	drawgraph_user_main(page);
+	drawgraph_user_license_notice(id);
+
+	while (1) {
+		newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
+		flushUserMain(&tag, STRUCT_LENGTH(UserButtons), UserButtons);
+		flushUserLicenseNotice(&tag);
+		click = handle_click_main(STRUCT_LENGTH(UserButtons), UserButtons);
+		if (click == LOGIN || click == USER_BIKE_REGISTER || click == USER_BIKE_WROTEOUT || click == EXIT) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_LICENSE_NOTICE
+			*page = click;
+			return;
+		}
+		if (mouse_press(USER_LICENSE_NOTICE_BUTTON1_X1, USER_LICENSE_NOTICE_BUTTON1_Y1, USER_LICENSE_NOTICE_BUTTON1_X2, USER_LICENSE_NOTICE_BUTTON1_Y2) == 1) {
+			*page = USER_QUIZ;
+			return;
+		}
+		newmouse(&MouseX, &MouseY, &press, &mouse_flag);
+		delay(25);
+	}
+}
+
+void drawgraph_user_license_notice(unsigned long* id)
+{
+	puthz(220, 80, "校园电动车通行证办理须知", 32,30, MY_BLACK);
+
+	// 绘制通知内容
+	puthz(170, 150, "一、办理校园通行证需提前三天预约，可从韵苑", 24,22, MY_BLACK);
+	puthz(200, 190, "沁苑，紫菘选择一处办理", 24, 22, MY_BLACK);
+	puthz(170, 240, "二、办理校园通行证需先通过电动车知识测试", 24,22, MY_BLACK);
+	puthz(170, 290, "三、测试前请仔细阅读电动车管理规范",24,22,MY_BLACK);
+
+	// 绘制按钮
+	setcolor(MY_RED);
+	setlinestyle(SOLID_LINE, 0, NORM_WIDTH);
+	setfillstyle(SOLID_FILL, MY_RED);
+	bar(USER_LICENSE_NOTICE_BUTTON1_X1, USER_LICENSE_NOTICE_BUTTON1_Y1,
+		USER_LICENSE_NOTICE_BUTTON1_X2, USER_LICENSE_NOTICE_BUTTON1_Y2);
+	puthz(USER_LICENSE_NOTICE_BUTTON1_X1 + 6, USER_LICENSE_NOTICE_BUTTON1_Y1 + 10,
+		"进入测试", 24,22, MY_WHITE);
+
+	setfillstyle(SOLID_FILL, MY_GREEN);
+	bar(USER_LICENSE_NOTICE_BUTTON2_X1, USER_LICENSE_NOTICE_BUTTON2_Y1,
+		USER_LICENSE_NOTICE_BUTTON2_X2, USER_LICENSE_NOTICE_BUTTON2_Y2);
+	puthz(USER_LICENSE_NOTICE_BUTTON2_X1 + 6, USER_LICENSE_NOTICE_BUTTON2_Y1 + 10,
+		"查看法规", 24,22, MY_WHITE);
+
+}
+
+void flushUserLicenseNotice(int* tag)
+{
+	// 刷新按钮状态
+	if (MouseX >= USER_LICENSE_NOTICE_BUTTON1_X1 && MouseX <= USER_LICENSE_NOTICE_BUTTON1_X2 &&
+		MouseY >= USER_LICENSE_NOTICE_BUTTON1_Y1 && MouseY <= USER_LICENSE_NOTICE_BUTTON1_Y2) {
+		setcolor(MY_BLACK);
+		setlinestyle(SOLID_LINE, 0, NORM_WIDTH);
+		rectangle(USER_LICENSE_NOTICE_BUTTON1_X1 - 1, USER_LICENSE_NOTICE_BUTTON1_Y1 - 1,
+			USER_LICENSE_NOTICE_BUTTON1_X2 + 1, USER_LICENSE_NOTICE_BUTTON1_Y2 + 1);
+		MouseS = 1;
+	}
+	else if (MouseX >= USER_LICENSE_NOTICE_BUTTON2_X1 && MouseX <= USER_LICENSE_NOTICE_BUTTON2_X2 &&
+		MouseY >= USER_LICENSE_NOTICE_BUTTON2_Y1 && MouseY <= USER_LICENSE_NOTICE_BUTTON2_Y2) {
+		setcolor(MY_BLACK);
+		setlinestyle(SOLID_LINE, 0, NORM_WIDTH);
+		rectangle(USER_LICENSE_NOTICE_BUTTON2_X1 - 1, USER_LICENSE_NOTICE_BUTTON2_Y1 - 1,
+			USER_LICENSE_NOTICE_BUTTON2_X2 + 1, USER_LICENSE_NOTICE_BUTTON2_Y2 + 1);
+		MouseS = 1;
+	}
+	else {
+		setcolor(MY_WHITE);
+		setlinestyle(SOLID_LINE, 0, NORM_WIDTH);
+		rectangle(USER_LICENSE_NOTICE_BUTTON1_X1 - 1, USER_LICENSE_NOTICE_BUTTON1_Y1 - 1,
+			USER_LICENSE_NOTICE_BUTTON1_X2 + 1, USER_LICENSE_NOTICE_BUTTON1_Y2 + 1);
+		rectangle(USER_LICENSE_NOTICE_BUTTON2_X1 - 1, USER_LICENSE_NOTICE_BUTTON2_Y1 - 1,
+			USER_LICENSE_NOTICE_BUTTON2_X2 + 1, USER_LICENSE_NOTICE_BUTTON2_Y2 + 1);
+	}
+}
+
+
+
 void user_bike_license(int *page,unsigned long *id)
 {
 	int license_data[3] = {-1,-1,-1};
@@ -721,12 +825,6 @@ void flushUserLicense(user_box box[3][3],int data[3]) {
 		rectangle(USER_BIKE_LICENSE_BUTTON2_X1 - 1, USER_BIKE_LICENSE_BUTTON2_Y1 - 1, USER_BIKE_LICENSE_BUTTON2_X2 + 1, USER_BIKE_LICENSE_BUTTON2_Y2 + 1);
 		MouseS = 0;
 	}	
-
-	for (i = 0; i < 3; i++)
-			if (data[i]!=-1) {
-				setfillstyle(SOLID_FILL, MY_BLACK);
-				bar(box[i][data[i]].x1 + 3, box[i][data[i]].y1 + 3, box[i][data[i]].x2 - 3, box[i][data[i]].y2 - 3);//解决鼠标更新导致选项框上色不全的问题
-			}
 }
 
 void user_license_data_judge(int* data) {
@@ -796,7 +894,7 @@ void user_bike_wroteout(int *page,unsigned long *id)
 	char count[8];
 	user_button UserButtons[] = {
 {USER_BIKE_REGISTER_X1, USER_BIKE_REGISTER_X2,USER_BIKE_REGISTER_Y1, USER_BIKE_REGISTER_Y2,ACTIVE_USER_BIKE_REGISTER,USER_BIKE_REGISTER},
-{USER_BIKE_LICENSE_X1, USER_BIKE_LICENSE_X2,USER_BIKE_LICENSE_Y1, USER_BIKE_LICENSE_Y2,ACTIVE_USER_BIKE_LICENSE,USER_BIKE_LICENSE},
+{USER_BIKE_LICENSE_X1, USER_BIKE_LICENSE_X2,USER_BIKE_LICENSE_Y1, USER_BIKE_LICENSE_Y2,ACTIVE_USER_BIKE_LICENSE,USER_BIKE_LICENSE_NOTICE},
 {USER_BIKE_ANUAL_X1, USER_BIKE_ANUAL_X2,USER_BIKE_ANUAL_Y1, USER_BIKE_ANUAL_Y2,ACTIVE_USER_BIKE_ANUAL,USER_BIKE_ANUAL},
 {USER_BIKE_WROTEOUT_X1, USER_BIKE_WROTEOUT_X2,USER_BIKE_WROTEOUT_Y1, USER_BIKE_WROTEOUT_Y2,ACTIVE_USER_BIKE_WROTEOUT,USER_BIKE_WROTEOUT},
 {USER_INFO_X1, USER_INFO_X2,USER_INFO_Y1, USER_INFO_Y2,ACTIVE_USER_INFO,USER_INFO},
@@ -822,7 +920,7 @@ void user_bike_wroteout(int *page,unsigned long *id)
 		flushUserMain(&tag_main, STRUCT_LENGTH(UserButtons), UserButtons); // 刷新界面
 		flushUserWroteoutWarning();
 		click = handle_click_main(STRUCT_LENGTH(UserButtons), UserButtons);
-		if (click == LOGIN || click == USER_BIKE_REGISTER ||click==USER_BIKE_LICENSE|| click == EXIT) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_LICENSE
+		if (click == LOGIN || click == USER_BIKE_REGISTER ||click==USER_BIKE_LICENSE_NOTICE|| click == EXIT) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_LICENSE
 			*page = click;
 			return;
 		}//菜单界面点击
@@ -988,10 +1086,15 @@ void user_quiz(int* page, unsigned long* id) {
 	char start_time[8];
 	int remain_sec = LASTING_TIME;
 	int tick=0;
+	int mouse_flag = 1;
+	int pass_flag;
 
 	question quiz[QUIZ_PAGE_COUNT][QUESTION_PER_PAGE];
 	char answer[QUIZ_PAGE_COUNT][QUESTION_PER_PAGE] = { '\0' };
 	int result[QUIZ_PAGE_COUNT][QUESTION_PER_PAGE] = {'\0'};
+	int position_xy[QUESTION_PER_PAGE][2] = {
+		{60,70},{60,190},{60,310}
+	};
 
 	user_button quiz_buttons[] = {
 		{USER_QUIZ_BUTTON1_X1, USER_QUIZ_BUTTON1_X2, USER_QUIZ_BUTTON1_Y1, USER_QUIZ_BUTTON1_Y2,1},
@@ -1000,15 +1103,34 @@ void user_quiz(int* page, unsigned long* id) {
 		{USER_QUIZ_EXIT_X1, USER_QUIZ_EXIT_X2, USER_QUIZ_EXIT_Y1, USER_QUIZ_EXIT_Y2,4},
 		{USER_QUIZ_BACK_X1,USER_QUIZ_BACK_X2,USER_QUIZ_BACK_Y1,USER_QUIZ_BACK_Y2,5}
 	};
-	int mouse_flag = 1;
-
-	int position_xy[QUESTION_PER_PAGE][2] = {
-		{60,70},{60,190},{60,310}
+	user_button result_buttons[] = {
+		{USER_QUIZ_RESULT_BUTTON1_X1, USER_QUIZ_RESULT_BUTTON1_X2, USER_QUIZ_RESULT_BUTTON1_Y1, USER_QUIZ_RESULT_BUTTON1_Y2, 1},
+		{USER_QUIZ_RESULT_BUTTON2_X1, USER_QUIZ_RESULT_BUTTON2_X2, USER_QUIZ_RESULT_BUTTON2_Y1, USER_QUIZ_RESULT_BUTTON2_Y2, 2},
+		{USER_QUIZ_EXIT_X1, USER_QUIZ_EXIT_X2, USER_QUIZ_EXIT_Y1, USER_QUIZ_EXIT_Y2,3},
+		{USER_QUIZ_BACK_X1,USER_QUIZ_BACK_X2,USER_QUIZ_BACK_Y1,USER_QUIZ_BACK_Y2,4}
 	};
-	
+
 	//store_data();
     generate_quiz(quiz, QUIZ_PAGE_COUNT, position_xy);//根据题库生成测试题
 	
+	//须知页面
+	drawgraph_quiz_notice();
+	tick = 800;
+	while (tick>=0) {
+		newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
+		if (tick % 20 == 0) {
+			sprintf(start_time, "%02d", tick / 40);
+			setfillstyle(SOLID_FILL, MY_WHITE);
+			bar(290, 290, 330, 330);
+			settextstyle(DEFAULT_FONT, HORIZ_DIR, 2); //输出题目序号
+			setcolor(MY_GREEN);
+			outtextxy(300, 303,start_time);
+		}	
+		tick--;
+		newmouse(&MouseX, &MouseY, &press, &mouse_flag);
+		delay(25);
+	}
+
 	//考试界面
 	clrmous(MouseX, MouseY);
 	save_bk_mou(MouseX, MouseY);
@@ -1017,7 +1139,7 @@ void user_quiz(int* page, unsigned long* id) {
 
 	while (1) {
 		newmouse_data(&MouseX, &MouseY, &press,&mouse_flag);
-		flushUserQuiz(&tag,&box_tag,quiz_buttons,quiz[quiz_page-1],answer[quiz_page-1],quiz_page);
+		flushUserQuiz(&tag,&box_tag,quiz_buttons,quiz[quiz_page-1],answer[quiz_page-1],quiz_page,1);
 		handle_click_quiz(quiz[quiz_page - 1], answer[quiz_page - 1], QUESTION_PER_PAGE);
 		if (mouse_press(USER_QUIZ_BACK_X1, USER_QUIZ_BACK_Y1, USER_QUIZ_BACK_X2, USER_QUIZ_BACK_Y2) == 1) {
 			delay(1000);
@@ -1054,25 +1176,109 @@ void user_quiz(int* page, unsigned long* id) {
 			remain_sec--;
 		}
 		tick++;
+
 		newmouse(&MouseX, &MouseY, &press, &mouse_flag);
 		delay(25);
 	}
-	//结果界面
-	if (judge_answer(quiz, answer, result, QUIZ_PAGE_COUNT)) {
-		drawgraph_user_quiz_pass(result, QUIZ_PAGE_COUNT);
-		while (1) {
-			newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
 
-			newmouse(&MouseX, &MouseY, &press, &mouse_flag);
-			delay(25);
+	//结果界面
+	pass_flag = judge_answer(quiz, answer, result, QUIZ_PAGE_COUNT);
+	if (pass_flag!=0)
+		drawgraph_user_quiz_pass(result, QUIZ_PAGE_COUNT);
+	else 
+		drawgraph_user_quiz_fail(result, QUIZ_PAGE_COUNT);
+
+	while (1) {
+		newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
+		FlushQuizResult(&tag, result_buttons);
+
+		if (mouse_press(USER_QUIZ_RESULT_BUTTON1_X1, USER_QUIZ_RESULT_BUTTON1_Y1, USER_QUIZ_RESULT_BUTTON1_X2, USER_QUIZ_RESULT_BUTTON1_Y2) == 1) //点击“回顾”，跳出循环，进入试卷回顾
+		{
+			break;
 		}
+		if (mouse_press(USER_QUIZ_RESULT_BUTTON2_X1, USER_QUIZ_RESULT_BUTTON2_Y1, USER_QUIZ_RESULT_BUTTON2_X2, USER_QUIZ_RESULT_BUTTON2_Y2) == 1 && pass_flag) //通过测试，点击“继续”按钮前往预约通行证界面
+		{
+			*page = USER_BIKE_LICENSE;
+			return;
+		}
+		if (mouse_press(USER_QUIZ_RESULT_BUTTON2_X1, USER_QUIZ_RESULT_BUTTON2_Y1, USER_QUIZ_RESULT_BUTTON2_X2, USER_QUIZ_RESULT_BUTTON2_Y2) == 1 && (!pass_flag))//未通过测试，点击“重试”重新测试 
+		{
+			*page = USER_QUIZ;
+			return;
+		}
+		if (mouse_press(USER_QUIZ_BACK_X1, USER_QUIZ_BACK_Y1, USER_QUIZ_BACK_X2, USER_QUIZ_BACK_Y2) == 1) {
+			delay(1000);
+			*page = MAIN_USER;
+			return;
+		}
+		if (mouse_press(USER_QUIZ_EXIT_X1, USER_QUIZ_EXIT_Y1, USER_QUIZ_EXIT_X2, USER_QUIZ_EXIT_Y2) == 1) {
+			*page = EXIT;
+			return;
+		}
+		newmouse(&MouseX, &MouseY, &press, &mouse_flag);
+		delay(25);
 	}
-	else
-		*page = MAIN_USER;
-		return;
+
+	//试卷回顾页面
+	quiz_page = 1;
+	drawgraph_quiz_review(&quiz_page, QUIZ_PAGE_COUNT, pass_flag);
+	draw_quiz_answer(quiz[quiz_page - 1], answer[quiz_page - 1], QUESTION_PER_PAGE);
+
+	while (1) {
+		newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
+		flushUserQuiz(&tag, &box_tag, quiz_buttons, quiz[quiz_page - 1], answer[quiz_page - 1], quiz_page,0);
+		if (mouse_press(USER_QUIZ_BACK_X1, USER_QUIZ_BACK_Y1, USER_QUIZ_BACK_X2, USER_QUIZ_BACK_Y2) == 1) {
+			delay(1000);
+			*page = MAIN_USER;
+			return;
+		}
+		if (mouse_press(USER_QUIZ_EXIT_X1, USER_QUIZ_EXIT_Y1, USER_QUIZ_EXIT_X2, USER_QUIZ_EXIT_Y2) == 1) {
+			*page = EXIT;
+			return;
+		}
+		//上一页
+		if (mouse_press(USER_QUIZ_BUTTON1_X1, USER_QUIZ_BUTTON1_Y1, USER_QUIZ_BUTTON1_X2, USER_QUIZ_BUTTON1_Y2) == 1 && quiz_page != 1) {
+			quiz_page -= 1;
+			drawgraph_quiz_review(&quiz_page, QUIZ_PAGE_COUNT, pass_flag);
+			draw_quiz_answer(quiz[quiz_page - 1], answer[quiz_page - 1], QUESTION_PER_PAGE);
+		}
+		//下一页
+		if (mouse_press(USER_QUIZ_BUTTON2_X1, USER_QUIZ_BUTTON2_Y1, USER_QUIZ_BUTTON2_X2, USER_QUIZ_BUTTON2_Y2) == 1 && quiz_page != QUIZ_PAGE_COUNT) {
+			quiz_page += 1;
+			drawgraph_quiz_review(&quiz_page, QUIZ_PAGE_COUNT, pass_flag);
+			draw_quiz_answer(quiz[quiz_page - 1], answer[quiz_page - 1], QUESTION_PER_PAGE);
+		}
+		//前往通行证预约
+		if (mouse_press(USER_QUIZ_BUTTON3_X1, USER_QUIZ_BUTTON3_Y1, USER_QUIZ_BUTTON3_X2, USER_QUIZ_BUTTON3_Y2) == 1 && pass_flag) {
+			*page = USER_BIKE_LICENSE;
+			return;
+		}
+		//重新测试
+		if (mouse_press(USER_QUIZ_BUTTON3_X1, USER_QUIZ_BUTTON3_Y1, USER_QUIZ_BUTTON3_X2, USER_QUIZ_BUTTON3_Y2) == 1 && (!pass_flag)) {
+			*page = USER_QUIZ;
+			return;
+		}
+		newmouse(&MouseX, &MouseY, &press, &mouse_flag);
+		delay(25);
+	}
+
 }
 	
+void drawgraph_quiz_notice() {
 
+	setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
+	bar(0, 0, 640, 480);
+	setcolor(MY_WHITE);
+	setfillstyle(1, MY_WHITE);
+	bar(10, 50, 630, 420);
+	puthz(200, 12, "电动车法规测试", 32, 30, MY_GREEN);//边框
+	puthz(220, 90, "测试须知", 32, 40, MY_BLACK);
+	puthz(30, 170, "测试共十二题，每题仅有一个正确选项，答对八题及以上即", 24, 22, MY_BLACK);
+	puthz(30, 210,"通过测试。答题时间共十分钟，中途离场需再次进行测试", 24, 22, MY_BLACK);
+	puthz(180, 300, "测试将在", 24, 22, MY_BLACK);
+	puthz(350, 300, "秒后开始", 24, 22, MY_BLACK);
+}
+	
 void drawgraph_user_quiz(int *quiz_page,int page_count) {
 	char question_serial[8][8];//按页码储存题目序号，最多8页，不想在这malloc
 	char quiz_page_string[10];//页码字符串
@@ -1125,19 +1331,24 @@ void drawgraph_user_quiz(int *quiz_page,int page_count) {
 
 	setfillstyle(SOLID_FILL, MY_RED);//交卷
 	bar(USER_QUIZ_BUTTON3_X1, USER_QUIZ_BUTTON3_Y1, USER_QUIZ_BUTTON3_X2, USER_QUIZ_BUTTON3_Y2);
-	puthz(USER_QUIZ_BUTTON3_X1 + 13, USER_QUIZ_BUTTON3_Y1 + 8, "交卷", 24, 20, MY_WHITE);
+	puthz(USER_QUIZ_BUTTON3_X1 + 16, USER_QUIZ_BUTTON3_Y1 + 8, "交卷", 24, 35, MY_WHITE);
 }
 
 
 
-void flushUserQuiz(int* tag,int *box_tag, user_button UserButtons[], question quiz[], char* answer,int quiz_page) {
+void flushUserQuiz(int* tag,int *box_tag, user_button UserButtons[], question quiz[], char* answer,int quiz_page ,int review_flag) {
 	int i = 0;
 	int temp = 0;
 	int new_tag = ACTIVE_USER_NONE;
-	int box_flag = FlushQuiz(quiz, 3,box_tag);//鼠标是否在选项框位置
+	int box_flag;//鼠标是否在选项框位置
 
-	if (box_flag)
-		new_tag = 6;//选项框活跃标签
+	if (review_flag) {
+		box_flag = FlushQuiz(quiz, 3, box_tag);
+		if (box_flag)
+			new_tag = 6;//选项框活跃标签
+	}
+	
+
 	for (i = 0; i < 5; i++) {
 		if (MouseX >= UserButtons[i].x1 && MouseX <= UserButtons[i].x2 &&
 			MouseY >= UserButtons[i].y1 && MouseY <= UserButtons[i].y2) {
@@ -1186,6 +1397,7 @@ void flushUserQuiz(int* tag,int *box_tag, user_button UserButtons[], question qu
 			setcolor(MY_RED);
 			setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
 			rectangle(USER_QUIZ_EXIT_X1, USER_QUIZ_EXIT_Y1, USER_QUIZ_EXIT_X2, USER_QUIZ_EXIT_Y2);
+
 			if(new_tag==0)
 				MouseS = 0;//空白处鼠标为箭头；选项框处鼠标形式在FlushQuiz中已处理，此处无须赋值
 		}
@@ -1210,41 +1422,277 @@ void drawgraph_user_quiz_pass(int result[][QUESTION_PER_PAGE],int page_count) {
 	sprintf(correct_num_string, "%d", correct_num);
 	sprintf(correct_rate_string, "%.2f%%", correct_rate);
 
+	//主页面
 	setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
 	bar(0, 0, 640, 480);
-	
 	setfillstyle(1, MY_CREAM);
 	bar(10, 50, 630, 470);
 	setfillstyle(1, MY_WHITE);
-	bar(120, 160, 520, 430);
+	bar(120, 160, 520, 440);
 	puthz(200, 12, "电动车法规测试", 32, 30, MY_WHITE);//边框
 	setcolor(MY_GREEN);
 	setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
-	rectangle(117, 157, 523, 433);
+	rectangle(117, 157, 523, 443);
 
+	//显示测试结果
 	puthz(210, 90, "恭喜通过！", 48,45, MY_GREEN);
-	puthz(180, 200, "您在本次测试中答对", 24, 22, MY_BLACK);
-	puthz(415, 200, "题", 24, 22, MY_BLACK);
-	puthz(220, 250, "正确率为", 24, 22, MY_BLACK);
-
+	puthz(180, 190, "您在本次测试中答对", 24, 22, MY_BLACK);
+	puthz(415, 190, "题", 24, 22, MY_BLACK);
+	puthz(210, 235, "正确率为", 24, 22, MY_BLACK);
 	settextstyle(DEFAULT_FONT, HORIZ_DIR, 2);
 	setcolor(MY_GREEN);
-	outtextxy(390, 205, correct_num_string);
-	outtextxy(330, 255, correct_rate_string);
+	outtextxy(390, 195, correct_num_string);
+	outtextxy(330, 235, correct_rate_string);
 
-	 //输出题目序号
-	setcolor(MY_BLACK);
-	
-	
+	puthz(140, 300, "您可以选择回顾测试中的错题，或", 24, 24, MY_BLACK);
+	puthz(140, 340, "前往预约办理校内通行证", 24, 24, MY_BLACK);
+
+	//绘制按钮
+	setfillstyle(1, MY_RED);//退出红叉
+	setcolor(MY_RED);
+	bar(USER_QUIZ_EXIT_X1, USER_QUIZ_EXIT_Y1, USER_QUIZ_EXIT_X2, USER_QUIZ_EXIT_Y2);
+	setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+	setcolor(MY_WHITE);
+	line(USER_QUIZ_EXIT_X1, USER_QUIZ_EXIT_Y1, USER_QUIZ_EXIT_X2 - 1, USER_QUIZ_EXIT_Y2 - 1);
+	line(USER_QUIZ_EXIT_X2 - 1, USER_QUIZ_EXIT_Y1, USER_QUIZ_EXIT_X1, USER_QUIZ_EXIT_Y2 - 1);
+
+	setfillstyle(SOLID_FILL, MY_YELLOW);//离开
+	bar(USER_QUIZ_BACK_X1, USER_QUIZ_BACK_Y1, USER_QUIZ_BACK_X2, USER_QUIZ_BACK_Y2);
+	puthz(USER_QUIZ_BACK_X1 + 7, USER_QUIZ_BACK_Y1 + 5, "离开", 24, 25, MY_WHITE);
+
+	setfillstyle(SOLID_FILL, MY_RED);
+	bar(USER_QUIZ_RESULT_BUTTON1_X1, USER_QUIZ_RESULT_BUTTON1_Y1, USER_QUIZ_RESULT_BUTTON1_X2, USER_QUIZ_RESULT_BUTTON1_Y2);
+	puthz(USER_QUIZ_RESULT_BUTTON1_X1 + 5, USER_QUIZ_RESULT_BUTTON1_Y1 + 5, "回顾", 24, 20, MY_WHITE);
+	bar(USER_QUIZ_RESULT_BUTTON2_X1, USER_QUIZ_RESULT_BUTTON2_Y1, USER_QUIZ_RESULT_BUTTON2_X2, USER_QUIZ_RESULT_BUTTON2_Y2);
+	puthz(USER_QUIZ_RESULT_BUTTON2_X1 + 5, USER_QUIZ_RESULT_BUTTON2_Y1 + 5, "继续", 24, 20, MY_WHITE);
+		
+}
+
+void drawgraph_user_quiz_fail(int result[][QUESTION_PER_PAGE], int page_count) {
+	int i, j;
+	int correct_num = 0;
+	float correct_rate;
+	char correct_num_string[16];
+	char correct_rate_string[16];
+
+	for (i = 0; i < page_count; i++) {
+		for (j = 0; j < QUESTION_PER_PAGE; j++) {
+			if (result[i][j] == 1)
+				correct_num++;
+		}
+	}
+	correct_rate = 100 * (float)correct_num / (page_count * QUESTION_PER_PAGE);
+	sprintf(correct_num_string, "%d", correct_num);
+	sprintf(correct_rate_string, "%.2f%%", correct_rate);
+
+	//主页面
+	setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
+	bar(0, 0, 640, 480);
+	setfillstyle(1, MY_CREAM);
+	bar(10, 50, 630, 470);
+	setfillstyle(1, MY_WHITE);
+	bar(120, 160, 520, 440);
+	puthz(200, 12, "电动车法规测试", 32, 30, MY_WHITE);//边框
+	setcolor(MY_GREEN);
+	setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+	rectangle(117, 157, 523, 443);
+
+	//显示测试结果
+	puthz(210, 90, "再接再厉", 48, 45, MY_GREEN);
+	puthz(180, 190, "您在本次测试中答对", 24, 22, MY_BLACK);
+	puthz(415, 190, "题", 24, 22, MY_BLACK);
+	puthz(210, 235, "正确率为", 24, 22, MY_BLACK);
+	settextstyle(DEFAULT_FONT, HORIZ_DIR, 2);
+	setcolor(MY_RED);
+	outtextxy(390, 195, correct_num_string);
+	outtextxy(330, 240, correct_rate_string);
+
+	puthz(140, 300, "您可以选择回顾测试中的错题，或重新", 24, 22, MY_BLACK);
+	puthz(140, 340, "进行测试", 24, 22, MY_BLACK);
+
+	//绘制按钮
+	setfillstyle(1, MY_RED);//退出红叉
+	setcolor(MY_RED);
+	bar(USER_QUIZ_EXIT_X1, USER_QUIZ_EXIT_Y1, USER_QUIZ_EXIT_X2, USER_QUIZ_EXIT_Y2);
+	setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+	setcolor(MY_WHITE);
+	line(USER_QUIZ_EXIT_X1, USER_QUIZ_EXIT_Y1, USER_QUIZ_EXIT_X2 - 1, USER_QUIZ_EXIT_Y2 - 1);
+	line(USER_QUIZ_EXIT_X2 - 1, USER_QUIZ_EXIT_Y1, USER_QUIZ_EXIT_X1, USER_QUIZ_EXIT_Y2 - 1);
+
+	setfillstyle(SOLID_FILL, MY_YELLOW);//离开
+	bar(USER_QUIZ_BACK_X1, USER_QUIZ_BACK_Y1, USER_QUIZ_BACK_X2, USER_QUIZ_BACK_Y2);
+	puthz(USER_QUIZ_BACK_X1 + 7, USER_QUIZ_BACK_Y1 + 5, "离开", 24, 25, MY_WHITE);
+
+	setfillstyle(SOLID_FILL, MY_RED);
+	bar(USER_QUIZ_RESULT_BUTTON1_X1, USER_QUIZ_RESULT_BUTTON1_Y1, USER_QUIZ_RESULT_BUTTON1_X2, USER_QUIZ_RESULT_BUTTON1_Y2);
+	puthz(USER_QUIZ_RESULT_BUTTON1_X1 + 7, USER_QUIZ_RESULT_BUTTON1_Y1 + 9, "回顾", 24, 20, MY_WHITE);
+	bar(USER_QUIZ_RESULT_BUTTON2_X1, USER_QUIZ_RESULT_BUTTON2_Y1, USER_QUIZ_RESULT_BUTTON2_X2, USER_QUIZ_RESULT_BUTTON2_Y2);
+	puthz(USER_QUIZ_RESULT_BUTTON2_X1 + 7, USER_QUIZ_RESULT_BUTTON2_Y1 + 9, "重试", 24, 20, MY_WHITE);
 }
 
 
+void drawgraph_quiz_review(int* quiz_page, int page_count,int pass_flag) {
+	char question_serial[8][8];//按页码储存题目序号，最多8页，不想在这malloc
+	char quiz_page_string[10];//页码字符串
+	char id[8];
+	int i;
+
+	setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
+	bar(0, 0, 640, 480);
+	setcolor(MY_WHITE);
+	setfillstyle(1, MY_WHITE);
+	bar(10, 50, 630, 420);
+	puthz(200, 12, "电动车法规测试", 32, 30, MY_WHITE);//边框
+
+	for (i = 0; i < 3; i++) {                 //为题目序号赋值
+		sprintf(question_serial[i], "%d", i + 1 + 3 * (*quiz_page - 1));
+	}
+	settextstyle(DEFAULT_FONT, HORIZ_DIR, 2); //输出题目序号
+	setcolor(MY_BLACK);
+	outtextxy(20, 70, question_serial[0]);
+	outtextxy(20, 190, question_serial[1]);
+	outtextxy(20, 310, question_serial[2]);
+
+	setfillstyle(1, MY_RED);//退出红叉
+	setcolor(MY_RED);
+	bar(USER_QUIZ_EXIT_X1, USER_QUIZ_EXIT_Y1, USER_QUIZ_EXIT_X2, USER_QUIZ_EXIT_Y2);
+	setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+	setcolor(MY_WHITE);
+	line(USER_QUIZ_EXIT_X1, USER_QUIZ_EXIT_Y1, USER_QUIZ_EXIT_X2 - 1, USER_QUIZ_EXIT_Y2 - 1);
+	line(USER_QUIZ_EXIT_X2 - 1, USER_QUIZ_EXIT_Y1, USER_QUIZ_EXIT_X1, USER_QUIZ_EXIT_Y2 - 1);
+
+	setfillstyle(SOLID_FILL, MY_YELLOW);//离开
+	bar(USER_QUIZ_BACK_X1, USER_QUIZ_BACK_Y1, USER_QUIZ_BACK_X2, USER_QUIZ_BACK_Y2);
+	puthz(USER_QUIZ_BACK_X1 + 7, USER_QUIZ_BACK_Y1 + 5, "离开", 24, 25, MY_WHITE);
+
+	setfillstyle(SOLID_FILL, MY_CREAM);//翻页
+	if (*quiz_page != 1) {
+		bar(USER_QUIZ_BUTTON1_X1, USER_QUIZ_BUTTON1_Y1, USER_QUIZ_BUTTON1_X2, USER_QUIZ_BUTTON1_Y2);
+		puthz(USER_QUIZ_BUTTON1_X1 + 5, USER_QUIZ_BUTTON1_Y1 + 8, "上一页", 24, 20, MY_BLACK);
+	}
+	if (*quiz_page != page_count) {
+		bar(USER_QUIZ_BUTTON2_X1, USER_QUIZ_BUTTON2_Y1, USER_QUIZ_BUTTON2_X2, USER_QUIZ_BUTTON2_Y2);
+		puthz(USER_QUIZ_BUTTON2_X1 + 5, USER_QUIZ_BUTTON2_Y1 + 8, "下一页", 24, 20, MY_BLACK);
+	}
+
+	setcolor(MY_WHITE);//页码
+	sprintf(quiz_page_string, "%d/%d", *quiz_page, page_count);
+	outtextxy(260, 450, quiz_page_string);
+	puthz(235, 443, "第", 24, 20, MY_WHITE);
+	puthz(310, 443, "页", 24, 20, MY_WHITE);
+
+	if (pass_flag == 0) {
+		setfillstyle(SOLID_FILL, MY_RED);//交卷
+		bar(USER_QUIZ_BUTTON3_X1, USER_QUIZ_BUTTON3_Y1, USER_QUIZ_BUTTON3_X2, USER_QUIZ_BUTTON3_Y2);
+		puthz(USER_QUIZ_BUTTON3_X1 + 3, USER_QUIZ_BUTTON3_Y1 + 8, "重新测试", 24, 20, MY_WHITE);
+	}
+	else {
+		setfillstyle(SOLID_FILL, MY_RED);//交卷
+		bar(USER_QUIZ_BUTTON3_X1, USER_QUIZ_BUTTON3_Y1, USER_QUIZ_BUTTON3_X2, USER_QUIZ_BUTTON3_Y2);
+		puthz(USER_QUIZ_BUTTON3_X1 + 3, USER_QUIZ_BUTTON3_Y1 + 8, "前往预约", 24, 20, MY_WHITE);
+	}
+}
+
+void FlushQuizResult(int* tag, user_button UserButtons[]) {
+	int i = 0;
+	int temp = 0;
+	int new_tag = ACTIVE_USER_NONE;
+	
+	for (i = 0; i < 4; i++) {
+		if (MouseX >= UserButtons[i].x1 && MouseX <= UserButtons[i].x2 &&
+			MouseY >= UserButtons[i].y1 && MouseY <= UserButtons[i].y2) {
+			new_tag = UserButtons[i].active_tag;
+			temp = i;
+			break;
+		}
+	}
+
+	if (*tag != new_tag) {
+		*tag = new_tag;
+		if (new_tag != ACTIVE_USER_NONE && new_tag <= 2) {
+			setcolor(MY_BLACK);
+			setlinestyle(SOLID_LINE, 0, NORM_WIDTH);
+			rectangle(UserButtons[temp].x1 - 1, UserButtons[temp].y1 - 1, UserButtons[temp].x2 + 1, UserButtons[temp].y2 + 1);
+			MouseS = 1;
+		}
+		else if (new_tag == 3) {//退出程序
+			setfillstyle(1, MY_WHITE);
+			setcolor(MY_WHITE);
+			setlinestyle(SOLID_LINE, 0, NORM_WIDTH);
+			rectangle(UserButtons[temp].x1, UserButtons[temp].y1, UserButtons[temp].x2, UserButtons[temp].y2);
+			MouseS = 1;
+		}
+		else if (new_tag == 4) {//返回主界面（离开）
+			setcolor(MY_RED);
+			setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+			setfillstyle(1, MY_RED);
+			bar(USER_QUIZ_BACK_X1, USER_QUIZ_BACK_Y1, USER_QUIZ_BACK_X2, USER_QUIZ_BACK_Y2);
+			puthz(USER_QUIZ_BACK_X1 + 7, USER_QUIZ_BACK_Y1 + 6, "离开", 24, 25, MY_WHITE);
+			MouseS = 1;
+		}
+		else {
+			// 清除提示
+			setcolor(MY_WHITE);
+			setlinestyle(SOLID_LINE, 0, NORM_WIDTH);
+			for (i = 0; i < 2; i++) {
+				rectangle(UserButtons[i].x1 - 1, UserButtons[i].y1 - 1, UserButtons[i].x2 + 1, UserButtons[i].y2 + 1);
+			}
+
+			setfillstyle(1, MY_YELLOW);//恢复“离开”
+			setcolor(MY_YELLOW);
+			bar(USER_QUIZ_BACK_X1, USER_QUIZ_BACK_Y1, USER_QUIZ_BACK_X2, USER_QUIZ_BACK_Y2);
+			puthz(USER_QUIZ_BACK_X1 + 7, USER_QUIZ_BACK_Y1 + 6, "离开", 24, 25, MY_WHITE);
+
+			setcolor(MY_RED);
+			setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+			rectangle(USER_QUIZ_EXIT_X1, USER_QUIZ_EXIT_Y1, USER_QUIZ_EXIT_X2, USER_QUIZ_EXIT_Y2);
+			MouseS = 0;
+		}
+			
+	}
+
+}
 
 
 void user_info()
 {
+
+	char input_buffer[20] = { 0 };
+	int input_len = 0;
+	int is_input_active = 0;
+	int mouse_flag;
+
+	setcolor(MY_WHITE);
+	rectangle(INPUT_X1, INPUT_Y1, INPUT_X2, INPUT_Y2);
+
+	while(1){
+		newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
+		/* 点击判断（精确到像素级）*/
+		if (mouse_press(INPUT_X1, INPUT_Y1, INPUT_X2, INPUT_Y2) == 1)
+		{
+			is_input_active = 1;
+		}
+
+		/* 输入激活处理 */
+		if (is_input_active)
+		{
+			// 进入输入模式
+			input_len = hz_input(INPUT_INNER_X, INPUT_INNER_Y,
+				INPUT_INNER_X + INPUT_INNER_W,
+				INPUT_INNER_Y + INPUT_INNER_H,
+				input_buffer, input_len,
+				MY_WHITE, MY_BLACK, 24);
+			is_input_active = 0;
+		}
+
+		newmouse(&MouseX, &MouseY, &press, &mouse_flag);
+		delay(25);
+	
+	}
+
 	
 }
+
 
 void user_message()
 {

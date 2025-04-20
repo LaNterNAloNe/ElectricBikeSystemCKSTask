@@ -166,22 +166,23 @@ void handle_click_quiz(question* quiz, char* answer, int question_count) {
 
 int judge_answer(question quiz[][QUESTION_PER_PAGE], char anwser[][QUESTION_PER_PAGE], int result[][QUESTION_PER_PAGE],int page_count) {
     int i, j;
-    int correct;
+    int correct_num=0;
     float correct_rate;
     for (i = 0; i < page_count; i++) {
         for (j = 0; j < QUESTION_PER_PAGE; j++) {
             if (quiz[i][j].correctAnswer == anwser[i][j]) {
                 result[i][j] = 1;
-                correct++;
+                correct_num++;
             }   
             else
                 result[i][j] = 0;
         }
     }
-    correct_rate = ((float)correct )/ (page_count * QUESTION_PER_PAGE);
+    correct_rate = (float)correct_num / (page_count * QUESTION_PER_PAGE);
     if (correct_rate >= PASSING_GRADE)
         return 1;
-    return 0;
+    else
+		return 0;
 }
 
 void printbox(question quiz[], char answer[]) {
@@ -249,6 +250,7 @@ int FlushQuiz(question quiz[],int question_count,int *box_tag) {
     }
 }
 
+
 void init_box_xy(question quiz, int box_xy[4][4]) {
     box_xy[0][0] = quiz.x + box_a_x;
     box_xy[0][1] = quiz.y + box_a_y;
@@ -284,6 +286,82 @@ void draw_countdown(int remain_sec, int x, int y) {
     settextstyle(DEFAULT_FONT, HORIZ_DIR, 2); // 默认字体，水平方向，大小2
     outtextxy(x, y,text); 
 }
+
+
+void draw_quiz_answer(question quiz[], char answer[],int question_count) {
+	int i, j;
+	int correct_flag;//判断答案是否正确
+	char abcd[4][2] = { "A","B","C","D" };
+	int box_xy[4][4]; //选项框位置
+	for (i = 0; i < question_count; i++) {
+		//初始化选项框坐标
+		init_box_xy(quiz[i], box_xy);
+
+		//默认答案正确
+		correct_flag = 1;
+
+		setlinestyle(SOLID_LINE, 0, NORM_WIDTH);
+		settextstyle(DEFAULT_FONT, HORIZ_DIR, 2); // 默认字体，水平方向，大小2
+
+		/* 绘制题干 */
+		puthz(quiz[i].x, quiz[i].y, quiz[i].main_text, 16, 15, MY_BLACK);
+		/* 绘制四个选项（两行两列） */
+		for (j = 0; j < 4; j++)
+		{
+			//正确选项
+			if (quiz[i].correctAnswer == 'A' + j) {
+				puthz(
+					quiz[i].x + OPTION_TEXT_SPACE + (j % 2) * OPTION_SPACING, 
+					quiz[i].y + (j / 2 + 1) * LINE_HEIGHT,          
+					quiz[i].options[j],
+					16, 15, MY_GREEN);
+				//选项字母
+				setcolor(MY_GREEN);
+				outtextxy(quiz[i].x + OPTION_LETTER_SPACE + (j % 2) * OPTION_SPACING,
+					quiz[i].y + (j / 2 + 1) * LINE_HEIGHT,
+					abcd[j]);
+			}
+			//被选择的错误选项
+			else if (answer[i] == 'A' + j) {
+				puthz(
+					quiz[i].x + OPTION_TEXT_SPACE + (j % 2) * OPTION_SPACING,
+					quiz[i].y + (j / 2 + 1) * LINE_HEIGHT,
+					quiz[i].options[j],
+					16, 15, MY_RED);
+				//选项字母
+				setcolor(MY_RED);
+				outtextxy(quiz[i].x + OPTION_LETTER_SPACE + (j % 2) * OPTION_SPACING,
+					quiz[i].y + (j / 2 + 1) * LINE_HEIGHT,
+					abcd[j]);
+				//答案错误
+				correct_flag = 0;
+			}
+			//其余选项
+			else {
+				/* 计算选项位置：水平间隔OPTION_SPACING，垂直下移LINE_HEIGHT */
+				puthz(
+					quiz[i].x + OPTION_TEXT_SPACE + (j % 2) * OPTION_SPACING, /* 选项X坐标 */
+					quiz[i].y + (j / 2 + 1) * LINE_HEIGHT,          /* 选项Y坐标 */
+					quiz[i].options[j],
+					16, 15, MY_BLACK);
+				//选项字母
+				setcolor(MY_BLACK);
+				outtextxy(quiz[i].x + OPTION_LETTER_SPACE + (j % 2) * OPTION_SPACING,
+					quiz[i].y + (j / 2 + 1) * LINE_HEIGHT,
+					abcd[j]);
+			}
+		}
+
+		//答错的提示
+		if (correct_flag == 0) {
+			puthz(quiz[i].x, quiz[i].y + 420, "回答错误！", 24, 20, MY_RED);
+		}
+	}
+}
+
+
+
+
 
 void store_data() {
 	question text[40];  // 扩展数组大小以容纳所有题目
