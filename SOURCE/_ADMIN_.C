@@ -130,36 +130,6 @@ void admin_database(int *page, unsigned long *ID , LINKLIST *LIST){
         display_memory_usage(400, 10); // 显示调试参数
 
     while (*page == ADMIN_DATABASE){
-
-        // show_num(10,10, flag, MY_WHITE);
-        // if (flag != old_flag)
-        // {
-        //     if (fp != NULL){
-        //         fclose(fp); // 关闭文件
-        //         fp = NULL; // 置零指针
-        //     }
-
-        //     if(flag == ADMIN_DATABASE_USER_INFO)
-        //     {
-        //         fp = fopen("DATA\\USER.DAT", "rb+"); // 打开用户登录数据文件
-        //         old_flag = flag; // 记录上一次的数据一览视图代号
-        //         if (fp == NULL) // 打开失败
-        //         {
-        //             drawExittingProgram(1); // 显示错误信息
-        //             exit(1); // 终止程序
-        //         }
-        //     }
-        //     if (flag == ADMIN_DATABASE_EBIKE_PASS_IN_OUT)
-        //     {
-        //         fp = fopen("DATA\\IO.DAT", "rb+"); // 打开车辆信息数据文件
-        //         old_flag = flag; // 记录上一次的数据一览视图代号
-        //         if (fp == NULL) // 打开失败
-        //         {
-        //             drawExittingProgram(1); // 显示错误信息
-        //             exit(1); // 终止程序
-        //         }
-        //     }
-        // }
         newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
 
         admin_flush_buttons(&tag, STRUCT_LENGTH(AdminButtons), AdminButtons);
@@ -739,9 +709,9 @@ long find_file_info(FILE *fp, char *file_type,char *search_str,char *search_need
     USER_LOGIN_DATA USER_TEMP;
     EBIKE_IN_OUT ebike_in_out_temp;
 
-    fseek(fp,0,SEEK_SET); // 获取文件长度
+    fseek(fp,0,SEEK_SET);
 
-    if(strcmp(file_type,"user_info") == 0){ // 查找用户信息
+    if(strcmp(file_type, "user_info") == 0){ // 查找用户信息
         while (fread(&USER_TEMP, sizeof(USER_LOGIN_DATA), 1, fp)) // 遍历文件中的所有数据块，当读取到文件末尾时，fread返回0，退出循环
         {
             if ((strcmp(search_needed, "id") == 0 && USER_TEMP.ID == atol(search_str)) ||
@@ -755,7 +725,7 @@ long find_file_info(FILE *fp, char *file_type,char *search_str,char *search_need
             counts++;
         }
     }
-    else if(strcmp(file_type,"ebike_manage") == 0){ // 查找车辆管理信息
+    else if(strcmp(file_type, "ebike_manage") == 0){ // 查找车辆管理信息
         while (fread(&ebike_temp, sizeof(EBIKE_INFO), 1, fp)) // 遍历文件中的所有数据块，当读取到文件末尾时，fread返回0，退出循环
         {
             if ((strcmp(search_needed, "realname") == 0 && strcmp(ebike_temp.rln, search_str) == 0) ||
@@ -772,7 +742,7 @@ long find_file_info(FILE *fp, char *file_type,char *search_str,char *search_need
             counts++;
         }
     }
-    else if(strcmp(file_type,"ebike_in_out") == 0){ // 查找车辆出入信息
+    else if(strcmp(file_type, "ebike_pass_in_out") == 0){ // 查找车辆出入信息
         while (fread(&ebike_in_out_temp, sizeof(EBIKE_IN_OUT), 1, fp)) // 遍历文件中的所有数据块，当读取到文件末尾时，fread返回0，退出循环
         {
             if (ebike_in_out_temp.apply_id == atol(search_str) && strcmp(search_needed, "apply_id") == 0)
@@ -1171,7 +1141,7 @@ void admin_handle_manage_feature_event(LINKLIST *LIST, int *page, char *search_s
         }
         linklist_write_user_data(LIST); // 将链表数据写入文件
 
-        admin_pass_failed_anime(ADMIN_FEATURE1_X1, ADMIN_FEATURE1_Y1, ADMIN_FEATURE1_X2, ADMIN_FEATURE1_Y2, PASSED); // 操作成功后的动画
+        admin_pass_failed_anime(ADMIN_FEATURE1_X1, ADMIN_FEATURE1_Y1, ADMIN_FEATURE1_X2, ADMIN_FEATURE1_Y2, PASSED, "同意申请"); // 操作成功后的动画
 
         admin_list_info(LIST, LIST_LIMIT, LIST_INTERVAL, id_list, fp_EBIKE_INFO_read, "ebike_manage",
                         list_mode, *mode, LIST_PAGEDOWN, LIST_FLUSH, "\0", "\0"); // 操作结束后刷新列表
@@ -1197,7 +1167,7 @@ void admin_handle_manage_feature_event(LINKLIST *LIST, int *page, char *search_s
 
         // 申请失败，不修改链表数据
 
-        admin_pass_failed_anime(ADMIN_FEATURE1_X1, ADMIN_FEATURE1_Y1, ADMIN_FEATURE1_X2, ADMIN_FEATURE1_Y2, FAILED); // 操作后的动画
+        admin_pass_failed_anime(ADMIN_FEATURE1_X1, ADMIN_FEATURE1_Y1, ADMIN_FEATURE1_X2, ADMIN_FEATURE1_Y2, FAILED, "拒绝申请"); // 操作后的动画
 
         admin_list_info(LIST, LIST_LIMIT, LIST_INTERVAL, id_list, fp_EBIKE_INFO_read, "ebike_manage",
                         list_mode, *mode, LIST_PAGEDOWN, LIST_FLUSH, "\0", "\0"); // 操作结束后刷新列表
@@ -1334,17 +1304,19 @@ void admin_handle_database_event(LINKLIST *LIST, int *flag, int *page, unsigned 
     if (mouse_press(ADMIN_FEATURE6_X1, ADMIN_FEATURE6_Y1, ADMIN_FEATURE6_X2, ADMIN_FEATURE6_Y2) == 1 &&
         *flag == ADMIN_DATABASE_EBIKE_PASS_IN_OUT)
     {
-        if (*selected_id!= 0){
+        if (*selected_id != 0){
             ltoa(*selected_id, buffer, 10);
             pos = find_file_info(*fp, file_type, buffer, "apply_id"); // 查找数据块
             if (pos == -1)
                 return; // 未找到数据块，不进行任何操作
-            fseek (*fp, -sizeof(EBIKE_IN_OUT), SEEK_CUR); // 定位到数据块
+            fseek (*fp, pos, SEEK_SET); // 定位到数据块
             fread (&ebike_in_out_temp, sizeof(EBIKE_IN_OUT), 1, *fp); // 读取数据块
-            ebike_in_out_temp.result = FAILED; // 修改数据块中的result字段为FAILED
-            fseek (*fp, -sizeof(EBIKE_IN_OUT), SEEK_CUR); // 定位到数据块
+            if (ebike_in_out_temp.result != PENDING)
+                return;
+            ebike_in_out_temp.result = FAILED;        // 修改数据块中的result字段为FAILED
+            fseek(*fp, pos, SEEK_SET);                // 定位到数据块
             fwrite (&ebike_in_out_temp, sizeof (EBIKE_IN_OUT), 1, *fp); // 将修改后的数据块写入文件
-            admin_pass_failed_anime(ADMIN_FEATURE6_X1, ADMIN_FEATURE6_Y1, ADMIN_FEATURE6_X2, ADMIN_FEATURE6_Y2, FAILED); // 操作后的动画
+            admin_pass_failed_anime(ADMIN_FEATURE6_X1, ADMIN_FEATURE6_Y1, ADMIN_FEATURE6_X2, ADMIN_FEATURE6_Y2, FAILED, "拒绝申请"); // 操作后的动画
             admin_list_info(LIST, LIST_LIMIT, LIST_INTERVAL, id_list, *fp, file_type, NULL, NULL, LIST_STAY, LIST_FLUSH, "\0", "\0"); // 操作结束后刷新列表
         }
     }
@@ -1352,17 +1324,19 @@ void admin_handle_database_event(LINKLIST *LIST, int *flag, int *page, unsigned 
     if (mouse_press(ADMIN_FEATURE5_X1, ADMIN_FEATURE5_Y1, ADMIN_FEATURE5_X2, ADMIN_FEATURE5_Y2) == 1 &&
         *flag == ADMIN_DATABASE_EBIKE_PASS_IN_OUT)
     {
-        if (*selected_id!= 0){
+        if (*selected_id != 0){
             ltoa(*selected_id, buffer, 10);
             pos = find_file_info(*fp, file_type, buffer, "apply_id"); // 查找数据块
             if (pos == -1)
                 return; // 未找到数据块，不进行任何操作
-            fseek (*fp, -sizeof(EBIKE_IN_OUT), SEEK_CUR); // 定位
+            fseek(*fp, pos, SEEK_SET);                                // 定位
             fread (&ebike_in_out_temp, sizeof(EBIKE_IN_OUT), 1, *fp); // 读取数据块
+            if (ebike_in_out_temp.result != PENDING)
+                return;
             ebike_in_out_temp.result = PASSED; // 修改数据块中的result字段为PASSED
-            fseek (*fp, -sizeof(EBIKE_IN_OUT), SEEK_CUR); // 定位到数据块
+            fseek(*fp, pos, SEEK_SET);         // 定位到数据块
             fwrite (&ebike_in_out_temp, sizeof (EBIKE_IN_OUT), 1, *fp); // 将修改后的数据块写入文件
-            admin_pass_failed_anime(ADMIN_FEATURE5_X1, ADMIN_FEATURE5_Y1, ADMIN_FEATURE5_X2, ADMIN_FEATURE5_Y2, PASSED); // 操作后的动画
+            admin_pass_failed_anime(ADMIN_FEATURE5_X1, ADMIN_FEATURE5_Y1, ADMIN_FEATURE5_X2, ADMIN_FEATURE5_Y2, PASSED, "同意申请"); // 操作后的动画
             admin_list_info(LIST, LIST_LIMIT, LIST_INTERVAL, id_list, *fp, file_type, NULL, NULL, LIST_STAY, LIST_FLUSH, "\0", "\0"); // 操作结束后刷新列表
         }
     }
@@ -1531,13 +1505,13 @@ void admin_handle_modify_ebike_data_event(LINKLIST *LIST, unsigned long *user_id
 MODULE:其他杂项函数
 ***********************************************************/
 // 点击按钮后，若能成功操作，则执行该显示动画
-void admin_pass_failed_anime(int button_x1, int button_y1, int button_x2, int button_y2, int result)
+void admin_pass_failed_anime(int button_x1, int button_y1, int button_x2, int button_y2, int result, char *prev_text)
 {
     int mouse_flag;
     int tick = 0;
     clrmous(MouseX, MouseY); // 清除鼠标
 
-    for (tick = 0; tick <= 80; tick++)
+    for (tick = 0; tick <= 40; tick++)
     {
         if (tick % 40 == 0)
         {
@@ -1555,13 +1529,13 @@ void admin_pass_failed_anime(int button_x1, int button_y1, int button_x2, int bu
             if (result == PASSED)
                 puthz(button_x1 + 4, button_y1 + 8, "通过成功", 16, 16, MY_WHITE); // 绘制按钮
             else if (result == FAILED)
-                puthz(button_x1 + 4, button_y1 + 8, "通过成功", 16, 16, MY_WHITE); // 绘制按钮
+                puthz(button_x1 + 4, button_y1 + 8, "驳回成功", 16, 16, MY_WHITE); // 绘制按钮
         }
         delay(25);
     }
     setfillstyle(SOLID_FILL, MY_YELLOW);
     bar(button_x1, button_y1, button_x2, button_y2);                   // 重绘按钮
-    puthz(button_x1 + 4, button_y1 + 8, "同意申请", 16, 16, MY_WHITE); // 重新绘制按钮
+    puthz(button_x1 + 4, button_y1 + 8, prev_text, 16, 16, MY_WHITE); // 重新绘制按钮
 
     newmouse(&MouseX, &MouseY, &press, &mouse_flag); // 重新绘制
 }

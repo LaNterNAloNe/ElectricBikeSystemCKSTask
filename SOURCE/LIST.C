@@ -204,17 +204,10 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
     if (page_count < 1)
         page_index = 0;
 
-    /* 5.初始化列表记录 */
-    for (i = 0; i < max; i++)
-    {
-        item_id[i] = 0;
-    }
-
     if (debug_mode == 1)
         puthz(ADMIN_INTERFACE_X1 + 140, ADMIN_INTERFACE_Y1 + 70 + max * interval, "检查三", 16, 16, MY_RED);
 
-
-    /* 6.前置操作完成，正式开始列表 */
+    /* 5.前置操作完成，正式开始列表 */
     // 收到下翻指令，或改变当前列表状态后从起点开始重新刷新列表 //
     if (valid_counts > 0 && page_change == LIST_PAGEDOWN)
     {
@@ -299,6 +292,10 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
         start = temp_start; // 成功找到可列出的数据，处理变量后进行进一步操作
         end = temp_start;
         temp_end = temp_start;
+        for (i = 0; i < max; i++) // 初始化item_id数组
+        {
+            item_id[i] = 0;
+        }
 
         if (debug_mode == 1)
             puthz(ADMIN_INTERFACE_X1 + 260, ADMIN_INTERFACE_Y1 + 70 + max * interval, "检查五", 16, 16, MY_RED);
@@ -492,6 +489,10 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
         }
         start = temp_start; // 查找到首个可以读取的数据，将实际的标记指向该数据
         end = temp_end;
+        for (i = 0; i < max; i++) // 初始化item_id数组
+        {
+            item_id[i] = 0;
+        }
 
         // 此处 temp_start 和 temp_end 都应为 start - 1 或更小//
         if (debug_mode == 1)
@@ -596,6 +597,11 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
         end = start; // end不能赋为负数，因为end为无符号整形数
         temp_end = start;
         temp_start = start;
+        for (i = 0; i < max; i++) // 初始化item_id数组
+        {
+            item_id[i] = 0;
+        }
+
         while (1)
         {
             if (flag == ADMIN_DATABASE_EBIKE_MANAGE)
@@ -780,12 +786,22 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
         list_show_page_index(0, 0, max, interval);
         puthz(ADMIN_INTERFACE_X1 + 140, ADMIN_INTERFACE_Y1 + 70, "未找到对应数据或传入参数错误", 16, 16, MY_RED);
         node = NULL; // 防止野指针
+        for (i = 0; i < max; i++) // 初始化item_id数组
+        {
+            item_id[i] = 0;
+        }
+
         return;
     }
 
     // 到函数末尾都还没返回，则出现异常，输出异常信息
     list_show_page_index(0, 0, max, interval);
     puthz(ADMIN_INTERFACE_X1 + 120, ADMIN_INTERFACE_Y1 + 70, "函数执行异常", 16, 16, MY_RED);
+    for (i = 0; i < max; i++) // 初始化item_id数组
+    {
+        item_id[i] = 0;
+    }
+
     node = NULL; // 防止野指针
 }
 
@@ -829,26 +845,26 @@ void admin_show_ebike_manage_info(struct _EBIKE_INFO_ TEMP, const int max, const
 
         if (strcmp(list_mode, "register") == 0 || strcmp(list_mode, "license") == 0 || strcmp(list_mode, "anual"))
         {
-            puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 310 - listed_item * interval, TEMP.rln, 16, 16, MY_WHITE); // 输出姓名
-            outtextxy(ADMIN_INTERFACE_X1 + 100, ADMIN_INTERFACE_Y1 + 310 - listed_item * interval, buffer);                // 输出ID
-            outtextxy(ADMIN_INTERFACE_X1 + 200, ADMIN_INTERFACE_Y1 + 310 - listed_item * interval, TEMP.ebike_ID);
+            puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + (max - listed_item - 1) * interval, TEMP.rln, 16, 16, MY_WHITE); // 输出姓名
+            outtextxy(ADMIN_INTERFACE_X1 + 100, ADMIN_INTERFACE_Y1 + (max - listed_item - 1) * interval, buffer);                // 输出ID
+            outtextxy(ADMIN_INTERFACE_X1 + 200, ADMIN_INTERFACE_Y1 + (max - listed_item - 1) * interval, TEMP.ebike_ID);
         }
         else if (strcmp(list_mode, "broken") == 0 || strcmp(list_mode, "violation") == 0)
         {
-            outtextxy(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 310 - listed_item * interval, buffer);         // 输出ID
-            outtextxy(ADMIN_INTERFACE_X1 + 200, ADMIN_INTERFACE_Y1 + 310 - listed_item * interval, TEMP.ebike_ID); // 输出电动车车牌号
-            outtextxy(ADMIN_INTERFACE_X1 + 300, ADMIN_INTERFACE_Y1 + 310 - listed_item * interval, TEMP.location); // 输出地址
+            outtextxy(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + (max - listed_item - 1) * interval, buffer);         // 输出ID
+            outtextxy(ADMIN_INTERFACE_X1 + 200, ADMIN_INTERFACE_Y1 + (max - listed_item - 1) * interval, TEMP.ebike_ID); // 输出电动车车牌号
+            outtextxy(ADMIN_INTERFACE_X1 + 300, ADMIN_INTERFACE_Y1 + (max - listed_item - 1) * interval, TEMP.location); // 输出地址
         }
 
-        outtextxy(ADMIN_INTERFACE_X1 + 300, ADMIN_INTERFACE_Y1 + 310 - listed_item * interval, buffer); // 输出请求时间
+        outtextxy(ADMIN_INTERFACE_X1 + 300, ADMIN_INTERFACE_Y1 + (max - listed_item - 1) * interval, buffer); // 输出请求时间
 
         if (TEMP.conduct_time == -1)
         { // 输出处理状态
-            puthz(ADMIN_INTERFACE_X1 + 400, ADMIN_INTERFACE_Y1 + 310 - listed_item * interval, "未处理", 16, 16, MY_RED);
+            puthz(ADMIN_INTERFACE_X1 + 400, ADMIN_INTERFACE_Y1 + (max - listed_item - 1) * interval, "未处理", 16, 16, MY_RED);
         }
         else
         {
-            puthz(ADMIN_INTERFACE_X1 + 400, ADMIN_INTERFACE_Y1 + 310 - listed_item * interval, "已处理", 16, 16, MY_GREEN);
+            puthz(ADMIN_INTERFACE_X1 + 400, ADMIN_INTERFACE_Y1 + (max - listed_item - 1) * interval, "已处理", 16, 16, MY_GREEN);
         }
     }
     else
@@ -891,23 +907,23 @@ void admin_show_user_info(USER_LOGIN_DATA TEMP, const int max, const int interva
     {
         settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);
         ltoa(TEMP.ID, buffer1, 10);                                                                                              // 将ID转换为字符串
-        outtextxy(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 74 + (max - 1) * interval - listed_item * interval, buffer1);    // 输出ID
-        outtextxy(ADMIN_INTERFACE_X1 + 120, ADMIN_INTERFACE_Y1 + 74 + (max - 1) * interval - listed_item * interval, TEMP.usrn); // 输出用户名
-        outtextxy(ADMIN_INTERFACE_X1 + 240, ADMIN_INTERFACE_Y1 + 74 + (max - 1) * interval - listed_item * interval, TEMP.psw);  // 输出密码
+        outtextxy(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 74 + (max - listed_item  - 1) * interval, buffer1);    // 输出ID
+        outtextxy(ADMIN_INTERFACE_X1 + 120, ADMIN_INTERFACE_Y1 + 74 + (max - listed_item  - 1) * interval, TEMP.usrn); // 输出用户名
+        outtextxy(ADMIN_INTERFACE_X1 + 240, ADMIN_INTERFACE_Y1 + 74 + (max - listed_item  - 1) * interval, TEMP.psw);  // 输出密码
         ltoa(TEMP.register_time, buffer1, 10);
         sprintf(buffer2, "%.4s.%.2s.%.2s", buffer1, buffer1 + 4, buffer1 + 6);                                                 // 将注册时间转换为字符串
-        outtextxy(ADMIN_INTERFACE_X1 + 360, ADMIN_INTERFACE_Y1 + 74 + (max - 1) * interval - listed_item * interval, buffer2); // 输出注册时间
+        outtextxy(ADMIN_INTERFACE_X1 + 360, ADMIN_INTERFACE_Y1 + 74 + (max - listed_item  - 1) * interval, buffer2); // 输出注册时间
         if (TEMP.state == ACTIVE)
         {
-            puthz(ADMIN_INTERFACE_X1 + 460, ADMIN_INTERFACE_Y1 + 70 + (max - 1) * interval - listed_item * interval, "活跃", 16, 16, MY_GREEN);
+            puthz(ADMIN_INTERFACE_X1 + 460, ADMIN_INTERFACE_Y1 + 70 + (max - listed_item  - 1) * interval, "活跃", 16, 16, MY_GREEN);
         }
         else if (TEMP.state == FROZEN)
         {
-            puthz(ADMIN_INTERFACE_X1 + 460, ADMIN_INTERFACE_Y1 + 70 + (max - 1) * interval - listed_item * interval, "冻结", 16, 16, MY_LIGHTBLUE);
+            puthz(ADMIN_INTERFACE_X1 + 460, ADMIN_INTERFACE_Y1 + 70 + (max - listed_item  - 1) * interval, "冻结", 16, 16, MY_LIGHTBLUE);
         }
         else if (TEMP.state == BANNED)
         {
-            puthz(ADMIN_INTERFACE_X1 + 460, ADMIN_INTERFACE_Y1 + 70 + (max - 1) * interval - listed_item * interval, "封禁", 16, 16, MY_RED);
+            puthz(ADMIN_INTERFACE_X1 + 460, ADMIN_INTERFACE_Y1 + 70 + (max - listed_item  - 1) * interval, "封禁", 16, 16, MY_RED);
         }
     }
     else
@@ -943,17 +959,17 @@ void admin_show_ebike_info(LINKLIST_USER usrdat, const int max, const int interv
     {
         settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);                                                                     // 设置字体样式和方向
         ltoa(usrdat.ID, buffer, 10);                                                                                  // 将ID转换为字符串
-        outtextxy(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 284 - listed_item * interval, buffer);                // 输出ID
-        outtextxy(ADMIN_INTERFACE_X1 + 120, ADMIN_INTERFACE_Y1 + 284 - listed_item * interval, usrdat.ebike_ID);      // 输出电动车车牌
-        outtextxy(ADMIN_INTERFACE_X1 + 220, ADMIN_INTERFACE_Y1 + 284 - listed_item * interval, usrdat.ebike_license); // 输出电动车牌照
-        outtextxy(ADMIN_INTERFACE_X1 + 340, ADMIN_INTERFACE_Y1 + 284 - listed_item * interval, usrdat.location);      // 输出地址
+        outtextxy(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 74 + (max - listed_item  - 1) * interval, buffer);                // 输出ID
+        outtextxy(ADMIN_INTERFACE_X1 + 120, ADMIN_INTERFACE_Y1 + 74 + (max - listed_item  - 1) * interval, usrdat.ebike_ID);      // 输出电动车车牌
+        outtextxy(ADMIN_INTERFACE_X1 + 220, ADMIN_INTERFACE_Y1 + 74 + (max - listed_item  - 1) * interval, usrdat.ebike_license); // 输出电动车牌照
+        outtextxy(ADMIN_INTERFACE_X1 + 340, ADMIN_INTERFACE_Y1 + 74 + (max - listed_item  - 1) * interval, usrdat.location);      // 输出地址
         if (usrdat.ebike_state == ACTIVE)
         {
-            puthz(ADMIN_INTERFACE_X1 + 440, ADMIN_INTERFACE_Y1 + 280 - listed_item * interval, "正常", 16, 16, MY_GREEN);
+            puthz(ADMIN_INTERFACE_X1 + 440, ADMIN_INTERFACE_Y1 + 70 + (max - listed_item - 1) * interval, "正常", 16, 16, MY_GREEN);
         }
         else if (usrdat.ebike_state == BROKEN)
         {
-            puthz(ADMIN_INTERFACE_X1 + 440, ADMIN_INTERFACE_Y1 + 280 - listed_item * interval, "损坏", 16, 16, MY_RED);
+            puthz(ADMIN_INTERFACE_X1 + 440, ADMIN_INTERFACE_Y1 + 70 + (max - listed_item - 1) * interval, "损坏", 16, 16, MY_RED);
         }
     }
     else
@@ -967,6 +983,7 @@ void admin_show_ebike_info(LINKLIST_USER usrdat, const int max, const int interv
 void admin_show_ebike_in_out(struct _EBIKE_IN_OUT_ TEMP, const int max, const int interval, int listed_item, int list_sequence)
 {
     char buffer[30]; // 定义缓冲区
+    char buffer2[20];
 
     setcolor(MY_WHITE); // 设置字体颜色为白色
     if (list_sequence == ASCENDING)
@@ -974,18 +991,20 @@ void admin_show_ebike_in_out(struct _EBIKE_IN_OUT_ TEMP, const int max, const in
         settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);                                                                     // 设置字体样式和方向
         outtextxy(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 74 + listed_item * interval, TEMP.ebike_id);            // 输出电动车车牌
         if(TEMP.in_time != 0){
-            sprintf(buffer, "%.4s.%.2s.%.2s", TEMP.in_time, TEMP.in_time + 4, TEMP.in_time + 6, 10); // 将时间转换为字符串
-            outtextxy(ADMIN_INTERFACE_X1 + 100, ADMIN_INTERFACE_Y1 + 74 + listed_item * interval, buffer);            // 输出时间
+            ltoa(TEMP.in_time, buffer, 10);
+            sprintf(buffer2, "%.4s.%.2s.%.2s", buffer, buffer + 4, buffer + 6); // 将时间转换为字符串
+            outtextxy(ADMIN_INTERFACE_X1 + 100, ADMIN_INTERFACE_Y1 + 74 + listed_item * interval, buffer2);            // 输出时间
             puthz(ADMIN_INTERFACE_X1 + 200, ADMIN_INTERFACE_Y1 + 70 + listed_item * interval, "入", 16, 16, MY_GREEN);
             puthz(ADMIN_INTERFACE_X1 + 220, ADMIN_INTERFACE_Y1 + 70 + listed_item * interval, TEMP.location, 16, 16, MY_WHITE);
         }
         else{
-            sprintf(buffer, "%.4s.%.2s.%.2s", TEMP.out_time, TEMP.out_time + 4, TEMP.out_time + 6, 10); // 将时间转换为字符串
-            outtextxy(ADMIN_INTERFACE_X1 + 100, ADMIN_INTERFACE_Y1 + 74 + listed_item * interval, buffer);            // 输出时间
+            ltoa(TEMP.out_time, buffer, 10);
+            sprintf(buffer2, "%.4s.%.2s.%.2s", buffer, buffer + 4, buffer + 6);                         // 将时间转换为字符串
+            outtextxy(ADMIN_INTERFACE_X1 + 100, ADMIN_INTERFACE_Y1 + 74 + listed_item * interval, buffer2);            // 输出时间
             puthz(ADMIN_INTERFACE_X1 + 200, ADMIN_INTERFACE_Y1 + 70 + listed_item * interval, "出", 16, 16, MY_LIGHTBLUE);
             puthz(ADMIN_INTERFACE_X1 + 220, ADMIN_INTERFACE_Y1 + 70 + listed_item * interval, TEMP.location, 16, 16, MY_WHITE);
         }
-        admin_show_ebike_in_out_comment(TEMP.comment, listed_item, interval, max); // 输出备注
+        admin_show_ebike_in_out_comment(TEMP.comment, listed_item, interval, max, ASCENDING); // 输出备注
 
         if (TEMP.result == PENDING)
         {
@@ -1003,37 +1022,40 @@ void admin_show_ebike_in_out(struct _EBIKE_IN_OUT_ TEMP, const int max, const in
     else if (list_sequence == DESCENDING)
     {
         settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);                                                                     // 设置字体样式和方向
-        outtextxy(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 284 - listed_item * interval, TEMP.ebike_id);            // 输出电动车车牌
+        outtextxy(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 74 + (max - listed_item - 1) * interval, TEMP.ebike_id);            // 输出电动车车牌
 
         if(TEMP.in_time!= 0){
-            sprintf(buffer, "%.4s.%.2s.%.2s", TEMP.in_time, TEMP.in_time + 4, TEMP.in_time + 6, 10); // 将时间转换为字符串
-            outtextxy(ADMIN_INTERFACE_X1 + 100, ADMIN_INTERFACE_Y1 + 284 - listed_item * interval, buffer);            // 输出时间
-            puthz(ADMIN_INTERFACE_X1 + 200, ADMIN_INTERFACE_Y1 + 280 - listed_item * interval, "入", 16, 16, MY_GREEN);
-            puthz(ADMIN_INTERFACE_X1 + 220, ADMIN_INTERFACE_Y1 + 280 - listed_item * interval, TEMP.location, 16, 16, MY_WHITE);
+            ltoa(TEMP.in_time, buffer, 10);
+            sprintf(buffer2, "%.4s.%.2s.%.2s", buffer, buffer + 74, buffer + 6);                                        // 将时间转换为字符串
+            outtextxy(ADMIN_INTERFACE_X1 + 100, ADMIN_INTERFACE_Y1 + 74 + (max - listed_item  - 1) * interval, buffer2);            // 输出时间
+            puthz(ADMIN_INTERFACE_X1 + 200, ADMIN_INTERFACE_Y1 + 70 + (max - listed_item - 1) * interval, "入", 16, 16, MY_GREEN);
+            puthz(ADMIN_INTERFACE_X1 + 220, ADMIN_INTERFACE_Y1 + 70 + (max - listed_item - 1) * interval, TEMP.location, 16, 16, MY_WHITE);
         }
         else{
-            sprintf(buffer, "%.4s.%.2s.%.2s", TEMP.out_time, TEMP.out_time + 4, TEMP.out_time + 6, 10); // 将时间转换为字符串
-            outtextxy(ADMIN_INTERFACE_X1 + 100, ADMIN_INTERFACE_Y1 + 284 - listed_item * interval, buffer);            // 输出时间
-            puthz(ADMIN_INTERFACE_X1 + 200, ADMIN_INTERFACE_Y1 + 280 - listed_item * interval, "出", 16, 16, MY_LIGHTBLUE);
-            puthz(ADMIN_INTERFACE_X1 + 220, ADMIN_INTERFACE_Y1 + 280 - listed_item * interval, TEMP.location, 16, 16, MY_WHITE);
+            ltoa(TEMP.out_time, buffer, 10);
+            sprintf(buffer2, "%.4s.%.2s.%.2s", buffer, buffer + 74, buffer + 6);                                        // 将时间转换为字符串
+            outtextxy(ADMIN_INTERFACE_X1 + 100, ADMIN_INTERFACE_Y1 + 74 + (max - listed_item  - 1) * interval, buffer2);            // 输出时间
+            puthz(ADMIN_INTERFACE_X1 + 200, ADMIN_INTERFACE_Y1 + 70 + (max - listed_item - 1) * interval, "出", 16, 16, MY_LIGHTBLUE);
+            puthz(ADMIN_INTERFACE_X1 + 220, ADMIN_INTERFACE_Y1 + 70 + (max - listed_item - 1) * interval, TEMP.location, 16, 16, MY_WHITE);
         }
-        admin_show_ebike_in_out_comment(TEMP.comment, listed_item, interval, max); // 输出备注
+        admin_show_ebike_in_out_comment(TEMP.comment, listed_item, interval, max, DESCENDING); // 输出备注
 
         if (TEMP.result == PENDING)
         {
-            puthz(ADMIN_INTERFACE_X1 + 440, ADMIN_INTERFACE_Y1 + 280 - listed_item * interval, "待处理", 16, 16, MY_WHITE);
+            puthz(ADMIN_INTERFACE_X1 + 440, ADMIN_INTERFACE_Y1 + 70 + (max - listed_item - 1) * interval, "待处理", 16, 16, MY_WHITE);
         }
         else if (TEMP.result == PASSED)
         {
-            puthz(ADMIN_INTERFACE_X1 + 440, ADMIN_INTERFACE_Y1 + 280 - listed_item * interval, "已通过", 16, 16, MY_GREEN);
+            puthz(ADMIN_INTERFACE_X1 + 440, ADMIN_INTERFACE_Y1 + 70 + (max - listed_item - 1) * interval, "已通过", 16, 16, MY_GREEN);
         }
         else if (TEMP.result == FAILED)
         {
-            puthz(ADMIN_INTERFACE_X1 + 440, ADMIN_INTERFACE_Y1 + 280 - listed_item * interval, "未通过", 16, 16, MY_RED);
+            puthz(ADMIN_INTERFACE_X1 + 440, ADMIN_INTERFACE_Y1 + 70 + (max - listed_item - 1) * interval, "未通过", 16, 16, MY_RED);
         }
     }
+    delay(25);
 }
-void admin_show_ebike_in_out_comment(int comment, int listed_item, int interval, int max)
+void admin_show_ebike_in_out_comment(int comment, int listed_item, int interval, int max, int page_change)
 {
     char buffer[20];
 
@@ -1043,10 +1065,15 @@ void admin_show_ebike_in_out_comment(int comment, int listed_item, int interval,
         strcpy(buffer, "在校人员");
     else if (comment == EBIKE_IN_TAKE_OUT || comment == EBIKE_OUT_TAKE_OUT)
         strcpy(buffer, "外卖快递");
-    else if (comment == EBIKE_IN_OTHER)
+    else if (comment == EBIKE_IN_OTHER || comment == EBIKE_OUT_OTHER)
         strcpy(buffer, "其他");
+    else if (comment == EBIKE_IN_VISIT || comment == EBIKE_OUT_VISIT)
+        strcpy(buffer, "来校访问");
 
-    puthz(ADMIN_INTERFACE_X1 + 340, ADMIN_INTERFACE_Y1 + 70 + listed_item * interval, buffer, 16, 16, MY_WHITE);
+    if (page_change == ASCENDING)
+        puthz(ADMIN_INTERFACE_X1 + 340, ADMIN_INTERFACE_Y1 + 70 + listed_item * interval, buffer, 16, 16, MY_WHITE);
+    else if (page_change == DESCENDING)
+        puthz(ADMIN_INTERFACE_X1 + 340, ADMIN_INTERFACE_Y1 + 70 + (max - listed_item  - 1) * interval, buffer, 16, 16, MY_WHITE);
 }
 
 // 判断一个数据块是否应该列出

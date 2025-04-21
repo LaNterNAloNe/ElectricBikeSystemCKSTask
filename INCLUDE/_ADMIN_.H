@@ -261,10 +261,10 @@ enum
 enum
 {
     EBIKE_IN_OUT_NULL = 0,
-    EBIKE_IN_TAKE_OUT,
-    EBIKE_OUT_TAKE_OUT,
     EBIKE_IN_OUT_REGISTERED_UNIT_IN,
     EBIKE_IN_OUT_REGISTERED_UNIT_OUT,
+    EBIKE_IN_TAKE_OUT,
+    EBIKE_OUT_TAKE_OUT,
     EBIKE_IN_VISIT,
     EBIKE_OUT_VISIT,
     EBIKE_IN_OTHER,
@@ -378,7 +378,7 @@ void clear_flip_up(int x1, int y1, int x2, int y2);
 void draw_flip_down(int x1, int y1, int x2, int y2);
 void clear_flip_down(int x1, int y1, int x2, int y2);
 
-void admin_pass_failed_anime(int button_x1, int button_y1, int button_x2, int button_y2, int result);
+void admin_pass_failed_anime(int button_x1, int button_y1, int button_x2, int button_y2, int result, char *prev_text);
 int admin_exitting(int *page);
 void AdminswitchPage();
 

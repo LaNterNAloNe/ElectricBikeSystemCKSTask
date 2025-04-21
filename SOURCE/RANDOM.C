@@ -113,7 +113,7 @@ int rand_io_comment()
         EBIKE_IN_VISIT,
         EBIKE_OUT_VISIT,
         EBIKE_IN_OTHER,
-        EBIKE_OUT_OTHER,
+        EBIKE_OUT_OTHER
     };
     int r = rand() % 6;
     return comment[r];
@@ -125,15 +125,15 @@ void rand_location(char *output, int gate_needed)
                                 "WEST", 
                                 "SOUTH", 
                                 "NORTH"};
-    const char *gate[] = {"South1Gate", 
-                          "South2Gate", 
-                          "South3Gate", 
-                          "WestGate", 
-                          "East1Gate", 
-                          "East2Gate", 
-                          "NorthGate", 
-                          "YunGate",
-                          "ZiGate"}; // 门牌号
+    const char *gate[] = {"南大门", 
+                          "南二门", 
+                          "南三门", 
+                          "西大门", 
+                          "东一门", 
+                          "东二门", 
+                          "北大门", 
+                          "韵苑大门",
+                          "紫菘大门"}; // 门牌号
     int dir;
     int num_len;
 
@@ -209,7 +209,7 @@ void rand_io_data(LINKLIST *LIST)
                     io_data.comment = EBIKE_IN_OUT_REGISTERED_UNIT_OUT;
                 }
 
-                io_data.result = 1; // 校园单位无需后台审核
+                io_data.result = PASSED; // 校园单位无需后台审核
             }
             else // 未在链表中找到ebike_id
             {
@@ -236,9 +236,9 @@ void rand_io_data(LINKLIST *LIST)
             }
 
             if (i > 45)
-                io_data.result = 0; // 校园单位无需后台审核
+                io_data.result = PENDING;
             else
-                io_data.result = 1; // 校园单位需要后台审核
+                io_data.result = PASSED;
         }
 
         fseek(fp, i * sizeof(EBIKE_IN_OUT), SEEK_SET); // 移动文件指针到文件末尾
