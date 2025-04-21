@@ -362,6 +362,7 @@ void message_list_click(int _x, int _y, int _listed_item, int _max, int _interva
 {
     MESSAGE msg; // 用于存储读取的消息
     FILE *fp = NULL;
+    char buffer[20];
     int i = 0; // 用于循环计数
     unsigned int previous_selected_id = *_selected_id; // 用于存储上一次选中的消息ID，非静态变量
 
@@ -382,11 +383,12 @@ void message_list_click(int _x, int _y, int _listed_item, int _max, int _interva
                     return; // 返回
                 }
 
-                message_get(fp, &msg, (char *)_selected_id, "message_id"); // 读取选中的消息
+                ltoa(*_selected_id, buffer, 10);
+                message_get(fp, &msg, buffer, "message_id"); // 读取选中的消息
                 message_display(&msg); // 显示选中的消息
 
                 msg.is_read = 1; // 将消息标记为已读
-                message_overwrite(fp, &msg, (char *)_selected_id, "message_id"); // 将选中的消息标记为已读
+                message_overwrite(fp, &msg, buffer, "message_id"); // 将选中的消息标记为已读
                 previous_selected_id = 0;
                 *_selected_id = 0;
                 fclose(fp);

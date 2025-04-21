@@ -24,7 +24,7 @@ void rand_exist_id(char *output, LINKLIST *LIST)
             continue;
         else
         {
-            strcpy(output, node->USER_DATA.ID); // 该id的数据有ebike_id信息，符合要求
+            strcpy(output, node->USER_DATA.ebike_ID); // 该id的数据有ebike_id信息，符合要求
             break;
         }
     }
@@ -36,12 +36,14 @@ void rand_ebike_id(char *output, LINKLIST *LIST)
     LINKLIST_NODE *node = LIST->HEAD;
     strcpy(output, "\0");
 
-    while(strcpy(output, "\0") == 0){
+    while(strcmp(output, "\0") == 0)
+    {
         for (i = 0; i < 2; i++)
             output[i] = 'A' + rand() % 26; // 生成大写字母
         for (i = 2; i < 6; i++)
             output[i] = '0' + rand() % 10; // 生成数字
         output[6] = '\0';
+
         // 确保id不与现有的重复
         while (node != NULL)
         {
@@ -70,27 +72,27 @@ void rand_license(char *output)
 void rand_time(long *output, int is_past_year, int is_today)
 {
     time_t now = time(NULL);
-    struct tm base = *localtime(&now);
+    struct tm *base = localtime(&now);
     int rand_days = rand() % 365; // 生成随机偏移量
-
+    
     if (is_today == 0)
     {
         // 设置时间范围
         if (is_past_year)
-            base.tm_year--; // 前一年范围
+            base->tm_year--; // 前一年范围
         else
-            base.tm_year++; // 后一年范围
+            base->tm_year++; // 后一年范围
 
         // 生成有效时间
-        mktime(&base);
-        base.tm_mday += rand_days;
-        mktime(&base); // 自动处理时间溢出
+        mktime(base);
+        base->tm_mday += rand_days;
+        mktime(base); // 自动处理时间溢出
 
         // 格式化为YYYYMMDD的8位数
         
     }
 
-    *output = base.tm_year * 10000 + (base.tm_mon + 1) * 100 + base.tm_mday;
+    *output = (long)(base->tm_year + 1900) * 10000 + (base->tm_mon + 1) * 100 + base->tm_mday;
 }
 
 void rand_violations(int *output)
@@ -166,7 +168,7 @@ void rand_io_data(LINKLIST *LIST)
 {
     int i, rand_divide = 0, pos = -1;
     char buffer[20];
-    FILE *fp = fopen("IOTMP.DAT", "wb+");
+    FILE *fp = fopen("DATA\\IOTMP.DAT", "wb");
     LINKLIST_NODE *user_data;
     EBIKE_IN_OUT io_data;
     if (fp == NULL)
@@ -183,7 +185,6 @@ void rand_io_data(LINKLIST *LIST)
     // 生成随机数据
     for (i = 0; i < 48; i++) // 一次生成48条数据
     {
-        
         io_data.apply_id = rand_int(1000000000, 9999999999); // 生成10位数字
 
         if (rand_int(1, 4) <= rand_divide) // 概率生成在校成员进出校园，进入这个语句的前提是链表中有数据
@@ -194,7 +195,7 @@ void rand_io_data(LINKLIST *LIST)
             {
                 linklist_get_to_node(LIST, pos, &user_data);
                 strcpy(io_data.ebike_license, user_data->USER_DATA.ebike_license); // 复制ebike_license
-                rand_location(io_data.location);                                   // 生成随机location
+                rand_location(io_data.location, 0);                                   // 生成随机location
                 if (rand_int(1, 2) == 1)                                           // 50%概率
                 {
                     rand_time(&io_data.in_time, 0, 1);                                 // 生成随机time
@@ -215,7 +216,6 @@ void rand_io_data(LINKLIST *LIST)
                 i--; // 重新生成
                 continue;
             }
-
         }
         else // 概率生成外放车辆进出校园
         {
@@ -240,6 +240,21 @@ void rand_io_data(LINKLIST *LIST)
             else
                 io_data.result = 1; // 校园单位需要后台审核
         }
+
+        fseek(fp, i * sizeof(EBIKE_IN_OUT), SEEK_SET); // 移动文件指针到文件末尾
+        fwrite(&io_data, sizeof(EBIKE_IN_OUT), 1, fp); // 写入文件
+    }
+    fclose(fp); // 关闭文件
+
+    // 将temp文件替换IO文件
+    remove("DATA\\IO.DAT"); // 删除IO文件
+
+    if(rename("DATA\\IOTMP.DAT", "DATA\\IO.DAT") != 0) // 重命名temp文件为IO文件
+    {
+        closegraph();
+        printf("Error: Cannot rename file IOTMP.DAT\n");
+        getch();
+        exit(1);
     }
 
 }

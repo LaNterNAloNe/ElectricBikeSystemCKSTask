@@ -43,7 +43,7 @@ void display_memory_usage(int x, int y)
     outtextxy(x, y + 10, mem_str);
 }
 
-void show_num(int x, int y, unsigned long value, int color)
+void show_num(int x, int y, long value, int color)
 {
     char text[20];
     sprintf(text, "%ld", value); // 将整数转换为字符串

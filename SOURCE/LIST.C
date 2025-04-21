@@ -39,9 +39,6 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
     EBIKE_IN_OUT ebike_in_out_temp;
     LINKLIST_NODE *node = NULL;
 
-    // show_num(10, 10, start, MY_WHITE); // 显示start
-    // show_num(10, 30, end, MY_WHITE);   // 显示end
-
     if (debug_mode == 1)
     {
         setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
@@ -216,6 +213,7 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
     if (debug_mode == 1)
         puthz(ADMIN_INTERFACE_X1 + 140, ADMIN_INTERFACE_Y1 + 70 + max * interval, "检查三", 16, 16, MY_RED);
 
+
     /* 6.前置操作完成，正式开始列表 */
     // 收到下翻指令，或改变当前列表状态后从起点开始重新刷新列表 //
     if (valid_counts > 0 && page_change == LIST_PAGEDOWN)
@@ -273,7 +271,7 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
             else if (flag == ADMIN_MESSAGE)
             {
                 /* 信息的读取较为特殊，需要从后往前读取，且认为最后面的是第一个。为不造成冲突，要读取文件时采取即时计算读取位置的方式 */
-                fseek(fp, (counts - temp_start - 1) * sizeof(user_temp), SEEK_SET); // 先判断接下来是否有可以列出的数据
+                fseek(fp, (counts - temp_start) * sizeof(user_temp), SEEK_SET); // 先判断接下来是否有可以列出的数据
                 if (!fread(&message_temp, sizeof(message_temp), 1, fp))             // 读取下一个数据块
                 {
                     return; // 到文件末尾都没有发现可列表的，则不执行下翻列表操作
@@ -285,7 +283,7 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
             }
             else if (flag == ADMIN_DATABASE_EBIKE_PASS_IN_OUT)
             {
-                fseek(fp, (temp_start) * sizeof(ebike_in_out_temp), SEEK_SET); // 先判断接下来是否有可以列出的数据
+                fseek(fp, (counts - temp_start) * sizeof(ebike_in_out_temp), SEEK_SET); // 先判断接下来是否有可以列出的数据
                 if (!fread(&ebike_in_out_temp, sizeof(ebike_in_out_temp), 1, fp))      // 读取下一个数据块
                 {
                     return; // 到文件末尾都没有发现可列表的，则不执行下翻列表操作
@@ -369,7 +367,7 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
             }
             else if (flag == ADMIN_MESSAGE)
             {
-                fseek(fp, (counts - temp_end - 1) * sizeof(message_temp), SEEK_SET); // 先判断接下来是否有可以列出的数据
+                fseek(fp, (counts - temp_end) * sizeof(message_temp), SEEK_SET); // 先判断接下来是否有可以列出的数据
                 if (!fread(&message_temp, sizeof(message_temp), 1, fp))             // 读取下一个数据块
                 {
                     puthz(ADMIN_INTERFACE_X1 + 190, ADMIN_INTERFACE_Y1 + 70 + listed_item * interval, "没有更多数据了哦！", 16, 16, MY_RED);
@@ -386,7 +384,7 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
             }
             else if (flag == ADMIN_DATABASE_EBIKE_PASS_IN_OUT)
             {
-                fseek(fp, (temp_end) * sizeof(ebike_in_out_temp), SEEK_SET); // 先判断接下来是否有可以列出的数据
+                fseek(fp, (counts - temp_end) * sizeof(ebike_in_out_temp), SEEK_SET); // 先判断接下来是否有可以列出的数据
                 if (!fread(&ebike_in_out_temp, sizeof(ebike_in_out_temp), 1, fp))      // 读取下一个数据块
                 {
                     puthz(ADMIN_INTERFACE_X1 + 190, ADMIN_INTERFACE_Y1 + 70 + listed_item * interval, "没有更多数据了哦！", 16, 16, MY_RED);
@@ -466,7 +464,7 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
             }
             else if (flag == ADMIN_MESSAGE)
             {
-                if (fseek(fp, (counts - temp_start - 1) * sizeof(message_temp), SEEK_SET)) // 读取上一个数据块，当文件指针尝试移动到负数时，fseek会返回非零数
+                if (fseek(fp, (counts - temp_start) * sizeof(message_temp), SEEK_SET)) // 读取上一个数据块，当文件指针尝试移动到负数时，fseek会返回非零数
                 {
                     return; // 到文件开头都没有发现可列表的，则不执行上翻列表操作 
                 }
@@ -479,7 +477,7 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
             }
             else if (flag == ADMIN_DATABASE_EBIKE_PASS_IN_OUT)
             {
-                if (fseek(fp, (counts - temp_start - 1) * sizeof(ebike_in_out_temp), SEEK_SET)) // 读取上一个数据块，当文件指针尝试移动到负数时，fseek会返回非零数
+                if (fseek(fp, (counts - temp_start) * sizeof(ebike_in_out_temp), SEEK_SET)) // 读取上一个数据块，当文件指针尝试移动到负数时，fseek会返回非零数
                 {
                     return; // 到文件开头都没有发现可列表的，则不执行上翻列表操作
                 }
@@ -553,7 +551,7 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
             }
             else if (flag == ADMIN_MESSAGE)
             {
-                fseek(fp, (counts - temp_start - 1) * sizeof(message_temp), SEEK_SET); // 读取上一个数据块，当文件指针尝试移动到负数时，fseek会返回非零数
+                fseek(fp, (counts - temp_start) * sizeof(message_temp), SEEK_SET); // 读取上一个数据块，当文件指针尝试移动到负数时，fseek会返回非零数
                 fread(&message_temp, sizeof(message_temp), 1, fp);                     // 读取上一个数据块
                 if (!message_is_valid(message_temp, search_str, search_needed))
                 {
@@ -566,7 +564,7 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
             }
             else if (flag == ADMIN_DATABASE_EBIKE_PASS_IN_OUT)
             {
-                fseek(fp, (counts - temp_start - 1) * sizeof(ebike_in_out_temp), SEEK_SET); // 读取上一个数据块，当文件指针尝试移动到负数时，fseek会返回非零数
+                fseek(fp, (counts - temp_start) * sizeof(ebike_in_out_temp), SEEK_SET); // 读取上一个数据块，当文件指针尝试移动到负数时，fseek会返回非零数
                 fread(&ebike_in_out_temp, sizeof(ebike_in_out_temp), 1, fp);                     // 读取上一个数据块
                 if (!list_ebike_in_out_is_valid(ebike_in_out_temp, search_str, search_needed))
                 {
@@ -596,6 +594,8 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
 
         /*条件判断*/
         end = start; // end不能赋为负数，因为end为无符号整形数
+        temp_end = start;
+        temp_start = start;
         while (1)
         {
             if (flag == ADMIN_DATABASE_EBIKE_MANAGE)
@@ -989,15 +989,15 @@ void admin_show_ebike_in_out(struct _EBIKE_IN_OUT_ TEMP, const int max, const in
 
         if (TEMP.result == PENDING)
         {
-            puthz(ADMIN_INTERFACE_X1 + 340, ADMIN_INTERFACE_Y1 + 70 + listed_item * interval, "待处理", 16, 16, MY_WHITE);
+            puthz(ADMIN_INTERFACE_X1 + 440, ADMIN_INTERFACE_Y1 + 70 + listed_item * interval, "待处理", 16, 16, MY_WHITE);
         }
         else if (TEMP.result == PASSED)
         {
-            puthz(ADMIN_INTERFACE_X1 + 340, ADMIN_INTERFACE_Y1 + 70 + listed_item * interval, "已通过", 16, 16, MY_GREEN);
+            puthz(ADMIN_INTERFACE_X1 + 440, ADMIN_INTERFACE_Y1 + 70 + listed_item * interval, "已通过", 16, 16, MY_GREEN);
         }
         else if (TEMP.result == FAILED)
         {
-            puthz(ADMIN_INTERFACE_X1 + 340, ADMIN_INTERFACE_Y1 + 70 + listed_item * interval, "未通过", 16, 16, MY_RED);
+            puthz(ADMIN_INTERFACE_X1 + 440, ADMIN_INTERFACE_Y1 + 70 + listed_item * interval, "未通过", 16, 16, MY_RED);
         }
     }
     else if (list_sequence == DESCENDING)
@@ -1021,15 +1021,15 @@ void admin_show_ebike_in_out(struct _EBIKE_IN_OUT_ TEMP, const int max, const in
 
         if (TEMP.result == PENDING)
         {
-            puthz(ADMIN_INTERFACE_X1 + 340, ADMIN_INTERFACE_Y1 + 280 - listed_item * interval, "待处理", 16, 16, MY_WHITE);
+            puthz(ADMIN_INTERFACE_X1 + 440, ADMIN_INTERFACE_Y1 + 280 - listed_item * interval, "待处理", 16, 16, MY_WHITE);
         }
         else if (TEMP.result == PASSED)
         {
-            puthz(ADMIN_INTERFACE_X1 + 340, ADMIN_INTERFACE_Y1 + 280 - listed_item * interval, "已通过", 16, 16, MY_GREEN);
+            puthz(ADMIN_INTERFACE_X1 + 440, ADMIN_INTERFACE_Y1 + 280 - listed_item * interval, "已通过", 16, 16, MY_GREEN);
         }
         else if (TEMP.result == FAILED)
         {
-            puthz(ADMIN_INTERFACE_X1 + 340, ADMIN_INTERFACE_Y1 + 280 - listed_item * interval, "未通过", 16, 16, MY_RED);
+            puthz(ADMIN_INTERFACE_X1 + 440, ADMIN_INTERFACE_Y1 + 280 - listed_item * interval, "未通过", 16, 16, MY_RED);
         }
     }
 }
@@ -1136,7 +1136,8 @@ void list_show_page_index(unsigned int page_index, unsigned int page_count, cons
 }
 
 // 绘制选中的行的图形动画，同时返回选中行对应数据的id
-void handle_list_select_line_admin(LINKLIST *LIST, unsigned long item_id[], unsigned long *selected_id, const int max, const int interval)
+void handle_list_select_line_admin(LINKLIST *LIST, unsigned long item_id[], unsigned long *selected_id, const int max, const int interval,
+                                   int page, int flag)
 {
     int i;
     unsigned long previous_selected_id = *selected_id;
@@ -1158,54 +1159,57 @@ void handle_list_select_line_admin(LINKLIST *LIST, unsigned long item_id[], unsi
 
             *selected_id = item_id[i];
 
-            // 输出选中行的补充信息
-            setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
-            bar(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 90 + max * interval,
-                ADMIN_INTERFACE_X1 + 420, ADMIN_INTERFACE_Y1 + 130 + max * interval); // 清理选中行显示的具体信息
+            if(flag != ADMIN_DATABASE_EBIKE_PASS_IN_OUT && flag!= ADMIN_DATABASE_EBIKE_INFO)
+            {
+                // 输出选中行的补充信息
+                setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
+                bar(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 90 + max * interval,
+                    ADMIN_INTERFACE_X1 + 420, ADMIN_INTERFACE_Y1 + 130 + max * interval); // 清理选中行显示的具体信息
 
-            puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 90 + max * interval, "姓名", 16, 16, MY_WHITE); // 输出选中行的具体信息
-            puthz(ADMIN_INTERFACE_X1 + 120, ADMIN_INTERFACE_Y1 + 90 + max * interval, "电动车牌", 16, 16, MY_WHITE);
-            puthz(ADMIN_INTERFACE_X1 + 220, ADMIN_INTERFACE_Y1 + 90 + max * interval, "通行证", 16, 16, MY_WHITE);
-            puthz(ADMIN_INTERFACE_X1 + 340, ADMIN_INTERFACE_Y1 + 90 + max * interval, "违规次数", 16, 16, MY_WHITE);
+                puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 90 + max * interval, "姓名", 16, 16, MY_WHITE); // 输出选中行的具体信息
+                puthz(ADMIN_INTERFACE_X1 + 120, ADMIN_INTERFACE_Y1 + 90 + max * interval, "电动车牌", 16, 16, MY_WHITE);
+                puthz(ADMIN_INTERFACE_X1 + 220, ADMIN_INTERFACE_Y1 + 90 + max * interval, "通行证", 16, 16, MY_WHITE);
+                puthz(ADMIN_INTERFACE_X1 + 340, ADMIN_INTERFACE_Y1 + 90 + max * interval, "违规次数", 16, 16, MY_WHITE);
 
-            ltoa (*selected_id, buffer, 10); // 将ID转换为字符串
-            pos = linklist_find_data(LIST, buffer, "ID"); // 查找ID对应的节点
-            if(pos == 0)
-            {
-                puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 110 + max * interval, "未找到对应数据", 16, 16, MY_RED);
-                return;
-            }
-            linklist_get_to_node(LIST, pos, &node); // 将指针指向对应节点
+                ltoa(*selected_id, buffer, 10);               // 将ID转换为字符串
+                pos = linklist_find_data(LIST, buffer, "ID"); // 查找ID对应的节点
+                if (pos == -1)
+                {
+                    puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 110 + max * interval, "未找到对应数据", 16, 16, MY_RED);
+                    return;
+                }
+                linklist_get_to_node(LIST, pos, &node); // 将指针指向对应节点
 
-            if (node->USER_DATA.rln != "0" && node->USER_DATA.rln != NULL) // 输出电动车状态
-            {
-                puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 110 + max * interval, node->USER_DATA.rln, 16, 16, MY_WHITE); // 输出姓名
-            }
-            else 
-            {
-                puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 110 + max * interval, "未登记姓名", 16, 16, MY_RED); // 输出姓名
-            }
-            if (node->USER_DATA.ebike_ID != "0" && node->USER_DATA.ebike_ID != NULL) // 输出电动车状态
-            {
+                if (node->USER_DATA.rln != "0" && node->USER_DATA.rln != NULL) // 输出电动车状态
+                {
+                    puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 110 + max * interval, node->USER_DATA.rln, 16, 16, MY_WHITE); // 输出姓名
+                }
+                else
+                {
+                    puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 110 + max * interval, "未登记姓名", 16, 16, MY_RED); // 输出姓名
+                }
+                if (node->USER_DATA.ebike_ID != "0" && node->USER_DATA.ebike_ID != NULL) // 输出电动车状态
+                {
+                    settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);
+                    outtextxy(ADMIN_INTERFACE_X1 + 120, ADMIN_INTERFACE_Y1 + 114 + max * interval, node->USER_DATA.ebike_ID); // 输出电动车车牌
+                }
+                else
+                {
+                    puthz(ADMIN_INTERFACE_X1 + 120, ADMIN_INTERFACE_Y1 + 110 + max * interval, "未登记车牌", 16, 16, MY_RED); // 输出电动车车牌
+                }
+                if (node->USER_DATA.ebike_license != "0" && node->USER_DATA.ebike_license != NULL) // 输出电动车状态
+                {
+                    settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);
+                    outtextxy(ADMIN_INTERFACE_X1 + 220, ADMIN_INTERFACE_Y1 + 114 + max * interval, node->USER_DATA.ebike_ID); // 输出电动车车牌
+                }
+                else
+                {
+                    puthz(ADMIN_INTERFACE_X1 + 220, ADMIN_INTERFACE_Y1 + 110 + max * interval, "未登记通行证", 16, 16, MY_RED); // 输出电动车车牌
+                }
+                ltoa(node->USER_DATA.violations, buffer, 10); // 将ID转换为字符串
                 settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);
-                outtextxy(ADMIN_INTERFACE_X1 + 120, ADMIN_INTERFACE_Y1 + 114 + max * interval, node->USER_DATA.ebike_ID); // 输出电动车车牌
+                outtextxy(ADMIN_INTERFACE_X1 + 340, ADMIN_INTERFACE_Y1 + 110 + max * interval, buffer); // 违规次数
             }
-            else
-            {
-                puthz(ADMIN_INTERFACE_X1 + 120, ADMIN_INTERFACE_Y1 + 110 + max * interval, "未登记车牌", 16, 16, MY_RED); // 输出电动车车牌
-            }
-            if (node->USER_DATA.ebike_license != "0" && node->USER_DATA.ebike_license != NULL) // 输出电动车状态
-            {
-                settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);
-                outtextxy(ADMIN_INTERFACE_X1 + 220, ADMIN_INTERFACE_Y1 + 114 + max * interval, node->USER_DATA.ebike_ID); // 输出电动车车牌
-            }
-            else
-            {
-                puthz(ADMIN_INTERFACE_X1 + 220, ADMIN_INTERFACE_Y1 + 110 + max * interval, "未登记通行证", 16, 16, MY_RED); // 输出电动车车牌  
-            }
-            ltoa (node->USER_DATA.violations, buffer, 10); // 将ID转换为字符串
-            settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);
-            outtextxy(ADMIN_INTERFACE_X1 + 340, ADMIN_INTERFACE_Y1 + 110 + max * interval, buffer); // 违规次数
         }
     }
     if (previous_selected_id == *selected_id &&

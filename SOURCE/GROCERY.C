@@ -13,6 +13,7 @@ unsigned long get_approx_time(char *time_buffer)
     if(time_buffer !=NULL)
         strcpy(time_buffer, buffer); // 当传入的指针不为空时，将时间字符串复制到传入的指针指向的内存中
 
+    tm == NULL; // 置零指针
     return atol(buffer);
 }
 
@@ -26,6 +27,7 @@ unsigned long get_exact_time(char *exact_buffer)
     if (exact_buffer != NULL)
         strcpy(exact_buffer, buffer); // 当传入的指针不为空时，将时间字符串复制到传入的指针指向的内存中
 
+    tm == NULL; // 置零指针
     return atol(buffer);
 }
 

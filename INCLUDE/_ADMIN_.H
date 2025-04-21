@@ -341,7 +341,7 @@ void admin_handle_manage_feature_event(LINKLIST *LIST, int *page, char *search_s
                                        FILE *fp_EBIKE_INFO_read, int *mode, unsigned long *selected_id);
 void admin_handle_buttons_event(int *page);
 void admin_handle_database_event(LINKLIST *LIST, int *flag, int *page, unsigned long *id_list,
-                                 FILE *fp_EBIKE_INFO_read, char *search_str, unsigned long *selected_id);
+                                 FILE **fp, char *search_str, unsigned long *selected_id);
 void admin_handle_modify_user_data_event(FILE *fp, unsigned long *user_id, int *isReturn);
 void admin_handle_modify_ebike_data_event(LINKLIST *LIST, unsigned long *user_id, int *isReturn);
 

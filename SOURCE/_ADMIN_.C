@@ -65,7 +65,7 @@ void admin_manage_bike_module(int *page, unsigned long *ID, LINKLIST *LIST, char
 
         admin_flush_buttons(&tag, STRUCT_LENGTH(AdminButtons), AdminButtons);
         admin_handle_buttons_event(page);
-        handle_list_select_line_admin(LIST, id_list, &selected_id, LIST_LIMIT, LIST_INTERVAL);
+        handle_list_select_line_admin(LIST, id_list, &selected_id, LIST_LIMIT, LIST_INTERVAL, *page, NULL);
         admin_handle_manage_feature_event(LIST, page, search_str, id_list, fp_EBIKE_INFO_read, &mode, &selected_id); // 处理点击事件
 
         newmouse(&MouseX, &MouseY, &press, &mouse_flag);
@@ -117,10 +117,8 @@ void admin_database(int *page, unsigned long *ID , LINKLIST *LIST){
     unsigned long id_list[8] = {0,0,0,0,0,0,0,0}; // 记录当前显示的列表每行对应的ID
     char search_str[20] = "\0"; // 搜索框输入信息储存
     ADMIN_BUTTONS AdminButtons[19];
-    FILE *fp_USER_LOGIN_DATA_read = fopen("DATA\\USER.DAT", "rb+"); // 打开用户登录数据文件
-    if (!fp_USER_LOGIN_DATA_read){
-        getch(), exit(1);
-    }
+    FILE *fp = NULL; // 打开用户登录数据文件
+
     // 列出车辆信息时，通过链表获取数据，因此不定义文件指针
 
     define_admin_buttons(AdminButtons, *page); // 定义按钮 
@@ -132,12 +130,42 @@ void admin_database(int *page, unsigned long *ID , LINKLIST *LIST){
         display_memory_usage(400, 10); // 显示调试参数
 
     while (*page == ADMIN_DATABASE){
+
+        // show_num(10,10, flag, MY_WHITE);
+        // if (flag != old_flag)
+        // {
+        //     if (fp != NULL){
+        //         fclose(fp); // 关闭文件
+        //         fp = NULL; // 置零指针
+        //     }
+
+        //     if(flag == ADMIN_DATABASE_USER_INFO)
+        //     {
+        //         fp = fopen("DATA\\USER.DAT", "rb+"); // 打开用户登录数据文件
+        //         old_flag = flag; // 记录上一次的数据一览视图代号
+        //         if (fp == NULL) // 打开失败
+        //         {
+        //             drawExittingProgram(1); // 显示错误信息
+        //             exit(1); // 终止程序
+        //         }
+        //     }
+        //     if (flag == ADMIN_DATABASE_EBIKE_PASS_IN_OUT)
+        //     {
+        //         fp = fopen("DATA\\IO.DAT", "rb+"); // 打开车辆信息数据文件
+        //         old_flag = flag; // 记录上一次的数据一览视图代号
+        //         if (fp == NULL) // 打开失败
+        //         {
+        //             drawExittingProgram(1); // 显示错误信息
+        //             exit(1); // 终止程序
+        //         }
+        //     }
+        // }
         newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
 
         admin_flush_buttons(&tag, STRUCT_LENGTH(AdminButtons), AdminButtons);
         admin_handle_buttons_event(page);
-        admin_handle_database_event(LIST, &flag, page, id_list, fp_USER_LOGIN_DATA_read,search_str, &selected_id); // 处理点击事件
-        handle_list_select_line_admin(LIST, id_list, &selected_id, LIST_LIMIT, LIST_INTERVAL);
+        admin_handle_database_event(LIST, &flag, page, id_list, &fp,search_str, &selected_id); // 处理点击事件
+        handle_list_select_line_admin(LIST, id_list, &selected_id, LIST_LIMIT, LIST_INTERVAL, NULL, flag);
 
         newmouse(&MouseX, &MouseY, &press, &mouse_flag);
 
@@ -146,7 +174,7 @@ void admin_database(int *page, unsigned long *ID , LINKLIST *LIST){
 
     admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, NULL, NULL, NULL, NULL, NULL, NULL, LIST_CLEAR, NULL, NULL); // 清除列表
     ch_input(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
-    fclose(fp_USER_LOGIN_DATA_read);
+    fclose(fp);
 }
 
 void admin_modify_data(LINKLIST *LIST, FILE *fp, char *file_type, unsigned long *user_id)
@@ -1178,11 +1206,12 @@ void admin_handle_manage_feature_event(LINKLIST *LIST, int *page, char *search_s
 }
 
 void admin_handle_database_event(LINKLIST *LIST, int *flag, int *page, unsigned long *id_list, 
-                                 FILE *fp, char *search_str, unsigned long *selected_id)
+                                 FILE **fp, char *search_str, unsigned long *selected_id)
 {
     long pos = -1; // 查找数据得到的位置
     EBIKE_IN_OUT ebike_in_out_temp;
     char file_type[20];
+    char buffer[20];
 
     switch (*flag){ // 枚举情况，在数据库中不会单独打开五个特性功能的文件，所以不列举ebike_manage
         case ADMIN_DATABASE_USER_INFO:
@@ -1213,7 +1242,12 @@ void admin_handle_database_event(LINKLIST *LIST, int *flag, int *page, unsigned 
         drawgraph_admin_database_user_info();
         *flag = ADMIN_DATABASE_USER_INFO;
         strcpy(file_type, "user_data");
-        admin_list_info(LIST, LIST_LIMIT, LIST_INTERVAL, id_list, fp, file_type, NULL, NULL, LIST_STAY, LIST_CLEAR_CONTINUE, search_str, "ID");
+        if (*fp != NULL)
+        {
+            fclose(*fp);                        // 关闭原文件
+        }
+        *fp = fopen("DATA\\USER.DAT", "rb+"); // 打开新文件
+        admin_list_info(LIST, LIST_LIMIT, LIST_INTERVAL, id_list, *fp, file_type, NULL, NULL, LIST_STAY, LIST_CLEAR_CONTINUE, search_str, "ID");
         return;
     }
     /*点击车辆信息*/
@@ -1223,6 +1257,11 @@ void admin_handle_database_event(LINKLIST *LIST, int *flag, int *page, unsigned 
         drawgraph_admin_database_ebike_info();
         *flag = ADMIN_DATABASE_EBIKE_INFO;
         strcpy(file_type, "ebike_data");
+        if (*fp != NULL)
+        {
+            fclose(*fp);                        // 关闭原文件
+            *fp = NULL;                         // 置零指针
+        }
         admin_list_info(LIST, LIST_LIMIT, LIST_INTERVAL, id_list, NULL, file_type, NULL, NULL, LIST_STAY, LIST_CLEAR_CONTINUE, search_str, "ID");
         return;
     }
@@ -1233,26 +1272,37 @@ void admin_handle_database_event(LINKLIST *LIST, int *flag, int *page, unsigned 
         drawgraph_admin_database_ebike_pass_in_out();
         *flag = ADMIN_DATABASE_EBIKE_PASS_IN_OUT;
         strcpy(file_type, "ebike_pass_in_out");
-        admin_list_info(LIST, LIST_LIMIT, LIST_INTERVAL, id_list, NULL, file_type, NULL, NULL, LIST_STAY, LIST_CLEAR_CONTINUE, search_str, "ID");
+        if (*fp != NULL)
+        {
+            fclose(*fp);                        // 关闭原文件
+        }
+        *fp = fopen("DATA\\IO.DAT", "rb+"); // 打开新文件
+        admin_list_info(LIST, LIST_LIMIT, LIST_INTERVAL, id_list, *fp, file_type, NULL, NULL, LIST_STAY, LIST_CLEAR_CONTINUE, search_str, "apply_id");
         return;
     }
 
     /*点击翻页*/
     if (mouse_press(ADMIN_FEATURE_UP_X1, ADMIN_FEATURE_UP_Y1, ADMIN_FEATURE_UP_X2, ADMIN_FEATURE_UP_Y2) == 1){
         if (*flag != ADMIN_DATABASE_EBIKE_INFO){
-            admin_list_info(LIST, LIST_LIMIT, LIST_INTERVAL, id_list, fp, file_type, NULL, NULL, LIST_PAGEUP, LIST_NO_CLEAR, search_str, "ID");
+            admin_list_info(LIST, LIST_LIMIT, LIST_INTERVAL, id_list, *fp, file_type, NULL, NULL, LIST_PAGEUP, LIST_NO_CLEAR, search_str, "ID");
         }
         else if (*flag == ADMIN_DATABASE_EBIKE_INFO){
-            admin_list_info(LIST, LIST_LIMIT, LIST_INTERVAL, id_list, fp, file_type, NULL, NULL, LIST_PAGEUP, LIST_NO_CLEAR, search_str, "ID");
+            admin_list_info(LIST, LIST_LIMIT, LIST_INTERVAL, id_list, NULL, file_type, NULL, NULL, LIST_PAGEUP, LIST_NO_CLEAR, search_str, "ID");
+        }
+        else if (*flag == ADMIN_DATABASE_EBIKE_PASS_IN_OUT){
+            admin_list_info(LIST, LIST_LIMIT, LIST_INTERVAL, id_list, *fp, file_type, NULL, NULL, LIST_PAGEUP, LIST_NO_CLEAR, search_str, "apply_id");
         }
         return;
     }
     if (mouse_press(ADMIN_FEATURE_DOWN_X1, ADMIN_FEATURE_DOWN_Y1, ADMIN_FEATURE_DOWN_X2, ADMIN_FEATURE_DOWN_Y2) == 1){
         if (*flag != ADMIN_DATABASE_EBIKE_INFO){
-            admin_list_info(LIST, LIST_LIMIT, LIST_INTERVAL, id_list, fp, file_type, NULL, NULL, LIST_PAGEDOWN, LIST_NO_CLEAR, search_str, "ID"); 
+            admin_list_info(LIST, LIST_LIMIT, LIST_INTERVAL, id_list, *fp, file_type, NULL, NULL, LIST_PAGEDOWN, LIST_NO_CLEAR, search_str, "ID"); 
         }
         else if (*flag == ADMIN_DATABASE_EBIKE_INFO){
-            admin_list_info(LIST, LIST_LIMIT, LIST_INTERVAL, id_list, fp, file_type, NULL, NULL, LIST_PAGEDOWN, LIST_NO_CLEAR, search_str, "ID");
+            admin_list_info(LIST, LIST_LIMIT, LIST_INTERVAL, id_list, NULL, file_type, NULL, NULL, LIST_PAGEDOWN, LIST_NO_CLEAR, search_str, "ID");
+        }
+        else if (*flag == ADMIN_DATABASE_EBIKE_PASS_IN_OUT){
+            admin_list_info(LIST, LIST_LIMIT, LIST_INTERVAL, id_list, *fp, file_type, NULL, NULL, LIST_PAGEDOWN, LIST_NO_CLEAR, search_str, "apply_id");
         }
         return;
     }
@@ -1261,7 +1311,7 @@ void admin_handle_database_event(LINKLIST *LIST, int *flag, int *page, unsigned 
     {
         ch_input(search_str, ADMIN_FEATURE_SEARCH_X1 + 25, ADMIN_FEATURE_SEARCH_Y1 + 2, 9, MY_LIGHTGRAY, 0, 1);
 
-        admin_list_info(LIST, LIST_LIMIT, LIST_INTERVAL, id_list, fp, file_type, NULL, NULL, LIST_STAY, LIST_CLEAR_CONTINUE, search_str, "ID"); // 搜索后刷新列表
+        admin_list_info(LIST, LIST_LIMIT, LIST_INTERVAL, id_list, *fp, file_type, NULL, NULL, LIST_STAY, LIST_CLEAR_CONTINUE, search_str, "ID"); // 搜索后刷新列表
         return;
     }
     /*点击修改信息*/
@@ -1270,13 +1320,13 @@ void admin_handle_database_event(LINKLIST *LIST, int *flag, int *page, unsigned 
     {
         if (*selected_id != 0){
             if (*flag == ADMIN_DATABASE_USER_INFO){ // 若在用户信息界面点击修改信息，则进入用户信息修改界面
-                admin_modify_data(LIST, fp, "user_data", selected_id);
+                admin_modify_data(LIST, *fp, "user_data", selected_id);
             }
             else if (*flag == ADMIN_DATABASE_EBIKE_INFO){ // 若在车辆信息界面点击修改信息，则进入车辆信息修改界面
-                admin_modify_data(LIST, fp, "ebike_data", selected_id);
+                admin_modify_data(LIST, *fp, "ebike_data", selected_id);
             }
             strcpy(search_str, "\0"); // 清除过滤依据以恢复正常列表，这一句很重要！
-            admin_list_info(LIST, LIST_LIMIT, LIST_INTERVAL, id_list, fp, file_type, NULL, NULL, LIST_STAY, LIST_CLEAR_CONTINUE, search_str, "ID");
+            admin_list_info(LIST, LIST_LIMIT, LIST_INTERVAL, id_list, *fp, file_type, NULL, NULL, LIST_STAY, LIST_CLEAR_CONTINUE, search_str, "ID");
         }
         return;
     }
@@ -1285,16 +1335,17 @@ void admin_handle_database_event(LINKLIST *LIST, int *flag, int *page, unsigned 
         *flag == ADMIN_DATABASE_EBIKE_PASS_IN_OUT)
     {
         if (*selected_id!= 0){
-            pos = find_file_info(fp, file_type, (char *)selected_id, "apply_id"); // 查找数据块
+            ltoa(*selected_id, buffer, 10);
+            pos = find_file_info(*fp, file_type, buffer, "apply_id"); // 查找数据块
             if (pos == -1)
                 return; // 未找到数据块，不进行任何操作
-            fseek (fp, -sizeof(EBIKE_IN_OUT), SEEK_CUR); // 定位到数据块
-            fread (&ebike_in_out_temp, sizeof(EBIKE_IN_OUT), 1, fp); // 读取数据块
+            fseek (*fp, -sizeof(EBIKE_IN_OUT), SEEK_CUR); // 定位到数据块
+            fread (&ebike_in_out_temp, sizeof(EBIKE_IN_OUT), 1, *fp); // 读取数据块
             ebike_in_out_temp.result = FAILED; // 修改数据块中的result字段为FAILED
-            fseek (fp, -sizeof(EBIKE_IN_OUT), SEEK_CUR); // 定位到数据块
-            fwrite (&ebike_in_out_temp, sizeof (EBIKE_IN_OUT), 1, fp); // 将修改后的数据块写入文件
+            fseek (*fp, -sizeof(EBIKE_IN_OUT), SEEK_CUR); // 定位到数据块
+            fwrite (&ebike_in_out_temp, sizeof (EBIKE_IN_OUT), 1, *fp); // 将修改后的数据块写入文件
             admin_pass_failed_anime(ADMIN_FEATURE6_X1, ADMIN_FEATURE6_Y1, ADMIN_FEATURE6_X2, ADMIN_FEATURE6_Y2, FAILED); // 操作后的动画
-            admin_list_info(LIST, LIST_LIMIT, LIST_INTERVAL, id_list, fp, file_type, NULL, NULL, LIST_STAY, LIST_FLUSH, "\0", "\0"); // 操作结束后刷新列表
+            admin_list_info(LIST, LIST_LIMIT, LIST_INTERVAL, id_list, *fp, file_type, NULL, NULL, LIST_STAY, LIST_FLUSH, "\0", "\0"); // 操作结束后刷新列表
         }
     }
     /* 在车辆出入界面，点击同意申请 */
@@ -1302,16 +1353,17 @@ void admin_handle_database_event(LINKLIST *LIST, int *flag, int *page, unsigned 
         *flag == ADMIN_DATABASE_EBIKE_PASS_IN_OUT)
     {
         if (*selected_id!= 0){
-            pos = find_file_info(fp, file_type, (char *)selected_id, "apply_id"); // 查找数据块
+            ltoa(*selected_id, buffer, 10);
+            pos = find_file_info(*fp, file_type, buffer, "apply_id"); // 查找数据块
             if (pos == -1)
                 return; // 未找到数据块，不进行任何操作
-            fseek (fp, -sizeof(EBIKE_IN_OUT), SEEK_CUR); // 定位
-            fread (&ebike_in_out_temp, sizeof(EBIKE_IN_OUT), 1, fp); // 读取数据块
+            fseek (*fp, -sizeof(EBIKE_IN_OUT), SEEK_CUR); // 定位
+            fread (&ebike_in_out_temp, sizeof(EBIKE_IN_OUT), 1, *fp); // 读取数据块
             ebike_in_out_temp.result = PASSED; // 修改数据块中的result字段为PASSED
-            fseek (fp, -sizeof(EBIKE_IN_OUT), SEEK_CUR); // 定位到数据块
-            fwrite (&ebike_in_out_temp, sizeof (EBIKE_IN_OUT), 1, fp); // 将修改后的数据块写入文件
+            fseek (*fp, -sizeof(EBIKE_IN_OUT), SEEK_CUR); // 定位到数据块
+            fwrite (&ebike_in_out_temp, sizeof (EBIKE_IN_OUT), 1, *fp); // 将修改后的数据块写入文件
             admin_pass_failed_anime(ADMIN_FEATURE5_X1, ADMIN_FEATURE5_Y1, ADMIN_FEATURE5_X2, ADMIN_FEATURE5_Y2, PASSED); // 操作后的动画
-            admin_list_info(LIST, LIST_LIMIT, LIST_INTERVAL, id_list, fp, file_type, NULL, NULL, LIST_STAY, LIST_FLUSH, "\0", "\0"); // 操作结束后刷新列表
+            admin_list_info(LIST, LIST_LIMIT, LIST_INTERVAL, id_list, *fp, file_type, NULL, NULL, LIST_STAY, LIST_FLUSH, "\0", "\0"); // 操作结束后刷新列表
         }
     }
 }

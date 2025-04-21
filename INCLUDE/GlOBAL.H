@@ -19,6 +19,7 @@
 #include "GROCERY.H"
 #include "LINKLIST.H"
 #include "MESSAGE.H"
+#include "RANDOM.H"
 
 
 
