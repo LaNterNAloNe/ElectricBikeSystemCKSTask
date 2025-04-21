@@ -1,5 +1,19 @@
 #include "INPUTHZ.h"
 
+void delete_cursor(int cursor_x, int cursor_y, int size) {
+    setcolor(MY_WHITE); // 光标颜色
+    setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+    line(cursor_x, cursor_y+2, cursor_x, cursor_y + size-2); // 绘制竖线作为光标// 初始化光标为可见状态
+}
+
+void new_cursor(int *cursor_x,int *cursor_y,int xx1, int y1, int Line, int L_len, int size) {
+    *cursor_x = xx1 + L_len * (size / 2 + 2) - 2; // 更新光标X位置
+    *cursor_y = y1 + (Line - 1) * 30;      // 更新Y位置
+    setcolor(MY_BLACK); // 光标颜色
+    setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+    line(*cursor_x, *cursor_y+2, *cursor_x, *cursor_y + size-2); // 绘制竖线作为光标// 初始化光标为可见状态
+}
+
 /************************************************************************
 FUNCTION:hz_input
 DESCRIPTION: 汉字输入法
@@ -92,12 +106,8 @@ int hz_input(int x1, int y1, int x2, int y2, char* s, int len, int color, int co
         exit(1);
     }
     
+    new_cursor(&cursor_x, &cursor_y, xx1, y1, Line, L_len, size);
     
-    cursor_x = xx1 + L_len * (size / 2 + 2) - 2; // 更新光标X位置
-    cursor_y = y1 + (Line - 1) * 30;      // 更新Y位置
-    setcolor(BLACK); // 光标颜色
-    setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
-    line(cursor_x, cursor_y, cursor_x, cursor_y + size); // 绘制竖线作为光标// 初始化光标为可见状态
     while (1) {
         
         if (kbhit()) {
@@ -113,15 +123,9 @@ int hz_input(int x1, int y1, int x2, int y2, char* s, int len, int color, int co
                     L_len--;
 
                     //删除光标
-                    setcolor(WHITE); // 光标颜色
-                    setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
-                    line(cursor_x, cursor_y, cursor_x, cursor_y + size); // 绘制竖线作为光标// 初始化光标为可见状态
+                    delete_cursor(cursor_x, cursor_y, size);
                     //新位置绘制光标
-                    cursor_x = xx1 + L_len * (size / 2 + 2) - 2; // 更新光标X位置
-                    cursor_y = y1 + (Line - 1) * 30;      // 更新Y位置
-                    setcolor(BLACK); // 光标颜色
-                    setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
-                    line(cursor_x, cursor_y, cursor_x, cursor_y + size); // 绘制竖线作为光标// 初始化光标为可见状态
+                    new_cursor(&cursor_x,&cursor_y,xx1, y1, Line, L_len, size);
 
                 }
                 else { // 汉字
@@ -132,15 +136,8 @@ int hz_input(int x1, int y1, int x2, int y2, char* s, int len, int color, int co
                     L_len -= 2;
 
                     //删除光标
-                    setcolor(WHITE); // 光标颜色
-                    setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
-                    line(cursor_x, cursor_y, cursor_x, cursor_y + size); // 绘制竖线作为光标// 初始化光标为可见状态
-                    //新位置绘制光标
-                    cursor_x = xx1 + L_len * (size / 2 + 2) - 2; // 更新光标X位置
-                    cursor_y = y1 + (Line - 1) * 30;      // 更新Y位置
-                    setcolor(BLACK); // 光标颜色
-                    setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
-                    line(cursor_x, cursor_y, cursor_x, cursor_y + size); // 绘制竖线作为光标// 初始化光标为可见状态
+                    delete_cursor(cursor_x, cursor_y, size);
+                    new_cursor(&cursor_x, &cursor_y, xx1, y1, Line, L_len, size);
                 }
                 *p = '\0'; // 更新终止符
                 break;
@@ -150,9 +147,7 @@ int hz_input(int x1, int y1, int x2, int y2, char* s, int len, int color, int co
                 settextjustify(old_text_settings.horiz, old_text_settings.vert);
                 settextstyle(old_text_settings.font, old_text_settings.direction, old_text_settings.charsize);
                 //删除光标
-                setcolor(WHITE); // 光标颜色
-                setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
-                line(cursor_x , cursor_y, cursor_x , cursor_y + size); // 绘制竖线作为光标// 初始化光标为可见状态
+                delete_cursor(cursor_x, cursor_y, size);
                 return len;
             }
 
@@ -183,15 +178,9 @@ int hz_input(int x1, int y1, int x2, int y2, char* s, int len, int color, int co
                     
 
                     //删除光标
-                    setcolor(WHITE); // 光标颜色
-                    setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
-                    line(cursor_x, cursor_y, cursor_x, cursor_y + size); // 绘制竖线作为光标// 初始化光标为可见状态
+                    delete_cursor(cursor_x, cursor_y, size);
                     //新位置绘制光标
-                    cursor_x = xx1 + L_len * (size / 2 + 2) - 2; // 更新光标X位置
-                    cursor_y = y1 + (Line - 1) * 30;      // 更新Y位置
-                    setcolor(BLACK); // 光标颜色
-                    setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
-                    line(cursor_x, cursor_y, cursor_x, cursor_y + size); // 绘制竖线作为光标// 初始化光标为可见状态
+                    new_cursor(&cursor_x, &cursor_y, xx1, y1, Line, L_len, size);
 
                     putimage(barx1, bary1, image, 0);
                     memset(py, 0, sizeof(py));//重置拼音
@@ -209,29 +198,17 @@ int hz_input(int x1, int y1, int x2, int y2, char* s, int len, int color, int co
                     L_len += pylen;
 
                     //删除光标
-                    setcolor(WHITE); // 光标颜色
-                    setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
-                    line(cursor_x, cursor_y, cursor_x, cursor_y + size); // 绘制竖线作为光标// 初始化光标为可见状态
+                    delete_cursor(cursor_x, cursor_y, size);
                     //新位置绘制光标
-                    cursor_x = xx1 + L_len * (size / 2 + 2) - 2; // 更新光标X位置
-                    cursor_y = y1 + (Line - 1) * 30;      // 更新Y位置
-                    setcolor(BLACK); // 光标颜色
-                    setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
-                    line(cursor_x, cursor_y, cursor_x, cursor_y + size); // 绘制竖线作为光标// 初始化光标为可见状态
+                    new_cursor(&cursor_x, &cursor_y, xx1, y1, Line, L_len, size);
 
                     putimage(barx1, bary1, image, 0);
                     break;
                 case 3: // 取消输入
                       //删除光标
-                    setcolor(WHITE); // 光标颜色
-                    setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
-                    line(cursor_x, cursor_y, cursor_x, cursor_y + size); // 绘制竖线作为光标// 初始化光标为可见状态
+                    delete_cursor(cursor_x, cursor_y, size);
                     //新位置绘制光标
-                    cursor_x = xx1 + L_len * (size / 2 + 2) - 2; // 更新光标X位置
-                    cursor_y = y1 + (Line - 1) * 30;      // 更新Y位置
-                    setcolor(BLACK); // 光标颜色
-                    setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
-                    line(cursor_x, cursor_y, cursor_x, cursor_y + size); // 绘制竖线作为光标// 初始化光标为可见状态
+                    new_cursor(&cursor_x, &cursor_y, xx1, y1, Line, L_len, size);
 
                     putimage(barx1, bary1, image, 0);
                     memset(py, 0, sizeof(py));
@@ -251,15 +228,9 @@ int hz_input(int x1, int y1, int x2, int y2, char* s, int len, int color, int co
                 *p = '\0'; // 确保终止符
 
                    //删除光标
-                setcolor(WHITE); // 光标颜色
-                setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
-                line(cursor_x, cursor_y, cursor_x, cursor_y + size); // 绘制竖线作为光标// 初始化光标为可见状态
+                delete_cursor(cursor_x, cursor_y, size);
                 //新位置绘制光标
-                cursor_x = xx1 + L_len * (size / 2 + 2) - 2; // 更新光标X位置
-                cursor_y = y1 + (Line - 1) * 30;      // 更新Y位置
-                setcolor(BLACK); // 光标颜色
-                setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
-                line(cursor_x, cursor_y, cursor_x, cursor_y + size); // 绘制竖线作为光标// 初始化光标为可见状态
+                new_cursor(&cursor_x, &cursor_y, xx1, y1, Line, L_len, size);
             }
         }
 
@@ -566,3 +537,5 @@ int xouttextxy(int x, int y, char *s, int color) // 8x16点阵字库
     free(mat);
     return len;
 }
+
+

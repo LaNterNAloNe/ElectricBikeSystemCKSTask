@@ -18,8 +18,9 @@ void user_main(int *page) {
 	};
 	
 	
-	clrmous(MouseX, MouseY);
-	save_bk_mou(MouseX, MouseY);
+	//clrmous(MouseX, MouseY);
+	//save_bk_mou(MouseX, MouseY);
+
 	drawgraph_user_main(page);
 	
 
@@ -135,7 +136,13 @@ void drawgraph_user_main(int *page) {
 			bar(USER_MESSAGE_X1, USER_MESSAGE_Y1, USER_MESSAGE_X2, USER_MESSAGE_Y2);
 			puthz(USER_MESSAGE_X1 + 5, (USER_MESSAGE_Y1 + USER_MESSAGE_Y2) / 2 - 5, "消息中心", 24, 25, MY_WHITE);
 			break;
-
+		case USER_BIKE_LICENSE_NOTICE:
+			setcolor(MY_WHITE);
+			setlinestyle(SOLID_LINE, 0, NORM_WIDTH);
+			setfillstyle(1, MY_WHITE);
+			bar(USER_BIKE_LICENSE_X1, USER_BIKE_LICENSE_Y1, USER_BIKE_LICENSE_X2, USER_BIKE_LICENSE_Y2);
+			puthz(USER_BIKE_LICENSE_X1 + 5, (USER_BIKE_LICENSE_Y1 + USER_BIKE_LICENSE_Y2) / 2 - 5, "电动车通行证", 24, 22, MY_BLACK);
+			break;
 	}
 	
 	
@@ -155,6 +162,7 @@ for (i = 0; i < button_count; i++) {
 	if (MouseX >= UserButtons[i].x1 && MouseX <= UserButtons[i].x2 &&
 		MouseY >= UserButtons[i].y1 && MouseY <= UserButtons[i].y2) {
 		new_tag = UserButtons[i].active_tag;
+		MouseS = 1;
 		temp = i; 
 		break;
 	}
@@ -166,20 +174,20 @@ if (*tag != new_tag) {
 			setcolor(MY_LIGHTGRAY);
 			setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
 			rectangle(UserButtons[*tag-1].x1, UserButtons[*tag-1].y1, UserButtons[*tag-1].x2, UserButtons[*tag-1].y2);
-			MouseS = 1;
+			
 		}
 		else if (*tag == ACTIVE_USER_EXIT) {
 			setcolor(MY_RED);
 			setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
 			rectangle(USER_EXIT_X1, USER_EXIT_Y1, USER_EXIT_X2, USER_EXIT_Y2);
-			MouseS = 1;
+			
 		}
 		else if (*tag == ACTIVE_USER_BACK) {
 			setfillstyle(1, MY_YELLOW);//恢复“返回登录”
 			setcolor(MY_YELLOW);
 			bar(USER_BACK_X1, USER_BACK_Y1, USER_BACK_X2, USER_BACK_Y2);
 			puthz(USER_BACK_X1 + 5, (USER_BACK_Y1 + USER_BACK_Y2) / 2 - 10, "返回", 24, 25, MY_WHITE);
-			MouseS = 1;
+			
 		}
 	}
 	*tag = new_tag;
@@ -188,14 +196,14 @@ if (*tag != new_tag) {
 		setcolor(MY_WHITE);
 		setlinestyle(SOLID_LINE,0,THICK_WIDTH);
 		rectangle(UserButtons[temp].x1, UserButtons[temp].y1, UserButtons[temp].x2, UserButtons[temp].y2);
-		MouseS = 1;
+		
 	}
 	else if (new_tag == ACTIVE_USER_EXIT) {
 		setfillstyle(1, MY_WHITE);
 		setcolor(MY_WHITE);
 		setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
 		rectangle(UserButtons[temp].x1, UserButtons[temp].y1, UserButtons[temp].x2, UserButtons[temp].y2);
-		MouseS = 1;
+		
 	}
 	else if (new_tag == ACTIVE_USER_BACK) {
 		setcolor(MY_RED);
@@ -203,7 +211,7 @@ if (*tag != new_tag) {
 		setfillstyle(1, MY_RED);
 		bar(USER_BACK_X1, USER_BACK_Y1, USER_BACK_X2, USER_BACK_Y2);
 		puthz(USER_BACK_X1 + 5, (USER_BACK_Y1 + USER_BACK_Y2) / 2 - 10, "返回", 24, 25, MY_WHITE);
-		MouseS = 1;
+		
 	}
 	else {
 		/*清除提示
@@ -246,10 +254,11 @@ int handle_click_main(int button_num, user_button UserButtons[]){
 void user_bike_register(int* page, unsigned long* id)
 {
 	int tag = 0;
+	int register_flag ;
 	int click = -1;
-	int register_flag = 0;
 	int mouse_flag;
 	char usrn[16] = {'\0'}; // 初始化为空
+	int hz_input_len=0;//汉字输入框的汉字数量
 	char e_bike_id[10] = {'\0'};
 	user_button UserButtons[] = {
 {USER_BIKE_REGISTER_X1, USER_BIKE_REGISTER_X2,USER_BIKE_REGISTER_Y1, USER_BIKE_REGISTER_Y2,ACTIVE_USER_BIKE_REGISTER,USER_BIKE_REGISTER},
@@ -267,7 +276,7 @@ void user_bike_register(int* page, unsigned long* id)
 	drawgraph_user_main(page);
 
 
-	if (1) {//此处应该为!ebike_user_register_judge(id)，但文件操作目前尚未完善
+	if (0) {//此处应该为!ebike_user_register_judge(id)，但文件操作目前尚未完善
 		setfillstyle(SOLID_FILL, MY_WHITE);
 		bar(150, 60, 640, 480);
 		drawgraph_user_bike_register_info(id);
@@ -277,7 +286,7 @@ void user_bike_register(int* page, unsigned long* id)
 			newmouse_data(&MouseX, &MouseY, &press,&mouse_flag);
 			flushUserMain(&tag, STRUCT_LENGTH(UserButtons), UserButtons); // 刷新界面
 			click = handle_click_main(STRUCT_LENGTH(UserButtons), UserButtons);
-			if (click == LOGIN || click == EXIT || click == USER_BIKE_LICENSE_NOTICE) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_REGISTER
+			if (click == LOGIN || click == EXIT || click == USER_BIKE_LICENSE_NOTICE||click==USER_BIKE_WROTEOUT) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_REGISTER
 				*page = click;
 				newmouse(&MouseX, &MouseY, &press, &mouse_flag);
 				return;
@@ -288,16 +297,16 @@ void user_bike_register(int* page, unsigned long* id)
 	}
 	drawgraph_user_bike_register_new();
 	while (1) {
+		newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
 		flushUserMain(&tag, STRUCT_LENGTH(UserButtons), UserButtons); // 刷新界面
 		flushUserRegister(&tag);
-		newmouse(&MouseX, &MouseY, &press, &mouse_flag);
 		click = handle_click_main(STRUCT_LENGTH(UserButtons), UserButtons);
-		if (click == LOGIN || click==USER_BIKE_LICENSE ||click == USER_BIKE_WROTEOUT||click==EXIT) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_REGISTER
+		if (click == LOGIN || click==USER_BIKE_LICENSE_NOTICE ||click == USER_BIKE_WROTEOUT||click==EXIT) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_REGISTER
 			*page = click;
 			return;
 		}//菜单界面点击
 		if (mouse_press(USER_BIKE_REGISTER_INPUT1_X1, USER_BIKE_REGISTER_INPUT1_Y1, USER_BIKE_REGISTER_INPUT1_X2, USER_BIKE_REGISTER_INPUT1_Y2) == 1) {
-			ch_input(usrn, USER_BIKE_REGISTER_INPUT1_X1, USER_BIKE_REGISTER_INPUT1_Y1 + 5, 13, MY_WHITE, 0, 1);
+			hz_input_len = hz_input(USER_BIKE_REGISTER_INPUT1_X1 + 3, USER_BIKE_REGISTER_INPUT1_Y1 + 3, USER_BIKE_REGISTER_INPUT1_X2, USER_BIKE_REGISTER_INPUT1_Y2, usrn, hz_input_len, MY_WHITE, MY_BLACK, 24);
 		}
 		if (mouse_press(USER_BIKE_REGISTER_INPUT2_X1, USER_BIKE_REGISTER_INPUT2_Y1, USER_BIKE_REGISTER_INPUT2_X2, USER_BIKE_REGISTER_INPUT2_Y2) == 1) {
 			ch_input(e_bike_id, USER_BIKE_REGISTER_INPUT2_X1, USER_BIKE_REGISTER_INPUT2_Y1 + 5, 13, MY_WHITE, 0, 1);
@@ -319,6 +328,7 @@ void user_bike_register(int* page, unsigned long* id)
 			else 
 				anime_user_bike_register_fail(register_flag);
 		}
+		newmouse(&MouseX, &MouseY, &press, &mouse_flag);
 		delay(25); // 50hz刷新率
 	}
 }
@@ -363,7 +373,7 @@ void flushUserRegister(int* tag) {
 	else if ((MouseX >= USER_BIKE_REGISTER_BUTTON1_X1 && MouseX <= USER_BIKE_REGISTER_BUTTON1_X2 && MouseY >= USER_BIKE_REGISTER_BUTTON1_Y1 && MouseY <= USER_BIKE_REGISTER_BUTTON1_Y2) ||
 		(MouseX >= USER_BIKE_REGISTER_BUTTON2_X1 && MouseX <= USER_BIKE_REGISTER_BUTTON2_X2 && MouseY >= USER_BIKE_REGISTER_BUTTON2_Y1 && MouseY <= USER_BIKE_REGISTER_BUTTON2_Y2))
 		MouseS = 1;
-	else
+	else if (*tag==ACTIVE_USER_NONE)
 		MouseS = 0;
 }
 
@@ -960,7 +970,7 @@ void user_bike_wroteout(int *page,unsigned long *id)
 		flushUserMain(&tag_main, STRUCT_LENGTH(UserButtons), UserButtons); // 刷新界面
 		flushUserWroteout(&tag_wroteout,WroteoutButtons);
 		click = handle_click_main(STRUCT_LENGTH(UserButtons), UserButtons);
-		if (click == LOGIN || click == USER_BIKE_REGISTER || click == USER_BIKE_LICENSE || click == EXIT) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_LICENSE
+		if (click == LOGIN || click == USER_BIKE_REGISTER || click == USER_BIKE_LICENSE_NOTICE || click == EXIT) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_LICENSE
 			*page = click;
 			return;
 		}
@@ -1437,15 +1447,15 @@ void drawgraph_user_quiz_pass(int result[][QUESTION_PER_PAGE],int page_count) {
 	//显示测试结果
 	puthz(210, 90, "恭喜通过！", 48,45, MY_GREEN);
 	puthz(180, 190, "您在本次测试中答对", 24, 22, MY_BLACK);
-	puthz(415, 190, "题", 24, 22, MY_BLACK);
+	puthz(422, 190, "题", 24, 22, MY_BLACK);
 	puthz(210, 235, "正确率为", 24, 22, MY_BLACK);
 	settextstyle(DEFAULT_FONT, HORIZ_DIR, 2);
 	setcolor(MY_GREEN);
 	outtextxy(390, 195, correct_num_string);
-	outtextxy(330, 235, correct_rate_string);
+	outtextxy(320, 230, correct_rate_string);
 
 	puthz(140, 300, "您可以选择回顾测试中的错题，或", 24, 24, MY_BLACK);
-	puthz(140, 340, "前往预约办理校内通行证", 24, 24, MY_BLACK);
+	puthz(150, 340, "前往预约办理校内通行证", 24, 24, MY_BLACK);
 
 	//绘制按钮
 	setfillstyle(1, MY_RED);//退出红叉
@@ -1665,9 +1675,12 @@ void user_info()
 	setcolor(MY_WHITE);
 	rectangle(INPUT_X1, INPUT_Y1, INPUT_X2, INPUT_Y2);
 
+	clrmous(MouseX, MouseY);
+	newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
+	newmouse(&MouseX, &MouseY, &press, &mouse_flag);
 	while(1){
 		newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
-		/* 点击判断（精确到像素级）*/
+		
 		if (mouse_press(INPUT_X1, INPUT_Y1, INPUT_X2, INPUT_Y2) == 1)
 		{
 			is_input_active = 1;
