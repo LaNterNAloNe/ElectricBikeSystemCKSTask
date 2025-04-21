@@ -1,7 +1,7 @@
 #include"GLOBAL.H"
 
 int main(void){
-    int page = MAIN_ADMIN; // 主页面
+    int page = USER_BIKE_REGISTER; // 主页面
     char buffer[50];
     unsigned long ID = 0; // 记录登录用户的ID
     int driver=VGA,mode=VGAHI;
@@ -19,12 +19,16 @@ int main(void){
         exit(1);
     }
     cleardevice();
-    mouseinit();
+    
     initcolorpalette();
-
+    mouseinit();
     linklist_get_user_data(LIST); // 生成链表
+<<<<<<< HEAD
     rand_io_data(LIST); // 生成随机进出校园信息，采用覆盖之前文件的方式
 
+=======
+    
+>>>>>>> 6f5756b4f62233ff464afd3edacb9c03a3f77c94
     while(page != EXIT){   //循环直到page = EXIT ( 0 )
         // cleardevice();
         switch (page){

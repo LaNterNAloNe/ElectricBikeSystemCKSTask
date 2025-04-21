@@ -24,7 +24,12 @@ void rand_exist_id(char *output, LINKLIST *LIST)
             continue;
         else
         {
+<<<<<<< HEAD
             strcpy(output, node->USER_DATA.ebike_ID); // 该id的数据有ebike_id信息，符合要求
+=======
+            sprintf(output, "%ul", node->USER_DATA.ID);
+            //strcpy(output, node->USER_DATA.ID); // 该id的数据有ebike_id信息，符合要求
+>>>>>>> 6f5756b4f62233ff464afd3edacb9c03a3f77c94
             break;
         }
     }
@@ -195,7 +200,11 @@ void rand_io_data(LINKLIST *LIST)
             {
                 linklist_get_to_node(LIST, pos, &user_data);
                 strcpy(io_data.ebike_license, user_data->USER_DATA.ebike_license); // 复制ebike_license
+<<<<<<< HEAD
                 rand_location(io_data.location, 0);                                   // 生成随机location
+=======
+                rand_location(io_data.location,1);                                   // 生成随机location
+>>>>>>> 6f5756b4f62233ff464afd3edacb9c03a3f77c94
                 if (rand_int(1, 2) == 1)                                           // 50%概率
                 {
                     rand_time(&io_data.in_time, 0, 1);                                 // 生成随机time

@@ -6,12 +6,16 @@
 #include <time.h>
 #include "LINKLIST.H"
 #include "_ADMIN_.H"
-
+#include "USER.H"
 
 void rand_id(char *output);
 void rand_exist_id(char *output, LINKLIST *LIST);
 void rand_license(char *output);
+<<<<<<< HEAD
 void rand_location(char *output, int gate_needed);
+=======
+void rand_location(char* output, int gate_needed);
+>>>>>>> 6f5756b4f62233ff464afd3edacb9c03a3f77c94
 void rand_ebike_id(char *output, LINKLIST *LIST);
 void rand_ebike_license(char *output);
 void rand_time(long *output, int is_past_year, int is_today);

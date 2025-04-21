@@ -67,6 +67,10 @@
 #define SUCCESS 1
 #define ter 15
 
+void delete_cursor(int cursor_x, int cursor_y, int size);
+
+void new_cursor(int *cursor_x,int *cursor_y,int xx1, int y1, int Line, int L_len, int size);
+
 int hz_input(int x1, int y1, int x2, int y2, char *s, int len, int color, int color2, int size);
 // ∫∫◊÷ ‰»Î∑®
 
