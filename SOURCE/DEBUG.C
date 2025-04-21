@@ -37,6 +37,7 @@ void display_memory_usage(int x, int y)
     bar(x - 5, y - 5, x + 150, y + 20);
 
     sprintf(mem_str, "MEM: %lu KB", get_used_memory());
+    settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);
     outtextxy(x, y, mem_str);
 
     sprintf(mem_str, "FARMEM: %lu B", farcoreleft());
@@ -65,5 +66,6 @@ void show_text(int x, int y, char *text, int color){
     bar(x,y,x+textwidth(text),y+textheight(text));
     rectangle(x - 1, y - 1, x + textwidth(text) + 1, y + textheight(text) + 1);
     setcolor(color);
+    settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);
     outtextxy(x, y, text);
 }

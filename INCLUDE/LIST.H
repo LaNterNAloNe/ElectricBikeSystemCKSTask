@@ -32,7 +32,7 @@
 #define LIST_STAY 0
 // 列表参数
 #define LIST_INTERVAL 30
-#define LIST_LIMIT 3
+#define LIST_LIMIT 8
 
 // 列表函数
 void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned long item_id[], FILE *fp, char *file_type,
