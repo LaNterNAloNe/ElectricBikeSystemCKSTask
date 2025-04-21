@@ -23,12 +23,8 @@ int main(void){
     initcolorpalette();
     mouseinit();
     linklist_get_user_data(LIST); // 生成链表
-<<<<<<< HEAD
     rand_io_data(LIST); // 生成随机进出校园信息，采用覆盖之前文件的方式
 
-=======
-    
->>>>>>> 6f5756b4f62233ff464afd3edacb9c03a3f77c94
     while(page != EXIT){   //循环直到page = EXIT ( 0 )
         // cleardevice();
         switch (page){
