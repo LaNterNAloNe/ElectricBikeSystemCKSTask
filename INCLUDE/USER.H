@@ -16,6 +16,7 @@
 #include "LINKLIST.H"
 #include "_ADMIN_.H"
 #include "QUIZ.H"
+#include "RANDOM.H"
 
 //按钮位置
 #define USER_BIKE_REGISTER_X1 0
@@ -26,10 +27,10 @@
 #define USER_BIKE_LICENSE_X2 150
 #define USER_BIKE_LICENSE_Y1 115
 #define USER_BIKE_LICENSE_Y2 165
-#define USER_BIKE_ANUAL_X1 0
-#define USER_BIKE_ANUAL_X2 150
-#define USER_BIKE_ANUAL_Y1 170
-#define USER_BIKE_ANUAL_Y2 220
+#define USER_ANNUAL_X1 0
+#define USER_ANNUAL_X2 150
+#define USER_ANNUAL_Y1 170
+#define USER_ANNUAL_Y2 220
 #define USER_BIKE_WROTEOUT_X1 0
 #define USER_BIKE_WROTEOUT_X2 150
 #define USER_BIKE_WROTEOUT_Y1 225
@@ -42,10 +43,10 @@
 #define USER_MESSAGE_X2 150
 #define USER_MESSAGE_Y1 335
 #define USER_MESSAGE_Y2 385
-#define USER_DATAGRAPH_X1 0
-#define USER_DATAGRAPH_X2 150
-#define USER_DATAGRAPH_Y1 390
-#define USER_DATAGRAPH_Y2 440
+#define USER_HELP_X1 0
+#define USER_HELP_X2 150
+#define USER_HELP_Y1 390
+#define USER_HELP_Y2 440
 #define USER_BACK_X1 575
 #define USER_BACK_X2 635
 #define USER_BACK_Y1 10
@@ -76,7 +77,7 @@
 #define USER_BIKE_LICENSE_BUTTON1_X1 340
 #define USER_BIKE_LICENSE_BUTTON1_X2 420
 #define USER_BIKE_LICENSE_BUTTON1_Y1 420
-#define USER_BIKE_LICENSE_BUTTON1_Y2 455
+#define USER_BIKE_LICENSE_BUTTON1_Y2 460
 #define USER_BIKE_LICENSE_BUTTON2_X1 335
 #define USER_BIKE_LICENSE_BUTTON2_X2 415
 #define USER_BIKE_LICENSE_BUTTON2_Y1 120
@@ -142,12 +143,12 @@
 #define USER_BIKE_WROTEOUT_INPUT1_Y2 185
 #define USER_BIKE_WROTEOUT_INPUT2_X1 250
 #define USER_BIKE_WROTEOUT_INPUT2_X2 600
-#define USER_BIKE_WROTEOUT_INPUT2_Y1 220
-#define USER_BIKE_WROTEOUT_INPUT2_Y2 255
+#define USER_BIKE_WROTEOUT_INPUT2_Y1 230
+#define USER_BIKE_WROTEOUT_INPUT2_Y2 265
 #define USER_BIKE_WROTEOUT_INPUT3_X1 250
 #define USER_BIKE_WROTEOUT_INPUT3_X2 600
-#define USER_BIKE_WROTEOUT_INPUT3_Y1 290
-#define USER_BIKE_WROTEOUT_INPUT3_Y2 325
+#define USER_BIKE_WROTEOUT_INPUT3_Y1 310
+#define USER_BIKE_WROTEOUT_INPUT3_Y2 345
 #define USER_BIKE_WROTEOUT_INPUT4_X1 250
 #define USER_BIKE_WROTEOUT_INPUT4_X2 600
 #define USER_BIKE_WROTEOUT_INPUT4_Y1 375
@@ -186,29 +187,77 @@
 #define QUESTION_PER_PAGE 3 //每页3题，最好别改
 #define LASTING_TIME 600 //测试时间十分钟
 
-#define INPUT_X1      100    // 输入框左上角X
-#define INPUT_Y1      100    // 输入框左上角Y
-#define INPUT_X2      400    // 输入框右下角X
-#define INPUT_Y2      140    // 输入框右下角Y
-#define INPUT_INNER_X (INPUT_X1+1) // 输入区域X起点
-#define INPUT_INNER_Y (INPUT_Y1+1) // 输入区域Y起点
-#define INPUT_INNER_W (INPUT_X2-INPUT_X1-2) // 输入区域宽度
-#define INPUT_INNER_H (INPUT_Y2-INPUT_Y1-2) // 输入区域高度
-#define TEXT_OFFSET_X 10     // 文字X偏移量
-#define TEXT_OFFSET_Y 20     // 文字Y偏移量
+// 账户安全按钮的坐标和标识
+#define USER_INFO_ACCOUNT_X1      260
+#define USER_INFO_ACCOUNT_X2      320
+#define USER_INFO_ACCOUNT_Y1      220
+#define USER_INFO_ACCOUNT_Y2      250
+#define USER_INFO_BIKEINFO_X1     490
+#define USER_INFO_BIKEINFO_X2     550
+#define USER_INFO_BIKEINFO_Y1     220
+#define USER_INFO_BIKEINFO_Y2     250
+#define USER_INFO_BIKEDATA_X1     490
+#define USER_INFO_BIKEDATA_X2     550
+#define USER_INFO_BIKEDATA_Y1     390
+#define USER_INFO_BIKEDATA_Y2     420
+#define USER_INFO_PASSWORD_X1     260
+#define USER_INFO_PASSWORD_X2     320
+#define USER_INFO_PASSWORD_Y1     390
+#define USER_INFO_PASSWORD_Y2     420
+
+
+#define HELP_ANNOUNCE1_X1 240
+#define HELP_ANNOUNCE1_X2 300
+#define HELP_ANNOUNCE1_Y1 170
+#define HELP_ANNOUNCE1_Y2 200
+#define HELP_ANNOUNCE2_X1 240
+#define HELP_ANNOUNCE2_X2 300
+#define HELP_ANNOUNCE2_Y1 290
+#define HELP_ANNOUNCE2_Y2 320
+#define HELP_ANNOUNCE3_X1 240
+#define HELP_ANNOUNCE3_X2 300
+#define HELP_ANNOUNCE3_Y1 400
+#define HELP_ANNOUNCE3_Y2 430
+#define HELP_ANNOUNCE_BACK_X1 350
+#define HELP_ANNOUNCE_BACK_X2 400
+#define HELP_ANNOUNCE_BACK_Y1 450
+#define HELP_ANNOUNCE_BACK_Y2 475
+#define HELP_BUTTON1_X1 460
+#define HELP_BUTTON1_X2 520
+#define HELP_BUTTON1_Y1 170
+#define HELP_BUTTON1_Y2 200
+#define HELP_BUTTON2_X1 460
+#define HELP_BUTTON2_X2 520
+#define HELP_BUTTON2_Y1 290
+#define HELP_BUTTON2_Y2 320
+#define HELP_BUTTON3_X1 460
+#define HELP_BUTTON3_X2 520
+#define HELP_BUTTON3_Y1 400
+#define HELP_BUTTON3_Y2 430
+
+#define HELP_ANNOUNCE 123
+
+
 
 
 //激活状态
 #define ACTIVE_USER_NONE 0
 #define ACTIVE_USER_BIKE_REGISTER 1
 #define ACTIVE_USER_BIKE_LICENSE 2
-#define ACTIVE_USER_BIKE_ANUAL 3
+#define ACTIVE_USER_ANNUAL 3
 #define ACTIVE_USER_BIKE_WROTEOUT 4
 #define ACTIVE_USER_INFO 5
+#define ACTIVE_USER_INFO_ACCOUNT 51
+#define ACTIVE_USER_INFO_BIKEINFO 52
+#define ACTIVE_USER_INFO_BIKEDATA 53
+#define ACTIVE_USER_INFO_PASSWORD 54
 #define ACTIVE_USER_MESSAGE 6
-#define ACTIVE_USER_DATAGRAPH 7
+#define ACTIVE_USER_HELP 7
 #define ACTIVE_USER_BACK 8
 #define ACTIVE_USER_EXIT 9
+
+
+
 
 typedef struct {
 	int x1, x2, y1, y2;
@@ -239,7 +288,7 @@ void drawgraph_user_bike_register_info(unsigned long *id);
 void flushUserRegister(int *tag);
 int EBIKE_INFO_judge(char *usrn,char *e_bike_id,unsigned long *id);
 void anime_user_bike_register_fail(int flag);
-int ebike_user_register_judge(unsigned long* ID);
+int user_ebike_register_judge(unsigned long* ID);
 void user_bike_register_getinfo(EBIKE_INFO *user_info,unsigned long *id);
 
 void user_bike_license_notice(int* page, unsigned long* id);
@@ -251,7 +300,7 @@ void drawgraph_user_bike_license(unsigned long *id,user_box box[3][3] );
 void flushUserLicense(user_box box[3][3],int data[3]);
 void handle_click_user_license(user_box box[3][3], int data[3]);
 void add_days_to_date(char* date_string, int days_to_add);
-void user_license_data_judge(int* data);
+int user_license_data_judge(int* data,unsigned long *id);
 
 void user_quiz(int* page, unsigned long* id);
 void drawgraph_quiz_notice();
@@ -262,21 +311,32 @@ void drawgraph_user_quiz_pass(int result[][QUESTION_PER_PAGE], int page_count);
 void drawgraph_user_quiz_fail(int result[][QUESTION_PER_PAGE], int page_count);
 void FlushQuizResult(int* tag, user_button UserButtons[]);
 
-void user_bike_anual();
+void user_help(int* page, unsigned long* id);
+void drawgraph_user_help();
+void FlushUserHelp(int* tag, int button_count, user_button UserButtons[]);
+int handle_click_user_help(int button_num, user_button UserButtons[]);
+void drawgraph_user_help_announce(int announce);
 
 void user_bike_wroteout(int *page,unsigned long *id);
 void drawgraph_user_bike_wroteout_warning();
 void drawgraph_user_wroteout();
 void flushUserWroteoutWarning();
 void flushUserWroteout(int *tag,user_button UserButtons[]);
+int wroteout_info_judge(char* usrn, char* e_bike_id, char* password, unsigned long* id);
+void draw_user_wroteout_fail(int wroteout_flag);
 
+void user_info(int* page, unsigned long* id);
+void flushUserInfo(int* tag, int button_count, user_button UserButtons[]);
+void drawgraph_user_info();
+int handle_click_info(int button_num, user_button UserButtons[]);
+void user_bike_info(int* page, unsigned long* id);
+void handle_button_and_input(char* new_text, char* old_text, int* button_state, int* hz_input_len, int x, int y, int len,int *tick);
 
-void user_info();
 void user_message();
 void user_datagraph();
 
 int handle_click_main(int button_num, user_button WroteoutButtons[]);
-void anime_login_success_user();
+void anime_login_success_user(int x1,int y1,int x2,int y2);
 
 #define STRUCT_LENGTH(Struct) (sizeof(Struct)/sizeof(Struct[0]))
 #endif
