@@ -305,5 +305,12 @@ void rand_msg()
         getch();
         exit(1);
     }
+}
+
+void rand_violation_data()
+{
+    int i;
+    char buffer[20];
+    FILE *fp = fopen("DATA\\VIOLATIONTMP.DAT", "wb+");
 
 }

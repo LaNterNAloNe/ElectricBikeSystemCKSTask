@@ -22,5 +22,6 @@ long rand_int(long min, long max);
 
 void rand_io_data(LINKLIST *LIST);
 void rand_msg();
+void rand_violation_data();
 
 #endif

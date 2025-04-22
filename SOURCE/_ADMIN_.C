@@ -35,7 +35,7 @@ MODULE:管理员车辆管理模块
 void admin_manage_bike_module(int *page, unsigned long *ID, LINKLIST *LIST, char *file_path, char *list_mode){
     int mouse_flag;
     int mode = 0; // 搜索模式，列出已处理清单或待处理清单，主动清除该页面时重设为0（默认列出待处理清单）
-    char search_str[20]; // 搜索框输入信息储存
+    char search_str[20] = "\0"; // 搜索框输入信息储存
     unsigned long selected_id = 0;
     unsigned long id_list[8] = {0,0,0,0,0,0,0,0}; // 记录当前显示的列表每行对应的ID
     int tag = ACTIVE_ADMIN_NULL;
@@ -53,7 +53,7 @@ void admin_manage_bike_module(int *page, unsigned long *ID, LINKLIST *LIST, char
 
     // 列出数据
     admin_list_info(LIST, LIST_LIMIT, LIST_INTERVAL, id_list, fp_EBIKE_INFO_read, "ebike_manage", 
-                    list_mode, mode, LIST_PAGEDOWN, LIST_CLEAR_CONTINUE, "\0", "\0");
+                    list_mode, mode, LIST_STAY, LIST_CLEAR_CONTINUE, "\0", "\0");
 
     if (debug_mode == 1)
         display_memory_usage(400, 10); // 显示调试参数
@@ -64,9 +64,9 @@ void admin_manage_bike_module(int *page, unsigned long *ID, LINKLIST *LIST, char
 
         admin_flush_buttons(&tag, STRUCT_LENGTH(AdminButtons), AdminButtons);
         admin_handle_buttons_event(page);
-        handle_list_select_line_admin(LIST, id_list, &selected_id, LIST_LIMIT, LIST_INTERVAL, *page, NULL);
         admin_handle_manage_feature_event(LIST, page, search_str, id_list, fp_EBIKE_INFO_read, &mode, &selected_id); // 处理点击事件
-
+        handle_list_select_line_admin(LIST, id_list, &selected_id, LIST_LIMIT, LIST_INTERVAL, *page, NULL);
+        
         newmouse(&MouseX, &MouseY, &press, &mouse_flag);
 
         delay(25);
@@ -1136,6 +1136,7 @@ void admin_handle_manage_feature_event(LINKLIST *LIST, int *page, char *search_s
         puthz(ADMIN_INTERFACE_X1 + 140, ADMIN_INTERFACE_Y1 + 10, "已处理项目", 16, 16, MY_WHITE);
         admin_list_info(LIST, LIST_LIMIT, LIST_INTERVAL, id_list, fp_EBIKE_INFO_read, "ebike_manage",
                         list_mode, *mode, LIST_STAY, LIST_CLEAR_CONTINUE, search_str, "ID");
+        *selected_id = 0; // 清除选中行
     } // 点击已处理后显示已处理
 
     if (mouse_press(ADMIN_FEATURE4_X1, ADMIN_FEATURE4_Y1, ADMIN_FEATURE4_X2, ADMIN_FEATURE4_Y2) == 1 &&
@@ -1147,6 +1148,7 @@ void admin_handle_manage_feature_event(LINKLIST *LIST, int *page, char *search_s
         puthz(ADMIN_INTERFACE_X1 + 140, ADMIN_INTERFACE_Y1 + 10, "未处理项目", 16, 16, MY_WHITE);
         admin_list_info(LIST, LIST_LIMIT, LIST_INTERVAL, id_list, fp_EBIKE_INFO_read, "ebike_manage",
                         list_mode, *mode, LIST_STAY, LIST_CLEAR_CONTINUE, search_str, "ID");
+        *selected_id = 0; // 清除选中行
     } // 点击未处理后显示未处理
 
     // 点击同意申请
