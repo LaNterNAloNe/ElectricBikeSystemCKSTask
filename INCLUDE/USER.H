@@ -237,7 +237,10 @@
 
 #define HELP_ANNOUNCE 123
 
-
+#define USER_ANNUAL_BUTTON1_X1 340
+#define USER_ANNUAL_BUTTON1_X2 420
+#define USER_ANNUAL_BUTTON1_Y1 435
+#define USER_ANNUAL_BUTTON1_Y2 460
 
 
 //¼¤»î×´Ì¬
@@ -311,6 +314,12 @@ void drawgraph_user_quiz_pass(int result[][QUESTION_PER_PAGE], int page_count);
 void drawgraph_user_quiz_fail(int result[][QUESTION_PER_PAGE], int page_count);
 void FlushQuizResult(int* tag, user_button UserButtons[]);
 
+
+void user_annual(int* page, unsigned long* id);
+void drawgraph_user_bike_annual(int flag);
+void user_annual_change(unsigned long* id);
+int ebike_annual_judge(unsigned long* id);
+
 void user_help(int* page, unsigned long* id);
 void drawgraph_user_help();
 void FlushUserHelp(int* tag, int button_count, user_button UserButtons[]);
@@ -333,7 +342,7 @@ void user_bike_info(int* page, unsigned long* id);
 void handle_button_and_input(char* new_text, char* old_text, int* button_state, int* hz_input_len, int x, int y, int len,int *tick);
 
 void user_message();
-void user_datagraph();
+
 
 int handle_click_main(int button_num, user_button WroteoutButtons[]);
 void anime_login_success_user(int x1,int y1,int x2,int y2);
