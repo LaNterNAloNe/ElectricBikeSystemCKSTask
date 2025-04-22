@@ -216,25 +216,28 @@ void admin_message_center(int *page, unsigned long *ID){
     int tag = ACTIVE_ADMIN_NULL;
     unsigned long id_list[8] = {0,0,0,0,0,0,0,0}; // 记录当前显示的列表每行对应的ID
     unsigned long selected_id = 0; // 选中行的ID
-    char search_str[20]; // 搜索框输入信息储存
-    char search_needed[10];
-    ADMIN_BUTTONS AdminButtons[21];
+    char search_str[20] = "\0"; // 搜索框输入信息储存
+    char search_needed[10] = "\0";
+    ADMIN_BUTTONS AdminButtons[22];
     FILE *fp = fopen("DATA\\MESSAGE.DAT", "rb+"); // 打开消息数据文件
     if (!fp)
         getch(),exit(1);
+
     define_admin_buttons(AdminButtons, *page); // 定义按钮
     clrmous(MouseX, MouseY);
 
     drawgraph_admin_menu(); // 初始化界面
     drawgraph_admin_message_center(); // 绘制界面
 
-    admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, id_list, fp, "message", NULL, NULL, LIST_STAY, LIST_CLEAR_CONTINUE, "\0", "\0"); // 清除列表
+    admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, id_list, fp, "message", NULL, NULL, LIST_STAY, LIST_CLEAR_CONTINUE, search_str, search_needed); // 清除列表
 
     if (debug_mode == 1)
         display_memory_usage(400, 10); // 显示调试参数
 
     while(*page == ADMIN_MESSAGE){
         newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
+
+        show_num(10, 10, selected_id, MY_WHITE);
 
         admin_handle_buttons_event(page);
         admin_flush_buttons(&tag, STRUCT_LENGTH(AdminButtons), AdminButtons);
@@ -709,10 +712,11 @@ void drawgraph_admin_info(unsigned long ID)
 
 void drawgraph_admin_message_center()
 {
-    puthz(ADMIN_INTERFACE_X1 + 15, ADMIN_INTERFACE_Y1 + 5, "消息中心", 24, 20, MY_WHITE); // 输出文本
+    puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 5, "消息中心", 24, 20, MY_WHITE); // 输出文本
 
-    draw_cues(ADMIN_BUTTON7_X2 + 10, ADMIN_BUTTON7_Y1, NULL, NULL); // 绘制箭头，标明当前打开页面为此
-    clear_exit(ADMIN_FEATURE_EXIT_X1, ADMIN_FEATURE_EXIT_Y1, ADMIN_FEATURE_EXIT_X2, ADMIN_FEATURE_EXIT_Y2);
+    puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 40, "消息主题", 16, 16, MY_WHITE);
+    puthz(ADMIN_INTERFACE_X1 + 300, ADMIN_INTERFACE_Y1 + 40, "发送者", 16, 16, MY_WHITE);
+    puthz(ADMIN_INTERFACE_X1 + 440, ADMIN_INTERFACE_Y1 + 40, "状态", 16, 16, MY_WHITE);
 
     setfillstyle(SOLID_FILL, MY_YELLOW);
     bar(ADMIN_FEATURE1_X1, ADMIN_FEATURE1_Y1, ADMIN_FEATURE1_X2, ADMIN_FEATURE1_Y2);
@@ -1608,7 +1612,7 @@ void admin_handle_message_click_event(FILE *fp, int *page, unsigned long id_list
     if (mouse_press(ADMIN_FEATURE_UP_X1, ADMIN_FEATURE_UP_Y1,
                     ADMIN_FEATURE_UP_X2, ADMIN_FEATURE_UP_Y2) == 1) // 点击上一页
     {
-        admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, id_list, fp, "message", NULL, NULL, LIST_PAGEDOWN, LIST_NO_CLEAR, search_str, "message_id"); // 清除列表
+        admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, id_list, fp, "message", NULL, NULL, LIST_PAGEUP, LIST_NO_CLEAR, search_str, "message_id"); // 清除列表
     }
     if (mouse_press(ADMIN_FEATURE_DOWN_X1, ADMIN_FEATURE_DOWN_Y1,
                     ADMIN_FEATURE_DOWN_X2, ADMIN_FEATURE_DOWN_Y2) == 1) // 点击下一页

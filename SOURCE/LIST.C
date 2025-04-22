@@ -383,7 +383,7 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
                     continue; // 如果下翻读取时读到的数据不符条件，则进行下一轮循环
                 }
 
-                message_list(message_temp, ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70, max, interval, listed_item, ASCENDING); // 输出数据
+                message_list(message_temp, ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70, listed_item, max, interval, ASCENDING); // 输出数据
                 item_id[listed_item] = message_temp.message_id; // 记录ID
             }
             else if (flag == ADMIN_DATABASE_EBIKE_PASS_IN_OUT)
@@ -585,7 +585,7 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
                     continue; // 如果下翻读取时读到的数据不符条件，则进行下一轮循环
                 }
 
-                message_list(message_temp, ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70, max, interval, listed_item, DESCENDING); // 输出数据
+                message_list(message_temp, ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70, listed_item, max, interval, DESCENDING); // 输出数据
                 item_id[7 - listed_item] = message_temp.message_id;                                                                   // 记录ID
             }
             else if (flag == ADMIN_DATABASE_EBIKE_PASS_IN_OUT)
@@ -792,7 +792,7 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
                     temp_end++; // end指数+1
                     continue;   // 如果下翻读取时读到的数据不符条件，则进行下一轮循环
                 }
-                message_list(message_temp, ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70, max, interval, listed_item, ASCENDING); // 输出数据
+                message_list(message_temp, ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70, listed_item, max, interval, ASCENDING); // 输出数据
                 item_id[listed_item] = message_temp.message_id;                                                                   // 记录ID
             }
             else if (flag == ADMIN_DATABASE_EBIKE_PASS_IN_OUT)

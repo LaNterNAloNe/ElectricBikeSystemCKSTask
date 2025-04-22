@@ -259,3 +259,51 @@ void rand_io_data(LINKLIST *LIST)
 
 }
 
+void rand_msg()
+{
+    int i;
+    char buffer[20];
+    FILE *fp = fopen("DATA\\MSGTMP.DAT", "wb+");
+    MESSAGE msg;
+    if (fp == NULL)
+    {
+        closegraph();
+        printf("Error: Cannot open file MSGTMP.DAT\n");
+        getch();
+        exit(1);
+    }
+
+    // 生成随机数据
+    for (i = 0; i < 10; i++) // 一次生成10条数据
+    {
+        rand_id(buffer); // 生成随机id
+        msg.message_id = atol(buffer);
+        rand_time(&msg.time, 0, 1); // 生成随机time
+        strcpy(msg.receiver_username, "all_admin");
+        ltoa(msg.message_id, buffer, 10);
+        strcpy(msg.sender_username, buffer);
+        strcpy(msg.title, "测试消息");
+        strcpy(msg.message, "这是一条测试消息");
+        msg.is_read = 0; // 未读
+        msg.is_replied = 0; // 未回复
+        msg.message_type = ANNOUNCEMENT; // 公告
+
+        fseek(fp, i * sizeof(MESSAGE), SEEK_SET); // 移动文件指针到文件末尾
+        fwrite(&msg, sizeof(MESSAGE), 1, fp); // 写入文件
+    }
+
+
+    fclose(fp); // 关闭文件
+
+    // 将temp文件替换IO文件
+    remove("DATA\\MESSAGE.DAT"); // 删除IO文件
+
+    if(rename("DATA\\MSGTMP.DAT", "DATA\\MESSAGE.DAT") != 0) // 重命名temp文件为IO文件
+    {
+        closegraph();
+        printf("Error: Cannot rename file MSGTMP.DAT to MESSAGE.DAT\n");
+        getch();
+        exit(1);
+    }
+
+}

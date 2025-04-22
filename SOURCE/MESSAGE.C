@@ -73,9 +73,9 @@ void message_list(MESSAGE msg,int _x, int _y, int _listed_item, int _max, int _i
         message_topic_display(_x, _y + _interval * _listed_item, 200, msg.title, MY_WHITE, 16, 1, 1); // 显示消息的主题
         outtextxy(_x + 300, _y + _interval * _listed_item, msg.sender_username);                      // 显示用户名
         if (msg.is_read == 1) { // 如果消息已读，则显示已读
-            outtextxy(_x + 420, _y + _interval * _listed_item, "已读"); // 显示已读
+            puthz(_x + 420, _y + _interval * _listed_item, "已读", 16, 16, MY_WHITE); // 显示已读
         } else { // 如果消息未读，则显示未读
-            outtextxy(_x + 420, _y + _interval * _listed_item, "未读"); // 显示未读
+            puthz(_x + 420, _y + _interval * _listed_item, "未读", 16, 16, MY_WHITE); // 显示未读
         }
     }
     else if (list_sequence == DESCENDING)
@@ -84,9 +84,9 @@ void message_list(MESSAGE msg,int _x, int _y, int _listed_item, int _max, int _i
         message_topic_display(_x, _y + _interval * (_max - _listed_item - 1), 200, msg.title, MY_WHITE, 16, 1, 1);   // 显示消息的主题
         outtextxy(_x + 300, _y + _interval * (_max - _listed_item - 1), msg.sender_username);                        // 显示用户名
         if (msg.is_read == 1) { // 如果消息已读，则显示已读
-            outtextxy(_x + 420, _y + _interval * (_max - _listed_item - 1), "已读"); // 显示已读
+            puthz(_x + 420, _y + _interval * (_max - _listed_item - 1), "已读", 16, 16, MY_WHITE); // 显示已读
         } else { // 如果消息未读，则显示未读
-            outtextxy(_x + 420, _y + _interval * (_max - _listed_item - 1), "未读"); // 显示未读
+            puthz(_x + 420, _y + _interval * (_max - _listed_item - 1), "未读", 16, 16, MY_WHITE); // 显示未读
         }
     }
     else
@@ -288,18 +288,14 @@ int message_overwrite(FILE *fp, MESSAGE *msg, char *search_str, char *search_nee
 // 检查消息是否有效
 int message_is_valid(MESSAGE msg, char *search_str, char *search_needed) 
 {
-    if ((search_str == "\0" || search_str == NULL) &&
-        (search_needed == "\0" || search_needed == NULL)) // 检查搜索字符串是否为空或为NULL
-    { 
-        return 1; // 如果为空或为NULL，返回1
-    }
-    if (msg.sender_id == atol(search_str) && strcmp(search_needed, "sender_id") == 0 ||
+    if (strcmp(search_str, "\0") == 0 ||
+        msg.sender_id == atol(search_str) && strcmp(search_needed, "sender_id") == 0 ||
         msg.receiver_id == atol(search_str) && strcmp(search_needed, "receiver_id") == 0 ||
-        strcmp(msg.sender_username, search_str) && strcmp(search_needed, "sender_username") == 0 ||
-        strcmp(msg.receiver_username, search_str) && strcmp(search_needed, "receiver_username") == 0 ||
-        strcmp("all_user", search_str) && strcmp(search_needed, "receiver_username") == 0 || // 枚举两种特殊情况
-        strcmp("all_admin", search_str) && strcmp(search_needed, "receiver_username") == 0 ||
-        strcmp(msg.sender_username, search_str) && strcmp(search_needed, "sender_username") == 0 ||
+        !strcmp(msg.sender_username, search_str) && strcmp(search_needed, "sender_username") == 0 ||
+        !strcmp(msg.receiver_username, search_str) && strcmp(search_needed, "receiver_username") == 0 ||
+        !strcmp("all_user", search_str) && strcmp(search_needed, "receiver_username") == 0 || // 枚举两种特殊情况
+        !strcmp("all_admin", search_str) && strcmp(search_needed, "receiver_username") == 0 ||
+        !strcmp(msg.sender_username, search_str) && strcmp(search_needed, "sender_username") == 0 ||
         msg.is_read == atoi(search_str) && strcmp(search_needed, "is_read") == 0)
     { 
         return 1; // 如果匹配，返回1
@@ -358,7 +354,7 @@ int message_if_found(int __is_read)
 }
 
 // 处理信息列表点击
-void message_list_click(int _x, int _y, int _max, int _interval, int _item_id[], long *_selected_id)
+void message_list_click(int _x, int _y, int _max, int _interval, unsigned long _item_id[], unsigned long *_selected_id)
 {
     MESSAGE msg; // 用于存储读取的消息
     FILE *fp = NULL;
@@ -368,33 +364,39 @@ void message_list_click(int _x, int _y, int _max, int _interval, int _item_id[],
 
     for (i = 0; i < _max; i++)
     {
+
         if (mouse_press(_x + 20, _y + 70 + i * _interval, _x + 500, _y + 70 + (i + 1) * _interval - 1) == 1 &&
-            _item_id[i] != 0 && _item_id[i] != previous_selected_id)
+            _item_id[i] != 0)
         {
+            setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
+            bar(_x + 10, _y + 70, _x + 18, _y + 310); // 清理所有高亮
+            setfillstyle(SOLID_FILL, MY_YELLOW);
+            bar(_x + 10, _y + 70 + i * _interval,
+                _x + 18, _y + 70 + i * _interval + _interval / (_interval / 15)); // 生成当前高亮
             *_selected_id = _item_id[i]; // 更新选中的消息ID
 
-            if (previous_selected_id == *_selected_id && *_selected_id != 0)
-            // 如果选中的消息ID与上一次选中的消息ID相同，并且不为0
-            // 则执行信息显示操作
-            {
-                fp = fopen("DATA\\MESSAGE.DAT", "rb+"); // 打开消息文件，以二进制读取模式打开
-                if (fp == NULL)                         // 检查文件指针是否为空
-                {                                       // 如果为空，输出错误信息并返回
-                    return;                             // 返回
-                }
+            // if (previous_selected_id == *_selected_id && *_selected_id != 0)
+            // // 如果选中的消息ID与上一次选中的消息ID相同，并且不为0
+            // // 则执行信息显示操作
+            // {
+            //     fp = fopen("DATA\\MESSAGE.DAT", "rb+"); // 打开消息文件，以二进制读取模式打开
+            //     if (fp == NULL)                         // 检查文件指针是否为空
+            //     {                                       // 如果为空，输出错误信息并返回
+            //         return;                             // 返回
+            //     }
 
-                ltoa(*_selected_id, buffer, 10);
-                message_get(fp, &msg, buffer, "message_id"); // 读取选中的消息
-                message_display(&msg);                       // 显示选中的消息
+            //     ltoa(*_selected_id, buffer, 10);
+            //     message_get(fp, &msg, buffer, "message_id"); // 读取选中的消息
+            //     message_display(&msg);                       // 显示选中的消息
 
-                msg.is_read = 1;                                   // 将消息标记为已读
-                message_overwrite(fp, &msg, buffer, "message_id"); // 将选中的消息标记为已读
-                previous_selected_id = 0;
-                *_selected_id = 0;
-                fclose(fp);
+            //     msg.is_read = 1;                                   // 将消息标记为已读
+            //     message_overwrite(fp, &msg, buffer, "message_id"); // 将选中的消息标记为已读
+            //     previous_selected_id = 0;
+            //     *_selected_id = 0;
+            //     fclose(fp);
 
-                break;
-            }
+            //     break;
+            // }
         }
     }
 
@@ -402,6 +404,9 @@ void message_list_click(int _x, int _y, int _max, int _interval, int _item_id[],
         mouse_press(_x + 20, _y + 70, _x + 500, _y + 70 + _max * _interval - 1) == -1)
     {
         // 经过上面循环发现没有选中正确的行，_selected_id不会发生改变，因此和previous相同
+        // 清理所有高亮
+        setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
+        bar(_x + 10, _y + 70, _x + 18, _y + 310);
         *_selected_id = 0; // 重置选中的消息ID
     }
 }
