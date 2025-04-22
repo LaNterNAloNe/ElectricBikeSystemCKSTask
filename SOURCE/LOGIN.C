@@ -514,10 +514,12 @@ void _register(int* page,unsigned long *ID,LINKLIST *LIST) {
 				is_register_invalid = userregister_judge(usrn,psw,ID,time);
 				if(!is_register_invalid){
 					anime_register_success();
+					new_user_data.ID = *ID;
+					strcpy(new_user_data.usrn, usrn);
 					linklist_add_data(LIST, new_user_data);//向链表中添加数据
                     linklist_write_user_data(LIST); // 写入用户数据
 					*page = LOGIN;
-					*ID = -1;
+					*ID = 0;
 					ch_input(NULL, NULL, NULL, NULL, NULL,1,NULL);  // 清除输入框记忆
 					return;
 				}
