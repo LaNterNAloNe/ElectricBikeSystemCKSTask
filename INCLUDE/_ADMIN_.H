@@ -344,6 +344,8 @@ void admin_handle_database_event(LINKLIST *LIST, int *flag, int *page, unsigned 
                                  FILE **fp, char *search_str, char *search_needed, unsigned long *selected_id);
 void admin_handle_modify_user_data_event(FILE *fp, unsigned long *user_id, int *isReturn);
 void admin_handle_modify_ebike_data_event(LINKLIST *LIST, unsigned long *user_id, int *isReturn);
+void admin_handle_message_click_event(FILE *fp, int *page, unsigned long id_list[], unsigned long *selected_id,
+                                      char *search_str, char *search_needed);
 
 // 二进制文件数据操作函数
 long find_file_info(FILE *fp, char *file_type, char *search_str, char *search_needed);

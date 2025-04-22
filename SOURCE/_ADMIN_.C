@@ -214,26 +214,38 @@ MODULE:管理员消息中心
 void admin_message_center(int *page, unsigned long *ID){
     int mouse_flag;
     int tag = ACTIVE_ADMIN_NULL;
-    ADMIN_BUTTONS AdminButtons[12];
+    unsigned long id_list[8] = {0,0,0,0,0,0,0,0}; // 记录当前显示的列表每行对应的ID
+    unsigned long selected_id = 0; // 选中行的ID
+    char search_str[20]; // 搜索框输入信息储存
+    char search_needed[10];
+    ADMIN_BUTTONS AdminButtons[21];
+    FILE *fp = fopen("DATA\\MESSAGE.DAT", "rb+"); // 打开消息数据文件
+    if (!fp)
+        getch(),exit(1);
     define_admin_buttons(AdminButtons, *page); // 定义按钮
     clrmous(MouseX, MouseY);
 
     drawgraph_admin_menu(); // 初始化界面
     drawgraph_admin_message_center(); // 绘制界面
+
+    admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, id_list, fp, "message", NULL, NULL, LIST_STAY, LIST_CLEAR_CONTINUE, "\0", "\0"); // 清除列表
+
+    if (debug_mode == 1)
+        display_memory_usage(400, 10); // 显示调试参数
+
     while(*page == ADMIN_MESSAGE){
         newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
 
         admin_handle_buttons_event(page);
         admin_flush_buttons(&tag, STRUCT_LENGTH(AdminButtons), AdminButtons);
+        admin_handle_message_click_event(fp, page, id_list, &selected_id, search_str, search_needed);
+        message_list_click(ADMIN_INTERFACE_X1, ADMIN_INTERFACE_Y1, LIST_LIMIT, LIST_INTERVAL, id_list, &selected_id); // 处理点击事件
 
-        if (mouse_press(ADMIN_FEATURE_EXIT_X1, ADMIN_FEATURE_EXIT_Y1,
-                        ADMIN_FEATURE_EXIT_X2, ADMIN_FEATURE_EXIT_Y2) == 1) // 点击返回
-        {
-            *page = MAIN_ADMIN;
-        }
         newmouse(&MouseX, &MouseY, &press, &mouse_flag);
         delay(25);
     }
+
+    fclose(fp);
 }
 
 /*****************************************************************
@@ -701,6 +713,29 @@ void drawgraph_admin_message_center()
 
     draw_cues(ADMIN_BUTTON7_X2 + 10, ADMIN_BUTTON7_Y1, NULL, NULL); // 绘制箭头，标明当前打开页面为此
     clear_exit(ADMIN_FEATURE_EXIT_X1, ADMIN_FEATURE_EXIT_Y1, ADMIN_FEATURE_EXIT_X2, ADMIN_FEATURE_EXIT_Y2);
+
+    setfillstyle(SOLID_FILL, MY_YELLOW);
+    bar(ADMIN_FEATURE1_X1, ADMIN_FEATURE1_Y1, ADMIN_FEATURE1_X2, ADMIN_FEATURE1_Y2);
+    bar(ADMIN_FEATURE2_X1, ADMIN_FEATURE2_Y1, ADMIN_FEATURE2_X2, ADMIN_FEATURE2_Y2);
+    bar(ADMIN_FEATURE3_X1, ADMIN_FEATURE3_Y1, ADMIN_FEATURE3_X2, ADMIN_FEATURE3_Y2);
+    bar(ADMIN_FEATURE4_X1, ADMIN_FEATURE4_Y1, ADMIN_FEATURE4_X2, ADMIN_FEATURE4_Y2);
+    bar(ADMIN_FEATURE5_X1, ADMIN_FEATURE5_Y1, ADMIN_FEATURE5_X2, ADMIN_FEATURE5_Y2);
+    bar(ADMIN_FEATURE6_X1, ADMIN_FEATURE6_Y1, ADMIN_FEATURE6_X2, ADMIN_FEATURE6_Y2);
+    puthz(ADMIN_FEATURE1_X1 + 4, ADMIN_FEATURE1_Y1 + 7, "查看信息", 16, 16, MY_WHITE);
+
+    setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
+    bar(ADMIN_FEATURE_SEARCH_X1, ADMIN_FEATURE_SEARCH_Y1, ADMIN_FEATURE_SEARCH_X2, ADMIN_FEATURE_SEARCH_Y2);
+    setcolor(MY_BLACK);
+    setlinestyle(SOLID_LINE, 0, NORM_WIDTH);
+    rectangle(ADMIN_FEATURE_SEARCH_X1, ADMIN_FEATURE_SEARCH_Y1, ADMIN_FEATURE_SEARCH_X2, ADMIN_FEATURE_SEARCH_Y2);
+
+    setlinestyle(SOLID_LINE, 0, THICK_WIDTH); // 小放大镜，提示为搜索框
+    line(ADMIN_FEATURE_SEARCH_X1 + 5, ADMIN_FEATURE_SEARCH_Y2 - 7, ADMIN_FEATURE_SEARCH_X1 + 12, ADMIN_FEATURE_SEARCH_Y2 - 14);
+    circle(ADMIN_FEATURE_SEARCH_X1 + 16, ADMIN_FEATURE_SEARCH_Y2 - 18, 5);
+
+    clear_exit(ADMIN_FEATURE_EXIT_X1, ADMIN_FEATURE_EXIT_Y1, ADMIN_FEATURE_EXIT_X2, ADMIN_FEATURE_EXIT_Y2);
+    clear_flip_up(ADMIN_FEATURE_UP_X1, ADMIN_FEATURE_UP_Y1, ADMIN_FEATURE_UP_X2, ADMIN_FEATURE_UP_Y2);
+    clear_flip_down(ADMIN_FEATURE_DOWN_X1, ADMIN_FEATURE_DOWN_Y1, ADMIN_FEATURE_DOWN_X2, ADMIN_FEATURE_DOWN_Y2);
 }
 
 /*****************************************************************
@@ -713,6 +748,7 @@ long find_file_info(FILE *fp, char *file_type,char *search_str,char *search_need
     EBIKE_INFO ebike_temp;
     USER_LOGIN_DATA USER_TEMP;
     EBIKE_IN_OUT ebike_in_out_temp;
+    MESSAGE message_temp;
 
     fseek(fp,0,SEEK_SET);
 
@@ -755,6 +791,15 @@ long find_file_info(FILE *fp, char *file_type,char *search_str,char *search_need
                 return counts * sizeof(EBIKE_IN_OUT);
             }
             counts++; 
+        }
+    }
+    else if(strcmp(file_type, "message") == 0){ // 查找车辆违章信息
+        while (fread(&message_temp, sizeof(MESSAGE), 1, fp)) // 遍历文件中的所有数据块，当读取到文件末尾时，fread返回0，退出循环
+        {
+            if(message_temp.message_id == atol(search_str) && strcmp(search_needed, "message_id") == 0)
+            {
+                return counts * sizeof(MESSAGE);
+            }
         }
     }
     return -1; // 文件指针位置返回到原先位置
@@ -1518,6 +1563,60 @@ void admin_handle_modify_ebike_data_event(LINKLIST *LIST, unsigned long *user_id
     }
 }
 
+void admin_handle_message_click_event(FILE *fp, int *page, unsigned long id_list[], unsigned long *selected_id,
+                                      char *search_str, char *search_needed)
+{
+    long pos = -1;
+    char buffer[20];
+    MESSAGE msg;
+
+    /* 点击退出按钮 */
+    if (mouse_press(ADMIN_FEATURE_EXIT_X1, ADMIN_FEATURE_EXIT_Y1,
+                    ADMIN_FEATURE_EXIT_X2, ADMIN_FEATURE_EXIT_Y2) == 1) // 点击返回
+    {
+        *page = MAIN_ADMIN;
+    }
+
+    /* 点击搜索按钮 */
+    if (mouse_press(ADMIN_FEATURE_SEARCH_X1, ADMIN_FEATURE_SEARCH_Y1,
+                    ADMIN_FEATURE_SEARCH_X2, ADMIN_FEATURE_SEARCH_Y2) == 1) // 点击搜索
+    {
+        ch_input(search_str, ADMIN_FEATURE_SEARCH_X1 + 25, ADMIN_FEATURE_SEARCH_Y1, 13, MY_LIGHTGRAY, INPUTBAR_NO_CLEAR, 1);                                 // 输入框
+        admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, id_list, fp, "message", NULL, NULL, LIST_STAY, LIST_CLEAR_CONTINUE, search_str, "message_id"); // 清除列表
+    }
+
+    /* 点击查看信息 */
+    if (mouse_press(ADMIN_FEATURE1_X1, ADMIN_FEATURE1_Y1,
+                    ADMIN_FEATURE1_X2, ADMIN_FEATURE1_Y2) == 1) // 点击查看信息
+    {
+        if (*selected_id != 0) // 未选中
+        {
+            pos = find_file_info(fp, "message", search_str, "message_id"); // 查找信息
+            if (pos != -1)                                                 // 找到信息
+            {
+                ltoa(*selected_id, buffer, 10);
+                message_get(fp, &msg, buffer, "message_id"); // 读取选中的消息
+                message_display(&msg);                       // 显示选中的消息
+
+                msg.is_read = 1;                                   // 将消息标记为已读
+                message_overwrite(fp, &msg, buffer, "message_id"); // 将选中的消息标记为已读
+            }
+        }
+    }
+
+    /* 点击翻页 */
+    if (mouse_press(ADMIN_FEATURE_UP_X1, ADMIN_FEATURE_UP_Y1,
+                    ADMIN_FEATURE_UP_X2, ADMIN_FEATURE_UP_Y2) == 1) // 点击上一页
+    {
+        admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, id_list, fp, "message", NULL, NULL, LIST_PAGEDOWN, LIST_NO_CLEAR, search_str, "message_id"); // 清除列表
+    }
+    if (mouse_press(ADMIN_FEATURE_DOWN_X1, ADMIN_FEATURE_DOWN_Y1,
+                    ADMIN_FEATURE_DOWN_X2, ADMIN_FEATURE_DOWN_Y2) == 1) // 点击下一页
+    {
+        admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, id_list, fp, "message", NULL, NULL, LIST_PAGEDOWN, LIST_NO_CLEAR, search_str, "message_id"); // 清除列表
+    }
+}
+
 /**********************************************************
 MODULE:其他杂项函数
 ***********************************************************/
@@ -1772,9 +1871,12 @@ void define_admin_buttons(ADMIN_BUTTONS AdminButtons[], int page)
     }
     else if (page == ADMIN_MESSAGE)
     {
-        admin_get_buttons(&AdminButtons[0], &Examples[19]);
-        admin_get_buttons(&AdminButtons[1], &Examples[31]);
-        admin_get_buttons(&AdminButtons[2], &Examples[32]);
+        for (i = 0, j = 0; i < 19; i++, j++)
+        {
+            admin_get_buttons(&AdminButtons[j], &Examples[i]);
+        }
+        admin_get_buttons(&AdminButtons[20], &Examples[31]);
+        admin_get_buttons(&AdminButtons[21], &Examples[32]);
     }
     else if (page == ADMIN_MESSAGE_REPLY)
     {

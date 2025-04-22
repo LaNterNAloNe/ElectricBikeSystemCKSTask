@@ -358,12 +358,12 @@ int message_if_found(int __is_read)
 }
 
 // 处理信息列表点击
-void message_list_click(int _x, int _y, int _listed_item, int _max, int _interval, int _item_id[], long *_selected_id) 
+void message_list_click(int _x, int _y, int _max, int _interval, int _item_id[], long *_selected_id)
 {
     MESSAGE msg; // 用于存储读取的消息
     FILE *fp = NULL;
     char buffer[20];
-    int i = 0; // 用于循环计数
+    int i = 0;                                         // 用于循环计数
     unsigned int previous_selected_id = *_selected_id; // 用于存储上一次选中的消息ID，非静态变量
 
     for (i = 0; i < _max; i++)
@@ -378,28 +378,28 @@ void message_list_click(int _x, int _y, int _listed_item, int _max, int _interva
             // 则执行信息显示操作
             {
                 fp = fopen("DATA\\MESSAGE.DAT", "rb+"); // 打开消息文件，以二进制读取模式打开
-                if (fp == NULL) // 检查文件指针是否为空
-                { // 如果为空，输出错误信息并返回
-                    return; // 返回
+                if (fp == NULL)                         // 检查文件指针是否为空
+                {                                       // 如果为空，输出错误信息并返回
+                    return;                             // 返回
                 }
 
                 ltoa(*_selected_id, buffer, 10);
                 message_get(fp, &msg, buffer, "message_id"); // 读取选中的消息
-                message_display(&msg); // 显示选中的消息
+                message_display(&msg);                       // 显示选中的消息
 
-                msg.is_read = 1; // 将消息标记为已读
+                msg.is_read = 1;                                   // 将消息标记为已读
                 message_overwrite(fp, &msg, buffer, "message_id"); // 将选中的消息标记为已读
                 previous_selected_id = 0;
                 *_selected_id = 0;
                 fclose(fp);
+
+                break;
             }
-            break;
         }
     }
 
-
     if (previous_selected_id == *_selected_id &&
-        mouse_press(_x + 20, _y + 70 + _listed_item * _interval, _x + 500, _y + 70 + (_listed_item + 1) * _interval - 1) == -1)
+        mouse_press(_x + 20, _y + 70, _x + 500, _y + 70 + _max * _interval - 1) == -1)
     {
         // 经过上面循环发现没有选中正确的行，_selected_id不会发生改变，因此和previous相同
         *_selected_id = 0; // 重置选中的消息ID

@@ -40,8 +40,8 @@ int message_overwrite(FILE *fp, MESSAGE *msg, char *search_str, char *search_nee
 int message_is_valid(MESSAGE msg, char *search_str, char *search_needed);
 int message_if_found(int __is_read);
 
-void message_handle_click_event(int *is_return, MESSAGE *msg);
-void message_list_click(int _x, int _y, int _listed_item, int _max, int _interval, int _item_id[], long *_selected_id);
+void message_handle_click_event(int *is_return, MESSAGE *msg); // message界面特有的鼠标点击事件处理函数
+void message_list_click(int _x, int _y, int _max, int _interval, int _item_id[], long *_selected_id);
 
 void message_display_draw_bg();
 void message_draw_reply_bg(MESSAGE *prev_msg);
