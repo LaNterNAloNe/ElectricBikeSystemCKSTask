@@ -1,9 +1,9 @@
 #include"GLOBAL.H"
 
 int main(void){
-    int page = MAIN_ADMIN; // 主页面
+    int page = MAIN_USER; // 主页面
     char buffer[50];
-    unsigned long ID = 0; // 记录登录用户的ID
+    unsigned long ID = 1; // 记录登录用户的ID
     int driver=VGA,mode=VGAHI;
     LINKLIST *LIST = (LINKLIST *)malloc(sizeof(LINKLIST));
     if (LIST == NULL){ // 分配内存失败
@@ -43,7 +43,7 @@ int main(void){
             case REGISTER_ID_INPUT:
                 register_id_input(&page, &ID);
                 break;
-
+            
             // USER.C
             case MAIN_USER:
                 user_main(&page);break;
@@ -55,10 +55,15 @@ int main(void){
                 user_bike_license_notice(&page, &ID); break;
             case USER_BIKE_WROTEOUT:
                 user_bike_wroteout(&page, &ID); break;
-            case USER_QUIZ:
-                user_quiz(&page, &ID); break;
             case USER_INFO:
                 user_info(&page, &ID); break;
+            case USER_INFO_BIKEINFO:
+                user_bike_info(&page, &ID); break;
+            case USER_HELP:
+                user_help(&page, &ID); break;
+            case USER_QUIZ:
+                user_quiz(&page, &ID); break;
+            
 
             //ADMIN.C
             case MAIN_ADMIN:
