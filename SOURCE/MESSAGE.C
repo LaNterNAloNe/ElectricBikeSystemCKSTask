@@ -7,26 +7,33 @@ RETURN:返回值统一为：（1）执行成功返回1；（2）执行失败（含各种原因）返回0
 
 void message_display(MESSAGE *msg)
 {
-    ADMIN_BUTTONS btn[3]; // 定义按钮变量
     int tag = ACTIVE_ADMIN_NULL; // 定义标签变量
     int is_return = 0;
     int mouse_flag;
-    define_admin_buttons(btn, ADMIN_MESSAGE); // 定义按钮
+    char buffer1[10];
+    char buffer2[10];
+    ADMIN_BUTTONS btn[2];                     // 定义按钮变量
+    define_admin_buttons(btn, ADMIN_MESSAGE_DISPLAY); // 定义按钮
     if (msg->message_type != PRIVATE_MESSAGE)
     {
-        memset(&btn[2], '\0', sizeof(btn[2])); // 清空按钮变量
+        memset(&btn[1], '\0', sizeof(btn[1])); // 清空按钮变量
     }
 
+    clrmous(MouseX, MouseY); // 清除鼠标
     message_display_draw_bg();
+
     if (msg == NULL)
     {
-        message_topic_display(120, 35, 400, "信息错误", MY_RED, 26, 3, 0); // 显示消息的主题
+        message_topic_display(120, 35, 400, "信息错误", MY_RED, 24, 3, 0); // 显示消息的主题
     }
     else
     {
-        message_topic_display(120, 35, 400, msg->title, MY_BLACK, 26, 3, 0); // 显示消息的主题
-        message_text_display(120, 80, 400, msg->sender_username, MY_BLACK);  // 显示消息的内容
-        message_text_display(120, 110, 400, msg->message, MY_BLACK);         // 显示消息的发送者
+        message_topic_display(120, 35, 400, msg->title, MY_BLACK, 24, 3, 0); // 显示消息的主题
+        message_text_display(160, 80, 400, msg->sender_username, MY_BLACK);  // 显示消息的发送者
+        ltoa(msg->time, buffer1, 10);
+        sprintf(buffer2, "%.4s.%.2s.%.2s", buffer1, buffer1 + 4, buffer1 + 6);
+        message_text_display(390, 80, 400, buffer2, MY_BLACK);         // 显示消息的发时间
+        message_text_display(120, 110, 400, msg->message, MY_BLACK);         // 显示消息的内容
     }
     
     while (is_return == 0)
@@ -38,6 +45,8 @@ void message_display(MESSAGE *msg)
 
         newmouse(&MouseX, &MouseY, &press, &mouse_flag);
     }
+    drawgraph_admin_menu();
+    drawgraph_admin_message_center();
 }
 
 void message_reply(int *is_return, MESSAGE *msg)
@@ -227,13 +236,10 @@ int message_get(FILE *fp, MESSAGE *msg, char *search_str, char *search_needed)
         return 0;
     }
 
-    while (i > counts) { // 逐行读取文件内容
-        if (fseek(fp, - i * sizeof(MESSAGE), SEEK_CUR) == -1); // 将文件指针回退到上一行的开头
-        {
-            return 0; // 如果回退失败，返回0
-        }
+    while (i < counts) { // 逐行读取文件内容
+        fseek(fp, (counts - i - 1) * sizeof(MESSAGE), SEEK_SET); // 将文件指针回退到上一行的开头
         fread(&msg_buffer, sizeof(MESSAGE), 1, fp);
-
+    
         if (message_is_valid(msg_buffer, search_str, search_needed) == 1)
         { // 检查消息是否有效
             *msg = msg_buffer; // 将有效消息复制到传入的指针指向的内存中
@@ -242,6 +248,7 @@ int message_get(FILE *fp, MESSAGE *msg, char *search_str, char *search_needed)
 
         i++;
     }
+    return 0;
 }
 
 // 覆盖消息
@@ -296,7 +303,9 @@ int message_is_valid(MESSAGE msg, char *search_str, char *search_needed)
         !strcmp("all_user", search_str) && strcmp(search_needed, "receiver_username") == 0 || // 枚举两种特殊情况
         !strcmp("all_admin", search_str) && strcmp(search_needed, "receiver_username") == 0 ||
         !strcmp(msg.sender_username, search_str) && strcmp(search_needed, "sender_username") == 0 ||
-        msg.is_read == atoi(search_str) && strcmp(search_needed, "is_read") == 0)
+        msg.is_read == atoi(search_str) && strcmp(search_needed, "is_read") == 0 || 
+        msg.message_id == atol(search_str) && strcmp(search_needed, "message_id") == 0
+        )
     { 
         return 1; // 如果匹配，返回1
     }

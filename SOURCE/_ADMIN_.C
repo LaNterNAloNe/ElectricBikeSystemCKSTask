@@ -237,7 +237,7 @@ void admin_message_center(int *page, unsigned long *ID){
     while(*page == ADMIN_MESSAGE){
         newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
 
-        show_num(10, 10, selected_id, MY_WHITE);
+        // show_num(10, 10, selected_id, MY_WHITE);
 
         admin_handle_buttons_event(page);
         admin_flush_buttons(&tag, STRUCT_LENGTH(AdminButtons), AdminButtons);
@@ -1595,15 +1595,22 @@ void admin_handle_message_click_event(FILE *fp, int *page, unsigned long id_list
     {
         if (*selected_id != 0) // 未选中
         {
-            pos = find_file_info(fp, "message", search_str, "message_id"); // 查找信息
+            ltoa(*selected_id, buffer, 10);
+            pos = find_file_info(fp, "message", buffer, "message_id"); // 查找信息
             if (pos != -1)                                                 // 找到信息
             {
                 ltoa(*selected_id, buffer, 10);
-                message_get(fp, &msg, buffer, "message_id"); // 读取选中的消息
+                if (message_get(fp, &msg, buffer, "message_id") != 1) // 读取选中的消息
+                {
+                    puthz(10, 10, "未找到信息！", 16, 16, MY_RED); // 显示未找到信息
+                    return;
+                }
                 message_display(&msg);                       // 显示选中的消息
 
                 msg.is_read = 1;                                   // 将消息标记为已读
                 message_overwrite(fp, &msg, buffer, "message_id"); // 将选中的消息标记为已读
+                admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, id_list, fp, "message", NULL, NULL, LIST_STAY, LIST_CLEAR_CONTINUE, "\0", "\0"); // 清除列表
+                *selected_id = 0;
             }
         }
     }
@@ -1881,6 +1888,11 @@ void define_admin_buttons(ADMIN_BUTTONS AdminButtons[], int page)
         }
         admin_get_buttons(&AdminButtons[20], &Examples[31]);
         admin_get_buttons(&AdminButtons[21], &Examples[32]);
+    }
+    else if (page == ADMIN_MESSAGE_DISPLAY)
+    {
+        admin_get_buttons(&AdminButtons[0], &Examples[19]);
+        admin_get_buttons(&AdminButtons[1], &Examples[31]);
     }
     else if (page == ADMIN_MESSAGE_REPLY)
     {
