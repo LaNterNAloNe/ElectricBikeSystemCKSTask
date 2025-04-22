@@ -517,8 +517,8 @@ void _register(int* page,unsigned long *ID,LINKLIST *LIST) {
 					linklist_add_data(LIST, new_user_data);//向链表中添加数据
                     linklist_write_user_data(LIST); // 写入用户数据
 					*page = LOGIN;
-					*ID = -1;
-					ch_input(NULL, NULL, NULL, NULL, NULL,1,NULL);  // 清除输入框记忆
+					*ID = 0;
+					ch_input(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);  // 清除输入框记忆
 					return;
 				}
 				if(is_register_invalid){

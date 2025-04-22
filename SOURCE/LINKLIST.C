@@ -269,16 +269,16 @@ RETURN:0成功，-1失败
 ***********************************************************/
 int linklist_write_user_data(LINKLIST *pList)
 {
-    const char *TMP_PATH = "DATA\\user_data.tmp"; // 临时文件名
+    const char *TMP_PATH = "DATA\\TEMP.tmp"; // 临时文件名
     const char *FINAL_PATH = "DATA\\USRDAT.TXT";
     FILE *fp = NULL;
     LINKLIST_NODE *ptr = pList->HEAD;
     char buffer[200]; // 扩大缓冲区防止溢出
 
-    fp = fopen(TMP_PATH, "w"); // 打开临时文件
+    fp = fopen(TMP_PATH, "w+"); // 打开临时文件
     if (!fp)
     {
-        perror("无法创建临时文件");
+        perror("linklist_write_user_data: can not create temp file");
         return -1;
     }
 
@@ -286,33 +286,42 @@ int linklist_write_user_data(LINKLIST *pList)
     {
         // 按字段顺序格式化字符串
         sprintf(buffer,"%d,%s,%s,%s,%s,%s,%d,%d,%c,%c,\n",
-                 ptr->USER_DATA.ID,
-                 ptr->USER_DATA.usrn,
-                 ptr->USER_DATA.rln,
-                 ptr->USER_DATA.location,
-                 ptr->USER_DATA.ebike_ID,
-                 ptr->USER_DATA.ebike_license,
-                 ptr->USER_DATA.anual_check,
-                 ptr->USER_DATA.violations,
-                 ptr->USER_DATA.account_state,
-                 ptr->USER_DATA.ebike_state);
+                ptr->USER_DATA.ID,
+                ptr->USER_DATA.usrn,
+                ptr->USER_DATA.rln,
+                ptr->USER_DATA.location,
+                ptr->USER_DATA.ebike_ID,
+                ptr->USER_DATA.ebike_license,
+                ptr->USER_DATA.anual_check,
+                ptr->USER_DATA.violations,
+                ptr->USER_DATA.account_state,
+                ptr->USER_DATA.ebike_state);
 
         // 写入文件并检查错误
         if (fputs(buffer, fp) == EOF)
         {
+            perror("linklist_write_user_data: write to temp file failed");
+            ptr = NULL;
             fclose(fp);
             remove(TMP_PATH);
-            return -1;
+            getch();
+            exit(1);
         }
         ptr = ptr->NEXT;
     }
 
     fclose(fp);
 
+    remove(FINAL_PATH); // 删除原文件
     if (rename(TMP_PATH, FINAL_PATH) != 0) // 替换文件
     {
+        perror("linklist_write_user_data: rename temp file failed");
+        ptr = NULL;
         remove(TMP_PATH);
-        return -1;
+        getch();
+        exit(1);
     }
+    ptr = NULL;
+
     return 0;
 }
