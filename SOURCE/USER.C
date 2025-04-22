@@ -31,7 +31,7 @@ void user_main(int *page) {
 			newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
 			flushUserMain(&tag, STRUCT_LENGTH(UserButtons), UserButtons); // 刷新界面
 			click = handle_click_main(STRUCT_LENGTH(UserButtons), UserButtons);
-			if (click == LOGIN || click == EXIT||click==USER_BIKE_REGISTER||click==USER_BIKE_LICENSE_NOTICE||click==USER_BIKE_WROTEOUT||click==USER_INFO||click==USER_HELP) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_REGISTER
+			if (click!=-99) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_REGISTER
 				*page = click;
 				newmouse(&MouseX, &MouseY, &press, &mouse_flag);
 				return;
@@ -306,7 +306,7 @@ void user_bike_register(int* page, unsigned long* id)
 	drawgraph_user_main(page);
 
 
-	if (0) {//此处应该为!ebike_user_register_judge(id)，但文件操作目前尚未完善
+	if (!user_ebike_register_judge(id)) {//此处应该为!ebike_user_register_judge(id)，但文件操作目前尚未完善
 		setfillstyle(SOLID_FILL, MY_WHITE);
 		bar(150, 60, 640, 480);
 		drawgraph_user_bike_register_info(id);
@@ -316,7 +316,7 @@ void user_bike_register(int* page, unsigned long* id)
 			newmouse_data(&MouseX, &MouseY, &press,&mouse_flag);
 			flushUserMain(&tag, STRUCT_LENGTH(UserButtons), UserButtons); // 刷新界面
 			click = handle_click_main(STRUCT_LENGTH(UserButtons), UserButtons);
-			if (click == LOGIN || click == EXIT || click == USER_BIKE_REGISTER || click == USER_BIKE_LICENSE_NOTICE || click == USER_BIKE_WROTEOUT || click == USER_INFO || click == USER_HELP){          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_REGISTER
+			if (click != -99 && click!= USER_BIKE_REGISTER){          
 				*page = click;
 				newmouse(&MouseX, &MouseY, &press, &mouse_flag);
 				return;
@@ -370,7 +370,7 @@ int user_ebike_register_judge(unsigned long *ID) {
 	int bike_count = 0;
 	int account_counts;
 	EBIKE_INFO TEMP;
-	FILE* fp_EBIKE_INFO_read = fopen("C:\\EBS\\DATA\\REGISTER.DAT", "r");
+	FILE* fp_EBIKE_INFO_read = fopen("DATA\\REGISTER.DAT", "rb");
 
 	if (fp_EBIKE_INFO_read == NULL) {
 		fclose(fp_EBIKE_INFO_read);
@@ -584,7 +584,7 @@ void drawgraph_user_bike_register_info(unsigned long *id) {
 	setcolor(MY_BLACK);
 	
 	puthz(170, 140, "姓名", 24, 20, MY_BLACK);
-	outtextxy(260, 142, user_info.rln);
+	puthz(260, 142, user_info.rln,24,22,MY_BLACK);
 	puthz(170, 190, "车牌号", 24, 20, MY_BLACK);
 	outtextxy(260, 192, user_info.ebike_ID);
 	puthz(170, 240, "学号", 24, 20, MY_BLACK);
@@ -650,11 +650,11 @@ void user_bike_register_getinfo(EBIKE_INFO* user_info,unsigned long *id) {
 
 void user_bike_license_notice(int* page, unsigned long* id)
 {
-	int click = -1;
+	int click = -99;
 	int tag = 0;
 	int mouse_flag;
 	int user_flag;
-	int tick;
+	int tick=0;
 	char second[][2] = { "5","4","3","2","1","0" };
 
 	user_button UserButtons[] = {
@@ -676,22 +676,21 @@ void user_bike_license_notice(int* page, unsigned long* id)
 	user_flag = user_ebike_register_judge(id);
 	if (!user_flag){
 		drawgraph_user_license_notice(id);
-
 			while (1) {
-				newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
+					newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
 					flushUserMain(&tag, STRUCT_LENGTH(UserButtons), UserButtons);
 					flushUserLicenseNotice(&tag);
 					click = handle_click_main(STRUCT_LENGTH(UserButtons), UserButtons);
-					if (click == LOGIN || click == EXIT || click == USER_BIKE_REGISTER || click == USER_BIKE_LICENSE_NOTICE || click == USER_BIKE_WROTEOUT || click == USER_INFO || click == USER_HELP) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_LICENSE_NOTICE
+					if (click != -99 && click!= USER_BIKE_LICENSE_NOTICE) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_LICENSE_NOTICE
 						*page = click;
-							return;
+						return;
 					}
-				if (mouse_press(USER_LICENSE_NOTICE_BUTTON1_X1, USER_LICENSE_NOTICE_BUTTON1_Y1, USER_LICENSE_NOTICE_BUTTON1_X2, USER_LICENSE_NOTICE_BUTTON1_Y2) == 1) {
-					*page = USER_QUIZ;
-					return;
-				}
-				newmouse(&MouseX, &MouseY, &press, &mouse_flag);
-				delay(25);
+					if (mouse_press(USER_LICENSE_NOTICE_BUTTON1_X1, USER_LICENSE_NOTICE_BUTTON1_Y1, USER_LICENSE_NOTICE_BUTTON1_X2, USER_LICENSE_NOTICE_BUTTON1_Y2) == 1) {
+						*page = USER_QUIZ;
+						return;
+					}
+					newmouse(&MouseX, &MouseY, &press, &mouse_flag);
+					delay(25);
 			}
 	}
 	else {
@@ -701,7 +700,7 @@ void user_bike_license_notice(int* page, unsigned long* id)
 			newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
 			flushUserMain(&tag, STRUCT_LENGTH(UserButtons), UserButtons);
 			click = handle_click_main(STRUCT_LENGTH(UserButtons), UserButtons);
-			if (click == LOGIN || click == EXIT || click == USER_BIKE_REGISTER || click == USER_BIKE_LICENSE_NOTICE || click == USER_BIKE_WROTEOUT || click == USER_INFO || click == USER_HELP) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_LICENSE_NOTICE
+			if (click != -99 && click != USER_BIKE_LICENSE_NOTICE) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_LICENSE_NOTICE
 				*page = click;
 				return;
 			}
@@ -789,7 +788,7 @@ void flushUserLicenseNotice(int* tag)
 void user_bike_license(int *page,unsigned long *id)
 {
 	int license_data[3] = {-1,-1,-1};
-	int click = -1;
+	int click = -99;
 	int tag = 0;
 	int register_flag = 0;
 	int mouse_flag;
@@ -826,7 +825,7 @@ void user_bike_license(int *page,unsigned long *id)
 		flushUserLicense(UserLicenseBox,license_data);
 		handle_click_user_license(UserLicenseBox,license_data);//处理选项框
 		click = handle_click_main(STRUCT_LENGTH(UserButtons), UserButtons);
-		if (click == LOGIN || click == EXIT || click == USER_BIKE_REGISTER || click == USER_BIKE_LICENSE_NOTICE || click == USER_BIKE_WROTEOUT || click == USER_INFO || click == USER_HELP) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_LICENSE
+		if (click !=-99 && click != USER_BIKE_LICENSE_NOTICE) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_LICENSE
 			*page = click;
 			return;
 		}//菜单界面点击
@@ -1090,7 +1089,7 @@ void user_help(int* page, unsigned long* id)
 		newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);//刷新鼠标数据
 		FlushUserHelp(&tag_help, STRUCT_LENGTH(HelpButtons), HelpButtons); // 刷新界面
 		click = handle_click_user_help(STRUCT_LENGTH(HelpButtons), HelpButtons);
-		if (click !=USER_MESSAGE && click !=USER_ANNUAL && click !=USER_HELP && (click <= HELP_ANNOUNCE||click >=HELP_ANNOUNCE+5) && click!=-99) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_LICENSE
+		if (click !=USER_MESSAGE && click !=USER_HELP && (click <= HELP_ANNOUNCE||click >=HELP_ANNOUNCE+5) && click!=-99) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_LICENSE
 			*page = click;
 			return;
 		}//菜单界面点击
@@ -1109,7 +1108,7 @@ void user_help(int* page, unsigned long* id)
 		newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);//刷新鼠标数据
 		flushUserMain(&tag_main, STRUCT_LENGTH(UserButtons), UserButtons);
 		click = handle_click_main(STRUCT_LENGTH(UserButtons), UserButtons);
-		if (click == LOGIN || click == EXIT || click == USER_BIKE_REGISTER || click == USER_BIKE_LICENSE_NOTICE || click == USER_BIKE_WROTEOUT) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_REGISTER
+		if (click != -99 && click != USER_HELP) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_REGISTER
 			*page = click;
 			newmouse(&MouseX, &MouseY, &press, &mouse_flag);
 			return;
@@ -1303,7 +1302,7 @@ void drawgraph_user_help_announce(int announce) {
 
 void user_bike_wroteout(int *page,unsigned long *id)
 {
-	int click = -1;
+	int click = -99;
 	int tag_main = 0;
 	int tag_wroteout = -1;
 	int flush_count = 0;
@@ -1349,7 +1348,7 @@ void user_bike_wroteout(int *page,unsigned long *id)
 			newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
 			flushUserMain(&tag_main, STRUCT_LENGTH(UserButtons), UserButtons);
 			click = handle_click_main(STRUCT_LENGTH(UserButtons), UserButtons);
-			if (click == LOGIN || click == EXIT || click == USER_BIKE_REGISTER || click == USER_BIKE_LICENSE_NOTICE || click == USER_BIKE_WROTEOUT || click == USER_INFO || click == USER_HELP) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_LICENSE_NOTICE
+			if (click != -99 && click !=USER_BIKE_WROTEOUT) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_LICENSE_NOTICE
 				*page = click;
 				return;
 			}
@@ -1378,7 +1377,7 @@ void user_bike_wroteout(int *page,unsigned long *id)
 		flushUserMain(&tag_main, STRUCT_LENGTH(UserButtons), UserButtons); // 刷新界面
 		flushUserWroteoutWarning();
 		click = handle_click_main(STRUCT_LENGTH(UserButtons), UserButtons);
-		if (click == LOGIN || click == EXIT || click == USER_BIKE_REGISTER || click == USER_BIKE_LICENSE_NOTICE || click == USER_INFO || click == USER_ANNUAL) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_LICENSE
+		if (click != -99 && click != USER_BIKE_WROTEOUT) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_LICENSE
 			*page = click;
 
 			return;
@@ -1419,7 +1418,7 @@ void user_bike_wroteout(int *page,unsigned long *id)
 		flushUserMain(&tag_main, STRUCT_LENGTH(UserButtons), UserButtons); // 刷新界面
 		flushUserWroteout(&tag_wroteout,WroteoutButtons);
 		click = handle_click_main(STRUCT_LENGTH(UserButtons), UserButtons);
-		if (click == LOGIN || click == EXIT || click == USER_BIKE_REGISTER || click == USER_BIKE_LICENSE_NOTICE || click == USER_BIKE_WROTEOUT || click == USER_INFO || click == USER_HELP) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_LICENSE
+		if (click != -99 && click != USER_BIKE_WROTEOUT) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_LICENSE
 			*page = click;
 			ch_input(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
 			return;
@@ -1669,6 +1668,207 @@ void draw_user_wroteout_fail(int wroteout_flag) {
 		break;
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+void user_annual(int* page, unsigned long* id) {
+	int tag = 0;
+	int register_flag;
+	int click = -1;
+	int mouse_flag;
+	int annual_flag;
+	int active_button = 0;
+	char usrn[16] = { '\0' }; // 初始化为空
+	int hz_input_len = 0;//汉字输入框的汉字数量
+	char e_bike_id[10] = { '\0' };
+	int tick=0;
+	char second[][2] = { "5","4","3","2","1","0" };
+	user_button UserButtons[] = {
+{USER_BIKE_REGISTER_X1, USER_BIKE_REGISTER_X2,USER_BIKE_REGISTER_Y1, USER_BIKE_REGISTER_Y2,ACTIVE_USER_BIKE_REGISTER,USER_BIKE_REGISTER},
+{USER_BIKE_LICENSE_X1, USER_BIKE_LICENSE_X2,USER_BIKE_LICENSE_Y1, USER_BIKE_LICENSE_Y2,ACTIVE_USER_BIKE_LICENSE,USER_BIKE_LICENSE_NOTICE},
+{USER_ANNUAL_X1, USER_ANNUAL_X2,USER_ANNUAL_Y1, USER_ANNUAL_Y2,ACTIVE_USER_ANNUAL,USER_ANNUAL},
+{USER_BIKE_WROTEOUT_X1, USER_BIKE_WROTEOUT_X2,USER_BIKE_WROTEOUT_Y1, USER_BIKE_WROTEOUT_Y2,ACTIVE_USER_BIKE_WROTEOUT,USER_BIKE_WROTEOUT},
+{USER_INFO_X1, USER_INFO_X2,USER_INFO_Y1, USER_INFO_Y2,ACTIVE_USER_INFO,USER_INFO},
+{USER_MESSAGE_X1, USER_MESSAGE_X2,USER_MESSAGE_Y1, USER_MESSAGE_Y2,ACTIVE_USER_MESSAGE,USER_MESSAGE},
+{USER_HELP_X1, USER_HELP_X2,USER_HELP_Y1, USER_HELP_Y2,ACTIVE_USER_HELP,USER_HELP},
+{USER_BACK_X1,USER_BACK_X2,USER_BACK_Y1,USER_BACK_Y2,ACTIVE_USER_BACK,LOGIN},
+{USER_EXIT_X1,USER_EXIT_X2,USER_EXIT_Y1,USER_EXIT_Y2,ACTIVE_USER_EXIT,EXIT},
+	};
+	clrmous(MouseX, MouseY);
+	save_bk_mou(MouseX, MouseY);
+	drawgraph_user_main(page);
+
+	register_flag = user_ebike_register_judge(id);
+	if (register_flag==1) {//调试
+		puthz(180, 200, "您未注册电动车，请前往注册！", 32, 32, MY_BLACK);
+		puthz(280, 300, "秒后转到电动车注册界面", 24, 22, MY_BLACK);
+		while (tick <= 202) {
+			newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
+			flushUserMain(&tag, STRUCT_LENGTH(UserButtons), UserButtons);
+			click = handle_click_main(STRUCT_LENGTH(UserButtons), UserButtons);
+			if (click == LOGIN || click == EXIT || click == USER_BIKE_REGISTER || click == USER_BIKE_LICENSE_NOTICE || click == USER_BIKE_WROTEOUT || click == USER_INFO || click == USER_HELP) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_LICENSE_NOTICE
+				*page = click;
+				return;
+			}
+			if (mouse_press(USER_LICENSE_NOTICE_BUTTON1_X1, USER_LICENSE_NOTICE_BUTTON1_Y1, USER_LICENSE_NOTICE_BUTTON1_X2, USER_LICENSE_NOTICE_BUTTON1_Y2) == 1) {
+				*page = USER_QUIZ;
+				return;
+			}
+			if (tick % 40 == 0) {
+				setfillstyle(SOLID_FILL, MY_WHITE);
+				bar(245, 280, 275, 330);
+				settextstyle(DEFAULT_FONT, HORIZ_DIR, 2); // 默认字体，水平方向，大小2
+				setcolor(MY_BLACK);
+				outtextxy(250, 305, second[tick / 40]);
+			}
+			newmouse(&MouseX, &MouseY, &press, &mouse_flag);
+			delay(25);
+			tick++;
+		}
+		*page = USER_BIKE_REGISTER;
+		return;
+	}
+	annual_flag = ebike_annual_judge(id);
+
+	drawgraph_user_bike_annual(annual_flag);
+	while (1) {
+		newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
+		flushUserMain(&tag, STRUCT_LENGTH(UserButtons), UserButtons);
+		click = handle_click_main(STRUCT_LENGTH(UserButtons), UserButtons);
+		if (click == LOGIN || click == EXIT || click == USER_BIKE_REGISTER || click == USER_BIKE_LICENSE_NOTICE || click == USER_BIKE_WROTEOUT || click == USER_INFO || click == USER_HELP) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_LICENSE_NOTICE
+			*page = click;
+			return;
+		}
+		if (mouse_press(USER_ANNUAL_BUTTON1_X1, USER_ANNUAL_BUTTON1_Y1, USER_ANNUAL_BUTTON1_X2, USER_ANNUAL_BUTTON1_Y2) == 1 && annual_flag==0) {//未年审
+			user_annual_change(id);
+			setfillstyle(SOLID_FILL, MY_WHITE);
+			bar(150, 60, 640, 480);
+			puthz(280, 200, "您已提交成功", 32, 40, MY_BLACK);
+			puthz(245, 260, "即将返回主界面", 32, 40, MY_BLACK);
+			delay(3000);
+			*page = MAIN_USER;
+			return;
+		}
+		if (mouse_press(USER_ANNUAL_BUTTON1_X1, USER_ANNUAL_BUTTON1_Y1, USER_ANNUAL_BUTTON1_X2, USER_ANNUAL_BUTTON1_Y2) == 1 && annual_flag == 1) {//已经年审
+			setfillstyle(SOLID_FILL, MY_WHITE);
+			bar(150, 60, 640, 480);
+			puthz(220, 200, "您已提交过年审信息", 32, 40, MY_BLACK);
+			puthz(245, 260, "即将返回主界面", 32, 40, MY_BLACK);
+			delay(3000);
+			*page = MAIN_USER;
+			return;
+		}
+		if (MouseX >= USER_ANNUAL_BUTTON1_X1 && MouseX <= USER_ANNUAL_BUTTON1_X2 && MouseY >= USER_ANNUAL_BUTTON1_Y1 && MouseY <= USER_ANNUAL_BUTTON1_Y2 ) {
+			MouseS = 1;
+			if (active_button !=1) {
+				setcolor(MY_BLACK);
+				rectangle(USER_ANNUAL_BUTTON1_X1 - 1, USER_ANNUAL_BUTTON1_Y1 - 1, USER_ANNUAL_BUTTON1_X2 + 1, USER_ANNUAL_BUTTON1_Y2 + 1);
+			}
+			active_button = 1;
+		}
+		else if (active_button == 1 ) {
+			setcolor(MY_WHITE);
+			rectangle(USER_ANNUAL_BUTTON1_X1 - 1, USER_ANNUAL_BUTTON1_Y1 - 1, USER_ANNUAL_BUTTON1_X2 + 1, USER_ANNUAL_BUTTON1_Y2 + 1);
+			active_button = 0;
+		}
+		newmouse(&MouseX, &MouseY, &press, &mouse_flag);
+		delay(25);
+	}
+}
+
+void drawgraph_user_bike_annual(int flag) {
+	puthz(250, 70, "电动车年审流程说明", 32, 35, MY_BLACK);
+	puthz(180, 115, "准备材料：包括身份证原件、购车发票、车辆合格证以及电动车行驶证（如有），部分车型还需提供交强险凭证。", 16, 18, MY_BLACK);
+	puthz(180, 175, "办理方式：前往车管所或指定检测站办理，也可在武汉交警小程序线上提交部分业务，建议提前电话咨询确认办理地点和线上可办范围。", 16, 18, MY_BLACK);
+	puthz(180, 255, "注意：若您的电动车属于旧国标，需注意武汉的过渡期政策，部分旧标车需在规定期限内更换牌照或淘汰，具体规定可向车管所咨询确认。", 16, 18, MY_BLACK);
+	puthz(180, 335, "提示：办理时建议提前预约，避开高峰期，尤其是学生群体可选择工作日早间前往以提高效率。", 16, 18, MY_BLACK);
+	setfillstyle(SOLID_FILL, MY_RED);
+	bar(USER_ANNUAL_BUTTON1_X1, USER_ANNUAL_BUTTON1_Y1, USER_ANNUAL_BUTTON1_X2, USER_ANNUAL_BUTTON1_Y2);
+	if(!flag){
+		puthz(240, 410, "若您的电动车今年已参与年审，请点击按钮", 24, 22, MY_BLACK);
+		puthz(USER_ANNUAL_BUTTON1_X1 + 10, USER_ANNUAL_BUTTON1_Y1 + 5, "已参与", 16, 18, MY_WHITE);
+	}
+	else {
+		puthz(200, 410, "您已确认电动车今年参与年审，若未参与，点击按钮前往反馈", 16, 18, MY_BLACK);
+		puthz(USER_ANNUAL_BUTTON1_X1 + 10, USER_ANNUAL_BUTTON1_Y1 + 5, "去反馈", 16, 18, MY_WHITE);
+	}
+	
+	
+}
+
+void user_annual_change(unsigned long* id) {
+	int i = -1;
+	int account_counts;
+	int data_position=-1;
+
+	EBIKE_INFO TEMP,INFO;
+	FILE* fp_EBIKE_ANNUAL_readndwrite = fopen("DATA\\ANUAL.DAT", "rb+");
+	if (fp_EBIKE_ANNUAL_readndwrite == NULL) {
+		fclose(fp_EBIKE_ANNUAL_readndwrite);
+		exit(0);
+	}
+	user_bike_register_getinfo(&INFO, id);
+	INFO.anual_check = 2025;
+	
+	fseek(fp_EBIKE_ANNUAL_readndwrite, 0, SEEK_END); // 确保写入位置在文件末尾
+	fwrite(&INFO, sizeof(EBIKE_INFO), 1, fp_EBIKE_ANNUAL_readndwrite);
+		
+	if (fclose(fp_EBIKE_ANNUAL_readndwrite) != 0) getch(), exit(1);
+	return;
+}
+
+int ebike_annual_judge(unsigned long* id) {
+	int i = -1;
+	int account_counts;
+
+
+	EBIKE_INFO TEMP;
+	FILE* fp_EBIKE_ANNUAL_read = fopen("DATA\\ANUAL.DAT", "rb");
+	if (fp_EBIKE_ANNUAL_read == NULL) {
+		fclose(fp_EBIKE_ANNUAL_read);
+		exit(0);
+	}
+
+	memset(&TEMP, 0, sizeof(TEMP));
+	fseek(fp_EBIKE_ANNUAL_read, 0, SEEK_END);
+	account_counts = ftell(fp_EBIKE_ANNUAL_read) / sizeof(EBIKE_INFO);//初始操作完成，接下来开始遍历数据
+
+	for (i = 0; i < account_counts; i++) {
+		fseek(fp_EBIKE_ANNUAL_read, i * sizeof(EBIKE_INFO), SEEK_SET);
+		fread(&TEMP, sizeof(EBIKE_INFO), 1, fp_EBIKE_ANNUAL_read); //逐个读取，每个用户信息
+
+		if (*id == TEMP.ID) {
+			fclose(fp_EBIKE_ANNUAL_read);
+			return 1;
+		}
+	}
+	fclose(fp_EBIKE_ANNUAL_read);
+	return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2288,7 +2488,7 @@ void user_info(int* page, unsigned long* id) {
 		flushUserInfo(&tag, STRUCT_LENGTH(UserButtons), UserButtons);
 
 		click = handle_click_info(STRUCT_LENGTH(UserButtons), UserButtons);
-		if (click !=USER_INFO &&click!=USER_ANNUAL && click!=USER_MESSAGE && click!=-99) {
+		if (click !=USER_INFO  && click!=USER_MESSAGE && click!=-99) {
 			*page = click;
 			return;
 		}

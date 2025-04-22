@@ -1,7 +1,7 @@
 #include"GLOBAL.H"
 
 int main(void){
-    int page = ADMIN_MESSAGE; // 主页面
+    int page = USER_ANNUAL; // 主页面
     char buffer[50];
     unsigned long ID = 1; // 记录登录用户的ID
     int driver=VGA,mode=VGAHI;
@@ -53,6 +53,8 @@ int main(void){
                 user_bike_license(&page, &ID); break;
             case USER_BIKE_LICENSE_NOTICE:
                 user_bike_license_notice(&page, &ID); break;
+            case USER_ANNUAL:
+                user_annual(&page, &ID); break;
             case USER_BIKE_WROTEOUT:
                 user_bike_wroteout(&page, &ID); break;
             case USER_INFO:
