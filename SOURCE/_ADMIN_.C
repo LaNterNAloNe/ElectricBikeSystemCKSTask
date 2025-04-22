@@ -715,7 +715,7 @@ void drawgraph_admin_message_center()
     puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 5, "消息中心", 24, 20, MY_WHITE); // 输出文本
 
     puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 40, "消息主题", 16, 16, MY_WHITE);
-    puthz(ADMIN_INTERFACE_X1 + 300, ADMIN_INTERFACE_Y1 + 40, "发送者", 16, 16, MY_WHITE);
+    puthz(ADMIN_INTERFACE_X1 + 320, ADMIN_INTERFACE_Y1 + 40, "发送者", 16, 16, MY_WHITE);
     puthz(ADMIN_INTERFACE_X1 + 440, ADMIN_INTERFACE_Y1 + 40, "状态", 16, 16, MY_WHITE);
 
     setfillstyle(SOLID_FILL, MY_YELLOW);
@@ -1605,7 +1605,7 @@ void admin_handle_message_click_event(FILE *fp, int *page, unsigned long id_list
                     puthz(10, 10, "未找到信息！", 16, 16, MY_RED); // 显示未找到信息
                     return;
                 }
-                message_display(&msg);                       // 显示选中的消息
+                message_display(&msg);                       // 显示选中的消息，这玩意在vscode里为什么报错我不得而知
 
                 msg.is_read = 1;                                   // 将消息标记为已读
                 message_overwrite(fp, &msg, buffer, "message_id"); // 将选中的消息标记为已读

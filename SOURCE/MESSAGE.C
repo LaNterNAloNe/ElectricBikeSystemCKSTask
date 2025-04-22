@@ -84,7 +84,7 @@ void message_list(MESSAGE msg,int _x, int _y, int _listed_item, int _max, int _i
         if (msg.is_read == 1) { // 如果消息已读，则显示已读
             puthz(_x + 420, _y + _interval * _listed_item, "已读", 16, 16, MY_WHITE); // 显示已读
         } else { // 如果消息未读，则显示未读
-            puthz(_x + 420, _y + _interval * _listed_item, "未读", 16, 16, MY_WHITE); // 显示未读
+            puthz(_x + 420, _y + _interval * _listed_item, "未读", 16, 16, MY_RED); // 显示未读
         }
     }
     else if (list_sequence == DESCENDING)
@@ -95,7 +95,7 @@ void message_list(MESSAGE msg,int _x, int _y, int _listed_item, int _max, int _i
         if (msg.is_read == 1) { // 如果消息已读，则显示已读
             puthz(_x + 420, _y + _interval * (_max - _listed_item - 1), "已读", 16, 16, MY_WHITE); // 显示已读
         } else { // 如果消息未读，则显示未读
-            puthz(_x + 420, _y + _interval * (_max - _listed_item - 1), "未读", 16, 16, MY_WHITE); // 显示未读
+            puthz(_x + 420, _y + _interval * (_max - _listed_item - 1), "未读", 16, 16, MY_RED); // 显示未读
         }
     }
     else
@@ -219,7 +219,7 @@ void message_text_display(int _x, int _y, int _width, char *_text, int _text_col
 // 获取消息
 int message_get(FILE *fp, MESSAGE *msg, char *search_str, char *search_needed)
 {
-    long i = 1;
+    long i = 0;
     long counts;
     MESSAGE msg_buffer; // 用于存储读取的消息
     if (fp == NULL || msg == NULL)
@@ -236,7 +236,7 @@ int message_get(FILE *fp, MESSAGE *msg, char *search_str, char *search_needed)
         return 0;
     }
 
-    while (i < counts) { // 逐行读取文件内容
+    while (i <= counts) { // 逐行读取文件内容
         fseek(fp, (counts - i - 1) * sizeof(MESSAGE), SEEK_SET); // 将文件指针回退到上一行的开头
         fread(&msg_buffer, sizeof(MESSAGE), 1, fp);
     
@@ -254,7 +254,7 @@ int message_get(FILE *fp, MESSAGE *msg, char *search_str, char *search_needed)
 // 覆盖消息
 int message_overwrite(FILE *fp, MESSAGE *msg, char *search_str, char *search_needed)
 {
-    long i = 1;
+    long i = 0;
     long counts;
     MESSAGE msg_buffer; // 用于存储读取的消息
 
@@ -272,24 +272,25 @@ int message_overwrite(FILE *fp, MESSAGE *msg, char *search_str, char *search_nee
         return 0;
     }
 
-    while (i > counts)
+    while (i <= counts)
     { // 逐行读取文件内容
-        if (fseek(fp, -i * sizeof(MESSAGE), SEEK_CUR) == -1)
-            ; // 将文件指针回退到上一行的开头
+        if (fseek(fp, (counts - i - 1) * sizeof(MESSAGE), SEEK_SET) == -1) // 将文件指针回退到上一行的开头
         {
+            puthz (10, 10, "写入文件失败", 16, 16, MY_RED);
             return 0; // 如果回退失败，返回0
         }
         fread(&msg_buffer, sizeof(MESSAGE), 1, fp);
-
+        
         if (message_is_valid(msg_buffer, search_str, search_needed) == 1) // 检查消息是否为目标信息
         {
-            fseek (fp, -i * sizeof(MESSAGE), SEEK_CUR); // 将文件指针回退到上一行的开头
+            fseek(fp, (counts - i - 1) * sizeof(MESSAGE), SEEK_SET); // 将文件指针回退到上一行的开头
             fwrite (msg, sizeof(MESSAGE), 1, fp); // 将消息写入文件
             return 1;
         }
 
         i++;
     }
+    return 0;
 }
 
 // 检查消息是否有效
