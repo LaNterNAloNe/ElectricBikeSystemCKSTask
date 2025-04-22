@@ -73,6 +73,24 @@
 #define USER_BIKE_REGISTER_INPUT2_X2 600
 #define USER_BIKE_REGISTER_INPUT2_Y1 225
 #define USER_BIKE_REGISTER_INPUT2_Y2 260
+#define USER_BIKE_REGISTER_INPUT3_X1 300
+#define USER_BIKE_REGISTER_INPUT3_Y1 283
+#define USER_BIKE_REGISTER_INPUT3_X2 390
+#define USER_BIKE_REGISTER_INPUT3_Y2 318
+#define USER_BIKE_REGISTER_INPUT4_X1 520
+#define USER_BIKE_REGISTER_INPUT4_Y1 283
+#define USER_BIKE_REGISTER_INPUT4_X2 620
+#define USER_BIKE_REGISTER_INPUT4_Y2 318
+#define USER_BIKE_REGISTER_INPUT5_X1 300
+#define USER_BIKE_REGISTER_INPUT5_Y1 345
+#define USER_BIKE_REGISTER_INPUT5_X2 390
+#define USER_BIKE_REGISTER_INPUT5_Y2 380
+#define USER_BIKE_REGISTER_INPUT6_X1 540
+#define USER_BIKE_REGISTER_INPUT6_Y1 345
+#define USER_BIKE_REGISTER_INPUT6_X2 620
+#define USER_BIKE_REGISTER_INPUT6_Y2 380
+
+
 
 #define USER_BIKE_LICENSE_BUTTON1_X1 340
 #define USER_BIKE_LICENSE_BUTTON1_X2 420
@@ -271,16 +289,13 @@ typedef struct {
 typedef struct {
 	int x1, x2, y1, y2;
 }user_box;
-// typedef struct {
-// 	char rln[16];
-// 	unsigned long ID;
-// 	char ebike_ID[10];
-// 	char ebike_license[10];
-// 	char location[10];
-// 	unsigned long apply_time;
-// 	unsigned long conduct_time;
-// 	int result;
-// } EBIKE_INFO;
+
+typedef struct {
+	char color[8];
+	char weight[8];
+	char length[8];
+	char battery[8];
+} EBIKE_MOREINFO;
 
 void user_main(int *page);
 void drawgraph_user_main(int *page);
