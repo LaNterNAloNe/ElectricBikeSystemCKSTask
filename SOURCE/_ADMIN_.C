@@ -153,14 +153,14 @@ void admin_modify_data(LINKLIST *LIST, FILE *fp, char *file_type, unsigned long 
     int tag = ACTIVE_ADMIN_NULL;
     int flag = -1;
     int isReturn = 0; // 是否返回;
-    ADMIN_BUTTONS AdminButtons[12];
-
-    define_admin_buttons(AdminButtons, ADMIN_MODIFY_DATA_USER_INFO); // 定义按钮
+    ADMIN_BUTTONS AdminButtons[6];
 
     if(strcmp(file_type, "user_data") == 0){ // 修改用户信息
         flag = ADMIN_DATABASE_USER_INFO;
+        define_admin_buttons(AdminButtons, ADMIN_MODIFY_DATA_USER_INFO); // 定义按钮
     }else if(strcmp(file_type, "ebike_data") == 0){ // 修改车辆信息
         flag = ADMIN_DATABASE_EBIKE_INFO;
+        define_admin_buttons(AdminButtons, ADMIN_MODIFY_DATA_EBIKE_INFO); // 定义按钮
     }else { // 错误
         return;
     }
@@ -186,12 +186,11 @@ void admin_modify_data(LINKLIST *LIST, FILE *fp, char *file_type, unsigned long 
     while (!isReturn){
         newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
 
-        if(flag = ADMIN_DATABASE_USER_INFO){ // 修改用户信息
-            admin_flush_buttons(&tag, 6, AdminButtons);
+        admin_flush_buttons(&tag, 6, AdminButtons);
+        if(flag == ADMIN_DATABASE_USER_INFO){ // 修改用户信息
             admin_handle_modify_user_data_event(fp, user_id, &isReturn); // 处理点击事件
         }
-        else if(flag = ADMIN_DATABASE_EBIKE_INFO){ // 修改车辆信息
-            admin_flush_buttons(&tag, 6, AdminButtons);
+        else if(flag == ADMIN_DATABASE_EBIKE_INFO){ // 修改车辆信息
             admin_handle_modify_ebike_data_event(LIST, user_id, &isReturn); // 处理点击事件
         }
 
@@ -201,10 +200,8 @@ void admin_modify_data(LINKLIST *LIST, FILE *fp, char *file_type, unsigned long 
     clrmous(MouseX, MouseY);
     drawgraph_admin_menu(); // 绘制界面
     drawgraph_admin_database();
-    if(flag == ADMIN_DATABASE_USER_INFO)
-        drawgraph_admin_database_user_info();
-    else if (flag == ADMIN_DATABASE_EBIKE_INFO)
-        drawgraph_admin_database_ebike_info();
+    if(flag == ADMIN_DATABASE_USER_INFO) drawgraph_admin_database_user_info();
+    else if (flag == ADMIN_DATABASE_EBIKE_INFO) drawgraph_admin_database_ebike_info();
 }
 
 
@@ -645,9 +642,16 @@ int drawgraph_admin_modify_data(FILE *fp, LINKLIST *LIST, int flag, unsigned lon
         outtextxy(ADMIN_LIST_DATA_INTERFACE_X1 + 80, ADMIN_MODIFY_DATA_INPUTBAR2_Y1 + 11, node->USER_DATA.usrn); // 显示用户名
         outtextxy(ADMIN_LIST_DATA_INTERFACE_X1 + 80, ADMIN_MODIFY_DATA_INPUTBAR3_Y1 + 11, node->USER_DATA.ebike_ID); // 显示电动车牌
         outtextxy(ADMIN_LIST_DATA_INTERFACE_X1 + 80, ADMIN_MODIFY_DATA_INPUTBAR4_Y1 + 11, node->USER_DATA.ebike_license); // 显示牌证号码
-        ltoa(node->USER_DATA.anual_check, buffer2, 10);                                                        // 将注册时间转换为字符串
-        sprintf(buffer1, "%.4s.%.2s.%.2s", buffer2, buffer2 + 4, buffer2 + 6);
-        outtextxy(ADMIN_LIST_DATA_INTERFACE_X1 + 80, ADMIN_MODIFY_DATA_INPUTBAR5_Y1 + 11, buffer1); // 显示年审日期
+        if (node->USER_DATA.anual_check != 0) // 显示年审日期
+        {
+            ltoa(node->USER_DATA.anual_check, buffer2, 10); // 将注册时间转换为字符串
+            sprintf(buffer1, "%.4s.%.2s.%.2s", buffer2, buffer2 + 4, buffer2 + 6);
+            outtextxy(ADMIN_LIST_DATA_INTERFACE_X1 + 80, ADMIN_MODIFY_DATA_INPUTBAR5_Y1 + 11, buffer1); // 显示年审日期
+        }
+        else
+        {
+            outtextxy(ADMIN_LIST_DATA_INTERFACE_X1 + 80, ADMIN_MODIFY_DATA_INPUTBAR5_Y1 + 11, "0"); // 显示年审日期
+        }
         outtextxy(ADMIN_LIST_DATA_INTERFACE_X1 + 80, ADMIN_MODIFY_DATA_INPUTBAR6_Y1 + 11, node->USER_DATA.location); // 显示车辆地址
         if (node->USER_DATA.ebike_state == ACTIVE)
         {
@@ -971,7 +975,7 @@ int admin_check_license(char *ebike_license){
     }
     for (i = 1; i < 8; i++) // 检查电动车ID
     {
-        if (ebike_license[i] < '0' || ebike_license[i] > '9') // 检查电动车ID后三位是否为数字
+        if (ebike_license[i] < '0' || ebike_license[i] > '9') // 检查电动车通行证后六位是否为数字
         {
             return 0;
         }
@@ -991,7 +995,7 @@ int admin_check_anual_check(char *now, unsigned long prev){ // 传入的now是带有'.
         return 0;
     }
 
-    if(now[4] == '.' && now[7] == '.'){ // 检查电动车ID
+    if(now[4] != '.' && now[7] != '.'){ // 检查电动车ID
         return 0;
     }
 
@@ -1507,7 +1511,7 @@ void admin_handle_modify_user_data_event(FILE *fp, unsigned long *user_id, int *
 
 void admin_handle_modify_ebike_data_event(LINKLIST *LIST, unsigned long *user_id, int *isReturn)
 { // 函数将在返回时清理user_id
-    MODIFY_EBIKE_DATA_BUFFER temp = {"\0", "\0", "\0", "\0"};
+    static MODIFY_EBIKE_DATA_BUFFER temp = {"\0", "\0", "\0", "\0"};
     char buffer1[15];
     char buffer2[15];
 
@@ -1526,10 +1530,10 @@ void admin_handle_modify_ebike_data_event(LINKLIST *LIST, unsigned long *user_id
     {
         ch_input(temp.anual_check_buffer, ADMIN_MODIFY_DATA_INPUTBAR5_X1, ADMIN_MODIFY_DATA_INPUTBAR5_Y1, 10, MY_LIGHTGRAY, INPUTBAR_NO_CLEAR, 1);
     }
-    if (mouse_press(ADMIN_MODIFY_DATA_INPUTBAR5_X1, ADMIN_MODIFY_DATA_INPUTBAR5_Y1,
-                    ADMIN_MODIFY_DATA_INPUTBAR5_X2, ADMIN_MODIFY_DATA_INPUTBAR5_Y2) == 1) // 点击位置框
+    if (mouse_press(ADMIN_MODIFY_DATA_INPUTBAR6_X1, ADMIN_MODIFY_DATA_INPUTBAR6_Y1,
+                    ADMIN_MODIFY_DATA_INPUTBAR6_X2, ADMIN_MODIFY_DATA_INPUTBAR6_Y2) == 1) // 点击位置框
     {
-        ch_input(temp.location_buffer, ADMIN_MODIFY_DATA_INPUTBAR5_X1, ADMIN_MODIFY_DATA_INPUTBAR5_Y1, 14, MY_LIGHTGRAY, INPUTBAR_NO_CLEAR, 1);
+        ch_input(temp.location_buffer, ADMIN_MODIFY_DATA_INPUTBAR6_X1, ADMIN_MODIFY_DATA_INPUTBAR6_Y1, 14, MY_LIGHTGRAY, INPUTBAR_NO_CLEAR, 1);
     }
 
     if (mouse_press(ADMIN_MODIFY_DATA_SAVE_X1, ADMIN_MODIFY_DATA_SAVE_Y1,
@@ -1557,8 +1561,9 @@ void admin_handle_modify_ebike_data_event(LINKLIST *LIST, unsigned long *user_id
         {
             modify_ebike_info(LIST, *user_id, temp.location_buffer, "location");
         }
-
+        linklist_write_user_data(LIST);                                                                                           // 写入用户信息到文件中
         puthz(ADMIN_MODIFY_DATA_INTERFACE_X1 + 100, ADMIN_MODIFY_DATA_INTERFACE_Y1 + 10, "成功保存修改信息！", 16, 16, MY_GREEN); // 显示保存成功
+        
         ch_input(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL);
         memset(&temp, '\0', sizeof(temp)); // 清空缓冲区
 
@@ -1890,6 +1895,17 @@ void define_admin_buttons(ADMIN_BUTTONS AdminButtons[], int page)
         admin_get_buttons(&AdminButtons[3], &Examples[28]);
         admin_get_buttons(&AdminButtons[4], &Examples[29]);
         admin_get_buttons(&AdminButtons[5], &Examples[30]);
+    }
+    else if (page == ADMIN_MODIFY_DATA_EBIKE_INFO)
+    {
+        for (i = 19, j = 0; i < 21; i++, j++)
+        {
+            admin_get_buttons(&AdminButtons[j], &Examples[i]);
+        }
+        admin_get_buttons(&AdminButtons[2], &Examples[23]);
+        admin_get_buttons(&AdminButtons[3], &Examples[24]);
+        admin_get_buttons(&AdminButtons[4], &Examples[25]);
+        admin_get_buttons(&AdminButtons[5], &Examples[26]);
     }
     else if (page == ADMIN_MESSAGE)
     {

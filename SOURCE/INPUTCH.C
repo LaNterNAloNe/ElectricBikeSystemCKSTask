@@ -80,22 +80,24 @@ int ch_input(char* ip,int x,int y,int lim,int color,int is_clear_memory,int is_v
 		ascii_code_c = c & 0xFF;
 		setlinestyle(SOLID_LINE,0,THICK_WIDTH);        //设置线型，防止线条样式变为细线
 
-		if (!(ascii_code_c>='0'&&ascii_code_c<='9' || ascii_code_c>='a'&&ascii_code_c<='z' || 
-			ascii_code_c>='A'&&ascii_code_c<='Z' || ascii_code_c=='_'||ascii_code_c=='\n'||
-			ascii_code_c=='\r'||ascii_code_c==' '|| ascii_code_c=='\b' ||ascii_code_c==033)) {
-			continue;  
-		}													
-		//将输入内容限制在以上列出的按键中，防止错误地退出而不能正常存储输入状态和破坏画面
+        if (!(ascii_code_c >= '0' && ascii_code_c <= '9' || ascii_code_c >= 'a' && ascii_code_c <= 'z' ||
+              ascii_code_c >= 'A' && ascii_code_c <= 'Z' || ascii_code_c == '_' || ascii_code_c == '\n' ||
+              ascii_code_c == '\r' || ascii_code_c == ' ' || ascii_code_c == '\b' || ascii_code_c == 033 ||
+              ascii_code_c == '.'))
+        {
+            continue;
+        }
+        //将输入内容限制在以上列出的按键中，防止错误地退出而不能正常存储输入状态和破坏画面
 
 		if(j<lim)
 		{	
 			if(ascii_code_c!='\n'&&ascii_code_c!='\r'&&ascii_code_c!=' '&&ascii_code_c!=033)       //如果读入非换行、回车、空格或退出
 			{
 				if(ascii_code_c!='\b')                            //如果读入非退格
-				{   
-					if(ascii_code_c>='0'&&ascii_code_c<='9' || ascii_code_c>='a'&&ascii_code_c<='z' || 
-						ascii_code_c>='A'&&ascii_code_c<='Z' || ascii_code_c=='_')
-					{
+				{
+                    if (ascii_code_c >= '0' && ascii_code_c <= '9' || ascii_code_c >= 'a' && ascii_code_c <= 'z' ||
+                        ascii_code_c >= 'A' && ascii_code_c <= 'Z' || ascii_code_c == '_' || ascii_code_c == '.')
+                    {
 						*(ip+j)=ascii_code_c;                         //将读入的c存入输入内容字符串ip
 						*(ip+j+1)='\0';                    //结束字符串ip
 						bar(x+8+j*18,y+3,x+12+j*18,y+24);  //清除光标（注意在原光标坐标上加上已经输入的内容）
