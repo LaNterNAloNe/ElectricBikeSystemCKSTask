@@ -31,6 +31,19 @@ void linklist_add_data(LINKLIST *pList, LINKLIST_USER NEW_USER_DATA)
         DATA_NODE->PREVIOUS = NULL; // 将头结点指向前一节点的指针定义为NULL，作为开头
     }
 
+    if (debug_mode == 1){
+        show_text(10, 60, "Add Data Success!", MY_WHITE);
+        show_num(10, 80, DATA_NODE->USER_DATA.ID, MY_WHITE);
+        show_text(10, 100, DATA_NODE->USER_DATA.usrn, MY_WHITE);
+        show_text(10, 120, DATA_NODE->USER_DATA.rln, MY_WHITE);
+        show_text(10, 140, DATA_NODE->USER_DATA.location, MY_WHITE);
+        show_text(10, 160, DATA_NODE->USER_DATA.ebike_ID, MY_WHITE);
+        show_text(10, 180, DATA_NODE->USER_DATA.ebike_license, MY_WHITE);
+        show_num(10, 200, DATA_NODE->USER_DATA.anual_check, MY_WHITE);
+        show_num(10, 220, DATA_NODE->USER_DATA.violations, MY_WHITE);
+        getch();
+    }
+
     return;
 }
 
@@ -285,7 +298,7 @@ int linklist_write_user_data(LINKLIST *pList)
     while (ptr != NULL) // 遍历链表并写入
     {
         // 按字段顺序格式化字符串
-        sprintf(buffer,"%d,%s,%s,%s,%s,%s,%d,%d,%c,%c,\n",
+        sprintf(buffer,"%ld,%s,%s,%s,%s,%s,%ld,%d,%c,%c,\n",
                 ptr->USER_DATA.ID,
                 ptr->USER_DATA.usrn,
                 ptr->USER_DATA.rln,

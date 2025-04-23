@@ -149,7 +149,7 @@ int ch_input(char* ip,int x,int y,int lim,int color,int is_clear_memory,int is_v
 				break;
 			}
 		}
-	}
+    }
 
 	bar(x,y+33,x+150,y+45);			   //清除输入框下方的超出限制提示
 

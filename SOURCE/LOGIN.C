@@ -478,13 +478,13 @@ void flushRegisterIdGraph(int* tag) {
 // 注册界面
 void _register(int* page,unsigned long *ID,LINKLIST *LIST) {
     int mouse_flag;
-    char usrn[10] = {'\0'}; // 初始化为空
-    char psw[10] = {'\0'};
+    char usrn[15] = {'\0'}; // 初始化为空
+    char psw[15] = {'\0'};
 	char time_string[10] = { '\0' };
 	unsigned long time=0;//系统时间
     int tag = 0;
 	int is_register_invalid=0;
-	LINKLIST_USER new_user_data={0, "0", "0", "0", "0", "0", 0, 0, '0', '0' };//annul check是unsigned long类型，这里暂且赋值999
+	LINKLIST_USER new_user_data={0, "0", "0", "0", "0", "0", 0, 0, '0', '0' };
 	new_user_data.ID = *ID;
     // 成功进入注册界面后，以记录第一层界面的ID，此时无需清理ID
 
@@ -517,6 +517,7 @@ void _register(int* page,unsigned long *ID,LINKLIST *LIST) {
 					new_user_data.ID = *ID;
 					strcpy(new_user_data.usrn, usrn);
 					linklist_add_data(LIST, new_user_data);//向链表中添加数据
+
                     linklist_write_user_data(LIST); // 写入用户数据
 					*page = LOGIN;
 					*ID = 0;

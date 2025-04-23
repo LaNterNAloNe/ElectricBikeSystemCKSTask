@@ -1312,7 +1312,8 @@ void admin_handle_database_event(LINKLIST *LIST, int *flag, int *page, unsigned 
 
     /*µã»÷·­Ò³*/
     if (mouse_press(ADMIN_FEATURE_UP_X1, ADMIN_FEATURE_UP_Y1, ADMIN_FEATURE_UP_X2, ADMIN_FEATURE_UP_Y2) == 1){
-        if (*flag == ADMIN_DATABASE_EBIKE_INFO){
+        if (*flag == ADMIN_DATABASE_USER_INFO)
+        {
             admin_list_info(LIST, LIST_LIMIT, LIST_INTERVAL, id_list, *fp, file_type, NULL, NULL, LIST_PAGEUP, LIST_NO_CLEAR, search_str, search_needed);
         }
         else if (*flag == ADMIN_DATABASE_EBIKE_INFO){
@@ -1324,7 +1325,8 @@ void admin_handle_database_event(LINKLIST *LIST, int *flag, int *page, unsigned 
         return;
     }
     if (mouse_press(ADMIN_FEATURE_DOWN_X1, ADMIN_FEATURE_DOWN_Y1, ADMIN_FEATURE_DOWN_X2, ADMIN_FEATURE_DOWN_Y2) == 1){
-        if (*flag == ADMIN_DATABASE_EBIKE_INFO){
+        if (*flag == ADMIN_DATABASE_USER_INFO)
+        {
             admin_list_info(LIST, LIST_LIMIT, LIST_INTERVAL, id_list, *fp, file_type, NULL, NULL, LIST_PAGEDOWN, LIST_NO_CLEAR, search_str, search_needed);
         }
         else if (*flag == ADMIN_DATABASE_EBIKE_INFO){
@@ -1335,6 +1337,7 @@ void admin_handle_database_event(LINKLIST *LIST, int *flag, int *page, unsigned 
         }
         return;
     }
+    show_num(10,10,*flag,MY_WHITE);
     /*µã»÷ËÑË÷¿ò*/
     if (mouse_press(ADMIN_FEATURE_SEARCH_X1, ADMIN_FEATURE_SEARCH_Y1, ADMIN_FEATURE_SEARCH_X2, ADMIN_FEATURE_SEARCH_Y2) == 1)
     {
