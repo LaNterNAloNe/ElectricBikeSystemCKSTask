@@ -233,23 +233,11 @@ DESCRIPTION: 鼠标状态发生变化则更新鼠标
 INPUT: nx,ny,nbuttons,flag
 RETURN: 无
 ********************************************/
-// void newmouse(int *nx,int *ny,int *nbuttons)
-// {
-// 	int xn,yn,buttonsn;
-// 	int x0=*nx,y0=*ny,buttons0=*nbuttons;
-// 	mread(&xn,&yn,&buttonsn);
-// 	*nx = xn;
-// 	*ny = yn;
-// 	*nbuttons = buttonsn;
-// 	if(buttons0 == *nbuttons)
-// 		*nbuttons = 0;    //使得能连续按键
-// 	if(xn == x0 && yn == y0 && buttonsn == buttons0)
-// 		return;            //鼠标状态不变则直接返回S
-// 	clrmous(x0,y0);        //说明鼠标状态发生了改变
-// 	save_bk_mou(*nx,*ny);
-// 	drawmous(*nx,*ny);
-// }
-/*****************************/
+
+/*********************************************/
+/* newmouse_data放在循环头，newmouse放在循环尾 */
+/*********************************************/
+
 void newmouse_data(int *nx, int *ny, int *nbuttons, int *flag) // 更新鼠标数据并判断鼠标位置是否改变
 {
     int xn, yn, buttonsn;

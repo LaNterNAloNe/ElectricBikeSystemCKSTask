@@ -19,9 +19,11 @@ int main(void){
         exit(1);
     }
     cleardevice();
-    
     initcolorpalette();
     mouseinit();
+
+    // reset_file(); // 重置文件，不用就注释
+
     linklist_get_user_data(LIST); // 生成链表
 
     rand_io_data(LIST); // 生成随机进出校园信息，采用覆盖之前文件的方式

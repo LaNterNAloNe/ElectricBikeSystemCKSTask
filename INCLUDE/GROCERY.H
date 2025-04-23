@@ -141,6 +141,8 @@ void drawExittingProgram(int err);
 
 long constrain_int(long input, long min, long max);
 
+void reset_file();
+
 #endif
 
 

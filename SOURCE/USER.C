@@ -470,7 +470,7 @@ int EBIKE_INFO_judge(char* usrn, char* e_bike_id,unsigned long* id) {
 	TEMP.ID =*id;
 	TEMP.apply_time =get_approx_time(NULL);
 	TEMP.conduct_time = 0;
-	TEMP.result = 0;
+	TEMP.result = PENDING;
 	TEMP.anual_check = 0;
 	TEMP.violations = 0;
 	fseek(fp_EBIKE_INFO_readndwrite, 0, SEEK_END); // 确保写入位置在文件末尾

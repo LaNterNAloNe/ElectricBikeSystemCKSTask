@@ -65,7 +65,7 @@ int linklist_find_data(LINKLIST *pList, char *str, char *needed_finding)
                 chain_length = ptr->chain_lenth;
         }
         if (!strcmp(needed_finding,"id")) {
-            itoa(ptr->USER_DATA.ID,buffer,10);
+            ltoa(ptr->USER_DATA.ID,buffer,10);
             if(strcmp(buffer, str) == 0)
                 chain_length = ptr->chain_lenth;
         }
@@ -78,7 +78,7 @@ int linklist_find_data(LINKLIST *pList, char *str, char *needed_finding)
                 chain_length = ptr->chain_lenth;
         }
         if (!strcmp(needed_finding,"anual_check")) {
-            itoa(ptr->USER_DATA.anual_check,buffer,10);
+            ltoa(ptr->USER_DATA.anual_check,buffer,10);
             if(!strcmp(buffer, str))
                 chain_length = ptr->chain_lenth;
         }
@@ -132,8 +132,6 @@ int linklist_get_length(LINKLIST *pList)
     int length = 0;
     LINKLIST_NODE *ptr = pList->HEAD; // 定义一个指针指向链表头
     while(ptr){
-        // show_num(10,10,ptr->USER_DATA.ID,MY_WHITE); // 显示链表中每个节点的ID
-        // getch();
         length++;
         ptr = ptr->NEXT; // 遍历链表，直到指针为空
     }
@@ -147,7 +145,11 @@ FUNCTION:将传入的指针矫正到相应的节点
 **********************************************************/
 void linklist_get_to_node(LINKLIST *pList, int index, LINKLIST_NODE **ptr){
     int i;
-    for(i = 1, *ptr = pList->HEAD; i <= index; i++, *ptr = (*ptr)->NEXT);
+    *ptr = pList->HEAD;
+    for (i = 1; i < index; i++)
+    {
+        *ptr = (*ptr)->NEXT;
+    }
     return;
 }
 
@@ -298,7 +300,7 @@ int linklist_write_user_data(LINKLIST *pList)
     while (ptr != NULL) // 遍历链表并写入
     {
         // 按字段顺序格式化字符串
-        sprintf(buffer,"%ld,%s,%s,%s,%s,%s,%ld,%d,%c,%c,\n",
+        sprintf(buffer,"%lu,%s,%s,%s,%s,%s,%lu,%d,%c,%c,\n",
                 ptr->USER_DATA.ID,
                 ptr->USER_DATA.usrn,
                 ptr->USER_DATA.rln,

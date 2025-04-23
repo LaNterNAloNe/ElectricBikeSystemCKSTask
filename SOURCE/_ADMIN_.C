@@ -237,8 +237,6 @@ void admin_message_center(int *page, unsigned long *ID){
     while(*page == ADMIN_MESSAGE){
         newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
 
-        // show_num(10, 10, selected_id, MY_WHITE);
-
         admin_handle_buttons_event(page);
         admin_flush_buttons(&tag, STRUCT_LENGTH(AdminButtons), AdminButtons);
         admin_handle_message_click_event(fp, page, id_list, &selected_id, search_str, search_needed);
@@ -1084,10 +1082,9 @@ void admin_handle_manage_feature_event(LINKLIST *LIST, int *page, char *search_s
     char list_mode[15]; // 列表依据
     char buffer[50];
     EBIKE_INFO temp_info;
-    LINKLIST_NODE *temp_node = LIST->HEAD; // LAST_NODE要找到链表中特定节点，先指向头结点
-    int chain_pos = -1;                    // 链表位置
-
-    unsigned long int search_pos = 0; // 查找数据得到的位置
+    LINKLIST_NODE *temp_node = NULL; // LAST_NODE要找到链表中特定节点，先指向头结点
+    long chain_pos = -1;  // 链表位置
+    long search_pos = -1; // 查找文件数据得到的位置
 
     // 根据不同的页面，以不同的方式调用列表函数
     switch (*page)
@@ -1155,67 +1152,77 @@ void admin_handle_manage_feature_event(LINKLIST *LIST, int *page, char *search_s
     if (mouse_press(ADMIN_FEATURE1_X1, ADMIN_FEATURE1_Y1, ADMIN_FEATURE1_X2, ADMIN_FEATURE1_Y2) == 1 && *selected_id != 0)
     {
         ltoa(*selected_id, buffer, 10);                                  // 将选中行的ID转化为字符串
-        if ((chain_pos = linklist_find_data(LIST, buffer, "id")) == 0) // 查找链表中是否存在该ID，若找不到，则不进行任何操作
+        chain_pos = linklist_find_data(LIST, buffer, "id");              // 查找链表中是否存在该ID，若找不到，则不进行任何操作
+        if (chain_pos == -1)
             return;
-
-        if (find_file_info(fp_EBIKE_INFO_read, "ebike_manage", buffer, "id") == 0)
+        
+        search_pos = find_file_info(fp_EBIKE_INFO_read, "ebike_manage", buffer, "id"); // 查找数据文件中是否存在该ID，若找不到，则不进行任何操作
+        if (search_pos == -1)
             return; // 如果没有找到数据块，则不进行任何操作，若能找到，则进一步处理数据
 
         // 修改数据块
-        
+        fseek(fp_EBIKE_INFO_read, search_pos, SEEK_SET);                                  // 定位到数据块
         fread(&temp_info, sizeof(EBIKE_INFO), 1, fp_EBIKE_INFO_read);                     // 读取数据块
+        if (temp_info.result != PENDING)                                                  // 如果该数据块已经被处理过，则不进行任何操作
+            return;
+
         temp_info.conduct_time = get_approx_time(NULL);                                   // 将时间字符串转化为int型数据，并赋值给conduct_time
         temp_info.result = PASSED;                                                        // 将result赋值为已处理
 
         fseek(fp_EBIKE_INFO_read, search_pos, SEEK_SET);               // 定位到数据块
         fwrite(&temp_info, sizeof(EBIKE_INFO), 1, fp_EBIKE_INFO_read); // 将新数据写入数据块
 
-        // 修改链表数据
-        for (i = 0; i < chain_pos; i++)
-        {
-            temp_node = temp_node->NEXT; // 遍历链表，找到对应节点
-        }
         // 根据不同的页面，修改链表中对应节点的特定数据
+        linklist_get_to_node(LIST, chain_pos, &temp_node); // 找到链表中对应节点
         switch (*page)
         {
-        case ADMIN_BIKE_REGISTER:
-            strcpy(temp_node->USER_DATA.ebike_ID, temp_info.ebike_ID); // 将链表中对应节点的ebike_ID修改为新数据
-            break;
-        case ADMIN_BIKE_LICENSE:
-            strcpy(temp_node->USER_DATA.ebike_license, temp_info.ebike_license); // 将链表中对应节点的ebike_license修改为新数据
-            break;
-        case ADMIN_BIKE_VIOLATION:
-            temp_node->USER_DATA.violations++;
-            ; // 将链表中对应节点的violations加1
-            break;
-        case ADMIN_BIKE_ANUAL:
-            temp_node->USER_DATA.anual_check += 10000; // 将链表中对应节点的annual加10000(10000表示数字中表示年的部分加1)
-            break;
-        case ADMIN_BIKE_BROKEN:
-            temp_node->USER_DATA.ebike_state = BROKEN; // 将链表中对应节点的ebike_state修改为BROKEN
-            break;
+            case ADMIN_BIKE_REGISTER:
+                strcpy(temp_node->USER_DATA.ebike_ID, temp_info.ebike_ID); // 将链表中对应节点的ebike_ID修改为新数据
+                break;
+            case ADMIN_BIKE_LICENSE:
+                strcpy(temp_node->USER_DATA.ebike_license, temp_info.ebike_license); // 将链表中对应节点的ebike_license修改为新数据
+                break;
+            case ADMIN_BIKE_VIOLATION:
+                temp_node->USER_DATA.violations++; // 将链表中对应节点的violations加1
+                break;
+            case ADMIN_BIKE_ANUAL:
+                temp_node->USER_DATA.anual_check += 10000; // 将链表中对应节点的annual加10000(10000表示数字中表示年的部分加1)
+                break;
+            case ADMIN_BIKE_BROKEN:
+                temp_node->USER_DATA.ebike_state = BROKEN; // 将链表中对应节点的ebike_state修改为BROKEN
+                break;
         }
-        linklist_write_user_data(LIST); // 将链表数据写入文件
+        temp_node = NULL;
+
+        if (linklist_write_user_data(LIST) == -1) // 将链表数据写入文件
+        {
+            perror("Error writing user data to file"); // 输出错误信息
+            getch();
+            exit(1);
+        }
 
         admin_pass_failed_anime(ADMIN_FEATURE1_X1, ADMIN_FEATURE1_Y1, ADMIN_FEATURE1_X2, ADMIN_FEATURE1_Y2, PASSED, "同意申请"); // 操作成功后的动画
 
         admin_list_info(LIST, LIST_LIMIT, LIST_INTERVAL, id_list, fp_EBIKE_INFO_read, "ebike_manage",
-                        list_mode, *mode, LIST_PAGEDOWN, LIST_FLUSH, "\0", "\0"); // 操作结束后刷新列表
+                        list_mode, *mode, LIST_STAY, LIST_FLUSH, "\0", "\0"); // 操作结束后刷新列表
     }
 
     // 点击拒绝申请
     if (mouse_press(ADMIN_FEATURE2_X1, ADMIN_FEATURE2_Y1, ADMIN_FEATURE2_X2, ADMIN_FEATURE2_Y2) == 1 && *selected_id != 0)
     {
-        ltoa(*selected_id, buffer, 10);
-        if (chain_pos = linklist_find_data(LIST, buffer, "id") == 0)
-            return; // 选中行，点击同意申请，若出现未能找到数据的情况，则不进行任何操作
+        ltoa(*selected_id, buffer, 10);                     // 将选中行的ID转化为字符串
 
-        if (find_file_info(fp_EBIKE_INFO_read, "ebike_manage", buffer, "id") == 0)
+        search_pos = find_file_info(fp_EBIKE_INFO_read, "ebike_manage", buffer, "id"); // 查找数据文件中是否存在该ID，若找不到，则不进行任何操作
+        if (search_pos == -1)
             return; // 如果没有找到数据块，则不进行任何操作，若能找到，则进一步处理数据
 
         // 修改数据块
-        fread(&temp_info, sizeof(EBIKE_INFO), 1, fp_EBIKE_INFO_read);                     // 读取数据块
-        temp_info.conduct_time = get_approx_time(NULL);                                              // 将时间字符串转化为int型数据，并赋值给conduct_time
+        fseek(fp_EBIKE_INFO_read, search_pos, SEEK_SET);              // 定位到数据块
+        fread(&temp_info, sizeof(EBIKE_INFO), 1, fp_EBIKE_INFO_read); // 读取数据块
+        if (temp_info.result != PENDING)                              // 如果该数据块已经被处理过，则不进行任何操作
+            return;
+        
+        temp_info.conduct_time = get_approx_time(NULL);                                   // 将时间字符串转化为int型数据，并赋值给conduct_time
         temp_info.result = FAILED;                                                        // 将result赋值为已处理
 
         fseek(fp_EBIKE_INFO_read, search_pos, SEEK_SET);               // 定位到数据块
@@ -1223,10 +1230,10 @@ void admin_handle_manage_feature_event(LINKLIST *LIST, int *page, char *search_s
 
         // 申请失败，不修改链表数据
 
-        admin_pass_failed_anime(ADMIN_FEATURE1_X1, ADMIN_FEATURE1_Y1, ADMIN_FEATURE1_X2, ADMIN_FEATURE1_Y2, FAILED, "拒绝申请"); // 操作后的动画
+        admin_pass_failed_anime(ADMIN_FEATURE2_X1, ADMIN_FEATURE2_Y1, ADMIN_FEATURE2_X2, ADMIN_FEATURE2_Y2, FAILED, "驳回申请"); // 操作后的动画
 
         admin_list_info(LIST, LIST_LIMIT, LIST_INTERVAL, id_list, fp_EBIKE_INFO_read, "ebike_manage",
-                        list_mode, *mode, LIST_PAGEDOWN, LIST_FLUSH, "\0", "\0"); // 操作结束后刷新列表
+                        list_mode, *mode, LIST_STAY, LIST_FLUSH, "\0", "\0"); // 操作结束后刷新列表
     }
     temp_node = NULL; // 释放指针
 }
@@ -1337,7 +1344,6 @@ void admin_handle_database_event(LINKLIST *LIST, int *flag, int *page, unsigned 
         }
         return;
     }
-    show_num(10,10,*flag,MY_WHITE);
     /*点击搜索框*/
     if (mouse_press(ADMIN_FEATURE_SEARCH_X1, ADMIN_FEATURE_SEARCH_Y1, ADMIN_FEATURE_SEARCH_X2, ADMIN_FEATURE_SEARCH_Y2) == 1)
     {

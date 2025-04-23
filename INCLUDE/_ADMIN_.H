@@ -287,10 +287,10 @@ typedef struct _EBIKE_INFO_{
 	char ebike_ID[10];
     char ebike_license[10];
     char location[10];
-    int anual_check;
+    long anual_check;
     int violations;
-    int apply_time;
-	int conduct_time;
+    long apply_time;
+	long conduct_time;
     int result;
 } EBIKE_INFO;
 

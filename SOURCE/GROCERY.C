@@ -64,3 +64,35 @@ long constrain_int(long input, long min, long max)
     if (input > max)
         return max;
 }
+
+void reset_file()
+{
+    int i = 0;
+    FILE *fp;
+    char buffer[20];
+    char *file_name[] = {
+        "DATA\\USER.DAT",
+        "DATA\\ANUAL.DAT",
+        "DATA\\BROKEN.DAT",
+        "DATA\\VIOLA.DAT",
+        "DATA\\LICENSE.DAT",
+        "DATA\\REGISTER.DAT",
+        "DATA\\USRDAT.TXT"};
+    int counts = sizeof(file_name) / sizeof(file_name[0]);
+
+    for (i = 0; i < counts; i++) // 遍历文件列表
+    {
+        fp = fopen(file_name[i], "w"); // 打开文件，清空内容
+        if (fp == NULL)
+        {
+            sprintf(buffer, "%s", file_name[i]); // 拼接完整路径
+            perror("reset_file: cannot reset ANUAL.DAT\n");
+            getch();
+            exit(1);
+        }
+        fclose(fp); // 关闭文件
+    }
+    
+    if (debug_mode == 1)
+        show_text(10, 10, "All files have been reset. Press any key to continue..."), getch();
+}
