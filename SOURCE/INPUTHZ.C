@@ -152,7 +152,11 @@ int hz_input(int x1, int y1, int x2, int y2, char* s, int len, int color, int co
             }
 
             asc = value & 0xff;
+            if (asc >= 'A' && asc <= 'Z') {
+                asc = asc + ('a' - 'A');
+            }
             if (asc >= 97 && asc <= 122) { // 输入法处理
+                
                 barx1 = (xx1 + L_len * 8 - 50 > 0) ? xx1 + L_len * 8 - 50 : 0;
                 barx2 = (barx1 + 200 < 630) ? barx1 + 200 : 430;
                 bary1 = y1 + Line * 30 + 10;
@@ -185,7 +189,8 @@ int hz_input(int x1, int y1, int x2, int y2, char* s, int len, int color, int co
                     putimage(barx1, bary1, image, 0);
                     memset(py, 0, sizeof(py));//重置拼音
                     break;
-                case 2: // 输入英文
+                case 2: 
+                    /*
                     pylen = strlen(py);
                     if (L_len + pylen > L_maxwords && Line <= maxline) {
                         Line++;
@@ -203,7 +208,7 @@ int hz_input(int x1, int y1, int x2, int y2, char* s, int len, int color, int co
                     new_cursor(&cursor_x, &cursor_y, xx1, y1, Line, L_len, size);
 
                     putimage(barx1, bary1, image, 0);
-                    break;
+                    break;*/
                 case 3: // 取消输入
                       //删除光标
                     delete_cursor(cursor_x, cursor_y, size);
@@ -215,7 +220,7 @@ int hz_input(int x1, int y1, int x2, int y2, char* s, int len, int color, int co
                     break;
                 }
             }
-            else if (asc > 31 && asc < 127) { // 直接输入ASCII
+            /*else if (asc > 31 && asc < 127) { // 直接输入ASCII
                 if (L_len >= L_maxwords && Line < maxline) {
                     Line++;
                     L_len = 0;
@@ -231,7 +236,7 @@ int hz_input(int x1, int y1, int x2, int y2, char* s, int len, int color, int co
                 delete_cursor(cursor_x, cursor_y, size);
                 //新位置绘制光标
                 new_cursor(&cursor_x, &cursor_y, xx1, y1, Line, L_len, size);
-            }
+            }*/
         }
 
         if ((MouseX < x1 || MouseX > x2 || MouseY < y1 || MouseY > y2) && press) {
@@ -374,6 +379,9 @@ int input_method(int x, int y, char *str, int value, char *py)
             /*输入字符处理*/
             if (asc > 31 && asc < 127 && strlen(py) < MAXPY && asc != '[' && asc != ']') // 有效输入时则复位
             {
+                if (asc >= 'A' && asc <= 'Z') {
+                    asc = asc + ('a' - 'A');  // 转换为小写
+                }
                 *p = asc;
                 p++;
                 fposition = 0;

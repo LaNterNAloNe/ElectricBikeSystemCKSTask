@@ -136,7 +136,7 @@ void drawgraph_user_main(int *page) {
 			setlinestyle(SOLID_LINE, 0, NORM_WIDTH);
 			setfillstyle(1, MY_WHITE);
 			bar(USER_MESSAGE_X1, USER_MESSAGE_Y1, USER_MESSAGE_X2, USER_MESSAGE_Y2);
-			puthz(USER_MESSAGE_X1 + 5, (USER_MESSAGE_Y1 + USER_MESSAGE_Y2) / 2 - 5, "消息中心", 24, 25, MY_WHITE);
+			puthz(USER_MESSAGE_X1 + 5, (USER_MESSAGE_Y1 + USER_MESSAGE_Y2) / 2 - 5, "消息中心", 24, 25, MY_BLACK);
 			break;
 		case USER_BIKE_LICENSE_NOTICE:
 			setcolor(MY_WHITE);
@@ -3775,35 +3775,56 @@ void user_message_send( int topic, char* topic_text, char* content_text, unsigne
 
 }
 
-void user_message(int* page, unsigned long* id) {
+
+/*
+void user_message(int* page, unsigned long* ID) {
 	int mouse_flag;
 	int tag = ACTIVE_ADMIN_NULL;
 	unsigned long id_list[8] = { 0,0,0,0,0,0,0,0 }; // 记录当前显示的列表每行对应的ID
 	unsigned long selected_id = 0; // 选中行的ID
 	char search_str[20] = "\0"; // 搜索框输入信息储存
 	char search_needed[10] = "\0";
-	ADMIN_BUTTONS AdminButtons[22];
+	ADMIN_BUTTONS AdminButtons[7]= {
+		{ADMIN_FEATURE1_X1, ADMIN_FEATURE1_X2,
+		 ADMIN_FEATURE1_Y1, ADMIN_FEATURE1_Y2,
+		 ACTIVE_ADMIN_FEATURE1, &draw_rectangle, &clear_rectangle},
+		{ADMIN_FEATURE6_X1, ADMIN_FEATURE6_X2,
+		 ADMIN_FEATURE6_Y1, ADMIN_FEATURE6_Y2,
+		 ACTIVE_ADMIN_FEATURE6, &draw_rectangle, &clear_rectangle},
+		{ADMIN_FEATURE_EXIT_X1, ADMIN_FEATURE_EXIT_X2,
+		 ADMIN_FEATURE_EXIT_Y1, ADMIN_FEATURE_EXIT_Y2,
+		 ACTIVE_ADMIN_FEATURE_EXIT, &draw_exit, &clear_exit},
+		{ADMIN_FEATURE_UP_X1, ADMIN_FEATURE_UP_X2,
+		 ADMIN_FEATURE_UP_Y1, ADMIN_FEATURE_UP_Y2,
+		 ACTIVE_ADMIN_FEATURE_UP, &draw_flip_up, &clear_flip_up},
+		{ADMIN_FEATURE_DOWN_X1, ADMIN_FEATURE_DOWN_X2,
+		 ADMIN_FEATURE_DOWN_Y1, ADMIN_FEATURE_DOWN_Y2,
+		 ACTIVE_ADMIN_FEATURE_DOWN, &draw_flip_down, &clear_flip_down},
+		 // 31
+		 // 以下为消息按钮
+		 {ADMIN_MESSAGE_REPLY_X1, ADMIN_MESSAGE_REPLY_X2,
+		  ADMIN_MESSAGE_REPLY_Y1, ADMIN_MESSAGE_REPLY_Y2,
+		  ACTIVE_ADMIN_MESSAGE_REPLY, &draw_rectangle, &clear_rectangle},
+		 {ADMIN_MESSAGE_EXIT_X1, ADMIN_MESSAGE_EXIT_X2,
+		  ADMIN_MESSAGE_EXIT_Y1, ADMIN_MESSAGE_EXIT_Y2,
+		  ACTIVE_ADMIN_MESSAGE_EXIT, &draw_exit, &clear_exit},
+	};
 	FILE* fp = fopen("DATA\\MESSAGE.DAT", "rb+"); // 打开消息数据文件
 	if (!fp)
 		getch(), exit(1);
 
-	define_admin_buttons(AdminButtons, *page); // 定义按钮
+	//define_user_message_buttons(AdminButtons, *page); // 定义按钮
 	clrmous(MouseX, MouseY);
 
-	drawgraph_admin_menu(); // 初始化界面
-	drawgraph_admin_message_center(); // 绘制界面
-
+	//drawgraph_admin_menu(); // 初始化界面
+	drawgraph_user_message_center(); // 绘制界面
 	admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, id_list, fp, "message", NULL, NULL, LIST_STAY, LIST_CLEAR_CONTINUE, search_str, search_needed); // 清除列表
 
-	if (debug_mode == 1)
-		display_memory_usage(400, 10); // 显示调试参数
 
-	while (*page == ADMIN_MESSAGE) {
+	while (1) {
 		newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
-
-		admin_handle_buttons_event(page);
 		admin_flush_buttons(&tag, STRUCT_LENGTH(AdminButtons), AdminButtons);
-		admin_handle_message_click_event(fp, page, id_list, &selected_id, search_str, search_needed);
+		user_handle_message_click_event(fp, page, id_list, &selected_id, search_str, search_needed);
 		message_list_click(ADMIN_INTERFACE_X1, ADMIN_INTERFACE_Y1, LIST_LIMIT, LIST_INTERVAL, id_list, &selected_id); // 处理点击事件
 
 		newmouse(&MouseX, &MouseY, &press, &mouse_flag);
@@ -3811,4 +3832,195 @@ void user_message(int* page, unsigned long* id) {
 	}
 
 	fclose(fp);
+}
+
+void drawgraph_user_message_center()
+{
+	setfillstyle(SOLID_FILL, MY_YELLOW);
+	bar(ADMIN_FEATURE1_X1, ADMIN_FEATURE1_Y1, ADMIN_FEATURE1_X2, ADMIN_FEATURE1_Y2);
+	
+	puthz(ADMIN_FEATURE1_X1 + 4, ADMIN_FEATURE1_Y1 + 7, "查看信息", 16, 16, MY_WHITE);
+	setfillstyle(SOLID_FILL, MY_RED);
+	bar(ADMIN_FEATURE6_X1, ADMIN_FEATURE6_Y1, ADMIN_FEATURE6_X2, ADMIN_FEATURE6_Y2);
+	puthz(ADMIN_FEATURE6_X1 + 4, ADMIN_FEATURE6_Y1 + 7, "发送消息", 16, 16, MY_WHITE);
+
+
+	clear_flip_up(ADMIN_FEATURE_UP_X1, ADMIN_FEATURE_UP_Y1, ADMIN_FEATURE_UP_X2, ADMIN_FEATURE_UP_Y2);
+	clear_flip_down(ADMIN_FEATURE_DOWN_X1, ADMIN_FEATURE_DOWN_Y1, ADMIN_FEATURE_DOWN_X2, ADMIN_FEATURE_DOWN_Y2);
+}
+
+*/
+
+void user_handle_message_click_event(FILE* fp, int* page, unsigned long id_list[], unsigned long* selected_id,
+	char* search_str, char* search_needed)
+{
+	long pos = -1;
+	char buffer[20];
+	MESSAGE msg;
+
+	
+	if (mouse_press(USER_MESSAGE_FEATURE_EXIT_X1, USER_MESSAGE_FEATURE_EXIT_Y1,
+		USER_MESSAGE_FEATURE_EXIT_X2, USER_MESSAGE_FEATURE_EXIT_Y2) == 1) // 点击返回
+	{
+		*page = USER_MESSAGE;
+	}
+
+	
+	if (mouse_press(USER_MESSAGE_FEATURE1_X1, USER_MESSAGE_FEATURE1_Y1,
+		USER_MESSAGE_FEATURE1_X2, USER_MESSAGE_FEATURE1_Y2) == 1) // 点击查看信息
+	{
+		if (*selected_id != 0) // 未选中
+		{
+			ltoa(*selected_id, buffer, 10);
+			pos = find_file_info(fp, "message", buffer, "message_id"); // 查找信息
+			if (pos != -1)                                                 // 找到信息
+			{
+				ltoa(*selected_id, buffer, 10);
+				if (message_get(fp, &msg, buffer, "message_id") != 1) // 读取选中的消息
+				{
+					puthz(10, 10, "未找到信息！", 16, 16, MY_RED); // 显示未找到信息
+					return;
+				}
+				message_display(&msg);                       // 显示选中的消息，这玩意在vscode里为什么报错我不得而知
+
+				msg.is_read = 1;                                   // 将消息标记为已读
+				message_overwrite(fp, &msg, buffer, "message_id"); // 将选中的消息标记为已读
+				admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, id_list, fp, "message", NULL, NULL, LIST_STAY, LIST_CLEAR_CONTINUE, "\0", "\0"); // 清除列表
+				*selected_id = 0;
+			}
+		}
+	}
+
+	
+	if (mouse_press(USER_MESSAGE_FEATURE_UP_X1, USER_MESSAGE_FEATURE_UP_Y1,
+		USER_MESSAGE_FEATURE_UP_X2, USER_MESSAGE_FEATURE_UP_Y2) == 1) // 点击上一页
+	{
+		admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, id_list, fp, "message", NULL, NULL, LIST_PAGEUP, LIST_NO_CLEAR, search_str, "message_id"); // 清除列表
+	}
+	if (mouse_press(USER_MESSAGE_FEATURE_DOWN_X1, USER_MESSAGE_FEATURE_DOWN_Y1,
+		USER_MESSAGE_FEATURE_DOWN_X2, USER_MESSAGE_FEATURE_DOWN_Y2) == 1) // 点击下一页
+	{
+		admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, id_list, fp, "message", NULL, NULL, LIST_PAGEDOWN, LIST_NO_CLEAR, search_str, "message_id"); // 清除列表
+	}
+}
+
+
+void user_message(int* page, unsigned long* ID) {
+	int mouse_flag;
+	int tag = ACTIVE_ADMIN_NULL;
+	unsigned long id_list[8] = { 0,0,0,0,0,0,0,0 }; // 记录当前显示的列表每行对应的ID
+	unsigned long selected_id = 0; // 选中行的ID
+	char search_str[20] = "\0"; // 搜索框输入信息储存
+	char search_needed[10] = "\0";
+	ADMIN_BUTTONS AdminButtons[7] = {
+		{USER_MESSAGE_FEATURE1_X1, USER_MESSAGE_FEATURE1_X2,
+		 USER_MESSAGE_FEATURE1_Y1, USER_MESSAGE_FEATURE1_Y2,
+		 ACTIVE_ADMIN_FEATURE1, &draw_rectangle, &clear_rectangle},
+		{USER_MESSAGE_FEATURE6_X1, USER_MESSAGE_FEATURE6_X2,
+		 USER_MESSAGE_FEATURE6_Y1, USER_MESSAGE_FEATURE6_Y2,
+		 ACTIVE_ADMIN_FEATURE6, &draw_rectangle, &clear_rectangle},
+		{USER_MESSAGE_FEATURE_EXIT_X1, USER_MESSAGE_FEATURE_EXIT_X2,
+		 USER_MESSAGE_FEATURE_EXIT_Y1, USER_MESSAGE_FEATURE_EXIT_Y2,
+		 ACTIVE_ADMIN_FEATURE_EXIT, &draw_exit, &clear_exit},
+		{USER_MESSAGE_FEATURE_UP_X1, USER_MESSAGE_FEATURE_UP_X2,
+		 USER_MESSAGE_FEATURE_UP_Y1, USER_MESSAGE_FEATURE_UP_Y2,
+		 ACTIVE_ADMIN_FEATURE_UP, &draw_flip_up, &clear_flip_up},
+		{USER_MESSAGE_FEATURE_DOWN_X1, USER_MESSAGE_FEATURE_DOWN_X2,
+		 USER_MESSAGE_FEATURE_DOWN_Y1, USER_MESSAGE_FEATURE_DOWN_Y2,
+		 ACTIVE_ADMIN_FEATURE_DOWN, &draw_flip_down, &clear_flip_down},
+		 // 31
+		 // 以下为消息按钮
+		 {USER_MESSAGE_REPLY_X1, USER_MESSAGE_REPLY_X2,
+		  USER_MESSAGE_REPLY_Y1, USER_MESSAGE_REPLY_Y2,
+		  ACTIVE_ADMIN_MESSAGE_REPLY, &draw_rectangle, &clear_rectangle},
+		 {USER_MESSAGE_EXIT_X1, USER_MESSAGE_EXIT_X2,
+		  USER_MESSAGE_EXIT_Y1, USER_MESSAGE_EXIT_Y2,
+		  ACTIVE_ADMIN_MESSAGE_EXIT, &draw_exit, &clear_exit},
+	};
+	FILE* fp = fopen("DATA\\MESSAGE.DAT", "rb+"); // 打开消息数据文件
+	if (!fp)
+		getch(), exit(1);
+
+	//define_user_message_buttons(AdminButtons, *page); // 定义按钮
+	clrmous(MouseX, MouseY);
+
+	//drawgraph_admin_menu(); // 初始化界面
+	drawgraph_user_message_center(); // 绘制界面
+	admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, id_list, fp, "message", NULL, NULL, LIST_STAY, LIST_CLEAR_CONTINUE, search_str, search_needed); // 清除列表
+
+
+	while (1) {
+		newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
+		admin_flush_buttons(&tag, STRUCT_LENGTH(AdminButtons), AdminButtons);
+		user_handle_message_click_event(fp, page, id_list, &selected_id, search_str, search_needed);
+		message_list_click(ADMIN_INTERFACE_X1, ADMIN_INTERFACE_Y1, LIST_LIMIT, LIST_INTERVAL, id_list, &selected_id); // 处理点击事件
+
+		newmouse(&MouseX, &MouseY, &press, &mouse_flag);
+		delay(25);
+	}
+
+	fclose(fp);
+}
+
+void drawgraph_user_message_center()
+{
+	setfillstyle(SOLID_FILL, MY_YELLOW);
+	bar(USER_MESSAGE_FEATURE1_X1, USER_MESSAGE_FEATURE1_Y1, USER_MESSAGE_FEATURE1_X2, USER_MESSAGE_FEATURE1_Y2);
+
+	puthz(USER_MESSAGE_FEATURE1_X1 + 4, USER_MESSAGE_FEATURE1_Y1 + 7, "查看信息", 16, 16, MY_WHITE);
+	setfillstyle(SOLID_FILL, MY_RED);
+	bar(USER_MESSAGE_FEATURE6_X1, USER_MESSAGE_FEATURE6_Y1, USER_MESSAGE_FEATURE6_X2, USER_MESSAGE_FEATURE6_Y2);
+	puthz(USER_MESSAGE_FEATURE6_X1 + 4, USER_MESSAGE_FEATURE6_Y1 + 7, "发送消息", 16, 16, MY_WHITE);
+
+
+	//clear_flip_up(USER_MESSAGE_FEATURE_UP_X1, USER_MESSAGE_FEATURE_UP_Y1, USER_MESSAGE_FEATURE_UP_X2, USER_MESSAGE_FEATURE_UP_Y2);
+	//clear_flip_down(USER_MESSAGE_FEATURE_DOWN_X1, USER_MESSAGE_FEATURE_DOWN_Y1, USER_MESSAGE_FEATURE_DOWN_X2, USER_MESSAGE_FEATURE_DOWN_Y2);
+	setfillstyle(SOLID_FILL, MY_CREAM);
+	bar(USER_MESSAGE_FEATURE_UP_X1, USER_MESSAGE_FEATURE_UP_Y1, USER_MESSAGE_FEATURE_UP_X2, USER_MESSAGE_FEATURE_UP_Y2);
+	bar(USER_MESSAGE_FEATURE_DOWN_X1, USER_MESSAGE_FEATURE_DOWN_Y1, USER_MESSAGE_FEATURE_DOWN_X2, USER_MESSAGE_FEATURE_DOWN_Y2);
+	
+}
+
+void user_message_display(struct _MESSAGE_ *msg)
+{
+	int tag = ACTIVE_ADMIN_NULL; // 定义标签变量
+	int is_return = 0;
+	int mouse_flag;
+	char buffer1[10];
+	char buffer2[10];
+	ADMIN_BUTTONS btn[2];                     // 定义按钮变量
+	define_admin_buttons(btn, ADMIN_MESSAGE_DISPLAY); // 定义按钮
+	if (msg->message_type != PRIVATE_MESSAGE)
+	{
+		memset(&btn[1], '\0', sizeof(btn[1])); // 清空按钮变量
+	}
+
+	clrmous(MouseX, MouseY); // 清除鼠标
+	message_display_draw_bg();
+
+	if (msg == NULL)
+	{
+		message_topic_display(120, 35, 400, "信息错误", MY_RED, 24, 3, 0); // 显示消息的主题
+	}
+	else
+	{
+		message_topic_display(120, 35, 400, msg->title, MY_BLACK, 24, 3, 0); // 显示消息的主题
+		message_text_display(160, 80, 400, msg->sender_username, MY_BLACK);  // 显示消息的发送者
+		ltoa(msg->time, buffer1, 10);
+		sprintf(buffer2, "%.4s.%.2s.%.2s", buffer1, buffer1 + 4, buffer1 + 6);
+		message_text_display(390, 80, 400, buffer2, MY_BLACK);         // 显示消息的发时间
+		message_text_display(120, 110, 400, msg->message, MY_BLACK);         // 显示消息的内容
+	}
+
+	while (is_return == 0)
+	{
+		newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
+
+		admin_flush_buttons(&tag, 3, btn); // 刷新按钮
+		message_handle_click_event(&is_return, msg); // 处理点击事件
+
+		newmouse(&MouseX, &MouseY, &press, &mouse_flag);
+	}
+	drawgraph_admin_menu();
+	drawgraph_admin_message_center();
 }

@@ -275,7 +275,7 @@ enum
 typedef void (*DRAWFUNCTION) (int coord1, int coord2, int coord3, int coord4);
 typedef void (*CLEARFUNCTION) (int coord1, int coord2, int coord3, int coord4);
 
-typedef struct {
+typedef struct _ADMIN_BUTTONS_{
     int x1, x2, y1, y2;
     int active_tag;
     DRAWFUNCTION drawfunc;
