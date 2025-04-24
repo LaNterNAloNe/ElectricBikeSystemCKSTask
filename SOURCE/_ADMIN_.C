@@ -1167,8 +1167,8 @@ void admin_handle_manage_feature_event(LINKLIST *LIST, int *page, char *search_s
         // 修改数据块
         fseek(fp_EBIKE_INFO_read, search_pos, SEEK_SET);                                  // 定位到数据块
         fread(&temp_info, sizeof(EBIKE_INFO), 1, fp_EBIKE_INFO_read);                     // 读取数据块
-        // if (temp_info.result != PENDING)                                                  // 如果该数据块已经被处理过，则不进行任何操作
-        //     return;
+        if (temp_info.result != PENDING)                                                  // 如果该数据块已经被处理过，则不进行任何操作
+            return;
 
         temp_info.conduct_time = get_approx_time(NULL);                                   // 将时间字符串转化为int型数据，并赋值给conduct_time
         temp_info.result = PASSED;                                                        // 将result赋值为已处理
@@ -1916,13 +1916,12 @@ void define_admin_buttons(ADMIN_BUTTONS AdminButtons[], int page)
         {
             admin_get_buttons(&AdminButtons[j], &Examples[i]);
         }
-        admin_get_buttons(&AdminButtons[20], &Examples[31]);
-        admin_get_buttons(&AdminButtons[21], &Examples[32]);
     }
     else if (page == ADMIN_MESSAGE_DISPLAY)
     {
         admin_get_buttons(&AdminButtons[0], &Examples[19]);
         admin_get_buttons(&AdminButtons[1], &Examples[31]);
+        admin_get_buttons(&AdminButtons[21], &Examples[32]);
     }
     else if (page == ADMIN_MESSAGE_REPLY)
     {

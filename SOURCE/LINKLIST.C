@@ -57,7 +57,7 @@ int linklist_find_data(LINKLIST *pList, char *str, char *needed_finding)
 {
     LINKLIST_NODE *ptr;
     int chain_length = 0;
-    char *buffer;
+    char buffer[20] = {'\0'};
     for (ptr = pList->HEAD; ptr; ptr = ptr->NEXT)
     {
         if (!strcmp(needed_finding,"username")) {
