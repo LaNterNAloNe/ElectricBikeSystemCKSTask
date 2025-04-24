@@ -684,7 +684,7 @@ void drawgraph_user_bike_register_info(unsigned long *id) {
 
 
 
-void user_bike_register_getinfo(EBIKE_INFO* user_info,unsigned long *id) {
+void user_bike_register_getinfo(struct _EBIKE_INFO_ * user_info,unsigned long *id) {
 	int i = 0;
 	int account_counts;
 	EBIKE_INFO TEMP;

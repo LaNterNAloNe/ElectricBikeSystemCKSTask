@@ -357,7 +357,7 @@ void flushUserRegister(int *tag);
 int EBIKE_INFO_judge(char *usrn,char *e_bike_id,unsigned long *id);
 void anime_user_bike_register_fail(int flag);
 int user_ebike_register_judge(unsigned long* ID);
-void user_bike_register_getinfo(EBIKE_INFO *user_info,unsigned long *id);
+void user_bike_register_getinfo(struct _EBIKE_INFO_ *user_info,unsigned long *id);
 void write_user_register_moreinfo(unsigned long *id,char* color, char* length, char* battery, char* weight);
 int user_get_ebike_moreinfo(EBIKE_MOREINFO* moreinfo, unsigned long* id);
 
