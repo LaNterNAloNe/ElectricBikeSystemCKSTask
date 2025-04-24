@@ -314,9 +314,9 @@ void draw_quiz_answer(question quiz[], char answer[],int question_count) {
 					quiz[i].x + OPTION_TEXT_SPACE + (j % 2) * OPTION_SPACING, 
 					quiz[i].y + (j / 2 + 1) * LINE_HEIGHT,          
 					quiz[i].options[j],
-					16, 15, MY_GREEN);
+					16, 15, LIGHTGREEN);
 				//Ñ¡Ïî×ÖÄ¸
-				setcolor(MY_GREEN);
+				setcolor(LIGHTGREEN);
 				outtextxy(quiz[i].x + OPTION_LETTER_SPACE + (j % 2) * OPTION_SPACING,
 					quiz[i].y + (j / 2 + 1) * LINE_HEIGHT,
 					abcd[j]);

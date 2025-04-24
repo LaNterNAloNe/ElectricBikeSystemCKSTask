@@ -290,10 +290,10 @@ void user_bike_register(int* page, unsigned long* id)
 	char usrn[16] = {'\0'}; // 初始化为空
 	int hz_input_len[2] = {0,0};//汉字输入框的汉字数量
 	char e_bike_id[10] = {'\0'};
-	char color[10];
-	char length[10];
-	char weight[10];
-	char battery[10];
+	char color[10] = {'-','\0'};
+	char length[10]= { '-','\0' };
+	char weight[10]= { '-','\0' };
+	char battery[10]= { '-','\0' };
 	user_button UserButtons[] = {
 {USER_BIKE_REGISTER_X1, USER_BIKE_REGISTER_X2,USER_BIKE_REGISTER_Y1, USER_BIKE_REGISTER_Y2,ACTIVE_USER_BIKE_REGISTER,USER_BIKE_REGISTER},
 {USER_BIKE_LICENSE_X1, USER_BIKE_LICENSE_X2,USER_BIKE_LICENSE_Y1, USER_BIKE_LICENSE_Y2,ACTIVE_USER_BIKE_LICENSE,USER_BIKE_LICENSE_NOTICE},
@@ -973,6 +973,10 @@ void user_bike_license(int *page,unsigned long *id)
 				return;
 			}
 		}
+		if (mouse_press(USER_BIKE_LICENSE_BUTTON2_X1, USER_BIKE_LICENSE_BUTTON2_Y1, USER_BIKE_LICENSE_BUTTON2_X2, USER_BIKE_LICENSE_BUTTON2_Y2) == 1) {
+			*page = USER_HELP;
+			return;
+		}
 		newmouse(&MouseX, &MouseY, &press, &mouse_flag);
 		delay(25);
 	}
@@ -1515,10 +1519,7 @@ void user_bike_wroteout(int *page,unsigned long *id)
 				*page = click;
 				return;
 			}
-			if (mouse_press(USER_LICENSE_NOTICE_BUTTON1_X1, USER_LICENSE_NOTICE_BUTTON1_Y1, USER_LICENSE_NOTICE_BUTTON1_X2, USER_LICENSE_NOTICE_BUTTON1_Y2) == 1) {
-				*page = USER_QUIZ;
-				return;
-			}
+
 			if (tick % 40 == 0) {
 				setfillstyle(SOLID_FILL, MY_WHITE);
 				bar(245, 280, 275, 330);
@@ -1612,6 +1613,10 @@ void user_bike_wroteout(int *page,unsigned long *id)
 			else
 				draw_user_wroteout_fail(wroteout_flag);
 		}
+		if (mouse_press(USER_BIKE_WROTEOUT_BUTTON2_X1, USER_BIKE_WROTEOUT_BUTTON2_Y1, USER_BIKE_WROTEOUT_BUTTON2_X2, USER_BIKE_WROTEOUT_BUTTON2_Y2) == 1) {
+			*page = USER_MESSAGE;
+			return;
+		}
         newmouse(&MouseX, &MouseY, &press, &mouse_flag);
 		delay(25);
 	}
@@ -1637,9 +1642,9 @@ void drawgraph_user_bike_wroteout_warning() {
 	setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
 	bar(USER_BIKE_WROTEOUT_BUTTON1_X1, USER_BIKE_WROTEOUT_BUTTON1_Y1, USER_BIKE_WROTEOUT_BUTTON1_X2, USER_BIKE_WROTEOUT_BUTTON1_Y2);
 	puthz(USER_BIKE_WROTEOUT_BUTTON1_X1 + 15, USER_BIKE_WROTEOUT_BUTTON1_Y1 + 8, "确认", 24, 20, MY_WHITE);
-	setfillstyle(SOLID_FILL, MY_RED);
+	setfillstyle(SOLID_FILL, MY_YELLOW);
 	bar(USER_BIKE_WROTEOUT_BUTTON2_X1, USER_BIKE_WROTEOUT_BUTTON2_Y1, USER_BIKE_WROTEOUT_BUTTON2_X2, USER_BIKE_WROTEOUT_BUTTON2_Y2);
-	puthz(USER_BIKE_WROTEOUT_BUTTON2_X1 + 15, USER_BIKE_WROTEOUT_BUTTON2_Y1 + 8, "返回", 24, 20, MY_WHITE);
+	puthz(USER_BIKE_WROTEOUT_BUTTON2_X1 + 15, USER_BIKE_WROTEOUT_BUTTON2_Y1 + 8, "反馈", 24, 20, MY_WHITE);
 
 }
 
@@ -3768,4 +3773,42 @@ void user_message_send( int topic, char* topic_text, char* content_text, unsigne
 	fclose(fp_USER_MESSAGE_SEND_read);
 	return 0;
 
+}
+
+void user_message(int* page, unsigned long* id) {
+	int mouse_flag;
+	int tag = ACTIVE_ADMIN_NULL;
+	unsigned long id_list[8] = { 0,0,0,0,0,0,0,0 }; // 记录当前显示的列表每行对应的ID
+	unsigned long selected_id = 0; // 选中行的ID
+	char search_str[20] = "\0"; // 搜索框输入信息储存
+	char search_needed[10] = "\0";
+	ADMIN_BUTTONS AdminButtons[22];
+	FILE* fp = fopen("DATA\\MESSAGE.DAT", "rb+"); // 打开消息数据文件
+	if (!fp)
+		getch(), exit(1);
+
+	define_admin_buttons(AdminButtons, *page); // 定义按钮
+	clrmous(MouseX, MouseY);
+
+	drawgraph_admin_menu(); // 初始化界面
+	drawgraph_admin_message_center(); // 绘制界面
+
+	admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, id_list, fp, "message", NULL, NULL, LIST_STAY, LIST_CLEAR_CONTINUE, search_str, search_needed); // 清除列表
+
+	if (debug_mode == 1)
+		display_memory_usage(400, 10); // 显示调试参数
+
+	while (*page == ADMIN_MESSAGE) {
+		newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
+
+		admin_handle_buttons_event(page);
+		admin_flush_buttons(&tag, STRUCT_LENGTH(AdminButtons), AdminButtons);
+		admin_handle_message_click_event(fp, page, id_list, &selected_id, search_str, search_needed);
+		message_list_click(ADMIN_INTERFACE_X1, ADMIN_INTERFACE_Y1, LIST_LIMIT, LIST_INTERVAL, id_list, &selected_id); // 处理点击事件
+
+		newmouse(&MouseX, &MouseY, &press, &mouse_flag);
+		delay(25);
+	}
+
+	fclose(fp);
 }
