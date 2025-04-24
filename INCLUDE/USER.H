@@ -454,6 +454,7 @@ int user_password_change(unsigned long* id, char* old_password, char* new_passwo
 
 void user_message(int *page ,unsigned long *id);
 void drawgraph_user_message_center();
+void drawgraph_user_main_message();
 void user_handle_message_click_event(FILE* fp, int* page, unsigned long id_list[], unsigned long* selected_id,char* search_str, char* search_needed);
 //void define_user_message_buttons(struct _ADMIN_BUTTONS_ AdminButtons[], int page);
 

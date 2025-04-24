@@ -233,7 +233,7 @@ if (*tag != new_tag) {
 		setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
 		setfillstyle(1, MY_RED);
 		bar(USER_BACK_X1, USER_BACK_Y1, USER_BACK_X2, USER_BACK_Y2);
-		puthz(USER_BACK_X1 + 5, (USER_BACK_Y1 + USER_BACK_Y2) / 2 - 10, "返回", 24, 25, MY_WHITE);
+		puthz(USER_BACK_X1 + 5, USER_BACK_Y1 + 5, "返回", 24, 25, MY_WHITE);
 		
 	}
 	else {
@@ -3907,11 +3907,27 @@ void user_handle_message_click_event(FILE* fp, int* page, unsigned long id_list[
 
 void user_message(int* page, unsigned long* ID) {
 	int mouse_flag;
+	int user_tag;
+	int click = -99;
 	int tag = ACTIVE_ADMIN_NULL;
 	unsigned long id_list[8] = { 0,0,0,0,0,0,0,0 }; // 记录当前显示的列表每行对应的ID
 	unsigned long selected_id = 0; // 选中行的ID
 	char search_str[20] = "\0"; // 搜索框输入信息储存
-	char search_needed[10] = "\0";
+	char search_needed[20] = "user_receiver_id";
+
+	user_button UserButtons[] = {
+{USER_BIKE_REGISTER_X1, 120,USER_BIKE_REGISTER_Y1, USER_BIKE_REGISTER_Y2,ACTIVE_USER_BIKE_REGISTER,USER_BIKE_REGISTER},
+{USER_BIKE_LICENSE_X1, 120,USER_BIKE_LICENSE_Y1, USER_BIKE_LICENSE_Y2,ACTIVE_USER_BIKE_LICENSE,USER_BIKE_LICENSE_NOTICE},
+{USER_ANNUAL_X1, 120,USER_ANNUAL_Y1, USER_ANNUAL_Y2,ACTIVE_USER_ANNUAL,USER_ANNUAL},
+{USER_BIKE_WROTEOUT_X1, 120,USER_BIKE_WROTEOUT_Y1, USER_BIKE_WROTEOUT_Y2,ACTIVE_USER_BIKE_WROTEOUT,USER_BIKE_WROTEOUT},
+{USER_INFO_X1, 120,USER_INFO_Y1, USER_INFO_Y2,ACTIVE_USER_INFO,USER_INFO},
+{USER_MESSAGE_X1, 120,USER_MESSAGE_Y1, USER_MESSAGE_Y2,ACTIVE_USER_MESSAGE,USER_MESSAGE},
+{USER_HELP_X1,120,USER_HELP_Y1, USER_HELP_Y2,ACTIVE_USER_HELP,USER_HELP},
+{USER_BACK_X1,USER_BACK_X2,USER_BACK_Y1,USER_BACK_Y2,ACTIVE_USER_BACK,LOGIN},
+{USER_EXIT_X1,USER_EXIT_X2,USER_EXIT_Y1,USER_EXIT_Y2,ACTIVE_USER_EXIT,EXIT},
+	};
+	
+	
 	ADMIN_BUTTONS AdminButtons[7] = {
 		{USER_MESSAGE_FEATURE1_X1, USER_MESSAGE_FEATURE1_X2,
 		 USER_MESSAGE_FEATURE1_Y1, USER_MESSAGE_FEATURE1_Y2,
@@ -3941,16 +3957,28 @@ void user_message(int* page, unsigned long* ID) {
 	if (!fp)
 		getch(), exit(1);
 
-	//define_user_message_buttons(AdminButtons, *page); // 定义按钮
+	
+
+
 	clrmous(MouseX, MouseY);
 
+	drawgraph_user_main_message();
 	//drawgraph_admin_menu(); // 初始化界面
 	drawgraph_user_message_center(); // 绘制界面
+
+
+	sprintf(search_str, "%ld", *ID);
 	admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, id_list, fp, "message", NULL, NULL, LIST_STAY, LIST_CLEAR_CONTINUE, search_str, search_needed); // 清除列表
 
 
 	while (1) {
 		newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
+		flushUserMain(&user_tag, STRUCT_LENGTH(UserButtons), UserButtons);
+		click = handle_click_main(STRUCT_LENGTH(UserButtons), UserButtons);
+		if (click != -99 && click != USER_BIKE_LICENSE_NOTICE) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_LICENSE_NOTICE
+			*page = click;
+			return;
+		}
 		admin_flush_buttons(&tag, STRUCT_LENGTH(AdminButtons), AdminButtons);
 		user_handle_message_click_event(fp, page, id_list, &selected_id, search_str, search_needed);
 		message_list_click(ADMIN_INTERFACE_X1, ADMIN_INTERFACE_Y1, LIST_LIMIT, LIST_INTERVAL, id_list, &selected_id); // 处理点击事件
@@ -3978,7 +4006,8 @@ void drawgraph_user_message_center()
 	setfillstyle(SOLID_FILL, MY_CREAM);
 	bar(USER_MESSAGE_FEATURE_UP_X1, USER_MESSAGE_FEATURE_UP_Y1, USER_MESSAGE_FEATURE_UP_X2, USER_MESSAGE_FEATURE_UP_Y2);
 	bar(USER_MESSAGE_FEATURE_DOWN_X1, USER_MESSAGE_FEATURE_DOWN_Y1, USER_MESSAGE_FEATURE_DOWN_X2, USER_MESSAGE_FEATURE_DOWN_Y2);
-	
+	puthz(USER_MESSAGE_FEATURE_UP_X1 + 10, USER_MESSAGE_FEATURE_UP_Y1 + 7, "上一页", 24, 22, MY_BLACK);
+	puthz(USER_MESSAGE_FEATURE_DOWN_X1 + 10, USER_MESSAGE_FEATURE_DOWN_Y1 + 7, "下一页", 24, 22, MY_BLACK);
 }
 
 void user_message_display(struct _MESSAGE_ *msg)
@@ -4024,3 +4053,51 @@ void user_message_display(struct _MESSAGE_ *msg)
 	drawgraph_admin_menu();
 	drawgraph_admin_message_center();
 }
+
+void drawgraph_user_main_message() {
+	char time_string[10] = { '\0' };
+	unsigned long time = get_approx_time(time_string);
+
+	initcolorpalette();
+	setbkcolor(MY_LIGHTBLUE);//主界面
+	setfillstyle(1, 0);
+	setcolor(MY_LIGHTBLUE);
+	bar(0, 0, 640, 480);
+	puthz(120, 10, "校园电动车管理系统", 32, 40, MY_WHITE);
+	setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+	setcolor(MY_WHITE);
+	setfillstyle(1, MY_WHITE);
+	bar(120, 50, 640, 480);
+	setfillstyle(1, MY_LIGHTGRAY);//侧框
+	setcolor(MY_LIGHTGRAY);
+	bar(0, 40, 120, 480);
+	setcolor(MY_LIGHTGRAY);
+	//setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+	//rectangle(151, 61, 639, 479);
+
+	settextstyle(DEFAULT_FONT, HORIZ_DIR, 2); // 默认字体，水平方向，大小2
+	setcolor(MY_WHITE);
+	outtextxy(5, 450, time_string);
+
+	setfillstyle(1, MY_YELLOW);//返回登录界面
+	setcolor(MY_YELLOW);
+	bar(USER_BACK_X1, USER_BACK_Y1, USER_BACK_X2, USER_BACK_Y2);
+
+	setfillstyle(1, MY_RED);//退出
+	setcolor(MY_RED);
+	bar(USER_EXIT_X1, USER_EXIT_Y1, USER_EXIT_X2, USER_EXIT_Y2);
+	setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+	setcolor(MY_WHITE);
+	line(USER_EXIT_X1, USER_EXIT_Y1, USER_EXIT_X2 - 1, USER_EXIT_Y2 - 1);
+	line(USER_EXIT_X2 - 1, USER_EXIT_Y1, USER_EXIT_X1, USER_EXIT_Y2 - 1);
+
+	puthz(USER_BIKE_REGISTER_X1 + 15, (USER_BIKE_REGISTER_Y1 + USER_BIKE_REGISTER_Y2) / 2 - 5, "登记", 24, 22, MY_WHITE);
+	puthz(USER_ANNUAL_X1 + 15, (USER_ANNUAL_Y1 + USER_ANNUAL_Y2) / 2 - 5, "年审", 24, 22, MY_WHITE);
+	puthz(USER_BIKE_LICENSE_X1 + 15, (USER_BIKE_LICENSE_Y1 + USER_BIKE_LICENSE_Y2) / 2 - 5, "通行证", 24, 22, MY_WHITE);
+	puthz(USER_BIKE_WROTEOUT_X1 + 15, (USER_BIKE_WROTEOUT_Y1 + USER_BIKE_WROTEOUT_Y2) / 2 - 5, "报废", 24, 22, MY_WHITE);
+	puthz(USER_INFO_X1 + 15, (USER_INFO_Y1 + USER_INFO_Y2) / 2 - 5, "信息", 24, 22, MY_WHITE);
+	puthz(USER_MESSAGE_X1 + 15, (USER_MESSAGE_Y1 + USER_MESSAGE_Y2) / 2 - 5, "消息", 24, 22, MY_WHITE);
+	puthz(USER_HELP_X1 + 15, (USER_HELP_Y1 + USER_HELP_Y2) / 2 - 5, "帮助", 24, 22, MY_WHITE);
+	puthz(USER_BACK_X1 + 15, (USER_BACK_Y1 + USER_BACK_Y2) / 2 - 10, "返回", 24, 25, MY_WHITE);
+}
+
