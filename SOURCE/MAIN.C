@@ -1,11 +1,7 @@
 #include"GLOBAL.H"
 
 int main(void){
-<<<<<<< HEAD
-    int page = MAIN_ADMIN; // 主页面
-=======
     int page = USER_MESSAGE; // 主页面
->>>>>>> 513cbe32ac54ad86eadacb80f3b2ef396349fd15
     char buffer[50];
     unsigned long ID = 10; // 记录登录用户的ID
     int driver=VGA,mode=VGAHI;
