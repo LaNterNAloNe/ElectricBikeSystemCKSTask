@@ -308,6 +308,34 @@
 #define USER_MESSAGE_OUT_INPUT2_Y1 310
 #define USER_MESSAGE_OUT_INPUT2_Y2 405
 
+#define USER_MESSAGE_FEATURE1_X1 130
+#define USER_MESSAGE_FEATURE1_Y1 440
+#define USER_MESSAGE_FEATURE1_X2 200
+#define USER_MESSAGE_FEATURE1_Y2 470
+#define USER_MESSAGE_FEATURE6_X1 520
+#define USER_MESSAGE_FEATURE6_Y1 440
+#define USER_MESSAGE_FEATURE6_X2 590
+#define USER_MESSAGE_FEATURE6_Y2 470
+#define USER_MESSAGE_FEATURE_EXIT_X1 610
+#define USER_MESSAGE_FEATURE_EXIT_Y1 450
+#define USER_MESSAGE_FEATURE_EXIT_X2 630
+#define USER_MESSAGE_FEATURE_EXIT_Y2 470
+#define USER_MESSAGE_FEATURE_UP_X1 220
+#define USER_MESSAGE_FEATURE_UP_Y1 355
+#define USER_MESSAGE_FEATURE_UP_X2 300
+#define USER_MESSAGE_FEATURE_UP_Y2 395
+#define USER_MESSAGE_FEATURE_DOWN_X1 380
+#define USER_MESSAGE_FEATURE_DOWN_Y1 355
+#define USER_MESSAGE_FEATURE_DOWN_X2 460
+#define USER_MESSAGE_FEATURE_DOWN_Y2 395
+#define USER_MESSAGE_REPLY_X1 10
+#define USER_MESSAGE_REPLY_Y1 100
+#define USER_MESSAGE_REPLY_X2 80
+#define USER_MESSAGE_REPLY_Y2 130
+#define USER_MESSAGE_EXIT_X1 20
+#define USER_MESSAGE_EXIT_Y1 10
+#define USER_MESSAGE_EXIT_X2 40
+#define USER_MESSAGE_EXIT_Y2 30
 
 //¼¤»î×´Ì¬
 #define ACTIVE_USER_NONE 0
@@ -425,9 +453,10 @@ void drawgraph_user_password();
 int user_password_change(unsigned long* id, char* old_password, char* new_password);
 
 void user_message(int *page ,unsigned long *id);
-//void drawgraph_user_message_center();
-//void user_handle_message_click_event(FILE* fp, int* page, unsigned long id_list[], unsigned long* selected_id, char* search_str, char* search_needed);
-//void define_user_message_buttons(ADMIN_BUTTONS AdminButtons[], int page);
+void drawgraph_user_message_center();
+void user_handle_message_click_event(FILE* fp, int* page, unsigned long id_list[], unsigned long* selected_id,char* search_str, char* search_needed);
+//void define_user_message_buttons(struct _ADMIN_BUTTONS_ AdminButtons[], int page);
+
 
 void user_message_out(int* page, unsigned long* id);
 void drawgraph_user_message_out(user_button* UserButtons);
