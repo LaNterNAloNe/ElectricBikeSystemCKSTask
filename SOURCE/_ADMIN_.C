@@ -1159,7 +1159,7 @@ void admin_handle_manage_feature_event(LINKLIST *LIST, int *page, char *search_s
         chain_pos = linklist_find_data(LIST, buffer, "id");              // 查找链表中是否存在该ID，若找不到，则不进行任何操作
         if (chain_pos == -1)
             return;
-        
+
         search_pos = find_file_info(fp_EBIKE_INFO_read, "ebike_manage", buffer, "id"); // 查找数据文件中是否存在该ID，若找不到，则不进行任何操作
         if (search_pos == -1)
             return; // 如果没有找到数据块，则不进行任何操作，若能找到，则进一步处理数据
@@ -1167,8 +1167,8 @@ void admin_handle_manage_feature_event(LINKLIST *LIST, int *page, char *search_s
         // 修改数据块
         fseek(fp_EBIKE_INFO_read, search_pos, SEEK_SET);                                  // 定位到数据块
         fread(&temp_info, sizeof(EBIKE_INFO), 1, fp_EBIKE_INFO_read);                     // 读取数据块
-        if (temp_info.result != PENDING)                                                  // 如果该数据块已经被处理过，则不进行任何操作
-            return;
+        // if (temp_info.result != PENDING)                                                  // 如果该数据块已经被处理过，则不进行任何操作
+        //     return;
 
         temp_info.conduct_time = get_approx_time(NULL);                                   // 将时间字符串转化为int型数据，并赋值给conduct_time
         temp_info.result = PASSED;                                                        // 将result赋值为已处理
@@ -1181,9 +1181,12 @@ void admin_handle_manage_feature_event(LINKLIST *LIST, int *page, char *search_s
         switch (*page)
         {
             case ADMIN_BIKE_REGISTER:
+                strcpy(temp_node->USER_DATA.rln, temp_info.rln); // 将链表中对应节点的realname修改为新数据
                 strcpy(temp_node->USER_DATA.ebike_ID, temp_info.ebike_ID); // 将链表中对应节点的ebike_ID修改为新数据
                 break;
             case ADMIN_BIKE_LICENSE:
+                rand_license(LIST, temp_info.ebike_license); // 生成随机电动车牌
+                show_text(10, 10, temp_info.ebike_license, MY_WHITE);
                 strcpy(temp_node->USER_DATA.ebike_license, temp_info.ebike_license); // 将链表中对应节点的ebike_license修改为新数据
                 break;
             case ADMIN_BIKE_VIOLATION:

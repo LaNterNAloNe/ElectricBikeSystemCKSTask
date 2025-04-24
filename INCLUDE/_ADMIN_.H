@@ -11,11 +11,12 @@
 #include"LINKLIST.H"
 #include"MOUSE.H"
 #include"HZ.H"
-#include"debug.h"
+#include"DEBUG.H"
 #include"LOGIN.H"
 #include"LIST.H"
 #include"MESSAGE.H"
 #include"INPUTHZ.H"
+#include"RANDOM.H"
 
 //定义界面坐标
 #define ADMIN_MENU_X1 0

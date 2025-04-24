@@ -12,26 +12,12 @@ typedef struct _LINKLIST_USER_{
     char rln[16];
     char location[10];
     char ebike_ID[10];
-    char ebike_license[7];
+    char ebike_license[10];
     unsigned long anual_check;
     int violations;
     char account_state;
     char ebike_state;
 } LINKLIST_USER;
-
-// typedef struct
-// {
-//     int ID;
-//     char rln[16];
-//     char ebike_ID[10];
-//     char account_state;
-// } LINKLIST_LICENSE;
-
-// typedef union
-// {
-//     LINKLIST_LICENSE USER_LICENSE;
-//     LINKLIST_USER USER_DATA;
-// }LINKLIST_BODY;
 
 typedef struct _LINKLISTNODE_
 {

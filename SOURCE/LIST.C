@@ -1257,7 +1257,7 @@ void handle_list_select_line_admin(LINKLIST *LIST, unsigned long item_id[], unsi
                 puthz(ADMIN_INTERFACE_X1 + 340, ADMIN_INTERFACE_Y1 + 90 + max * interval, "违规次数", 16, 16, MY_WHITE);
 
                 ltoa(*selected_id, buffer, 10);               // 将ID转换为字符串
-                pos = linklist_find_data(LIST, buffer, "ID"); // 查找ID对应的节点
+                pos = linklist_find_data(LIST, buffer, "id"); // 查找ID对应的节点
                 if (pos == -1)
                 {
                     puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 110 + max * interval, "未找到对应数据", 16, 16, MY_RED);
@@ -1265,7 +1265,7 @@ void handle_list_select_line_admin(LINKLIST *LIST, unsigned long item_id[], unsi
                 }
                 linklist_get_to_node(LIST, pos, &node); // 将指针指向对应节点
 
-                if (node->USER_DATA.rln != "0" && node->USER_DATA.rln != NULL) // 输出电动车状态
+                if (strcmp(node->USER_DATA.rln, "0") != 0) // 输出电动车状态
                 {
                     puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 110 + max * interval, node->USER_DATA.rln, 16, 16, MY_WHITE); // 输出姓名
                 }
@@ -1273,7 +1273,7 @@ void handle_list_select_line_admin(LINKLIST *LIST, unsigned long item_id[], unsi
                 {
                     puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 110 + max * interval, "未登记姓名", 16, 16, MY_RED); // 输出姓名
                 }
-                if (node->USER_DATA.ebike_ID != "0" && node->USER_DATA.ebike_ID != NULL) // 输出电动车状态
+                if (strcmp(node->USER_DATA.ebike_ID, "0") != 0) // 输出电动车状态
                 {
                     settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);
                     outtextxy(ADMIN_INTERFACE_X1 + 120, ADMIN_INTERFACE_Y1 + 114 + max * interval, node->USER_DATA.ebike_ID); // 输出电动车车牌
@@ -1282,10 +1282,10 @@ void handle_list_select_line_admin(LINKLIST *LIST, unsigned long item_id[], unsi
                 {
                     puthz(ADMIN_INTERFACE_X1 + 120, ADMIN_INTERFACE_Y1 + 110 + max * interval, "未登记车牌", 16, 16, MY_RED); // 输出电动车车牌
                 }
-                if (node->USER_DATA.ebike_license != "0" && node->USER_DATA.ebike_license != NULL) // 输出电动车状态
+                if (strcmp(node->USER_DATA.ebike_license, "0") != 0) // 输出电动车状态
                 {
                     settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);
-                    outtextxy(ADMIN_INTERFACE_X1 + 220, ADMIN_INTERFACE_Y1 + 114 + max * interval, node->USER_DATA.ebike_ID); // 输出电动车车牌
+                    outtextxy(ADMIN_INTERFACE_X1 + 220, ADMIN_INTERFACE_Y1 + 114 + max * interval, node->USER_DATA.ebike_license); // 输出电动车车牌
                 }
                 else
                 {
@@ -1293,7 +1293,7 @@ void handle_list_select_line_admin(LINKLIST *LIST, unsigned long item_id[], unsi
                 }
                 ltoa(node->USER_DATA.violations, buffer, 10); // 将ID转换为字符串
                 settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);
-                outtextxy(ADMIN_INTERFACE_X1 + 340, ADMIN_INTERFACE_Y1 + 110 + max * interval, buffer); // 违规次数
+                outtextxy(ADMIN_INTERFACE_X1 + 340, ADMIN_INTERFACE_Y1 + 114 + max * interval, buffer); // 违规次数
             }
         }
     }

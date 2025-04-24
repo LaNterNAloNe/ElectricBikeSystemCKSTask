@@ -60,13 +60,19 @@ void rand_ebike_id(char *output, LINKLIST *LIST)
     node == NULL; // ÷√¡„÷∏’Î
 }
 
-void rand_license(char *output)
+void rand_license(LINKLIST *LIST, char *output)
 {
     int i;
-    output[0] = 'A' + rand() % 26;
-    for (i = 1; i < 8; i++)
-        output[i] = '0' + rand() % 10;
-    output[8] = '\0';
+    while(1){
+        output[0] = 'A' + rand() % 26;
+        for (i = 1; i <= 8; i++)
+            output[i] = '0' + rand() % 10;
+        output[9] = '\0';
+
+
+        if (linklist_find_data(LIST, output, "license") == -1)
+            break;
+    }
 }
 
 void rand_time(long *output, int is_past_year, int is_today)

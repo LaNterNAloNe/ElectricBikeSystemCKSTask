@@ -73,6 +73,14 @@ int linklist_find_data(LINKLIST *pList, char *str, char *needed_finding)
             if(!strcmp(ptr->USER_DATA.rln, str))
                 chain_length = ptr->chain_lenth;
         }
+        if (!strcmp(needed_finding,"ebike_id")) {
+            if(!strcmp(ptr->USER_DATA.ebike_ID, str))
+                chain_length = ptr->chain_lenth;
+        }
+        if (!strcmp(needed_finding,"ebike_license")) {
+            if(!strcmp(ptr->USER_DATA.ebike_license, str))
+                chain_length = ptr->chain_lenth;
+        }
         if (!strcmp(needed_finding,"location")) {
             if(!strcmp(ptr->USER_DATA.location, str))
                 chain_length = ptr->chain_lenth;
