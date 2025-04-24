@@ -3,7 +3,7 @@
 int main(void){
     int page = MAIN_ADMIN; // 主页面
     char buffer[50];
-    unsigned long ID = 2; // 记录登录用户的ID
+    unsigned long ID = 10; // 记录登录用户的ID
     int driver=VGA,mode=VGAHI;
     LINKLIST *LIST = (LINKLIST *)malloc(sizeof(LINKLIST));
     if (LIST == NULL){ // 分配内存失败
@@ -62,11 +62,19 @@ int main(void){
             case USER_INFO:
                 user_info(&page, &ID); break;
             case USER_INFO_BIKEINFO:
-                user_bike_info(&page, &ID); break;
+                user_bikeinfo(&page, &ID); break;
+            case USER_INFO_BIKEDATA:
+                user_bikedata(&page, &ID); break;
+            case USER_INFO_PASSWORD:
+                user_info_password(&page, &ID); break;
             case USER_HELP:
                 user_help(&page, &ID); break;
             case USER_QUIZ:
                 user_quiz(&page, &ID); break;
+            //case USER_MESSAGE:
+                //user_message(&page, &ID); break;
+            case USER_MESSAGE:
+                user_message_out(&page, &ID); break;
             
 
             //ADMIN.C

@@ -34,7 +34,7 @@ int hz_input(int x1, int y1, int x2, int y2, char* s, int len, int color, int co
     int Line = 0, L_len = 0; // 当前行数和该行字符数
     int pylen = 0;
     int xx1 = x1 + 2, xx2 = x2 - 2; // 防止输入溢出
-    int L_maxwords = (xx2 - xx1) / (size / 2); // 每行最大字符数（按汉字计算）
+    int L_maxwords = ((xx2 - xx1) / (size + 4)) * 2; // 每行最大字符数（按汉字计算）
     int maxline = (y2 - y1) / 30; // 最大行数
     int barx1, barx2, bary1, bary2;
     char str[3] = { '\0', '\0', '\0' }; // 存储一个汉字
@@ -117,7 +117,7 @@ int hz_input(int x1, int y1, int x2, int y2, char* s, int len, int color, int co
                 if (len <= 0) break;
                 if (*(p - 1) > 31 && *(p - 1) < 127) { // ASCII字符
                     setfillstyle(1, WHITE);
-                    bar(xx1 + (L_len - 1) * 8, y1 + (Line - 1) * 30, xx1 + L_len * 8, y1 + Line * 30);
+                    bar(xx1 + (L_len - 1) * 8, y1 + (Line - 1) * 28, xx1 + L_len * 8, y1 + Line * 28);
                     p--;
                     len--;
                     L_len--;
