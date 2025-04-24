@@ -404,14 +404,17 @@ int message_is_valid(MESSAGE msg, char *search_str, char *search_needed)
     if (!strcmp(search_str, "all") && !strcmp(search_needed, "all") ||
 
         !strcmp(msg.receiver_username, "all_admin") && 
-        (!strcmp(search_needed, "admin_all") ||
+        (
+        !strcmp(search_needed, "admin_all") ||
         msg.sender_id == atol(search_str) && !strcmp(search_needed, "admin_sender_id") ||
         msg.receiver_id == atol(search_str) && !strcmp(search_needed, "admn_receiver_id") ||
         !strcmp(msg.sender_username, search_str) && !strcmp(search_needed, "admin_sender_username") ||
         !strcmp(msg.receiver_username, search_str) && !strcmp(search_needed, "admin_receiver_username") ||
         msg.is_read == atoi(search_str) && !strcmp(search_needed, "admin_is_read") ||
-        msg.message_id == atol(search_str) && !strcmp(search_needed, "admin_message_id"))
-
+        msg.message_id == atol(search_str) && !strcmp(search_needed, "admin_message_id")
+        )
+        ||
+        msg.receiver_id == atol(search_str) && !strcmp(search_needed, "user_receiver_id")
     )
     { 
         return 1; // Èç¹ûÆ¥Åä£¬·µ»Ø1
