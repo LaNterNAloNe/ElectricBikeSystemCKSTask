@@ -338,7 +338,7 @@ void drawgraph_admin_message_center(void);
 void drawgraph_admin_info(unsigned long ID);
 
 // 画面点击事件函数
-void admin_handle_manage_feature_event(LINKLIST *LIST, int *page, char *search_str, unsigned long *id_list,
+void admin_handle_manage_feature_event(LINKLIST *LIST, long ID, int *page, char *search_str, unsigned long *id_list,
                                        FILE *fp_EBIKE_INFO_read, int *mode, unsigned long *selected_id);
 void admin_handle_buttons_event(int *page);
 void admin_handle_database_event(LINKLIST *LIST, int *flag, int *page, unsigned long *id_list,

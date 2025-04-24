@@ -64,7 +64,7 @@ void admin_manage_bike_module(int *page, unsigned long *ID, LINKLIST *LIST, char
 
         admin_flush_buttons(&tag, STRUCT_LENGTH(AdminButtons), AdminButtons);
         admin_handle_buttons_event(page);
-        admin_handle_manage_feature_event(LIST, page, search_str, id_list, fp_EBIKE_INFO_read, &mode, &selected_id); // 处理点击事件
+        admin_handle_manage_feature_event(LIST, *ID, page, search_str, id_list, fp_EBIKE_INFO_read, &mode, &selected_id); // 处理点击事件
         handle_list_select_line_admin(LIST, id_list, &selected_id, LIST_LIMIT, LIST_INTERVAL, *page, NULL);
         
         newmouse(&MouseX, &MouseY, &press, &mouse_flag);
@@ -214,19 +214,21 @@ void admin_message_center(int *page, unsigned long *ID){
     unsigned long id_list[8] = {0,0,0,0,0,0,0,0}; // 记录当前显示的列表每行对应的ID
     unsigned long selected_id = 0; // 选中行的ID
     char search_str[20] = "\0"; // 搜索框输入信息储存
-    char search_needed[10] = "\0";
-    ADMIN_BUTTONS AdminButtons[22];
+    char search_needed[30] = "\0";
+    ADMIN_BUTTONS AdminButtons[19];
     FILE *fp = fopen("DATA\\MESSAGE.DAT", "rb+"); // 打开消息数据文件
     if (!fp)
         getch(),exit(1);
 
-    define_admin_buttons(AdminButtons, *page); // 定义按钮
+    // memset(AdminButtons, '\0', sizeof(AdminButtons));  // 清空搜索需求
+    define_admin_buttons(AdminButtons, ADMIN_MESSAGE); // 定义按钮
     clrmous(MouseX, MouseY);
 
     drawgraph_admin_menu(); // 初始化界面
     drawgraph_admin_message_center(); // 绘制界面
 
-    admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, id_list, fp, "message", NULL, NULL, LIST_STAY, LIST_CLEAR_CONTINUE, search_str, search_needed); // 清除列表
+    strcpy(search_needed, "admin_all"); // 搜索需求
+    admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, id_list, fp, "message", NULL, NULL, LIST_STAY, LIST_CLEAR_CONTINUE, "\0", "admin_all"); // 清除列表
 
     if (debug_mode == 1)
         display_memory_usage(400, 10); // 显示调试参数
@@ -235,7 +237,7 @@ void admin_message_center(int *page, unsigned long *ID){
         newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
 
         admin_handle_buttons_event(page);
-        admin_flush_buttons(&tag, STRUCT_LENGTH(AdminButtons), AdminButtons);
+        // admin_flush_buttons(&tag, STRUCT_LENGTH(AdminButtons), AdminButtons);
         admin_handle_message_click_event(fp, page, id_list, &selected_id, search_str, search_needed);
         message_list_click(ADMIN_INTERFACE_X1, ADMIN_INTERFACE_Y1, LIST_LIMIT, LIST_INTERVAL, id_list, &selected_id); // 处理点击事件
 
@@ -739,6 +741,7 @@ void drawgraph_admin_message_center()
     line(ADMIN_FEATURE_SEARCH_X1 + 5, ADMIN_FEATURE_SEARCH_Y2 - 7, ADMIN_FEATURE_SEARCH_X1 + 12, ADMIN_FEATURE_SEARCH_Y2 - 14);
     circle(ADMIN_FEATURE_SEARCH_X1 + 16, ADMIN_FEATURE_SEARCH_Y2 - 18, 5);
 
+    draw_cues(ADMIN_BUTTON7_X2 + 10, ADMIN_BUTTON7_Y1, NULL, NULL);
     clear_exit(ADMIN_FEATURE_EXIT_X1, ADMIN_FEATURE_EXIT_Y1, ADMIN_FEATURE_EXIT_X2, ADMIN_FEATURE_EXIT_Y2);
     clear_flip_up(ADMIN_FEATURE_UP_X1, ADMIN_FEATURE_UP_Y1, ADMIN_FEATURE_UP_X2, ADMIN_FEATURE_UP_Y2);
     clear_flip_down(ADMIN_FEATURE_DOWN_X1, ADMIN_FEATURE_DOWN_Y1, ADMIN_FEATURE_DOWN_X2, ADMIN_FEATURE_DOWN_Y2);
@@ -802,7 +805,8 @@ long find_file_info(FILE *fp, char *file_type,char *search_str,char *search_need
     else if(strcmp(file_type, "message") == 0){ // 查找车辆违章信息
         while (fread(&message_temp, sizeof(MESSAGE), 1, fp)) // 遍历文件中的所有数据块，当读取到文件末尾时，fread返回0，退出循环
         {
-            if(message_temp.message_id == atol(search_str) && strcmp(search_needed, "message_id") == 0)
+            if(message_temp.message_id == atol(search_str) && strcmp(search_needed, "admin_message_id") == 0 ||
+                strcmp(search_needed, "all") == 0)
             {
                 return counts * sizeof(MESSAGE);
             }
@@ -1080,7 +1084,7 @@ void admin_handle_buttons_event(int *page)
     }
 }
 
-void admin_handle_manage_feature_event(LINKLIST *LIST, int *page, char *search_str, unsigned long *id_list, FILE *fp_EBIKE_INFO_read, int *mode, unsigned long *selected_id)
+void admin_handle_manage_feature_event(LINKLIST *LIST, long ID, int *page, char *search_str, unsigned long *id_list, FILE *fp_EBIKE_INFO_read, int *mode, unsigned long *selected_id)
 {
     int i;
     char list_mode[15]; // 列表依据
@@ -1167,8 +1171,8 @@ void admin_handle_manage_feature_event(LINKLIST *LIST, int *page, char *search_s
         // 修改数据块
         fseek(fp_EBIKE_INFO_read, search_pos, SEEK_SET);                                  // 定位到数据块
         fread(&temp_info, sizeof(EBIKE_INFO), 1, fp_EBIKE_INFO_read);                     // 读取数据块
-        if (temp_info.result != PENDING)                                                  // 如果该数据块已经被处理过，则不进行任何操作
-            return;
+        // if (temp_info.result != PENDING)                                                  // 如果该数据块已经被处理过，则不进行任何操作
+        //     return;
 
         temp_info.conduct_time = get_approx_time(NULL);                                   // 将时间字符串转化为int型数据，并赋值给conduct_time
         temp_info.result = PASSED;                                                        // 将result赋值为已处理
@@ -1183,20 +1187,24 @@ void admin_handle_manage_feature_event(LINKLIST *LIST, int *page, char *search_s
             case ADMIN_BIKE_REGISTER:
                 strcpy(temp_node->USER_DATA.rln, temp_info.rln); // 将链表中对应节点的realname修改为新数据
                 strcpy(temp_node->USER_DATA.ebike_ID, temp_info.ebike_ID); // 将链表中对应节点的ebike_ID修改为新数据
+                message_admin_quick_message(LIST, ID, temp_node->USER_DATA.ID, ANNOUNCEMENT, QUICK_REGISTER); // 发送消息
                 break;
             case ADMIN_BIKE_LICENSE:
                 rand_license(LIST, temp_info.ebike_license); // 生成随机电动车牌
                 show_text(10, 10, temp_info.ebike_license, MY_WHITE);
                 strcpy(temp_node->USER_DATA.ebike_license, temp_info.ebike_license); // 将链表中对应节点的ebike_license修改为新数据
+                message_admin_quick_message(LIST, ID, temp_node->USER_DATA.ID, ANNOUNCEMENT, QUICK_LICENSE); // 发送消息
                 break;
             case ADMIN_BIKE_VIOLATION:
                 temp_node->USER_DATA.violations++; // 将链表中对应节点的violations加1
                 break;
             case ADMIN_BIKE_ANUAL:
                 temp_node->USER_DATA.anual_check += 10000; // 将链表中对应节点的annual加10000(10000表示数字中表示年的部分加1)
+                message_admin_quick_message(LIST, ID, temp_node->USER_DATA.ID, ANNOUNCEMENT, QUICK_ANUAL); // 发送消息
                 break;
             case ADMIN_BIKE_BROKEN:
                 temp_node->USER_DATA.ebike_state = BROKEN; // 将链表中对应节点的ebike_state修改为BROKEN
+                message_admin_quick_message(LIST, ID, temp_node->USER_DATA.ID, ANNOUNCEMENT, QUICK_BROKEN); // 发送消息
                 break;
         }
         temp_node = NULL;
@@ -1605,7 +1613,18 @@ void admin_handle_message_click_event(FILE *fp, int *page, unsigned long id_list
                     ADMIN_FEATURE_SEARCH_X2, ADMIN_FEATURE_SEARCH_Y2) == 1) // 点击搜索
     {
         ch_input(search_str, ADMIN_FEATURE_SEARCH_X1 + 25, ADMIN_FEATURE_SEARCH_Y1, 13, MY_LIGHTGRAY, INPUTBAR_NO_CLEAR, 1);                                 // 输入框
-        admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, id_list, fp, "message", NULL, NULL, LIST_STAY, LIST_CLEAR_CONTINUE, search_str, "message_id"); // 清除列表
+        if (strcmp(search_str, "\0")!= 0)                                // 若输入框不为空
+        {
+            
+            strcpy(search_needed, "admin_sender_username"); // 搜索依据
+            admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, id_list, fp, "message", NULL, NULL, LIST_STAY, LIST_CLEAR_CONTINUE, search_str, "admin_sender_username"); // 清除列表
+        }
+        else
+        {
+            strcpy(search_needed, "admin_all"); // 清空搜索依据
+            admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, id_list, fp, "message", NULL, NULL, LIST_STAY, LIST_CLEAR_CONTINUE, search_str, "admin_all"); // 清除列表
+        }
+            
     }
 
     /* 点击查看信息 */
@@ -1615,11 +1634,11 @@ void admin_handle_message_click_event(FILE *fp, int *page, unsigned long id_list
         if (*selected_id != 0) // 未选中
         {
             ltoa(*selected_id, buffer, 10);
-            pos = find_file_info(fp, "message", buffer, "message_id"); // 查找信息
+            pos = find_file_info(fp, "message", buffer, "admin_message_id"); // 查找信息
             if (pos != -1)                                                 // 找到信息
             {
                 ltoa(*selected_id, buffer, 10);
-                if (message_get(fp, &msg, buffer, "message_id") != 1) // 读取选中的消息
+                if (message_get(fp, &msg, buffer, "admin_message_id") != 1) // 读取选中的消息
                 {
                     puthz(10, 10, "未找到信息！", 16, 16, MY_RED); // 显示未找到信息
                     return;
@@ -1627,9 +1646,10 @@ void admin_handle_message_click_event(FILE *fp, int *page, unsigned long id_list
                 message_display(&msg);                       // 显示选中的消息，这玩意在vscode里为什么报错我不得而知
 
                 msg.is_read = 1;                                   // 将消息标记为已读
-                message_overwrite(fp, &msg, buffer, "message_id"); // 将选中的消息标记为已读
-                admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, id_list, fp, "message", NULL, NULL, LIST_STAY, LIST_CLEAR_CONTINUE, "\0", "\0"); // 清除列表
+                message_overwrite(fp, &msg, buffer, "admin_message_id"); // 将选中的消息标记为已读
+                admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, id_list, fp, "message", NULL, NULL, LIST_STAY, LIST_CLEAR_CONTINUE, "\0", "admin_all"); // 清除列表
                 *selected_id = 0;
+                ch_input(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL); // 清除输入框
             }
         }
     }
@@ -1638,12 +1658,12 @@ void admin_handle_message_click_event(FILE *fp, int *page, unsigned long id_list
     if (mouse_press(ADMIN_FEATURE_UP_X1, ADMIN_FEATURE_UP_Y1,
                     ADMIN_FEATURE_UP_X2, ADMIN_FEATURE_UP_Y2) == 1) // 点击上一页
     {
-        admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, id_list, fp, "message", NULL, NULL, LIST_PAGEUP, LIST_NO_CLEAR, search_str, "message_id"); // 清除列表
+        admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, id_list, fp, "message", NULL, NULL, LIST_PAGEUP, LIST_NO_CLEAR, search_str, search_needed); // 清除列表
     }
     if (mouse_press(ADMIN_FEATURE_DOWN_X1, ADMIN_FEATURE_DOWN_Y1,
                     ADMIN_FEATURE_DOWN_X2, ADMIN_FEATURE_DOWN_Y2) == 1) // 点击下一页
     {
-        admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, id_list, fp, "message", NULL, NULL, LIST_PAGEDOWN, LIST_NO_CLEAR, search_str, "message_id"); // 清除列表
+        admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, id_list, fp, "message", NULL, NULL, LIST_PAGEDOWN, LIST_NO_CLEAR, search_str, search_needed); // 清除列表
     }
 }
 
@@ -1696,6 +1716,11 @@ void admin_flush_buttons(int *tag, int button_counts, ADMIN_BUTTONS AdminButtons
     static int last_active_index = 0;
     static int current_active_index = 0;
 
+    if (debug_mode == 1){
+        show_num(10, 10, last_active_index, MY_WHITE);
+        show_num(10, 20, current_active_index, MY_WHITE);
+    }
+    
     // 检查按钮数量是否合法
     if (button_counts <= 0 || !AdminButtons)
     {

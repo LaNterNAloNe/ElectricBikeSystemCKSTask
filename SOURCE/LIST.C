@@ -265,7 +265,7 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
             else if (flag == ADMIN_MESSAGE)
             {
                 /* 信息的读取较为特殊，需要从后往前读取，且认为最后面的是第一个。为不造成冲突，要读取文件时采取即时计算读取位置的方式 */
-                fseek(fp, (counts - temp_start) * sizeof(user_temp), SEEK_SET); // 先判断接下来是否有可以列出的数据
+                fseek(fp, (counts - temp_start) * sizeof(message_temp), SEEK_SET);  // 先判断接下来是否有可以列出的数据
                 if (!fread(&message_temp, sizeof(message_temp), 1, fp))             // 读取下一个数据块
                 {
                     return; // 到文件末尾都没有发现可列表的，则不执行下翻列表操作
@@ -669,7 +669,7 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
             else if (flag == ADMIN_MESSAGE)
             {
                 /* 信息的读取较为特殊，需要从后往前读取，且认为最后面的是第一个。为不造成冲突，要读取文件时采取即时计算读取位置的方式 */
-                fseek(fp, (counts - temp_end - 1) * sizeof(user_temp), SEEK_SET);   // 先判断接下来是否有可以列出的数据
+                fseek(fp, (counts - temp_end - 1) * sizeof(message_temp), SEEK_SET);   // 先判断接下来是否有可以列出的数据
                 if (!fread(&message_temp, sizeof(message_temp), 1, fp))             // 读取下一个数据块
                 {
                     return; // 到文件末尾都没有发现可列表的，则不执行下翻列表操作

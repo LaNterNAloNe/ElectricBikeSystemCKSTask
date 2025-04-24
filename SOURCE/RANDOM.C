@@ -20,7 +20,7 @@ void rand_exist_id(char *output, LINKLIST *LIST)
     {
         linklist_get_to_node(LIST, rand_int(1, linklist_get_length(LIST)), &node); // 随机获取链表中的数据
 
-        if (strcmp(node->USER_DATA.ebike_ID, "\0") != 0)
+        if (strcmp(node->USER_DATA.ebike_ID, "0") == 0)
             continue;
         else
         {
@@ -200,6 +200,7 @@ void rand_io_data(LINKLIST *LIST)
             if (pos > 0)
             {
                 linklist_get_to_node(LIST, pos, &user_data);
+
                 strcpy(io_data.ebike_license, user_data->USER_DATA.ebike_license); // 复制ebike_license
                 rand_location(io_data.location, 0);                                   // 生成随机location
                 if (rand_int(1, 2) == 1)                                           // 50%概率
@@ -207,12 +208,14 @@ void rand_io_data(LINKLIST *LIST)
                     rand_time(&io_data.in_time, 0, 1);                                 // 生成随机time
                     io_data.out_time = 0;
                     io_data.comment = EBIKE_IN_OUT_REGISTERED_UNIT_IN;
+                    rand_location(io_data.location, 1); // 生成随机门牌号
                 }
                 else
                 {
                     rand_time(&io_data.out_time, 0, 1); // 生成随机time
                     io_data.in_time = 0;
                     io_data.comment = EBIKE_IN_OUT_REGISTERED_UNIT_OUT;
+                    rand_location(io_data.location, 1); // 生成随机门牌号
                 }
 
                 io_data.result = PASSED; // 校园单位无需后台审核
@@ -298,7 +301,7 @@ void rand_msg()
         fwrite(&msg, sizeof(MESSAGE), 1, fp); // 写入文件
     }
 
-
+    fflush(fp);
     fclose(fp); // 关闭文件
 
     // 将temp文件替换IO文件

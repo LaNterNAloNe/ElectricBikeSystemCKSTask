@@ -98,7 +98,9 @@
     "LIST.C": "cpp",
     "RANDOM.C": "cpp",
     "QUIZ.C": "cpp",
-    "system_error": "cpp"
+    "system_error": "cpp",
+    "INPUTHZ.C": "cpp",
+    "algorithm": "cpp"
 },
 "marscode.chatLanguage": "cn"
 }

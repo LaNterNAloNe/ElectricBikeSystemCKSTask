@@ -80,7 +80,7 @@ void message_list(MESSAGE msg,int _x, int _y, int _listed_item, int _max, int _i
     {
         settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);                                                                    // 设置字体样式和方向
         message_topic_display(_x, _y + _interval * _listed_item, 200, msg.title, MY_WHITE, 16, 1, 1); // 显示消息的主题
-        outtextxy(_x + 300, _y + _interval * _listed_item, msg.sender_username);                      // 显示用户名
+        outtextxy(_x + 300, _y + 4 + _interval * _listed_item, msg.sender_username);                      // 显示用户名
         if (msg.is_read == 1) { // 如果消息已读，则显示已读
             puthz(_x + 420, _y + _interval * _listed_item, "已读", 16, 16, MY_WHITE); // 显示已读
         } else { // 如果消息未读，则显示未读
@@ -91,7 +91,7 @@ void message_list(MESSAGE msg,int _x, int _y, int _listed_item, int _max, int _i
     {
         settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);                                                                    // 设置字体样式和方向
         message_topic_display(_x, _y + _interval * (_max - _listed_item - 1), 200, msg.title, MY_WHITE, 16, 1, 1);   // 显示消息的主题
-        outtextxy(_x + 300, _y + _interval * (_max - _listed_item - 1), msg.sender_username);                        // 显示用户名
+        outtextxy(_x + 300, _y + 4 + _interval * (_max - _listed_item - 1), msg.sender_username);                        // 显示用户名
         if (msg.is_read == 1) { // 如果消息已读，则显示已读
             puthz(_x + 420, _y + _interval * (_max - _listed_item - 1), "已读", 16, 16, MY_WHITE); // 显示已读
         } else { // 如果消息未读，则显示未读
@@ -216,6 +216,111 @@ void message_text_display(int _x, int _y, int _width, char *_text, int _text_col
     }
 }
 
+int message_admin_quick_message(LINKLIST *LIST, long _sender_id, long _receiver_id, int _message_type, int _quick_type)
+{
+    FILE *fp; // 定义文件指针
+    MESSAGE msg; // 定义消息结构体变量
+    int pos = -1;
+    char buffer[20];
+    char apply_time[20];
+    char conduct_time[20];
+    char anual_check[20];
+    LINKLIST_NODE *node;
+    EBIKE_INFO ebike_info; // 定义电动车信息结构体变量
+
+    ltoa(_receiver_id, buffer, 10); // 将接收者ID转换为字符串
+    
+    /* 文件信息读取 */
+    if (_quick_type == QUICK_REGISTER) // 如果是快速注册
+        fp = fopen("DATA\\REGISTER.DAT", "rb"); // 打开注册信息文件，以二进制读取方式打开
+    else if (_quick_type == QUICK_LICENSE) // 如果是快速注册
+        fp = fopen("DATA\\LICENSE.DAT", "rb"); // 打开注册信息文件，以二进制读取方式打开
+    else if (_quick_type == QUICK_ANUAL) // 如果是快速注册
+        fp = fopen("DATA\\ANUAL.DAT", "rb"); // 打开注册信息文件，以二进制读取方式打开
+    else if (_quick_type == QUICK_BROKEN) // 如果是快速注册
+        fp = fopen("DATA\\BROKEN.DAT", "rb"); // 打开注册信息文件，以二进制读取方式打开
+    else if (_quick_type == QUICK_VIOLA) // 如果是快速注册
+        fp = fopen("DATA\\VIOLA.DAT", "rb"); // 打开注册信息文件，以二进制读取方式打开
+
+    if (fp == NULL)
+    { // 如果打开文件失败，返回0
+        perror("message_admin_quick_message: file-pointer cannot open file\n");
+        return 0;
+    }
+    pos = find_file_info(fp, "ebike_manage", buffer, "id"); // 获取文件信息
+    if (pos == -1)
+    { // 如果未找到文件信息，返回0
+        perror("message_admin_quick_message: file-pointer cannot find file info\n");
+        fclose(fp);
+        return 0;
+    }
+    fseek(fp, pos, SEEK_SET);                      // 将文件指针移动到文件信息的位置
+    fread(&ebike_info, sizeof(EBIKE_INFO), 1, fp); // 读取电动车信息
+    fclose(fp);                                    // 关闭文件
+    // 获取申请时间和操作时间
+    ltoa(ebike_info.apply_time, buffer, 10);
+    sprintf(apply_time, "%0.4s.%0.2s.%0.2s", buffer, buffer + 4, buffer + 6); // 将申请时间转换为字符串
+    ltoa(ebike_info.conduct_time, buffer, 10);
+    sprintf(conduct_time, "%0.4s.%0.2s.%0.2s", buffer, buffer + 4, buffer + 6); // 将操作时间转换为字符串
+
+    /* 链表信息读取 */
+    ltoa(_receiver_id, buffer, 10); // 将接受者ID转换为字符串
+    pos = linklist_find_data(LIST, buffer, "id");
+    if (pos == -1)
+    { // 如果未找到接收者ID，返回0
+        perror("message_admin_quick_message: linklist cannot find receiver id\n");
+        return 0;
+    }
+
+    linklist_get_to_node(LIST, pos, &node); // 获取接收者信息
+
+    msg.receiver_id = _receiver_id; // 设置消息的接收者ID
+    strcpy(msg.receiver_username, node->USER_DATA.usrn); // 设置消息的接收者用户名
+    msg.sender_id = _sender_id; // 设置消息的发送者ID
+    strcpy(msg.sender_username, "Admin"); // 设置消息的发送者用户名
+    msg.time = get_approx_time(NULL); // 设置消息的发送者ID
+    msg.is_read = 0; // 设置消息的发送者ID
+    msg.is_replied = 0; // 设置消息的发送者ID
+    msg.message_type = ANNOUNCEMENT; // 设置消息的发送者ID
+
+    if (_quick_type == QUICK_REGISTER) {
+        strcpy(msg.title, "您的电动车已成功注册！"); // 设置消息的标题
+        sprintf(msg.message, "您的电动车已成功注册！注册信息如下：\n注册人：%s\n车牌号：%s\n申请时间：%s\n处理日期：%s\n提示：如果希望长期在校园内行驶电动车，请尽快办理校园电动车通行证！\n\n祝生活愉快！", 
+            node->USER_DATA.rln, node->USER_DATA.ebike_ID, apply_time, conduct_time); // 设置消息的内容
+    } else if (_quick_type == QUICK_LICENSE) {
+        strcpy(msg.title, "您已成功申请校园通行证！"); // 设置消息的标题
+        sprintf(msg.message, "您的电动车校园通行证已成功申请！申请信息如下：\n注册人：%s\n车牌号：%s\n通行证：%s\n申请时间：%s\n处理日期：%s\n提示：成功申请后请及时前往预定的上牌地点完成上牌，预期视为作废！\n\n祝生活愉快！",
+                node->USER_DATA.rln, node->USER_DATA.ebike_ID, node->USER_DATA.ebike_license, apply_time, conduct_time); // 设置消息的内容
+    } else if (_quick_type == QUICK_ANUAL) {
+        ltoa(node->USER_DATA.anual_check, buffer, 10);
+        sprintf(anual_check, "%0.4s.%0.2s.%0.2s", buffer, buffer + 4, buffer + 6); // 将操作时间转换为字符串
+        strcpy(msg.title, "您的电动车年检已完成！"); // 设置消息的标题
+        sprintf(msg.message, "您的电动车年检已完成！年检信息如下：\n注册人：%s\n车牌号：%s\n最新年检日期：%s\n申请时间：%s\n处理日期：%s\n\n\n祝生活愉快！",
+                node->USER_DATA.rln, node->USER_DATA.ebike_ID, anual_check, apply_time, conduct_time); // 设置消息的内容
+    } else if (_quick_type == QUICK_BROKEN) {
+        strcpy(msg.title, "您的电动车报废申请已通过！"); // 设置消息的标题
+        sprintf(msg.message, "您的电动车报废申请已通过！报废信息如下：\n注册人：%s\n车牌号：%s\n通行证：%s\n申请时间：%s\n处理日期：%s\n提示：相关电动车数据已从数据库移出，请及时前往校园内检查点完成报废！\n\n祝生活愉快！",
+                node->USER_DATA.rln, node->USER_DATA.ebike_ID, node->USER_DATA.ebike_license, apply_time, conduct_time); // 设置消息的内容
+    } else if (_quick_type == QUICK_VIOLA) {
+        strcpy(msg.title, "您有一项电动车违规行为！"); // 设置消息的标题
+        sprintf(msg.message, "您有一项电动车违规行为！违规信息如下：\n注册人：%s\n车牌号：%s\n通行证：%s\n请遵守校园内电动车执行条例！\n\n祝生活愉快！",
+                node->USER_DATA.rln, node->USER_DATA.ebike_ID, node->USER_DATA.ebike_license); // 设置消息的内容
+    }
+
+    fp = fopen("DATA\\MESSAGE.DAT", "rb+"); // 打开消息文件，以二进制追加方式打开
+    if (fp == NULL)
+    { // 如果打开文件失败，返回0
+        perror("message_admin_quick_message: file-pointer cannot open file, after editting msg\n");
+        node == NULL;
+        return 0;
+    }
+    fseek(fp, 0, SEEK_END); // 将文件指针移动到文件末尾
+    fwrite(&msg, sizeof(MESSAGE), 1, fp); // 写入消息
+    fclose(fp); // 关闭文件
+    node == NULL;
+    return 1; // 返回1
+}
+
 // 获取消息
 int message_get(FILE *fp, MESSAGE *msg, char *search_str, char *search_needed)
 {
@@ -296,17 +401,18 @@ int message_overwrite(FILE *fp, MESSAGE *msg, char *search_str, char *search_nee
 // 检查消息是否有效
 int message_is_valid(MESSAGE msg, char *search_str, char *search_needed) 
 {
-    if (strcmp(search_str, "\0") == 0 ||
-        msg.sender_id == atol(search_str) && strcmp(search_needed, "sender_id") == 0 ||
-        msg.receiver_id == atol(search_str) && strcmp(search_needed, "receiver_id") == 0 ||
-        !strcmp(msg.sender_username, search_str) && strcmp(search_needed, "sender_username") == 0 ||
-        !strcmp(msg.receiver_username, search_str) && strcmp(search_needed, "receiver_username") == 0 ||
-        !strcmp("all_user", search_str) && strcmp(search_needed, "receiver_username") == 0 || // 枚举两种特殊情况
-        !strcmp("all_admin", search_str) && strcmp(search_needed, "receiver_username") == 0 ||
-        !strcmp(msg.sender_username, search_str) && strcmp(search_needed, "sender_username") == 0 ||
-        msg.is_read == atoi(search_str) && strcmp(search_needed, "is_read") == 0 || 
-        msg.message_id == atol(search_str) && strcmp(search_needed, "message_id") == 0
-        )
+    if (!strcmp(search_str, "all") && !strcmp(search_needed, "all") ||
+
+        !strcmp(msg.receiver_username, "all_admin") && 
+        (!strcmp(search_needed, "admin_all") ||
+        msg.sender_id == atol(search_str) && !strcmp(search_needed, "admin_sender_id") ||
+        msg.receiver_id == atol(search_str) && !strcmp(search_needed, "admn_receiver_id") ||
+        !strcmp(msg.sender_username, search_str) && !strcmp(search_needed, "admin_sender_username") ||
+        !strcmp(msg.receiver_username, search_str) && !strcmp(search_needed, "admin_receiver_username") ||
+        msg.is_read == atoi(search_str) && !strcmp(search_needed, "admin_is_read") ||
+        msg.message_id == atol(search_str) && !strcmp(search_needed, "admin_message_id"))
+
+    )
     { 
         return 1; // 如果匹配，返回1
     }

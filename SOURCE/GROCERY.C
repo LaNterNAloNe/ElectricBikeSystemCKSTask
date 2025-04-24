@@ -63,6 +63,7 @@ long constrain_int(long input, long min, long max)
         return min;
     if (input > max)
         return max;
+    return input;
 }
 
 void reset_file()
