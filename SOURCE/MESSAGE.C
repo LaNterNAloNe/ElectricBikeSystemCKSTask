@@ -282,6 +282,8 @@ int message_admin_quick_message(LINKLIST *LIST, long _sender_id, long _receiver_
     msg.is_read = 0; // 设置消息的发送者ID
     msg.is_replied = 0; // 设置消息的发送者ID
     msg.message_type = ANNOUNCEMENT; // 设置消息的发送者ID
+    rand_id(buffer);                 // 生成随机id
+    msg.message_id = atol(buffer);
 
     if (_quick_type == QUICK_REGISTER) {
         strcpy(msg.title, "您的电动车已成功注册！"); // 设置消息的标题
@@ -402,10 +404,13 @@ int message_overwrite(FILE *fp, MESSAGE *msg, char *search_str, char *search_nee
 int message_is_valid(MESSAGE msg, char *search_str, char *search_needed) 
 {
 
-    // show_text (70, 10, search_str, MY_WHITE); // 显示消息的主题
-    // show_text(30, 30, search_needed, MY_WHITE);        // 显示消息的主题
-    // show_text(30, 50, msg.receiver_username, MY_WHITE); // 显示消息的主题
-    // show_text(30, 70, msg.sender_username, MY_WHITE);   // 显示消息的主题
+    // show_text (70, 50, search_str, MY_WHITE); // 显示消息的主题
+    // show_text(30, 60, search_needed, MY_WHITE);        // 显示消息的主题
+    // show_text(30, 70, msg.receiver_username, MY_WHITE); // 显示消息的主题
+    // show_text(30, 80, msg.sender_username, MY_WHITE);   // 显示消息的主题
+
+    // show_num(30, 90, msg.receiver_id, MY_WHITE);   // 显示消息的主题
+    // show_num(30, 100, msg.message_id, MY_WHITE);   // 显示消息的主题
     // getch();
 
     if (!strcmp(search_str, "all") && !strcmp(search_needed, "all") ||
@@ -422,7 +427,8 @@ int message_is_valid(MESSAGE msg, char *search_str, char *search_needed)
         )
         ||
         msg.receiver_id == atol(search_str) && !strcmp(search_needed, "user_receiver_id") ||
-        !strcmp(msg.receiver_username, search_str) && !strcmp(search_needed, "user_receiver_username")
+        !strcmp(msg.receiver_username, search_str) && !strcmp(search_needed, "user_receiver_username") ||
+        msg.message_id == atol(search_str) && !strcmp(search_needed, "user_message_id")
     )
     { 
         return 1; // 如果匹配，返回1
@@ -488,8 +494,6 @@ void message_list_click(int _x, int _y, int _max, int _interval, unsigned long _
     char buffer[20];
     int i = 0;                                         // 用于循环计数
     unsigned long previous_selected_id = *_selected_id; // 用于存储上一次选中的消息ID，非静态变量
-
-    show_num(10, 400, *_selected_id, MY_WHITE);
 
     for (i = 0; i < _max; i++)
     {

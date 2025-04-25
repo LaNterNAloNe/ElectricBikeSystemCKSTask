@@ -420,7 +420,7 @@ int user_ebike_register_judge(LINKLIST *LIST,unsigned long *ID) {
 	LINKLIST_NODE *temp;
 	sprintf(id_string, "%ld", *ID);
 	index=linklist_find_data(LIST, id_string, "id");
-	show_num(10, 300, index,MY_BLACK);
+
 	if (index == -1)
 		return 1;
 	linklist_get_to_node(LIST, index, &temp);
@@ -3746,7 +3746,7 @@ void user_message_out(LINKLIST *LIST,int* page, unsigned long* id) {
 			else
 				puthz(220, 410, "不能发送空消息", 16, 18, MY_RED);
 		}
-		if (mouse_press(USER_MESSAGE_OUT_BUTTON7_X1, USER_MESSAGE_OUT_BUTTON7_X2, USER_MESSAGE_OUT_BUTTON7_Y1, USER_MESSAGE_OUT_BUTTON7_Y2) == 1) {
+		if (mouse_press(USER_MESSAGE_OUT_BUTTON7_X1, USER_MESSAGE_OUT_BUTTON7_Y1, USER_MESSAGE_OUT_BUTTON7_X2, USER_MESSAGE_OUT_BUTTON7_Y2) == 1) {
 			*page = USER_MESSAGE;
 			return;
 		}
@@ -3972,8 +3972,8 @@ void user_handle_message_click_event(FILE* fp, int* page, unsigned long id_list[
 
 				msg.is_read = 1;                                   // 将消息标记为已读
 				message_overwrite(fp, &msg, buffer, "user_message_id"); // 将选中的消息标记为已读
-				admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, id_list, fp, "message", NULL, NULL, LIST_STAY, LIST_CLEAR_CONTINUE, "\0", "\0"); // 清除列表
-				*selected_id = 0;
+                admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, id_list, fp, "message", NULL, NULL, LIST_STAY, LIST_CLEAR_CONTINUE, search_str, "user_receiver_id"); // 清除列表
+                *selected_id = 0;
 			}
 		}
 	}
