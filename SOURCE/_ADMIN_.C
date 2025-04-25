@@ -215,13 +215,13 @@ void admin_message_center(int *page, unsigned long *ID){
     unsigned long selected_id = 0; // 选中行的ID
     char search_str[20] = "\0"; // 搜索框输入信息储存
     char search_needed[30] = "\0";
-    ADMIN_BUTTONS AdminButtons[19];
+    // ADMIN_BUTTONS AdminButtons[19];
     FILE *fp = fopen("DATA\\MESSAGE.DAT", "rb+"); // 打开消息数据文件
     if (!fp)
         getch(),exit(1);
 
     // memset(AdminButtons, '\0', sizeof(AdminButtons));  // 清空搜索需求
-    define_admin_buttons(AdminButtons, ADMIN_MESSAGE); // 定义按钮
+    // define_admin_buttons(AdminButtons, ADMIN_MESSAGE); // 定义按钮
     clrmous(MouseX, MouseY);
 
     drawgraph_admin_menu(); // 初始化界面
@@ -1198,14 +1198,15 @@ void admin_handle_manage_feature_event(LINKLIST *LIST, long ID, int *page, char 
         // 修改数据块
         fseek(fp_EBIKE_INFO_read, search_pos, SEEK_SET);                                  // 定位到数据块
         fread(&temp_info, sizeof(EBIKE_INFO), 1, fp_EBIKE_INFO_read);                     // 读取数据块
-        // if (temp_info.result != PENDING)                                                  // 如果该数据块已经被处理过，则不进行任何操作
-        //     return;
+        if (temp_info.result != PENDING)                                                  // 如果该数据块已经被处理过，则不进行任何操作
+            return;
 
         temp_info.conduct_time = get_approx_time(NULL);                                   // 将时间字符串转化为int型数据，并赋值给conduct_time
         temp_info.result = PASSED;                                                        // 将result赋值为已处理
 
         fseek(fp_EBIKE_INFO_read, search_pos, SEEK_SET);               // 定位到数据块
         fwrite(&temp_info, sizeof(EBIKE_INFO), 1, fp_EBIKE_INFO_read); // 将新数据写入数据块
+        fflush (fp_EBIKE_INFO_read);                                     // 刷新文件缓冲区
 
         // 根据不同的页面，修改链表中对应节点的特定数据
         linklist_get_to_node(LIST, chain_pos, &temp_node); // 找到链表中对应节点
@@ -1214,6 +1215,7 @@ void admin_handle_manage_feature_event(LINKLIST *LIST, long ID, int *page, char 
             case ADMIN_BIKE_REGISTER:
                 strcpy(temp_node->USER_DATA.rln, temp_info.rln); // 将链表中对应节点的realname修改为新数据
                 strcpy(temp_node->USER_DATA.ebike_ID, temp_info.ebike_ID); // 将链表中对应节点的ebike_ID修改为新数据
+                temp_node -> USER_DATA.ebike_state = ACTIVE; // 将链表中对应节点的state修改为REGISTERED
                 message_admin_quick_message(LIST, ID, temp_node->USER_DATA.ID, ANNOUNCEMENT, QUICK_REGISTER); // 发送消息
                 break;
             case ADMIN_BIKE_LICENSE:

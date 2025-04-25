@@ -2026,7 +2026,7 @@ void user_annual(LINKLIST *LIST,int* page, unsigned long* id) {
 		newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
 		flushUserMain(&tag, STRUCT_LENGTH(UserButtons), UserButtons);
 		click = handle_click_main(STRUCT_LENGTH(UserButtons), UserButtons);
-		if (click == LOGIN || click == EXIT || click == USER_BIKE_REGISTER || click == USER_BIKE_LICENSE_NOTICE || click == USER_BIKE_WROTEOUT || click == USER_INFO || click == USER_HELP) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_LICENSE_NOTICE
+		if (click == LOGIN || click == EXIT || click == USER_BIKE_REGISTER || click == USER_BIKE_LICENSE_NOTICE || click == USER_BIKE_WROTEOUT || click == USER_INFO || click == USER_HELP || click == USER_MESSAGE) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_LICENSE_NOTICE
 			*page = click;
 			return;
 		}
@@ -2111,7 +2111,7 @@ void user_annual_write(LINKLIST *LIST,unsigned long* id) {
 }
 
 int ebike_annual_judge(LINKLIST *LIST,unsigned long* id) {
-	/*int i;
+	int i;
 	int account_counts;
 
 	EBIKE_INFO TEMP;
@@ -2135,12 +2135,6 @@ int ebike_annual_judge(LINKLIST *LIST,unsigned long* id) {
 		}
 	}
 	fclose(fp_EBIKE_ANNUAL_read);
-	return 0;*/
-	EBIKE_INFO TEMP;
-	user_bike_register_getinfo(LIST, &TEMP, id);
-	if (TEMP.anual_check != 0) {
-		return 1;
-	}
 	return 0;
 }
 
@@ -3847,8 +3841,9 @@ void user_message_send(LINKLIST *LIST,int topic, char* topic_text, char* content
 	rand_id(buffer); // 生成随机id
 	message_to_send.message_id = atol(buffer);
 	message_to_send.sender_id = *id;
-	strcpy(message_to_send.sender_username, sender_info.rln);
-	strcpy(message_to_send.message, content_text);
+	// strcpy(message_to_send.sender_username, sender_info.username);
+    message_to_send.sender_id = sender_info.ID;
+    strcpy(message_to_send.message, content_text);
 	message_to_send.time = get_approx_time(NULL);
 	message_to_send.is_read = 0;
 	message_to_send.is_replied = 0;

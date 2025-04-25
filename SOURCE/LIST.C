@@ -865,7 +865,7 @@ void admin_show_ebike_manage_info(struct _EBIKE_INFO_ TEMP, const int max, const
 
         if (strcmp(list_mode, "register") == 0 || strcmp(list_mode, "license") == 0 || strcmp(list_mode, "anual") == 0)
         {
-            puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70 + listed_item * 20, TEMP.rln, 16, 16, MY_WHITE); // 输出姓名
+            puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + listed_item * interval, TEMP.rln, 16, 16, MY_WHITE); // 输出姓名
             outtextxy(ADMIN_INTERFACE_X1 + 100, ADMIN_INTERFACE_Y1 + 74 + listed_item * interval, buffer1);          // 输出ID
             outtextxy(ADMIN_INTERFACE_X1 + 200, ADMIN_INTERFACE_Y1 + 74 + listed_item * interval, TEMP.ebike_ID);   // 输出电动车车牌号
         }
