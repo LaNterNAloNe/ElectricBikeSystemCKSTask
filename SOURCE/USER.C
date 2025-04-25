@@ -792,7 +792,7 @@ void user_bike_license_notice(LINKLIST *LIST,int* page, unsigned long* id)
 	save_bk_mou(MouseX, MouseY);
 	drawgraph_user_main(page);
 
-	license_flag = ebike_license_judge(id);
+	license_flag = ebike_license_judge(LIST,id);
 	register_flag = user_ebike_register_judge(LIST,id);
 	quiz_flag = quiz_judge(id);
 
@@ -883,6 +883,9 @@ void user_bike_license_notice(LINKLIST *LIST,int* page, unsigned long* id)
 			if (mouse_press(USER_LICENSE_NOTICE_BUTTON1_X1, USER_LICENSE_NOTICE_BUTTON1_Y1, USER_LICENSE_NOTICE_BUTTON1_X2, USER_LICENSE_NOTICE_BUTTON1_Y2) == 1) {
 				*page = USER_QUIZ;
 				return;
+			}
+			if (mouse_press(USER_LICENSE_NOTICE_BUTTON2_X1, USER_LICENSE_NOTICE_BUTTON2_Y1, USER_LICENSE_NOTICE_BUTTON2_X2, USER_LICENSE_NOTICE_BUTTON2_Y2) == 1) {
+				*page = USER_HELP;
 			}
 			newmouse(&MouseX, &MouseY, &press, &mouse_flag);
 			delay(25);
@@ -1167,7 +1170,7 @@ int user_license_data_judge(LINKLIST *LIST,int* data,unsigned long *id) {
 
 }
 
-int ebike_license_judge(unsigned long* id) {
+int ebike_license_judge(LINKLIST *LIST,unsigned long* id) {
 	/*int i = 0;
 	char e_bike_license[10];
 	int account_counts;
@@ -1196,7 +1199,11 @@ int ebike_license_judge(unsigned long* id) {
 
 	if (fclose(fp_EBIKE_INFO_LICENSE_readndwrite) != 0) getch(), exit(1);
 	return 1;*/
-
+	EBIKE_INFO USER;
+	user_bike_register_getinfo(LIST, &USER, id);
+	if (strcmp(USER.ebike_license, "0") != 0)
+		return 0;
+	return 1;
 }
 
 void handle_click_user_license(user_box box[3][3], int data[3]) {
@@ -2091,6 +2098,8 @@ void user_annual_write(LINKLIST *LIST,unsigned long* id) {
 	}
 	user_bike_register_getinfo(LIST,&INFO, id);
 	INFO.result= PENDING;
+	INFO.apply_time = get_approx_time(NULL);
+	INFO.conduct_time = 0;
 	INFO.ID = *id;
 	
 	fseek(fp_EBIKE_ANNUAL_readndwrite, 0, SEEK_END); // 确保写入位置在文件末尾
@@ -3461,7 +3470,7 @@ void drawgraph_user_bikedata(LINKLIST *LIST,unsigned long* id) {
 
 	user_bike_register_getinfo(LIST,&data, id);
 	anual_flag = ebike_annual_judge(LIST,id);
-	license_flag = ebike_license_judge(id);
+	license_flag = ebike_license_judge(LIST,id);
 
 	puthz(260, 80, "电动车状态", 32, 40, MY_BLACK);
 	setcolor(MY_BLACK);
@@ -3497,7 +3506,7 @@ void drawgraph_user_bikedata(LINKLIST *LIST,unsigned long* id) {
 
 
 
-void user_info_password(int* page, int* id) {
+void user_info_password(int* page, unsigned long* id) {
 	int click = -99;
 	int tag_main = 0;
 	int tag_wroteout = -1;
@@ -3577,6 +3586,10 @@ void user_info_password(int* page, int* id) {
 				bar(295, 195, 500, 225);
 				puthz(200, 385, "找不到对应账号", 24, 22, MY_RED);
 			}
+		}
+		if (mouse_press(USER_BIKE_WROTEOUT_BUTTON2_X1, USER_BIKE_WROTEOUT_BUTTON2_Y1, USER_BIKE_WROTEOUT_BUTTON2_X2, USER_BIKE_WROTEOUT_BUTTON2_Y2)) {
+			*page = USER_INFO;
+			break;
 		}
 		newmouse(&MouseX, &MouseY, &press, &mouse_flag);
 		delay(25);
@@ -3731,7 +3744,11 @@ void user_message_out(LINKLIST *LIST,int* page, unsigned long* id) {
 				return;
 			}
 			else
-				puthz(220, 410, "不能发送空消息", 24, 22, MY_RED);
+				puthz(220, 410, "不能发送空消息", 16, 18, MY_RED);
+		}
+		if (mouse_press(USER_MESSAGE_OUT_BUTTON7_X1, USER_MESSAGE_OUT_BUTTON7_X2, USER_MESSAGE_OUT_BUTTON7_Y1, USER_MESSAGE_OUT_BUTTON7_Y2) == 1) {
+			*page = USER_MESSAGE;
+			return;
 		}
 		newmouse(&MouseX, &MouseY, &press, &mouse_flag);
 		delay(25);
@@ -3952,7 +3969,7 @@ void user_handle_message_click_event(FILE* fp, int* page, unsigned long id_list[
 					puthz(10, 10, "未找到信息！", 16, 16, MY_RED); // 显示未找到信息
 					return;
 				}
-				message_display(&msg);                       // 显示选中的消息，这玩意在vscode里为什么报错我不得而知
+				user_message_display(&msg);                       // 显示选中的消息，这玩意在vscode里为什么报错我不得而知
 
 				msg.is_read = 1;                                   // 将消息标记为已读
 				message_overwrite(fp, &msg, buffer, "message_id"); // 将选中的消息标记为已读
@@ -3976,16 +3993,19 @@ void user_handle_message_click_event(FILE* fp, int* page, unsigned long id_list[
 }
 
 
-void user_message(int* page, unsigned long* ID) {
+void user_message(LINKLIST *LIST,int* page, unsigned long* ID) {
 	int mouse_flag;
 	int user_tag;
 	int click = -99;
 	int tag = ACTIVE_ADMIN_NULL;
+	char usrn[16];
 	unsigned long id_list[8] = { 0,0,0,0,0,0,0,0 }; // 记录当前显示的列表每行对应的ID
 	unsigned long selected_id = 0; // 选中行的ID
 	char search_str[20] = "\0"; // 搜索框输入信息储存
 	char search_needed[20] = "user_receiver_id";
-
+	
+	EBIKE_INFO USER;
+	
 	user_button UserButtons[] = {
 {USER_BIKE_REGISTER_X1, 120,USER_BIKE_REGISTER_Y1, USER_BIKE_REGISTER_Y2,ACTIVE_USER_BIKE_REGISTER,USER_BIKE_REGISTER},
 {USER_BIKE_LICENSE_X1, 120,USER_BIKE_LICENSE_Y1, USER_BIKE_LICENSE_Y2,ACTIVE_USER_BIKE_LICENSE,USER_BIKE_LICENSE_NOTICE},
@@ -3994,7 +4014,7 @@ void user_message(int* page, unsigned long* ID) {
 {USER_INFO_X1, 120,USER_INFO_Y1, USER_INFO_Y2,ACTIVE_USER_INFO,USER_INFO},
 {USER_MESSAGE_X1, 120,USER_MESSAGE_Y1, USER_MESSAGE_Y2,ACTIVE_USER_MESSAGE,USER_MESSAGE},
 {USER_HELP_X1,120,USER_HELP_Y1, USER_HELP_Y2,ACTIVE_USER_HELP,USER_HELP},
-{USER_BACK_X1,USER_BACK_X2,USER_BACK_Y1,USER_BACK_Y2,ACTIVE_USER_BACK,LOGIN},
+//{USER_BACK_X1,USER_BACK_X2,USER_BACK_Y1,USER_BACK_Y2,ACTIVE_USER_BACK,LOGIN},
 {5,25,5,25,ACTIVE_USER_EXIT,EXIT},
 	};
 	
@@ -4029,7 +4049,7 @@ void user_message(int* page, unsigned long* ID) {
 		getch(), exit(1);
 
 	
-
+	
 
 	clrmous(MouseX, MouseY);
 
@@ -4042,13 +4062,14 @@ void user_message(int* page, unsigned long* ID) {
 	bar(130, 335, 630, 350);
 	sprintf(search_str, "%ld", *ID);
 	admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, id_list, fp, "message", NULL, NULL, LIST_STAY, LIST_CLEAR_CONTINUE, search_str, search_needed); // 清除列表
-	
+	get_user_username(LIST, usrn, ID);
+	show_text(10, 440, usrn, MY_BLACK);
 
 	while (1) {
 		newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
 		flushUserMessageMain(&user_tag, STRUCT_LENGTH(UserButtons), UserButtons);
 		click = handle_click_main(STRUCT_LENGTH(UserButtons), UserButtons);
-		if (click != -99 && click != USER_BIKE_LICENSE_NOTICE) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_LICENSE_NOTICE
+		if (click != -99 && click != USER_MESSAGE) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_LICENSE_NOTICE
 			*page = click;
 			return;
 		}
@@ -4057,6 +4078,7 @@ void user_message(int* page, unsigned long* ID) {
 			return;
 		}
 		admin_flush_buttons(&tag, STRUCT_LENGTH(AdminButtons), AdminButtons);
+		
 		user_handle_message_click_event(fp, page, id_list, &selected_id, search_str, search_needed);
 		message_list_click(ADMIN_INTERFACE_X1, ADMIN_INTERFACE_Y1, LIST_LIMIT, LIST_INTERVAL, id_list, &selected_id); // 处理点击事件
 
@@ -4091,49 +4113,7 @@ void drawgraph_user_message_center()
 	puthz(USER_MESSAGE_FEATURE_DOWN_X1 + 4, USER_MESSAGE_FEATURE_DOWN_Y1 + 7, "下一页", 16, 16, MY_BLACK);
 }
 
-void user_message_display(struct _MESSAGE_ *msg)
-{
-	int tag = ACTIVE_ADMIN_NULL; // 定义标签变量
-	int is_return = 0;
-	int mouse_flag;
-	char buffer1[10];
-	char buffer2[10];
-	ADMIN_BUTTONS btn[2];                     // 定义按钮变量
-	define_admin_buttons(btn, ADMIN_MESSAGE_DISPLAY); // 定义按钮
-	if (msg->message_type != PRIVATE_MESSAGE)
-	{
-		memset(&btn[1], '\0', sizeof(btn[1])); // 清空按钮变量
-	}
 
-	clrmous(MouseX, MouseY); // 清除鼠标
-	message_display_draw_bg();
-
-	if (msg == NULL)
-	{
-		message_topic_display(120, 35, 400, "信息错误", MY_RED, 24, 3, 0); // 显示消息的主题
-	}
-	else
-	{
-		message_topic_display(120, 35, 400, msg->title, MY_BLACK, 24, 3, 0); // 显示消息的主题
-		message_text_display(160, 80, 400, msg->sender_username, MY_BLACK);  // 显示消息的发送者
-		ltoa(msg->time, buffer1, 10);
-		sprintf(buffer2, "%.4s.%.2s.%.2s", buffer1, buffer1 + 4, buffer1 + 6);
-		message_text_display(390, 80, 400, buffer2, MY_BLACK);         // 显示消息的发时间
-		message_text_display(120, 110, 400, msg->message, MY_BLACK);         // 显示消息的内容
-	}
-
-	while (is_return == 0)
-	{
-		newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
-
-		admin_flush_buttons(&tag, 3, btn); // 刷新按钮
-		message_handle_click_event(&is_return, msg); // 处理点击事件
-
-		newmouse(&MouseX, &MouseY, &press, &mouse_flag);
-	}
-	drawgraph_admin_menu();
-	drawgraph_admin_message_center();
-}
 
 void drawgraph_user_main_message() {
 	char time_string[10] = { '\0' };
@@ -4153,6 +4133,9 @@ void drawgraph_user_main_message() {
 	setcolor(MY_LIGHTGRAY);
 	bar(0, 30, 120, 480);
 	setcolor(MY_LIGHTGRAY);
+
+	setfillstyle(SOLID_FILL, MY_WHITE);
+	bar(USER_MESSAGE_X1, USER_MESSAGE_Y1, USER_MESSAGE_X2, USER_MESSAGE_Y2);
 	//setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
 	//rectangle(151, 61, 639, 479);
 
@@ -4160,9 +4143,9 @@ void drawgraph_user_main_message() {
 	setcolor(MY_WHITE);
 	//outtextxy(5, 450, time_string);
 
-	setfillstyle(1, MY_YELLOW);//返回登录界面
+	/*setfillstyle(1, MY_YELLOW);//返回登录界面
 	setcolor(MY_YELLOW);
-	bar(USER_BACK_X1, USER_BACK_Y1, USER_BACK_X2, USER_BACK_Y2);
+	bar(USER_BACK_X1, USER_BACK_Y1, USER_BACK_X2, USER_BACK_Y2);*/
 
 	setfillstyle(1, MY_RED);//退出
 	setcolor(MY_RED);
@@ -4177,9 +4160,9 @@ void drawgraph_user_main_message() {
 	puthz(USER_BIKE_LICENSE_X1 + 15, (USER_BIKE_LICENSE_Y1 + USER_BIKE_LICENSE_Y2) / 2 - 5, "通行证", 24, 22, MY_WHITE);
 	puthz(USER_BIKE_WROTEOUT_X1 + 15, (USER_BIKE_WROTEOUT_Y1 + USER_BIKE_WROTEOUT_Y2) / 2 - 5, "报废", 24, 22, MY_WHITE);
 	puthz(USER_INFO_X1 + 15, (USER_INFO_Y1 + USER_INFO_Y2) / 2 - 5, "信息管理", 24, 22, MY_WHITE);
-	puthz(USER_MESSAGE_X1 + 15, (USER_MESSAGE_Y1 + USER_MESSAGE_Y2) / 2 - 5, "消息中心", 24, 22, MY_WHITE);
+	puthz(USER_MESSAGE_X1 + 15, (USER_MESSAGE_Y1 + USER_MESSAGE_Y2) / 2 - 5, "消息中心", 24, 22, MY_BLACK);
 	puthz(USER_HELP_X1 + 15, (USER_HELP_Y1 + USER_HELP_Y2) / 2 - 5, "帮助", 24, 22, MY_WHITE);
-	puthz(USER_BACK_X1 + 10, (USER_BACK_Y1 + USER_BACK_Y2) / 2 - 10, "返回", 24, 25, MY_WHITE);
+	//puthz(USER_BACK_X1 + 5, (USER_BACK_Y1 + USER_BACK_Y2) / 2 - 10, "返回", 24, 25, MY_WHITE);
 }
 
 void flushUserMessageMain(int* tag, int button_count, user_button UserButtons[]) {
@@ -4262,3 +4245,64 @@ void flushUserMessageMain(int* tag, int button_count, user_button UserButtons[])
 	}
 }
 
+void user_message_display(struct _MESSAGE_ *msg)
+{
+	int tag = ACTIVE_ADMIN_NULL; // 定义标签变量
+	int is_return = 0;
+	int mouse_flag;
+	char buffer1[10];
+	char buffer2[10];
+	ADMIN_BUTTONS btn[2];                     // 定义按钮变量
+	define_admin_buttons(btn, ADMIN_MESSAGE_DISPLAY); // 定义按钮
+	if (msg->message_type != PRIVATE_MESSAGE)
+	{
+		memset(&btn[1], '\0', sizeof(btn[1])); // 清空按钮变量
+	}
+
+	clrmous(MouseX, MouseY); // 清除鼠标
+	message_display_draw_bg();
+
+	if (msg == NULL)
+	{
+		message_topic_display(120, 35, 400, "信息错误", MY_RED, 24, 3, 0); // 显示消息的主题
+	}
+	else
+	{
+		message_topic_display(120, 35, 400, msg->title, MY_BLACK, 24, 3, 0); // 显示消息的主题
+		message_text_display(160, 80, 400, msg->sender_username, MY_BLACK);  // 显示消息的发送者
+		ltoa(msg->time, buffer1, 10);
+		sprintf(buffer2, "%.4s.%.2s.%.2s", buffer1, buffer1 + 4, buffer1 + 6);
+		message_text_display(390, 80, 400, buffer2, MY_BLACK);         // 显示消息的发时间
+		message_text_display(120, 110, 400, msg->message, MY_BLACK);         // 显示消息的内容
+	}
+
+	while (is_return == 0)
+	{
+		newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
+
+		admin_flush_buttons(&tag, 3, btn); // 刷新按钮
+		message_handle_click_event(&is_return, msg); // 处理点击事件
+
+		newmouse(&MouseX, &MouseY, &press, &mouse_flag);
+	}
+	drawgraph_user_main_message();
+	drawgraph_user_message_center(); // 绘制界面
+}
+
+void get_user_username(LINKLIST *LIST,char* usrn, unsigned long* id) {
+	char id_string[10];
+	int index;
+	LINKLIST_NODE* temp;
+	sprintf(id_string, "%ld", *id);
+	index = linklist_find_data(LIST, id_string, "id");
+	if (index == -1) {
+		
+		return;
+	}
+		
+	
+	
+	linklist_get_to_node(LIST, index, &temp);
+	
+	strcpy(usrn, temp->USER_DATA.usrn);
+}
