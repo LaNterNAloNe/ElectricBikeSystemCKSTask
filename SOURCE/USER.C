@@ -1297,7 +1297,7 @@ void user_help(int* page, unsigned long* id)
 		newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);//刷新鼠标数据
 		FlushUserHelp(&tag_help, STRUCT_LENGTH(HelpButtons), HelpButtons); // 刷新界面
 		click = handle_click_user_help(STRUCT_LENGTH(HelpButtons), HelpButtons);
-		if (click !=USER_HELP && click!=-99) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_LICENSE
+		if (click !=USER_HELP && click!=-99 && click<HELP_ANNOUNCE) {          //其它页面做完后此处会改成click!=-1&&click!=USER_BIKE_LICENSE
 			*page = click;
 			return;
 		}//菜单界面点击
