@@ -39,8 +39,8 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
     EBIKE_IN_OUT ebike_in_out_temp;
     LINKLIST_NODE *node = NULL;
 
-    // show_text(10, 10, search_needed, MY_WHITE);
-    // show_text(10, 20, search_str, MY_WHITE);
+    show_text(10, 10, search_needed, MY_WHITE);
+    show_text(10, 20, search_str, MY_WHITE);
 
     if (debug_mode == 1)
     {
@@ -217,7 +217,7 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
             puthz(ADMIN_INTERFACE_X1 + 200, ADMIN_INTERFACE_Y1 + 70 + max * interval, "检查四", 16, 16, MY_RED);
 
         /* 条件判断 */
-        if (end >= valid_counts - 1)
+        if (end >= counts - 1)
         {
             node = NULL;
             return; // 如果end指向结尾的数据，则不做任何操作
@@ -274,6 +274,8 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
                 {
                     break;
                 }
+                show_num(10, 50, counts - temp_start, MY_WHITE);
+                getch();
             }
             else if (flag == ADMIN_DATABASE_EBIKE_PASS_IN_OUT)
             {
@@ -757,8 +759,6 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
             else if (flag == ADMIN_DATABASE_EBIKE_INFO)
             {
                 linklist_get_to_node(LIST, temp_end + 1, &node); // 将指针指向对应节点
-                show_num (10, 50, temp_end+1, MY_WHITE);
-                getch();
                 if (node == NULL)                               // 如果node指针为NULL，则说明已经到达链表头部，不能再向前移动
                 {
                     temp_end--; // 若读取到文件末尾，则将end指向文件末尾的前一个数据块，防止越界
@@ -815,7 +815,7 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
             listed_item++;
             if (listed_item < max)
                 temp_end++; // 将end指向读取的数据的头部
-            
+
             if(debug_mode == 1)
             {
                 show_num(10, 100, temp_end, MY_WHITE);

@@ -401,6 +401,13 @@ int message_overwrite(FILE *fp, MESSAGE *msg, char *search_str, char *search_nee
 // 检查消息是否有效
 int message_is_valid(MESSAGE msg, char *search_str, char *search_needed) 
 {
+
+    // show_text (70, 10, search_str, MY_WHITE); // 显示消息的主题
+    // show_text(30, 30, search_needed, MY_WHITE);        // 显示消息的主题
+    // show_text(30, 50, msg.receiver_username, MY_WHITE); // 显示消息的主题
+    // show_text(30, 70, msg.sender_username, MY_WHITE);   // 显示消息的主题
+    // getch();
+
     if (!strcmp(search_str, "all") && !strcmp(search_needed, "all") ||
 
         !strcmp(msg.receiver_username, "all_admin") && 
@@ -414,7 +421,8 @@ int message_is_valid(MESSAGE msg, char *search_str, char *search_needed)
         msg.message_id == atol(search_str) && !strcmp(search_needed, "admin_message_id")
         )
         ||
-        msg.receiver_id == atol(search_str) && !strcmp(search_needed, "user_receiver_id")
+        msg.receiver_id == atol(search_str) && !strcmp(search_needed, "user_receiver_id") ||
+        !strcmp(msg.receiver_username, search_str) && !strcmp(search_needed, "user_receiver_username")
     )
     { 
         return 1; // 如果匹配，返回1
@@ -479,11 +487,12 @@ void message_list_click(int _x, int _y, int _max, int _interval, unsigned long _
     FILE *fp = NULL;
     char buffer[20];
     int i = 0;                                         // 用于循环计数
-    unsigned int previous_selected_id = *_selected_id; // 用于存储上一次选中的消息ID，非静态变量
+    unsigned long previous_selected_id = *_selected_id; // 用于存储上一次选中的消息ID，非静态变量
+
+    show_num(10, 400, *_selected_id, MY_WHITE);
 
     for (i = 0; i < _max; i++)
     {
-
         if (mouse_press(_x + 20, _y + 70 + i * _interval, _x + 500, _y + 70 + (i + 1) * _interval - 1) == 1 &&
             _item_id[i] != 0)
         {

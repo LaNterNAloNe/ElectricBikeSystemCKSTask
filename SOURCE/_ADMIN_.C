@@ -814,7 +814,7 @@ long find_file_info(FILE *fp, char *file_type,char *search_str,char *search_need
         while (fread(&message_temp, sizeof(MESSAGE), 1, fp)) // 遍历文件中的所有数据块，当读取到文件末尾时，fread返回0，退出循环
         {
             if(message_temp.message_id == atol(search_str) && strcmp("all_admin", message_temp.receiver_username) == 0 && strcmp(search_needed, "admin_message_id") == 0 ||
-                message_temp.message_id == atol(search_str) && strcmp(search_str, message_temp.receiver_username) == 0 && strcmp(search_needed, "user_message_id") == 0 ||
+                message_temp.message_id == atol(search_str) && strcmp(search_needed, "user_message_id") == 0 ||
                 strcmp(search_needed, "all") == 0)
             {
                 return counts * sizeof(MESSAGE);

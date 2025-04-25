@@ -2098,15 +2098,10 @@ void user_annual_write(LINKLIST *LIST,unsigned long* id) {
 	}
 	user_bike_register_getinfo(LIST,&INFO, id);
 	INFO.result= PENDING;
-<<<<<<< HEAD
+	INFO.apply_time = get_approx_time(NULL);
+    INFO.anual_check = get_approx_time(NULL);
     INFO.conduct_time = 0;
-=======
-	INFO.apply_time = get_approx_time(NULL);
-	INFO.conduct_time = 0;
->>>>>>> 9d3049c5c905c16621633a133c790a36975b3b03
 	INFO.ID = *id;
-	INFO.apply_time = get_approx_time(NULL);
-	INFO.anual_check = get_approx_time(NULL);
 	
 	fseek(fp_EBIKE_ANNUAL_readndwrite, 0, SEEK_END); // 确保写入位置在文件末尾
 	fwrite(&INFO, sizeof(EBIKE_INFO), 1, fp_EBIKE_ANNUAL_readndwrite);
@@ -3955,21 +3950,20 @@ void user_handle_message_click_event(FILE* fp, int* page, unsigned long id_list[
 	if (mouse_press(USER_MESSAGE_FEATURE_EXIT_X1, USER_MESSAGE_FEATURE_EXIT_Y1,
 		USER_MESSAGE_FEATURE_EXIT_X2, USER_MESSAGE_FEATURE_EXIT_Y2) == 1) // 点击返回
 	{
-		*page = USER_MESSAGE;
+		*page = MAIN_USER;
 	}
 
 	
 	if (mouse_press(USER_MESSAGE_FEATURE1_X1, USER_MESSAGE_FEATURE1_Y1,
 		USER_MESSAGE_FEATURE1_X2, USER_MESSAGE_FEATURE1_Y2) == 1) // 点击查看信息
 	{
-		if (*selected_id != 0) // 未选中
+        if (*selected_id != 0) // 未选中
 		{
 			ltoa(*selected_id, buffer, 10);
-			pos = find_file_info(fp, "message", buffer, "message_id"); // 查找信息
+			pos = find_file_info(fp, "message", buffer, "user_message_id"); // 查找信息
 			if (pos != -1)                                                 // 找到信息
 			{
-				ltoa(*selected_id, buffer, 10);
-				if (message_get(fp, &msg, buffer, "message_id") != 1) // 读取选中的消息
+				if (message_get(fp, &msg, buffer, "user_message_id") != 1) // 读取选中的消息
 				{
 					puthz(10, 10, "未找到信息！", 16, 16, MY_RED); // 显示未找到信息
 					return;
@@ -3977,7 +3971,7 @@ void user_handle_message_click_event(FILE* fp, int* page, unsigned long id_list[
 				user_message_display(&msg);                       // 显示选中的消息，这玩意在vscode里为什么报错我不得而知
 
 				msg.is_read = 1;                                   // 将消息标记为已读
-				message_overwrite(fp, &msg, buffer, "message_id"); // 将选中的消息标记为已读
+				message_overwrite(fp, &msg, buffer, "user_message_id"); // 将选中的消息标记为已读
 				admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, id_list, fp, "message", NULL, NULL, LIST_STAY, LIST_CLEAR_CONTINUE, "\0", "\0"); // 清除列表
 				*selected_id = 0;
 			}
@@ -3988,13 +3982,13 @@ void user_handle_message_click_event(FILE* fp, int* page, unsigned long id_list[
 	if (mouse_press(USER_MESSAGE_FEATURE_UP_X1, USER_MESSAGE_FEATURE_UP_Y1,
 		USER_MESSAGE_FEATURE_UP_X2, USER_MESSAGE_FEATURE_UP_Y2) == 1) // 点击上一页
 	{
-		admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, id_list, fp, "message", NULL, NULL, LIST_PAGEUP, LIST_NO_CLEAR, search_str, "message_id"); // 清除列表
-	}
+        admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, id_list, fp, "message", NULL, NULL, LIST_PAGEUP, LIST_NO_CLEAR, search_str, "user_receiver_id"); // 清除列表
+    }
 	if (mouse_press(USER_MESSAGE_FEATURE_DOWN_X1, USER_MESSAGE_FEATURE_DOWN_Y1,
 		USER_MESSAGE_FEATURE_DOWN_X2, USER_MESSAGE_FEATURE_DOWN_Y2) == 1) // 点击下一页
 	{
-		admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, id_list, fp, "message", NULL, NULL, LIST_PAGEDOWN, LIST_NO_CLEAR, search_str, "message_id"); // 清除列表
-	}
+        admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, id_list, fp, "message", NULL, NULL, LIST_PAGEDOWN, LIST_NO_CLEAR, search_str, "user_receiver_id"); // 清除列表
+    }
 }
 
 
@@ -4005,9 +3999,9 @@ void user_message(LINKLIST *LIST,int* page, unsigned long* ID) {
 	int tag = ACTIVE_ADMIN_NULL;
 	char usrn[16];
 	unsigned long id_list[8] = { 0,0,0,0,0,0,0,0 }; // 记录当前显示的列表每行对应的ID
-	unsigned long selected_id = 0; // 选中行的ID
+	unsigned long selected_id = 100000000; // 选中行的ID
 	char search_str[20] = "\0"; // 搜索框输入信息储存
-	char search_needed[20] = "user_receiver_id";
+	char search_needed[30] = "user_receiver_id";
 	
 	EBIKE_INFO USER;
 	
@@ -4051,12 +4045,9 @@ void user_message(LINKLIST *LIST,int* page, unsigned long* ID) {
 	};
 	FILE* fp = fopen("DATA\\MESSAGE.DAT", "rb+"); // 打开消息数据文件
 	if (!fp)
-		getch(), exit(1);
+        getch(), exit(1);
 
-	
-	
-
-	clrmous(MouseX, MouseY);
+    clrmous(MouseX, MouseY);
 
 	
 	//drawgraph_admin_menu(); // 初始化界面
@@ -4068,9 +4059,8 @@ void user_message(LINKLIST *LIST,int* page, unsigned long* ID) {
 	sprintf(search_str, "%ld", *ID);
 	admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, id_list, fp, "message", NULL, NULL, LIST_STAY, LIST_CLEAR_CONTINUE, search_str, search_needed); // 清除列表
 	get_user_username(LIST, usrn, ID);
-	show_text(10, 440, usrn, MY_BLACK);
 
-	while (1) {
+    while (1) {
 		newmouse_data(&MouseX, &MouseY, &press, &mouse_flag);
 		flushUserMessageMain(&user_tag, STRUCT_LENGTH(UserButtons), UserButtons);
 		click = handle_click_main(STRUCT_LENGTH(UserButtons), UserButtons);
@@ -4089,7 +4079,7 @@ void user_message(LINKLIST *LIST,int* page, unsigned long* ID) {
 
 		newmouse(&MouseX, &MouseY, &press, &mouse_flag);
 		delay(25);
-	}
+    }
 
 	fclose(fp);
 }
