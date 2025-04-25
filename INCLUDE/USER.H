@@ -308,30 +308,30 @@
 #define USER_MESSAGE_OUT_INPUT2_Y1 310
 #define USER_MESSAGE_OUT_INPUT2_Y2 405
 
-#define USER_MESSAGE_FEATURE1_X1 130
-#define USER_MESSAGE_FEATURE1_Y1 440
-#define USER_MESSAGE_FEATURE1_X2 200
-#define USER_MESSAGE_FEATURE1_Y2 470
+#define USER_MESSAGE_FEATURE1_X1 170
+#define USER_MESSAGE_FEATURE1_Y1 400
+#define USER_MESSAGE_FEATURE1_X2 240
+#define USER_MESSAGE_FEATURE1_Y2 430
 #define USER_MESSAGE_FEATURE6_X1 520
-#define USER_MESSAGE_FEATURE6_Y1 440
+#define USER_MESSAGE_FEATURE6_Y1 400
 #define USER_MESSAGE_FEATURE6_X2 590
-#define USER_MESSAGE_FEATURE6_Y2 470
+#define USER_MESSAGE_FEATURE6_Y2 430
 #define USER_MESSAGE_FEATURE_EXIT_X1 610
 #define USER_MESSAGE_FEATURE_EXIT_Y1 450
 #define USER_MESSAGE_FEATURE_EXIT_X2 630
 #define USER_MESSAGE_FEATURE_EXIT_Y2 470
-#define USER_MESSAGE_FEATURE_UP_X1 220
-#define USER_MESSAGE_FEATURE_UP_Y1 355
-#define USER_MESSAGE_FEATURE_UP_X2 300
-#define USER_MESSAGE_FEATURE_UP_Y2 395
-#define USER_MESSAGE_FEATURE_DOWN_X1 380
-#define USER_MESSAGE_FEATURE_DOWN_Y1 355
-#define USER_MESSAGE_FEATURE_DOWN_X2 460
-#define USER_MESSAGE_FEATURE_DOWN_Y2 395
-#define USER_MESSAGE_REPLY_X1 10
-#define USER_MESSAGE_REPLY_Y1 100
-#define USER_MESSAGE_REPLY_X2 80
-#define USER_MESSAGE_REPLY_Y2 130
+#define USER_MESSAGE_FEATURE_UP_X1 280
+#define USER_MESSAGE_FEATURE_UP_Y1 400
+#define USER_MESSAGE_FEATURE_UP_X2 350
+#define USER_MESSAGE_FEATURE_UP_Y2 430
+#define USER_MESSAGE_FEATURE_DOWN_X1 400
+#define USER_MESSAGE_FEATURE_DOWN_Y1 400
+#define USER_MESSAGE_FEATURE_DOWN_X2 470
+#define USER_MESSAGE_FEATURE_DOWN_Y2 430
+#define USER_MESSAGE_REPLY_X1 0
+#define USER_MESSAGE_REPLY_Y1 0
+#define USER_MESSAGE_REPLY_X2 0
+#define USER_MESSAGE_REPLY_Y2 0
 #define USER_MESSAGE_EXIT_X1 20
 #define USER_MESSAGE_EXIT_Y1 10
 #define USER_MESSAGE_EXIT_X2 40
@@ -378,27 +378,27 @@ typedef struct {
 void user_main(int *page);
 void drawgraph_user_main(int *page);
 void flushUserMain(int* tag, int button_count, user_button UserButtons[]);
-void user_bike_register(int* page, unsigned long* id);
+void user_bike_register(LINKLIST *LIST,int* page, unsigned long* id);
 void drawgraph_user_bike_register_new(void);
-void drawgraph_user_bike_register_info(unsigned long *id);
+void drawgraph_user_bike_register_info(LINKLIST *LIST,unsigned long *id);
 void flushUserRegister(int *tag);
 int EBIKE_INFO_judge(char *usrn,char *e_bike_id,unsigned long *id);
 void anime_user_bike_register_fail(int flag);
-int user_ebike_register_judge(unsigned long* ID);
-void user_bike_register_getinfo(struct _EBIKE_INFO_ *user_info,unsigned long *id);
+int user_ebike_register_judge(LINKLIST *LIST,unsigned long* ID);
+void user_bike_register_getinfo(LINKLIST *LIST,struct _EBIKE_INFO_ *user_info,unsigned long *id);
 void write_user_register_moreinfo(unsigned long *id,char* color, char* length, char* battery, char* weight);
 int user_get_ebike_moreinfo(EBIKE_MOREINFO* moreinfo, unsigned long* id);
 
-void user_bike_license_notice(int* page, unsigned long* id);
+void user_bike_license_notice(LINKLIST *LIST,int* page, unsigned long* id);
 void drawgraph_user_license_notice(unsigned long* id);
 void flushUserLicenseNotice(int* tag);
 
-void user_bike_license(int* page, unsigned long* id);
-void drawgraph_user_bike_license(unsigned long *id,user_box box[3][3] );
+void user_bike_license(LINKLIST *LIST,int* page, unsigned long* id);
+void drawgraph_user_bike_license(LINKLIST *LIST,unsigned long *id,user_box box[3][3] );
 void flushUserLicense(user_box box[3][3],int data[3]);
 void handle_click_user_license(user_box box[3][3], int data[3]);
 void add_days_to_date(char* date_string, int days_to_add);
-int user_license_data_judge(int* data,unsigned long *id);
+int user_license_data_judge(LINKLIST *LIST,int* data,unsigned long *id);
 int ebike_license_judge(unsigned long* id);
 
 void user_quiz(int* page, unsigned long* id);
@@ -413,10 +413,10 @@ void write_quiz_result_to_file(unsigned long* id);
 int quiz_judge(unsigned long* id);
 
 
-void user_annual(int* page, unsigned long* id);
+void user_annual(LINKLIST *LIST,int* page, unsigned long* id);
 void drawgraph_user_bike_annual(int flag);
-void user_annual_write(unsigned long* id);
-int ebike_annual_judge(unsigned long* id);
+void user_annual_write(LINKLIST *LIST,unsigned long* id);
+int ebike_annual_judge(LINKLIST *LIST,unsigned long* id);
 
 void user_help(int* page, unsigned long* id);
 void drawgraph_user_help();
@@ -424,12 +424,12 @@ void FlushUserHelp(int* tag, int button_count, user_button UserButtons[]);
 int handle_click_user_help(int button_num, user_button UserButtons[]);
 void drawgraph_user_help_announce(int announce);
 
-void user_bike_wroteout(int *page,unsigned long *id);
+void user_bike_wroteout(LINKLIST *LIST,int *page,unsigned long *id);
 void drawgraph_user_bike_wroteout_warning();
 void drawgraph_user_wroteout();
 void flushUserWroteoutWarning();
 void flushUserWroteout(int *tag,user_button UserButtons[]);
-int wroteout_info_judge(char* usrn, char* e_bike_id, char* password, unsigned long* id);
+int wroteout_info_judge(LINKLIST *LIST,char* usrn, char* e_bike_id, char* password, unsigned long* id);
 void wroteout_delete_data(unsigned long* id);
 void draw_user_wroteout_fail(int wroteout_flag);
 
@@ -438,15 +438,15 @@ void flushUserInfo(int* tag, int button_count, user_button UserButtons[]);
 void drawgraph_user_info();
 int handle_click_info(int button_num, user_button UserButtons[]);
 
-void user_bikeinfo(int* page, unsigned long* id);
+void user_bikeinfo(LINKLIST *LIST,int* page, unsigned long* id);
 void handle_button_and_hzinput(char* new_text, char* old_text, int* button_state, int* hz_input_len, int x, int y, int len,int *tick);
 void handle_button_and_chinput(char* new_text, char* old_text, int* button_state, int max_input, int x, int y, int len, int* tick);
 void flushChangeButton(int *tag_main,int* tag, int pos_xy[][2], int len, int count,int button_state[]);
-void drawgraph_user_bike_moreinfo(unsigned long* id,int pos_xy[][2],int count,int len);
+void drawgraph_user_bike_moreinfo(LINKLIST *LIST,unsigned long* id,int pos_xy[][2],int count,int len);
 void change_user_info_moreinfo(char input_text[][10], int state[], unsigned long id);
 
-void user_bikedata(int* page, unsigned long* id);
-void drawgraph_user_bikedata(unsigned long* id);
+void user_bikedata(LINKLIST *LIST,int* page, unsigned long* id);
+void drawgraph_user_bikedata(LINKLIST *LIST,unsigned long* id);
 
 void user_info_password(int* page, int* id);
 void drawgraph_user_password();
@@ -457,13 +457,13 @@ void drawgraph_user_message_center();
 void drawgraph_user_main_message();
 void user_handle_message_click_event(FILE* fp, int* page, unsigned long id_list[], unsigned long* selected_id,char* search_str, char* search_needed);
 //void define_user_message_buttons(struct _ADMIN_BUTTONS_ AdminButtons[], int page);
+void flushUserMessageMain(int* tag, int button_count, user_button UserButtons[]);
 
-
-void user_message_out(int* page, unsigned long* id);
+void user_message_out(LINKLIST *LIST,int* page, unsigned long* id);
 void drawgraph_user_message_out(user_button* UserButtons);
 void flushMessageOut(int* change_tag, user_button *UserButtons, int button_count);
 void handle_message_out_click(user_button* UserButtons,int *topic);
-void user_message_send( int topic, char* topic_text, char* content_text, unsigned long* id);
+void user_message_send(LINKLIST *LIST,int topic, char* topic_text, char* content_text, unsigned long* id);
 
 int handle_click_main(int button_num, user_button WroteoutButtons[]);
 void anime_login_success_user(int x1,int y1,int x2,int y2);
