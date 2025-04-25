@@ -357,15 +357,23 @@ void drawgraph_admin_feature(int page)
         puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 40, "姓名", 16, 16, MY_WHITE);
         puthz(ADMIN_INTERFACE_X1 + 100, ADMIN_INTERFACE_Y1 + 40, "学号", 16, 16, MY_WHITE);
         puthz(ADMIN_INTERFACE_X1 + 200, ADMIN_INTERFACE_Y1 + 40, "车辆车牌号", 16, 16, MY_WHITE);
+        puthz(ADMIN_INTERFACE_X1 + 300, ADMIN_INTERFACE_Y1 + 40, "申请日期", 16, 16, MY_WHITE);
     }
-    else if (page == ADMIN_BIKE_VIOLATION || page == ADMIN_BIKE_BROKEN)
+    else if (page == ADMIN_BIKE_BROKEN)
     { // 车辆违规，车辆报废
         puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 40, "学号", 16, 16, MY_WHITE);
         puthz(ADMIN_INTERFACE_X1 + 100, ADMIN_INTERFACE_Y1 + 40, "车辆车牌号", 16, 16, MY_WHITE);
         puthz(ADMIN_INTERFACE_X1 + 200, ADMIN_INTERFACE_Y1 + 40, "地点", 16, 16, MY_WHITE);
+        puthz(ADMIN_INTERFACE_X1 + 300, ADMIN_INTERFACE_Y1 + 40, "申请日期", 16, 16, MY_WHITE);
+    }
+    else if (page == ADMIN_BIKE_VIOLATION)
+    { // 车辆违规
+        puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 40, "学号", 16, 16, MY_WHITE);
+        puthz(ADMIN_INTERFACE_X1 + 100, ADMIN_INTERFACE_Y1 + 40, "车辆车牌号", 16, 16, MY_WHITE);
+        puthz(ADMIN_INTERFACE_X1 + 200, ADMIN_INTERFACE_Y1 + 40, "地点", 16, 16, MY_WHITE);
+        puthz(ADMIN_INTERFACE_X1 + 300, ADMIN_INTERFACE_Y1 + 40, "时间", 16, 16, MY_WHITE);
     }
 
-    puthz(ADMIN_INTERFACE_X1 + 300, ADMIN_INTERFACE_Y1 + 40, "申请日期", 16, 16, MY_WHITE);
     puthz(ADMIN_INTERFACE_X1 + 400, ADMIN_INTERFACE_Y1 + 40, "处理情况", 16, 16, MY_WHITE);
 
     setfillstyle(SOLID_FILL, MY_YELLOW);
@@ -805,7 +813,8 @@ long find_file_info(FILE *fp, char *file_type,char *search_str,char *search_need
     else if(strcmp(file_type, "message") == 0){ // 查找车辆违章信息
         while (fread(&message_temp, sizeof(MESSAGE), 1, fp)) // 遍历文件中的所有数据块，当读取到文件末尾时，fread返回0，退出循环
         {
-            if(message_temp.message_id == atol(search_str) && strcmp(search_needed, "admin_message_id") == 0 ||
+            if(message_temp.message_id == atol(search_str) && strcmp("all_admin", message_temp.receiver_username) == 0 && strcmp(search_needed, "admin_message_id") == 0 ||
+                message_temp.message_id == atol(search_str) && strcmp(search_str, message_temp.receiver_username) == 0 && strcmp(search_needed, "user_message_id") == 0 ||
                 strcmp(search_needed, "all") == 0)
             {
                 return counts * sizeof(MESSAGE);
@@ -1107,7 +1116,7 @@ void admin_handle_manage_feature_event(LINKLIST *LIST, long ID, int *page, char 
         strcpy(list_mode, "violation");
         break;
     case ADMIN_BIKE_ANUAL:
-        strcpy(list_mode, "annual");
+        strcpy(list_mode, "anual");
         break;
     case ADMIN_BIKE_BROKEN:
         strcpy(list_mode, "broken");
@@ -1156,6 +1165,24 @@ void admin_handle_manage_feature_event(LINKLIST *LIST, long ID, int *page, char 
         *selected_id = 0; // 清除选中行
     } // 点击未处理后显示未处理
 
+    if (mouse_press(ADMIN_FEATURE_UP_X1, ADMIN_FEATURE_UP_Y1, ADMIN_FEATURE_UP_X2, ADMIN_FEATURE_UP_Y2) == 1) // 点击上翻
+    {
+        *selected_id = 0; // 清除选中行
+        setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
+        bar(ADMIN_INTERFACE_X1 + 10, ADMIN_INTERFACE_Y1 + 70, ADMIN_INTERFACE_X1 + 18, ADMIN_INTERFACE_Y1 + 310); // 清理所有选中行高亮
+        admin_list_info(LIST, LIST_LIMIT, LIST_INTERVAL, id_list, fp_EBIKE_INFO_read, "ebike_manage",
+                        list_mode, *mode, LIST_PAGEUP, LIST_NO_CLEAR, search_str, "ID"); // 刷新列表
+    }
+
+    if (mouse_press(ADMIN_FEATURE_DOWN_X1, ADMIN_FEATURE_DOWN_Y1, ADMIN_FEATURE_DOWN_X2, ADMIN_FEATURE_DOWN_Y2) == 1) // 点击下翻
+    {
+        *selected_id = 0; // 清除选中行
+        setfillstyle(SOLID_FILL, MY_LIGHTGRAY);
+        bar(ADMIN_INTERFACE_X1 + 10, ADMIN_INTERFACE_Y1 + 70, ADMIN_INTERFACE_X1 + 18, ADMIN_INTERFACE_Y1 + 310); // 清理所有选中行高亮
+        admin_list_info(LIST, LIST_LIMIT, LIST_INTERVAL, id_list, fp_EBIKE_INFO_read, "ebike_manage",
+                        list_mode, *mode, LIST_PAGEDOWN, LIST_NO_CLEAR, search_str, "ID"); // 刷新列表
+    }
+
     // 点击同意申请
     if (mouse_press(ADMIN_FEATURE1_X1, ADMIN_FEATURE1_Y1, ADMIN_FEATURE1_X2, ADMIN_FEATURE1_Y2) == 1 && *selected_id != 0)
     {
@@ -1171,8 +1198,8 @@ void admin_handle_manage_feature_event(LINKLIST *LIST, long ID, int *page, char 
         // 修改数据块
         fseek(fp_EBIKE_INFO_read, search_pos, SEEK_SET);                                  // 定位到数据块
         fread(&temp_info, sizeof(EBIKE_INFO), 1, fp_EBIKE_INFO_read);                     // 读取数据块
-        if (temp_info.result != PENDING)                                                  // 如果该数据块已经被处理过，则不进行任何操作
-            return;
+        // if (temp_info.result != PENDING)                                                  // 如果该数据块已经被处理过，则不进行任何操作
+        //     return;
 
         temp_info.conduct_time = get_approx_time(NULL);                                   // 将时间字符串转化为int型数据，并赋值给conduct_time
         temp_info.result = PASSED;                                                        // 将result赋值为已处理
@@ -1191,7 +1218,6 @@ void admin_handle_manage_feature_event(LINKLIST *LIST, long ID, int *page, char 
                 break;
             case ADMIN_BIKE_LICENSE:
                 rand_license(LIST, temp_info.ebike_license); // 生成随机电动车牌
-                show_text(10, 10, temp_info.ebike_license, MY_WHITE);
                 strcpy(temp_node->USER_DATA.ebike_license, temp_info.ebike_license); // 将链表中对应节点的ebike_license修改为新数据
                 message_admin_quick_message(LIST, ID, temp_node->USER_DATA.ID, ANNOUNCEMENT, QUICK_LICENSE); // 发送消息
                 break;
@@ -1199,7 +1225,7 @@ void admin_handle_manage_feature_event(LINKLIST *LIST, long ID, int *page, char 
                 temp_node->USER_DATA.violations++; // 将链表中对应节点的violations加1
                 break;
             case ADMIN_BIKE_ANUAL:
-                temp_node->USER_DATA.anual_check += 10000; // 将链表中对应节点的annual加10000(10000表示数字中表示年的部分加1)
+                temp_node->USER_DATA.anual_check = temp_info.anual_check; // 将链表中对应节点的annual加赋值为新数据
                 message_admin_quick_message(LIST, ID, temp_node->USER_DATA.ID, ANNOUNCEMENT, QUICK_ANUAL); // 发送消息
                 break;
             case ADMIN_BIKE_BROKEN:
@@ -1655,6 +1681,10 @@ void admin_handle_message_click_event(FILE *fp, int *page, unsigned long id_list
                 admin_list_info(NULL, LIST_LIMIT, LIST_INTERVAL, id_list, fp, "message", NULL, NULL, LIST_STAY, LIST_CLEAR_CONTINUE, "\0", "admin_all"); // 清除列表
                 *selected_id = 0;
                 ch_input(NULL, NULL, NULL, NULL, NULL, INPUTBAR_CLEAR, NULL); // 清除输入框
+            }
+            else 
+            {
+                show_text(10, 0, "cannot find message", MY_RED); // 显示未找到信息
             }
         }
     }

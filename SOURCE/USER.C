@@ -1232,7 +1232,7 @@ void add_days_to_date(char *date_string, int days_to_add) {
 		}
 	}
 	sprintf(date_string, "%4d-%2d-%2d", year, month, day);
-	return 0;
+	return;
 }
 
 
@@ -2091,12 +2091,14 @@ void user_annual_write(LINKLIST *LIST,unsigned long* id) {
 	}
 	user_bike_register_getinfo(LIST,&INFO, id);
 	INFO.result= PENDING;
+    INFO.conduct_time = 0;
 	INFO.ID = *id;
+	INFO.apply_time = get_approx_time(NULL);
+	INFO.anual_check = get_approx_time(NULL);
 	
 	fseek(fp_EBIKE_ANNUAL_readndwrite, 0, SEEK_END); // 确保写入位置在文件末尾
 	fwrite(&INFO, sizeof(EBIKE_INFO), 1, fp_EBIKE_ANNUAL_readndwrite);
 		
-	show_text(10, 10, INFO.ebike_ID, MY_WHITE);
 	if (fclose(fp_EBIKE_ANNUAL_readndwrite) != 0) getch(), exit(1);
 	return;
 }

@@ -757,8 +757,11 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
             else if (flag == ADMIN_DATABASE_EBIKE_INFO)
             {
                 linklist_get_to_node(LIST, temp_end + 1, &node); // 将指针指向对应节点
+                show_num (10, 50, temp_end+1, MY_WHITE);
+                getch();
                 if (node == NULL)                               // 如果node指针为NULL，则说明已经到达链表头部，不能再向前移动
                 {
+                    temp_end--; // 若读取到文件末尾，则将end指向文件末尾的前一个数据块，防止越界
                     puthz(ADMIN_INTERFACE_X1 + 190, ADMIN_INTERFACE_Y1 + 70 + listed_item * interval, "没有更多数据了哦！", 16, 16, MY_RED);
                     return; // 到文件末尾都没有发现可列表的，则不执行下翻列表操作
                 }
@@ -778,6 +781,7 @@ void admin_list_info(LINKLIST *LIST, const int max, const int interval, unsigned
                 fseek(fp, (counts - temp_end - 1) * sizeof(message_temp), SEEK_SET); // 读取上一个数据块，当文件指针尝试移动到负数时，fseek会返回非零数
                 if (!fread(&message_temp, sizeof(message_temp), 1, fp))             // 读取上一个数据块
                 {
+                    temp_end--; // 若读取到文件末尾，则将end指向文件末尾的前一个数据块，防止越界
                     puthz(ADMIN_INTERFACE_X1 + 190, ADMIN_INTERFACE_Y1 + 70 + listed_item * interval, "没有更多数据了哦！", 16, 16, MY_RED);
                     break; // 到文件末尾都没有发现可列表的，则不执行下翻列表操作
                 }
@@ -861,7 +865,7 @@ void admin_show_ebike_manage_info(struct _EBIKE_INFO_ TEMP, const int max, const
     {
         settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);
 
-        if (strcmp(list_mode, "register") == 0 || strcmp(list_mode, "license") || strcmp(list_mode, "anual"))
+        if (strcmp(list_mode, "register") == 0 || strcmp(list_mode, "license") == 0 || strcmp(list_mode, "anual") == 0)
         {
             puthz(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70 + listed_item * 20, TEMP.rln, 16, 16, MY_WHITE); // 输出姓名
             outtextxy(ADMIN_INTERFACE_X1 + 100, ADMIN_INTERFACE_Y1 + 74 + listed_item * interval, buffer1);          // 输出ID
@@ -869,13 +873,13 @@ void admin_show_ebike_manage_info(struct _EBIKE_INFO_ TEMP, const int max, const
         }
         else if (strcmp(list_mode, "broken") == 0 || strcmp(list_mode, "violation") == 0)
         {
-            outtextxy(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 70 + listed_item * interval, buffer1);         // 输出ID
+            outtextxy(ADMIN_INTERFACE_X1 + 20, ADMIN_INTERFACE_Y1 + 74 + listed_item * interval, buffer1);         // 输出ID
             outtextxy(ADMIN_INTERFACE_X1 + 100, ADMIN_INTERFACE_Y1 + 74 + listed_item * interval, TEMP.ebike_ID); // 输出电动车车牌号
             outtextxy(ADMIN_INTERFACE_X1 + 200, ADMIN_INTERFACE_Y1 + 74 + listed_item * interval, TEMP.location); // 输出地址
         }
 
         ltoa(TEMP.apply_time, buffer1, 10);
-        sprintf(buffer2, "%.4s.%.2s.%.2s", buffer1, buffer1 + 4, buffer1 + 6); // 输出申请时间
+        sprintf(buffer2, "%.4s.%.2s.%.2s", buffer1, buffer1 + 4, buffer1 + 6); // 输出申请时间或违规时间
         outtextxy(ADMIN_INTERFACE_X1 + 300, ADMIN_INTERFACE_Y1 + 74 + listed_item * interval, buffer2); // 输出请求时间
 
         if (TEMP.result == PENDING)

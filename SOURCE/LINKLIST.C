@@ -203,6 +203,7 @@ FUNCTION:将传入的指针矫正到相应的节点
 void linklist_get_to_node(LINKLIST *pList, int index, LINKLIST_NODE **ptr){
     int i;
     *ptr = pList->HEAD;
+    if (index < 1 || index > linklist_get_length(pList)) return; // 如果序号不在链表范围内，则返回
     for (i = 1; i < index; i++)
     {
         *ptr = (*ptr)->NEXT;

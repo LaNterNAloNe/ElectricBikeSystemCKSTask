@@ -165,7 +165,10 @@ void rand_location(char *output, int gate_needed)
 
 long rand_int(long min, long max)
 {
-    long result = min + labs(rand() % (max - min + 1));
+    long result;
+    if (min > max)
+        return -1;
+    result = min + labs(rand() % (max - min + 1));
     return result;
 }
 
@@ -316,10 +319,67 @@ void rand_msg()
     }
 }
 
-void rand_violation_data()
+void rand_violation_data(LINKLIST *LIST)
 {
     int i;
+    const int rand_devide = 90;
     char buffer[20];
-    FILE *fp = fopen("DATA\\VIOLATIONTMP.DAT", "wb+");
+    FILE *fp = NULL;
+    EBIKE_INFO ebike_info;
+    LINKLIST_NODE *node = NULL;
 
+    if (rand_int(1, linklist_get_length(LIST)) != -1)
+    {
+        fp = fopen("DATA\\VIOLA.DAT", "rb+");
+        fseek (fp, 0, SEEK_SET); // 移动文件指针到文件开头
+
+        for (i = 0; i < 10; i++) // 一次尝试生成10条数据，可能不会生成10条
+        {
+            node = NULL;
+            if (rand_int(1, 100) < rand_devide) // 随机获取链表中的数据
+            {
+                if (debug_mode == 1){
+                    sprintf(buffer, "rand violation: %d", i);
+                    show_text(50, 10 * i, buffer, MY_WHITE);
+                }
+                continue;
+            }
+            else
+            {
+                rand_exist_id(buffer, LIST);                                                           // 生成选择已有ebike_id
+                linklist_get_to_node(LIST, linklist_find_data(LIST, buffer, "ebike_id"), &node); // 找到该id的数据
+                if (node == NULL)
+                {
+                    if (debug_mode == 1){
+                        show_text(10, 10, "Error: Cannot get random violation history: cannot find node", MY_WHITE);
+                        getch();
+                    }
+                    fclose(fp);
+                    return;
+                }
+                strcpy(ebike_info.ebike_ID, node->USER_DATA.ebike_ID); // 复制ebike_id
+                strcpy(ebike_info.ebike_license, node->USER_DATA.ebike_license); // 复制ebike_license
+                strcpy(ebike_info.location, node->USER_DATA.location);           // 复制location
+                ebike_info.ID = node->USER_DATA.ID; // 复制ID
+                ebike_info.violations = node->USER_DATA.violations; // 赋值违章次数
+                ebike_info.result = PENDING;
+                ebike_info.conduct_time = 0;
+                ebike_info.apply_time = get_approx_time(NULL);
+                
+                fwrite (&ebike_info, sizeof(EBIKE_INFO), 1, fp); // 写入文件
+
+                memset(&ebike_info, '\0', sizeof(EBIKE_INFO)); // 清空结构体
+            }
+        }
+    }
+
+    node = NULL;
+    fclose(fp); // 关闭文件
+
+    if (debug_mode == 1)
+    {
+        show_text(10, 10, "Success: Random violation history generated success", MY_WHITE);
+        getch();
+    }
 }
+

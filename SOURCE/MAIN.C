@@ -1,11 +1,7 @@
 #include"GLOBAL.H"
 
 int main(void){
-<<<<<<< HEAD
-    int page = MAIN_USER; // 主页面
-=======
-    int page = USER_MESSAGE; // 主页面
->>>>>>> cd06eb7ecee630cd160eed01ff2615c34e8ae0e7
+    int page = MAIN_ADMIN; // 主页面
     char buffer[50];
     unsigned long ID = 10; // 记录登录用户的ID
     int driver=VGA,mode=VGAHI;
@@ -31,7 +27,8 @@ int main(void){
     linklist_get_user_data(LIST); // 生成链表
 
     rand_io_data(LIST); // 生成随机进出校园信息，采用覆盖之前文件的方式
-    //rand_msg(); // 生成随机消息，采用覆盖之前文件的方式
+    rand_violation_data(LIST); // 生成随机违章信息，采用覆盖之前文件的方式
+    // rand_msg(); // 生成随机消息，采用覆盖之前文件的方式
 
     while(page != EXIT){   //循环直到page = EXIT ( 0 )
         // cleardevice();
