@@ -75,7 +75,7 @@ int main(void){
             case USER_MESSAGE_OUT:
                 user_message_out(LIST,&page, &ID); break;
             case USER_MESSAGE:
-                user_message(&page, &ID); break;
+                user_message(LIST,&page, &ID); break;
             
 
             //ADMIN.C

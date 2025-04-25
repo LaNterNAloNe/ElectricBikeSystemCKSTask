@@ -399,7 +399,7 @@ void flushUserLicense(user_box box[3][3],int data[3]);
 void handle_click_user_license(user_box box[3][3], int data[3]);
 void add_days_to_date(char* date_string, int days_to_add);
 int user_license_data_judge(LINKLIST *LIST,int* data,unsigned long *id);
-int ebike_license_judge(unsigned long* id);
+int ebike_license_judge(LINKLIST *LIST,unsigned long* id);
 
 void user_quiz(int* page, unsigned long* id);
 void drawgraph_quiz_notice();
@@ -448,16 +448,17 @@ void change_user_info_moreinfo(char input_text[][10], int state[], unsigned long
 void user_bikedata(LINKLIST *LIST,int* page, unsigned long* id);
 void drawgraph_user_bikedata(LINKLIST *LIST,unsigned long* id);
 
-void user_info_password(int* page, int* id);
+void user_info_password(int* page, unsigned long* id);
 void drawgraph_user_password();
 int user_password_change(unsigned long* id, char* old_password, char* new_password);
 
-void user_message(int *page ,unsigned long *id);
+void user_message(LINKLIST *LIST,int *page ,unsigned long *id);
 void drawgraph_user_message_center();
 void drawgraph_user_main_message();
 void user_handle_message_click_event(FILE* fp, int* page, unsigned long id_list[], unsigned long* selected_id,char* search_str, char* search_needed);
 //void define_user_message_buttons(struct _ADMIN_BUTTONS_ AdminButtons[], int page);
 void flushUserMessageMain(int* tag, int button_count, user_button UserButtons[]);
+void user_message_display(struct _MESSAGE_ *msg);
 
 void user_message_out(LINKLIST *LIST,int* page, unsigned long* id);
 void drawgraph_user_message_out(user_button* UserButtons);
@@ -467,6 +468,7 @@ void user_message_send(LINKLIST *LIST,int topic, char* topic_text, char* content
 
 int handle_click_main(int button_num, user_button WroteoutButtons[]);
 void anime_login_success_user(int x1,int y1,int x2,int y2);
+void get_user_username(LINKLIST *LIST,char* usrn, unsigned long* id);
 
 #define STRUCT_LENGTH(Struct) (sizeof(Struct)/sizeof(Struct[0]))
 #endif
