@@ -106,6 +106,55 @@ int linklist_find_data(LINKLIST *pList, char *str, char *needed_finding)
     return -1; // 如果没有找到，则返回0
 }
 
+int linklist_find_data_user(LINKLIST* pList, char* str, char* needed_finding) {
+    LINKLIST_NODE* ptr;
+    int chain_length = 0;
+    char buffer[20] = { '\0' };
+    for (ptr = pList->HEAD; ptr; ptr = ptr->NEXT)
+    {
+        if (!strcmp(needed_finding, "id")) {
+            ltoa(ptr->USER_DATA.ID, buffer, 10);
+            if (strcmp(buffer, str) == 0) {
+                    chain_length = ptr->chain_lenth;
+            }
+                
+        }
+        if (!strcmp(needed_finding, "realname")) {
+            if (!strcmp(ptr->USER_DATA.rln, str))
+                chain_length = ptr->chain_lenth;
+        }
+        if (!strcmp(needed_finding, "ebike_id")) {
+            if (!strcmp(ptr->USER_DATA.ebike_ID, str))
+                chain_length = ptr->chain_lenth;
+        }
+        if (!strcmp(needed_finding, "ebike_license")) {
+            if (!strcmp(ptr->USER_DATA.ebike_license, str))
+                chain_length = ptr->chain_lenth;
+        }
+        if (!strcmp(needed_finding, "location")) {
+            if (!strcmp(ptr->USER_DATA.location, str))
+                chain_length = ptr->chain_lenth;
+        }
+        if (!strcmp(needed_finding, "anual_check")) {
+            ltoa(ptr->USER_DATA.anual_check, buffer, 10);
+            if (!strcmp(buffer, str))
+                chain_length = ptr->chain_lenth;
+        }
+        if (strcmp(needed_finding, "account_state")) {
+            itoa((int)ptr->USER_DATA.account_state - '0', buffer, 10);
+            if (!strcmp(buffer, str))
+                chain_length = ptr->chain_lenth;
+        }
+        if (strcmp(needed_finding, "violations")) {
+            itoa(ptr->USER_DATA.violations, buffer, 10);
+            if (!strcmp(buffer, str))
+                chain_length = ptr->chain_lenth; // 如果找到，则返回该节点的序号
+        }
+        if (chain_length) return chain_length; // 如果找到，则返回该节点的序号
+    }
+
+    return -1; // 如果没有找到，则返回0
+}
 
 /**********************************************************
 NAME:linklist_delete_data

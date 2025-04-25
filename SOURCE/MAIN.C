@@ -1,7 +1,7 @@
 #include"GLOBAL.H"
 
 int main(void){
-    int page = MAIN_ADMIN; // 主页面
+    int page = USER_MESSAGE; // 主页面
     char buffer[50];
     unsigned long ID = 10; // 记录登录用户的ID
     int driver=VGA,mode=VGAHI;
@@ -50,21 +50,21 @@ int main(void){
             case MAIN_USER:
                 user_main(&page);break;
             case USER_BIKE_REGISTER:
-                user_bike_register(&page, &ID); break;
+                user_bike_register(LIST,&page, &ID); break;
             case USER_BIKE_LICENSE:
-                user_bike_license(&page, &ID); break;
+                user_bike_license(LIST,&page, &ID); break;
             case USER_BIKE_LICENSE_NOTICE:
-                user_bike_license_notice(&page, &ID); break;
+                user_bike_license_notice(LIST,&page, &ID); break;
             case USER_ANNUAL:
-                user_annual(&page, &ID); break;
+                user_annual(LIST,&page, &ID); break;
             case USER_BIKE_WROTEOUT:
-                user_bike_wroteout(&page, &ID); break;
+                user_bike_wroteout(LIST,&page, &ID); break;
             case USER_INFO:
                 user_info(&page, &ID); break;
             case USER_INFO_BIKEINFO:
-                user_bikeinfo(&page, &ID); break;
+                user_bikeinfo(LIST,&page, &ID); break;
             case USER_INFO_BIKEDATA:
-                user_bikedata(&page, &ID); break;
+                user_bikedata(LIST,&page, &ID); break;
             case USER_INFO_PASSWORD:
                 user_info_password(&page, &ID); break;
             case USER_HELP:
@@ -72,7 +72,7 @@ int main(void){
             case USER_QUIZ:
                 user_quiz(&page, &ID); break;
             case USER_MESSAGE_OUT:
-                user_message_out(&page, &ID); break;
+                user_message_out(LIST,&page, &ID); break;
             case USER_MESSAGE:
                 user_message(&page, &ID); break;
             

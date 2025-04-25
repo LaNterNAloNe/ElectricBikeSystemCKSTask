@@ -34,6 +34,7 @@ typedef struct _LINKLIST_
 
 void linklist_add_data(LINKLIST *pList, LINKLIST_USER NEW_USER_DATA);
 int linklist_find_data(LINKLIST *pList, char *str, char *needed_finding);
+int linklist_find_data_user(LINKLIST* pList, char* str, char* needed_finding);
 int linklist_delete_data(LINKLIST *pList, char *usrn);
 int linklist_get_length(LINKLIST *pList);
 void linklist_get_to_node(LINKLIST *pList, int index, LINKLIST_NODE **ptr);
